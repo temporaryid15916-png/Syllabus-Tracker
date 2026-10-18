@@ -582,6 +582,12 @@ function render(){
             ]
         ).filter(Boolean).length;
 
+const bookPercent =
+        count === 0
+          ? 0
+          : Math.round(
+              (bookCompleted / count) * 100
+            );
 
       const progressWrap =
         document.createElement("div");
@@ -597,7 +603,7 @@ function render(){
         "progress-text";
 
       progressText.textContent =
-        `${bookCompleted} / ${count} completed`;
+        `${bookCompleted} / ${count} completed — ${bookPercent}%`;
 
 
       const progress =
