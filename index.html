@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Syllabus Tracker</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,sans-serif;background:#f4f6fb;color:#18202a}
+  .wrap{max-width:1000px;margin:0 auto;padding:24px}
+  h1{margin:0 0 6px;font-size:32px}
+  .sub{color:#667085;margin-bottom:22px}
+  .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+  .card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 3px 14px rgba(0,0,0,.06)}
+  .card .label{color:#667085;font-size:14px}
+  .big{font-size:30px;font-weight:700;margin-top:6px}
+  .bar{height:12px;background:#e9edf3;border-radius:99px;overflow:hidden;margin-top:12px}
+  .fill{height:100%;background:#20a464;border-radius:99px;transition:.25s}
+  .book{background:#fff;border-radius:16px;margin:14px 0;padding:18px;box-shadow:0 3px 14px rgba(0,0,0,.06)}
+  .bookhead{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .booktitle{font-size:20px;font-weight:700}
+  .pct{font-weight:700;color:#16824e}
+  .chapters{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:15px}
+  .chapter{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border:1px solid #e5e7eb;border-radius:10px;background:#fafbfc}
+  .chapter.done{background:#ecfdf3;border-color:#b7ebce}
+  .chapter span{font-size:15px}
+  button{border:0;border-radius:8px;padding:7px 12px;cursor:pointer;font-weight:600}
+  .select{background:#e8f7ef;color:#147a48}
+  .selected{background:#16824e;color:#fff}
+  .footer{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+  .reset{background:#fff;border:1px solid #d0d5dd;color:#344054}
+  @media(max-width:700px){.summary{grid-template-columns:1fr}.chapters{grid-template-columns:1fr}.wrap{padding:14px}h1{font-size:27px}}
+</style>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#16824e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+</head>
+<body>
+<div class="wrap">
+  <h1>📚 Syllabus Tracker</h1>
+  <div class="sub">Select a chapter when you complete it. Your progress is saved automatically.</div>
+
+  <div class="summary">
+    <div class="card">
+      <div class="label">Total Chapters</div>
+      <div class="big" id="total">0</div>
+    </div>
+    <div class="card">
+      <div class="label">Completed</div>
+      <div class="big" id="completed">0</div>
+    </div>
+    <div class="card">
+      <div class="label">Overall Progress</div>
+      <div class="big" id="overall">0%</div>
+      <div class="bar"><div class="fill" id="overallFill"></div></div>
+    </div>
+  </div>
+
+  <div id="books"></div>
+
+  <div class="footer">
+    <button class="reset" onclick="saveNow()">💾 Save</button>
+    <button class="reset" onclick="resetAll()">Reset All</button>
+  </div>
+  <div class="sub" style="margin-top:10px;font-size:13px">Your chapter names and progress are saved on this device/browser automatically. You do not need to download the file every time.</div>
+</div>
+
+<script>
+const books = [
+  ["Physics 1st Paper",10],
+  ["Physics 2nd Paper",11],
+  ["Chemistry 1st Paper",5],
+  ["Chemistry 2nd Paper",5],
+  ["Higher Math 1st Paper",10],
+  ["Higher Math 2nd Paper",10],
+  ["Botany",12],
+  ["Zoology",12]
+];
+
+const permanentChapterNames = {
+  "Physics 1st Paper": [
+    "ভৌত জগৎ ও পরিমাপ",
+    "ভেক্টর",
+    "গতিবিদ্যা",
+    "নিউটনিয়ান বলবিদ্যা",
+    "কাজ, শক্তি ও ক্ষমতা",
+    "মহাকার্ষ ও অভিকর্ষ",
+    "পদার্থের গাঠনিক ধর্ম",
+    "পর্যাবৃত্ত গতি",
+    "তরঙ্গ",
+    "আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব"
+  ],
+  "Physics 2nd Paper": [
+    "তাপগতিবিদ্যা",
+    "স্থির তড়িৎ",
+    "চল তড়িৎ",
+    "চৌম্বক ক্রিয়া ও চৌম্বকত্ব",
+    "চৌম্বক আবেশ ও পরিবর্তী প্রবাহ",
+    "জ্যামিতিক আলোকবিজ্ঞান",
+    "ভৌত আলোকবিজ্ঞান",
+    "আধুনিক পদার্থবিজ্ঞানের সূচনা",
+    "পরমানু মডেল এবং নিউক্লিয়ার পদার্থবিজ্ঞান",
+    "সেমিকন্ডাক্টর ও ইলেকট্রনিক্‌স",
+    "জ্যোতির্বিজ্ঞান"
+  ],
+  "Chemistry 1st Paper": [
+    "ল্যাবরেটরির নিরাপদ ব্যবহার",
+    "গুণগত রসায়ন",
+    "মৌলের পর্যায়বৃত্ত ধর্ম ও রাসায়নিক বন্ধন",
+    "রাসায়নিক পরিবর্তন",
+    "কর্মমুখী রসায়ন"
+  ],
+  "Chemistry 2nd Paper": [
+    "পরিবেশ রসায়ন",
+    "জৈব রসায়ন",
+    "পরিমাণগত রসায়ন",
+    "তড়িৎ রসায়ন",
+    "অর্থনৈতিক রসায়ন"
+  ],
+  "Higher Math 1st Paper": [
+    "ম্যাট্রিক্স ও নির্ণায়ক",
+    "ভেক্টর",
+    "সরলরেখা",
+    "বৃত্ত",
+    "বিন্যাস ও সমাবেশ",
+    "ত্রিকোণমিতিক অনুপাত",
+    "সংযুক্ত ও যৌগিক কোণের ত্রিকোণমিতিক অনুপাত",
+    "ফাংশন ও ফাংশনের লেখচিত্র",
+    "অন্তরীকরণ",
+    "যোগজীকরণ"
+  ],
+  "Higher Math 2nd Paper": [
+    "বাস্তব সংখ্যা ও অসমতা",
+    "যোগাশ্রয়ী প্রোগ্রাম",
+    "জটিল সংখ্যা",
+    "বহুপদী ও বহুপদী সমীকরণ",
+    "দ্বিপদী বিস্তৃতি",
+    "কনিক",
+    "বিপরীত ত্রিকোণমিতি",
+    "স্থিতিবিদ্যা",
+    "সমতলে বস্তুকণার গতি",
+    "বিস্তার পরিমাপ ও সম্ভাবনা"
+  ],
+  "Botany": [
+    "কোষ ও এর গঠন",
+    "কোষ বিভাজন",
+    "কোষ রসায়ন",
+    "অণুজীব",
+    "শৈবাল ও ছত্রাক",
+    "ব্রায়োফাইটা ও  টেরিডোফাইটা",
+    "নগ্নবীজী ও আবৃতবীজী উদ্ভিদ",
+    "টিস্যু ও টিস্যুতন্ত্র",
+    "উদ্ভিদ শারীর তত্ত্ব",
+    "উদ্ভিদ প্রজনন",
+    "জীবপ্রযুক্তি",
+    "জীবের পরিবেশ বিস্তার ও সংরক্ষণ"
+  ],
+  "Zoology": [
+    "প্রাণীর বিভিন্নতা ও শ্রেণিবিন্যাস",
+    "প্রাণীর পরিচিতি",
+    "পরিপাক ও শোষণ",
+    "রক্ত ও সঞ্চালন",
+    "শ্বসন ও শ্বাসক্রিয়া",
+    "বর্জ্য ও নিষ্কাশন",
+    "চলন ও অঙ্গ চালনা",
+    "সমন্বয় ও নিয়ন্ত্রণ",
+    "মানব জীবনের ধারাবাহিকতা",
+    "মানবদেহের প্রতিরক্ষা",
+    "জিনতত্ত্ব ও বিবর্তন",
+    "প্রাণীর আচরণ"
+  ]
+};
+
+const saved = JSON.parse(localStorage.getItem("syllabusTracker") || "{}");
+
+function key(b,c){ return b+"__"+c; }
+
+function render(){
+  const root=document.getElementById("books");
+  root.innerHTML="";
+  let total=0, done=0;
+
+  books.forEach(([book,count])=>{
+    total += count;
+    let bookDone=0;
+    for(let c=1;c<=count;c++) if(saved[key(book,c)]) bookDone++;
+    done += bookDone;
+    const pct=count ? (bookDone/count*100) : 0;
+
+    const section=document.createElement("div");
+    section.className="book";
+    section.innerHTML=`
+      <div class="bookhead">
+        <div class="booktitle">${book}</div>
+        <div class="pct">${pct.toFixed(1)}% complete</div>
+      </div>
+      <div class="bar"><div class="fill" style="width:${pct}%"></div></div>
+      <div class="chapters"></div>
+    `;
+    const grid=section.querySelector(".chapters");
+
+    for(let c=1;c<=count;c++){
+      const isDone=!!saved[key(book,c)];
+      const row=document.createElement("div");
+      row.className="chapter"+(isDone?" done":"");
+      const nameKey = "name__" + key(book,c);
+      const savedName = saved[nameKey] || (permanentChapterNames[name]?.[c - 1]) || `Chapter ${c}`;
+      row.innerHTML=`<input class="chapterName" value="${savedName.replace(/"/g,'&quot;')}" aria-label="Chapter ${c} name">
+        <button class="${isDone?"selected":"select"}">${isDone?"Selected":"Select"}</button>`;
+      const input = row.querySelector(".chapterName");
+      input.addEventListener("change",()=>{
+        saved[nameKey] = input.value.trim() || `Chapter ${c}`;
+        localStorage.setItem("syllabusTracker",JSON.stringify(saved));
+        render();
+      });
+      input.addEventListener("keydown",(e)=>{
+        if(e.key==="Enter"){ input.blur(); }
+      });
+      row.querySelector("button").onclick=()=>{
+        saved[key(book,c)] = !saved[key(book,c)];
+        localStorage.setItem("syllabusTracker",JSON.stringify(saved));
+        render();
+      };
+      grid.appendChild(row);
+    }
+    root.appendChild(section);
+  });
+
+  const overall=total ? done/total*100 : 0;
+  document.getElementById("total").textContent=total;
+  document.getElementById("completed").textContent=done;
+  document.getElementById("overall").textContent=overall.toFixed(1)+"%";
+  document.getElementById("overallFill").style.width=overall+"%";
+}
+
+function saveNow(){
+  localStorage.setItem("syllabusTracker", JSON.stringify(saved));
+  const btn = document.querySelector('.footer .reset');
+  const old = btn.textContent;
+  btn.textContent = "✓ Saved";
+  setTimeout(() => btn.textContent = old, 1000);
+}
+
+function resetAll(){
+  if(confirm("Reset all selected chapters?")){
+    Object.keys(saved).forEach(k=>delete saved[k]);
+    localStorage.removeItem("syllabusTracker");
+    render();
+  }
+}
+render();
+
+window.addEventListener("beforeunload", () => {
+  localStorage.setItem("syllabusTracker", JSON.stringify(saved));
+});
+
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>
