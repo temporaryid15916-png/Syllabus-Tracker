@@ -6,30 +6,235 @@
 <title>Syllabus Tracker</title>
 <style>
   *{box-sizing:border-box}
-  body{margin:0;font-family:Arial,sans-serif;background:#f4f6fb;color:#18202a}
-  .wrap{max-width:1000px;margin:0 auto;padding:24px}
-  h1{margin:0 0 6px;font-size:32px}
-  .sub{color:#667085;margin-bottom:22px}
-  .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
-  .card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 3px 14px rgba(0,0,0,.06)}
-  .card .label{color:#667085;font-size:14px}
-  .big{font-size:30px;font-weight:700;margin-top:6px}
-  .bar{height:12px;background:#e9edf3;border-radius:99px;overflow:hidden;margin-top:12px}
-  .fill{height:100%;background:#20a464;border-radius:99px;transition:.25s}
-  .book{background:#fff;border-radius:16px;margin:14px 0;padding:18px;box-shadow:0 3px 14px rgba(0,0,0,.06)}
-  .bookhead{display:flex;justify-content:space-between;align-items:center;gap:12px}
-  .booktitle{font-size:20px;font-weight:700}
-  .pct{font-weight:700;color:#16824e}
-  .chapters{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:15px}
-  .chapter{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border:1px solid #e5e7eb;border-radius:10px;background:#fafbfc}
-  .chapter.done{background:#ecfdf3;border-color:#b7ebce}
-  .chapter span{font-size:15px}
-  button{border:0;border-radius:8px;padding:7px 12px;cursor:pointer;font-weight:600}
-  .select{background:#e8f7ef;color:#147a48}
-  .selected{background:#16824e;color:#fff}
-  .footer{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
-  .reset{background:#fff;border:1px solid #d0d5dd;color:#344054}
-  @media(max-width:700px){.summary{grid-template-columns:1fr}.chapters{grid-template-columns:1fr}.wrap{padding:14px}h1{font-size:27px}}
+
+  :root{
+    --bg:#f4f6fb;
+    --card:#ffffff;
+    --text:#18202a;
+    --muted:#667085;
+    --border:#e5e7eb;
+    --soft:#fafbfc;
+    --done:#ecfdf3;
+    --done-border:#b7ebce;
+    --green:#16824e;
+    --green2:#20a464;
+    --button-bg:#e8f7ef;
+    --button-text:#147a48;
+  }
+
+  body.dark{
+    --bg:#101418;
+    --card:#182027;
+    --text:#edf2f7;
+    --muted:#aab4c0;
+    --border:#303a44;
+    --soft:#202a33;
+    --done:#123b29;
+    --done-border:#246b4a;
+    --green:#39b878;
+    --green2:#35c47c;
+    --button-bg:#173c2b;
+    --button-text:#65d39a;
+  }
+
+  body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    transition:background .2s,color .2s;
+  }
+
+  .wrap{
+    max-width:1000px;
+    margin:0 auto;
+    padding:24px
+  }
+
+  .header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:14px;
+  }
+
+  h1{
+    margin:0 0 6px;
+    font-size:32px
+  }
+
+  .sub{
+    color:var(--muted);
+    margin-bottom:22px
+  }
+
+  .summary{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+    margin-bottom:24px
+  }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:18px;
+    box-shadow:0 3px 14px rgba(0,0,0,.06)
+  }
+
+  .card .label{
+    color:var(--muted);
+    font-size:14px
+  }
+
+  .big{
+    font-size:30px;
+    font-weight:700;
+    margin-top:6px
+  }
+
+  .bar{
+    height:12px;
+    background:var(--border);
+    border-radius:99px;
+    overflow:hidden;
+    margin-top:12px
+  }
+
+  .fill{
+    height:100%;
+    background:var(--green2);
+    border-radius:99px;
+    transition:.25s
+  }
+
+  .book{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    margin:14px 0;
+    padding:18px;
+    box-shadow:0 3px 14px rgba(0,0,0,.06)
+  }
+
+  .bookhead{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px
+  }
+
+  .booktitle{
+    font-size:20px;
+    font-weight:700
+  }
+
+  .pct{
+    font-weight:700;
+    color:var(--green)
+  }
+
+  .chapters{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:9px;
+    margin-top:15px
+  }
+
+  .chapter{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding:11px 13px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:var(--soft)
+  }
+
+  .chapter.done{
+    background:var(--done);
+    border-color:var(--done-border)
+  }
+
+  .chapter span{
+    font-size:15px
+  }
+
+  .chapterName{
+    flex:1;
+    min-width:0;
+    border:0;
+    outline:none;
+    background:transparent;
+    color:var(--text);
+    font-size:15px;
+    font-family:inherit;
+  }
+
+  .chapterName:focus{
+    outline:2px solid var(--green);
+    outline-offset:2px;
+    border-radius:5px;
+  }
+
+  button{
+    border:0;
+    border-radius:8px;
+    padding:7px 12px;
+    cursor:pointer;
+    font-weight:600
+  }
+
+  .select{
+    background:var(--button-bg);
+    color:var(--button-text)
+  }
+
+  .selected{
+    background:var(--green);
+    color:#fff
+  }
+
+  .footer{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:20px
+  }
+
+  .reset{
+    background:var(--card);
+    border:1px solid var(--border);
+    color:var(--text)
+  }
+
+  .theme-btn{
+    white-space:nowrap;
+  }
+
+  @media(max-width:700px){
+    .summary{
+      grid-template-columns:1fr
+    }
+
+    .chapters{
+      grid-template-columns:1fr
+    }
+
+    .wrap{
+      padding:14px
+    }
+
+    h1{
+      font-size:27px
+    }
+
+    .header{
+      align-items:flex-start;
+    }
+  }
 </style>
   <link rel="manifest" href="./manifest.webmanifest">
   <meta name="theme-color" content="#16824e">
@@ -38,8 +243,19 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>📚 Syllabus Tracker</h1>
-  <div class="sub">Select a chapter when you complete it. Your progress is saved automatically.</div>
+
+  <div class="header">
+    <div>
+      <h1>📚 Syllabus Tracker</h1>
+      <div class="sub">
+        Select a chapter when you complete it. Your progress is saved automatically.
+      </div>
+    </div>
+
+    <button id="themeBtn" class="reset theme-btn" onclick="toggleDarkMode()">
+      🌙 Dark
+    </button>
+  </div>
 
   <div class="summary">
     <div class="card">
@@ -85,7 +301,7 @@ const permanentChapterNames = {
     "গতিবিদ্যা",
     "নিউটনিয়ান বলবিদ্যা",
     "কাজ, শক্তি ও ক্ষমতা",
-    "মহাকার্ষ ও অভিকর্ষ",
+    "মহাকর্ষ ও অভিকর্ষ",
     "পদার্থের গাঠনিক ধর্ম",
     "পর্যাবৃত্ত গতি",
     "তরঙ্গ",
@@ -205,7 +421,7 @@ function render(){
       const row=document.createElement("div");
       row.className="chapter"+(isDone?" done":"");
       const nameKey = "name__" + key(book,c);
-      const savedName = saved[nameKey] || (permanentChapterNames[name]?.[c - 1]) || `Chapter ${c}`;
+      const savedName = saved[nameKey] || (permanentChapterNames[book]?.[c - 1]) || `Chapter ${c}`;
       row.innerHTML=`<input class="chapterName" value="${savedName.replace(/"/g,'&quot;')}" aria-label="Chapter ${c} name">
         <button class="${isDone?"selected":"select"}">${isDone?"Selected":"Select"}</button>`;
       const input = row.querySelector(".chapterName");
@@ -247,6 +463,36 @@ function resetAll(){
     Object.keys(saved).forEach(k=>delete saved[k]);
     localStorage.removeItem("syllabusTracker");
     render();
+  }
+}
+
+function applyTheme(){
+  const dark = localStorage.getItem("syllabusTheme") === "dark";
+
+  document.body.classList.toggle("dark", dark);
+
+  const btn = document.getElementById("themeBtn");
+
+  if(btn){
+    btn.textContent = dark ? "☀️ Light" : "🌙 Dark";
+  }
+}
+
+function toggleDarkMode(){
+  const dark = !document.body.classList.contains("dark");
+
+  document.body.classList.toggle("dark", dark);
+
+  localStorage.setItem(
+    "syllabusTheme",
+    dark ? "dark" : "light"
+  );
+
+  applyTheme();
+}
+
+applyTheme();
+render();
   }
 }
 render();
