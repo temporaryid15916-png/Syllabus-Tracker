@@ -86,6 +86,33 @@ h1{
   box-shadow:0 2px 8px rgba(0,0,0,.04);
 }
 
+/* Stats Grid for Overall Progress Cards */
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:15px;
+  margin-bottom:18px;
+}
+
+.stat-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:18px;
+  box-shadow:0 2px 8px rgba(0,0,0,.04);
+}
+
+.stat-label{
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:8px;
+}
+
+.stat-value{
+  font-size:26px;
+  font-weight:bold;
+}
+
 .book-title{
   font-size:20px;
   font-weight:bold;
@@ -321,7 +348,7 @@ const permanentChapterNames = {
     "ভৌত জগত ও পরিমাপ",
     "ভেক্টর",
     "গতিবিদ্যা",
-    "নিউটনিয়ান বলবিদ্যা",
+    "নিউটনিয়ান বলবিদ্যা",
     "কাজ, শক্তি ও ক্ষমতা",
     "মহাকর্ষ ও অভিকর্ষ",
     "পদার্থের গাঠনিক ধর্ম",
@@ -500,46 +527,37 @@ function render(){
 
 
   /* =========================
-     OVERALL PROGRESS
-     SHOW AT TOP
+     OVERALL PROGRESS (3 CARDS)
   ========================= */
 
-  const overall =
-    document.createElement("div");
+  const percent = total === 0 ? "0.00" : ((completed / total) * 100).toFixed(2);
 
-  overall.className = "card";
+  const statsGrid = document.createElement("div");
+  statsGrid.className = "stats-grid";
 
-  const percent =
-    total === 0
-      ? 0
-      : Math.round(
-          (completed / total) * 100
-        );
-
-  overall.innerHTML = `
-
-    <strong>Overall Progress</strong>
-
-    <div class="progress-wrap">
-
-      <div class="progress-text">
-        ${completed} / ${total} completed — ${percent}%
-      </div>
-
-      <div class="progress">
-
-        <div
-          class="progress-bar"
-          style="width:${percent}%">
-        </div>
-
-      </div>
-
+  statsGrid.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Total Chapters</div>
+      <div class="stat-value">${total}</div>
     </div>
 
+    <div class="stat-card">
+      <div class="stat-label">Completed</div>
+      <div class="stat-value">${completed}</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-label">Overall Progress</div>
+      <div class="stat-value">${percent}%</div>
+      <div class="progress-wrap" style="margin-top:10px; margin-bottom:0;">
+        <div class="progress">
+          <div class="progress-bar" style="width:${percent}%"></div>
+        </div>
+      </div>
+    </div>
   `;
 
-  app.appendChild(overall);
+  app.appendChild(statsGrid);
 
 
   /* =========================
@@ -582,12 +600,12 @@ function render(){
             ]
         ).filter(Boolean).length;
 
-const bookPercent =
+
+      const bookPercent =
         count === 0
-          ? 0
-          : Math.round(
-              (bookCompleted / count) * 100
-            );
+          ? "0.00"
+          : ((bookCompleted / count) * 100).toFixed(2);
+
 
       const progressWrap =
         document.createElement("div");
@@ -620,7 +638,7 @@ const bookPercent =
         "progress-bar";
 
       progressBar.style.width =
-        `${(bookCompleted / count) * 100}%`;
+        `${bookPercent}%`;
 
 
       progress.appendChild(
@@ -874,11 +892,6 @@ function resetAll(){
     return;
   }
 
-
-  /*
-    শুধু progress reset হবে।
-    Chapter names থাকবে।
-  */
 
   Object.keys(saved).forEach(k => {
 
