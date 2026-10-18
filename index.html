@@ -531,6 +531,7 @@ function render(){
   ========================= */
 
   const percent = total === 0 ? "0.00" : ((completed / total) * 100).toFixed(2);
+  const remainingPercent = total === 0 ? "100.00" : (100 - parseFloat(percent)).toFixed(2);
 
   const statsGrid = document.createElement("div");
   statsGrid.className = "stats-grid";
@@ -548,7 +549,7 @@ function render(){
 
     <div class="stat-card">
       <div class="stat-label">Overall Progress</div>
-      <div class="stat-value">${percent}%</div>
+      <div class="stat-value">${percent}% <span style="font-size:14px; color:var(--muted); font-weight:normal;">(Remaining: ${remainingPercent}%)</span></div>
       <div class="progress-wrap" style="margin-top:10px; margin-bottom:0;">
         <div class="progress">
           <div class="progress-bar" style="width:${percent}%"></div>
