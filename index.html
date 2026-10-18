@@ -167,8 +167,10 @@ h1{
   white-space:nowrap;
 }
 
+/* Progress */
 .progress-wrap{
   margin-top:10px;
+  margin-bottom:18px;
 }
 
 .progress-text{
@@ -192,12 +194,23 @@ h1{
   transition:.3s;
 }
 
+/* Footer */
 .footer{
   display:flex;
   justify-content:center;
   gap:10px;
   flex-wrap:wrap;
   margin:25px 0;
+}
+
+/* Copyright */
+.copyright{
+  text-align:center;
+  color:var(--muted);
+  font-size:11px;
+  margin-top:-10px;
+  margin-bottom:12px;
+  opacity:.8;
 }
 
 @media(max-width:600px){
@@ -231,6 +244,7 @@ h1{
   <div class="header">
     <div>
       <h1>📚 Syllabus Tracker</h1>
+
       <div class="sub">
         Select a chapter when you complete it. Your progress is saved automatically.
       </div>
@@ -247,28 +261,53 @@ h1{
   <div id="app"></div>
 
   <div class="footer">
-    <button id="saveBtn" class="reset" onclick="saveNow()">
+
+    <button
+      id="saveBtn"
+      class="reset"
+      onclick="saveNow()">
       💾 Save
     </button>
 
-    <button class="reset" onclick="resetAll()">
+    <button
+      class="reset"
+      onclick="resetAll()">
       Reset All
     </button>
+
+  </div>
+
+  <div class="copyright">
+    ©turabi_alam
   </div>
 
 </div>
 
+
 <script>
 
+/* =========================
+   BOOKS
+========================= */
+
 const books = {
+
   "Physics 1st Paper": 10,
+
   "Physics 2nd Paper": 11,
+
   "Chemistry 1st Paper": 5,
+
   "Chemistry 2nd Paper": 5,
+
   "Higher Math 1st Paper": 10,
+
   "Higher Math 2nd Paper": 10,
+
   "Botany": 12,
+
   "Zoology": 12
+
 };
 
 
@@ -391,7 +430,6 @@ let saved = JSON.parse(
 
 /* =========================
    REMOVE OLD GENERIC NAMES
-   BUT KEEP PROGRESS
 ========================= */
 
 Object.keys(saved).forEach(k => {
@@ -400,7 +438,9 @@ Object.keys(saved).forEach(k => {
     k.startsWith("name__") &&
     /^Chapter\s+\d+$/i.test(saved[k])
   ){
+
     delete saved[k];
+
   }
 
 });
@@ -416,7 +456,9 @@ localStorage.setItem(
 ========================= */
 
 function key(book, chapter){
+
   return book + "__" + chapter;
+
 }
 
 
@@ -426,60 +468,207 @@ function key(book, chapter){
 
 function render(){
 
-  const app = document.getElementById("app");
+  const app =
+    document.getElementById("app");
 
   app.innerHTML = "";
+
+
+  /* =========================
+     CALCULATE TOTAL FIRST
+     FOR OVERALL PROGRESS
+  ========================= */
 
   let total = 0;
   let completed = 0;
 
+  Object.entries(books).forEach(
+    ([book, count]) => {
+
+      total += count;
+
+      for(let c = 1; c <= count; c++){
+
+        if(saved[key(book, c)]){
+          completed++;
+        }
+
+      }
+
+    }
+  );
+
+
+  /* =========================
+     OVERALL PROGRESS
+     SHOW AT TOP
+  ========================= */
+
+  const overall =
+    document.createElement("div");
+
+  overall.className = "card";
+
+  const percent =
+    total === 0
+      ? 0
+      : Math.round(
+          (completed / total) * 100
+        );
+
+  overall.innerHTML = `
+
+    <strong>Overall Progress</strong>
+
+    <div class="progress-wrap">
+
+      <div class="progress-text">
+        ${completed} / ${total} completed — ${percent}%
+      </div>
+
+      <div class="progress">
+
+        <div
+          class="progress-bar"
+          style="width:${percent}%">
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+  app.appendChild(overall);
+
+
+  /* =========================
+     SUBJECTS
+  ========================= */
 
   Object.entries(books).forEach(
     ([book, count]) => {
 
-      const card = document.createElement("div");
+      const card =
+        document.createElement("div");
+
       card.className = "card";
 
-      const title = document.createElement("div");
-      title.className = "book-title";
+
+      /* Subject title */
+
+      const title =
+        document.createElement("div");
+
+      title.className =
+        "book-title";
+
       title.textContent = book;
 
       card.appendChild(title);
 
 
-      const grid = document.createElement("div");
+      /* =========================
+         SUBJECT PROGRESS
+         BEFORE CHAPTERS
+      ========================= */
+
+      const bookCompleted =
+        Array.from(
+          {length: count},
+          (_, i) =>
+            !!saved[
+              key(book, i + 1)
+            ]
+        ).filter(Boolean).length;
+
+
+      const progressWrap =
+        document.createElement("div");
+
+      progressWrap.className =
+        "progress-wrap";
+
+
+      const progressText =
+        document.createElement("div");
+
+      progressText.className =
+        "progress-text";
+
+      progressText.textContent =
+        `${bookCompleted} / ${count} completed`;
+
+
+      const progress =
+        document.createElement("div");
+
+      progress.className =
+        "progress";
+
+
+      const progressBar =
+        document.createElement("div");
+
+      progressBar.className =
+        "progress-bar";
+
+      progressBar.style.width =
+        `${(bookCompleted / count) * 100}%`;
+
+
+      progress.appendChild(
+        progressBar
+      );
+
+      progressWrap.appendChild(
+        progressText
+      );
+
+      progressWrap.appendChild(
+        progress
+      );
+
+
+      /* Progress comes BEFORE chapters */
+
+      card.appendChild(
+        progressWrap
+      );
+
+
+      /* =========================
+         CHAPTER GRID
+      ========================= */
+
+      const grid =
+        document.createElement("div");
+
       grid.className = "grid";
 
 
-      for(let c = 1; c <= count; c++){
-
-        total++;
+      for(
+        let c = 1;
+        c <= count;
+        c++
+      ){
 
         const isDone =
           !!saved[key(book, c)];
-
-        if(isDone){
-          completed++;
-        }
 
 
         const row =
           document.createElement("div");
 
         row.className =
-          "chapter" + (isDone ? " done" : "");
+          "chapter" +
+          (isDone ? " done" : "");
 
 
         const nameKey =
-          "name__" + key(book, c);
+          "name__" +
+          key(book, c);
 
-
-        /*
-          IMPORTANT:
-          যদি পুরোনো localStorage-এ
-          "Chapter 1" থাকে, সেটা আর ব্যবহার
-          করা হবে না।
-        */
 
         let savedName =
           saved[nameKey];
@@ -491,13 +680,16 @@ function render(){
         ){
 
           savedName =
-            permanentChapterNames[book]?.[c - 1]
-            || `Chapter ${c}`;
+            permanentChapterNames[book]?.[
+              c - 1
+            ] ||
+            `Chapter ${c}`;
 
         }
 
 
         row.innerHTML = `
+
           <input
             class="chapterName"
             value="${String(savedName)
@@ -509,18 +701,31 @@ function render(){
           >
 
           <button class="${
-            isDone ? "selected" : "select"
+            isDone
+              ? "selected"
+              : "select"
           }">
-            ${isDone ? "Selected" : "Select"}
+
+            ${
+              isDone
+                ? "Selected"
+                : "Select"
+            }
+
           </button>
+
         `;
 
 
+        /* =========================
+           SAVE CHAPTER NAME
+        ========================= */
+
         const input =
-          row.querySelector(".chapterName");
+          row.querySelector(
+            ".chapterName"
+          );
 
-
-        /* Save custom chapter name */
 
         input.addEventListener(
           "change",
@@ -532,7 +737,8 @@ function render(){
 
             if(value){
 
-              saved[nameKey] = value;
+              saved[nameKey] =
+                value;
 
             }else{
 
@@ -564,7 +770,9 @@ function render(){
         );
 
 
-        /* Select / Unselect */
+        /* =========================
+           SELECT / UNSELECT
+        ========================= */
 
         row.querySelector("button").onclick =
           () => {
@@ -589,99 +797,14 @@ function render(){
       }
 
 
-/* Progress */
+      /* Chapters after progress */
 
-const progressWrap =
-  document.createElement("div");
-
-progressWrap.className =
-  "progress-wrap";
-
-const bookCompleted =
-  Array.from(
-    {length: count},
-    (_, i) =>
-      !!saved[key(book, i + 1)]
-  ).filter(Boolean).length;
-
-const progressText =
-  document.createElement("div");
-
-progressText.className =
-  "progress-text";
-
-progressText.textContent =
-  `${bookCompleted} / ${count} completed`;
-
-const progress =
-  document.createElement("div");
-
-progress.className = "progress";
-
-const progressBar =
-  document.createElement("div");
-
-progressBar.className =
-  "progress-bar";
-
-progressBar.style.width =
-  `${(bookCompleted / count) * 100}%`;
-
-progress.appendChild(progressBar);
-
-progressWrap.appendChild(progressText);
-progressWrap.appendChild(progress);
-
-
-/* IMPORTANT:
-   Progress আগে,
-   Chapter list পরে
-*/
-
-card.appendChild(progressWrap);
-card.appendChild(grid);
+      card.appendChild(grid);
 
       app.appendChild(card);
 
     }
   );
-
-
-  /* Overall progress */
-
-  const overall =
-    document.createElement("div");
-
-  overall.className = "card";
-
-
-  const percent =
-    total === 0
-      ? 0
-      : Math.round((completed / total) * 100);
-
-
-  overall.innerHTML = `
-    <strong>Overall Progress</strong>
-
-    <div class="progress-wrap">
-
-      <div class="progress-text">
-        ${completed} / ${total} completed — ${percent}%
-      </div>
-
-      <div class="progress">
-        <div
-          class="progress-bar"
-          style="width:${percent}%">
-        </div>
-      </div>
-
-    </div>
-  `;
-
-
-  app.appendChild(overall);
 
 }
 
@@ -699,7 +822,9 @@ function saveNow(){
 
 
   const btn =
-    document.getElementById("saveBtn");
+    document.getElementById(
+      "saveBtn"
+    );
 
 
   if(btn){
@@ -714,7 +839,10 @@ function saveNow(){
 
     setTimeout(
       () => {
-        btn.textContent = oldText;
+
+        btn.textContent =
+          oldText;
+
       },
       1200
     );
@@ -743,7 +871,7 @@ function resetAll(){
 
   /*
     শুধু progress reset হবে।
-    Chapter names রাখা হবে।
+    Chapter names থাকবে।
   */
 
   Object.keys(saved).forEach(k => {
@@ -775,8 +903,9 @@ function resetAll(){
 function applyTheme(){
 
   const dark =
-    localStorage.getItem("syllabusTheme")
-    === "dark";
+    localStorage.getItem(
+      "syllabusTheme"
+    ) === "dark";
 
 
   document.body.classList.toggle(
@@ -786,7 +915,9 @@ function applyTheme(){
 
 
   const btn =
-    document.getElementById("themeBtn");
+    document.getElementById(
+      "themeBtn"
+    );
 
 
   if(btn){
@@ -804,7 +935,9 @@ function applyTheme(){
 function toggleDarkMode(){
 
   const dark =
-    !document.body.classList.contains("dark");
+    !document.body.classList.contains(
+      "dark"
+    );
 
 
   document.body.classList.toggle(
@@ -815,7 +948,9 @@ function toggleDarkMode(){
 
   localStorage.setItem(
     "syllabusTheme",
-    dark ? "dark" : "light"
+    dark
+      ? "dark"
+      : "light"
   );
 
 
