@@ -1,4 +1,4 @@
-const CACHE_NAME = "syllabus-tracker-v2";
+const CACHE_NAME = "syllabus-tracker-v3";
 
 const APP_FILES = [
   "./",
@@ -11,8 +11,11 @@ const APP_FILES = [
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_FILES))
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(APP_FILES);
+    })
   );
+
   self.skipWaiting();
 });
 
@@ -26,23 +29,50 @@ self.addEventListener("activate", (event) => {
       )
     )
   );
+
   self.clients.claim();
 });
 
 self.addEventListener("fetch", (event) => {
+  // HTML files: always try the latest version from GitHub first
+  if (
+    event.request.mode === "navigate" ||
+    event.request.destination === "document"
+  ) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          const responseClone = networkResponse.clone();
+
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+
+          return networkResponse;
+        })
+        .catch(() => {
+          return caches.match(event.request);
+        })
+    );
+
+    return;
+  }
+
+  // Other files: cache first, then network
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      return cachedResponse || fetch(event.request).then((networkResponse) => {
-        const responseClone = networkResponse.clone();
+      return (
+        cachedResponse ||
+        fetch(event.request).then((networkResponse) => {
+          const responseClone = networkResponse.clone();
 
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseClone);
-        });
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
 
-        return networkResponse;
-      }).catch(() => {
-        return caches.match("./index.html");
-      });
+          return networkResponse;
+        })
+      );
     })
   );
 });
