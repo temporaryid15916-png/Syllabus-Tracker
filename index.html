@@ -589,59 +589,57 @@ function render(){
       }
 
 
-      /* Progress */
+/* Progress */
 
-      const progressWrap =
-        document.createElement("div");
+const progressWrap =
+  document.createElement("div");
 
-      progressWrap.className =
-        "progress-wrap";
+progressWrap.className =
+  "progress-wrap";
 
+const bookCompleted =
+  Array.from(
+    {length: count},
+    (_, i) =>
+      !!saved[key(book, i + 1)]
+  ).filter(Boolean).length;
 
-      const bookCompleted =
-        Array.from(
-          {length: count},
-          (_, i) =>
-            !!saved[key(book, i + 1)]
-        ).filter(Boolean).length;
+const progressText =
+  document.createElement("div");
 
+progressText.className =
+  "progress-text";
 
-      const progressText =
-        document.createElement("div");
+progressText.textContent =
+  `${bookCompleted} / ${count} completed`;
 
-      progressText.className =
-        "progress-text";
+const progress =
+  document.createElement("div");
 
-      progressText.textContent =
-        `${bookCompleted} / ${count} completed`;
+progress.className = "progress";
 
+const progressBar =
+  document.createElement("div");
 
-      const progress =
-        document.createElement("div");
+progressBar.className =
+  "progress-bar";
 
-      progress.className = "progress";
+progressBar.style.width =
+  `${(bookCompleted / count) * 100}%`;
 
+progress.appendChild(progressBar);
 
-      const progressBar =
-        document.createElement("div");
-
-      progressBar.className =
-        "progress-bar";
-
-
-      progressBar.style.width =
-        `${(bookCompleted / count) * 100}%`;
-
-
-      progress.appendChild(progressBar);
+progressWrap.appendChild(progressText);
+progressWrap.appendChild(progress);
 
 
-      progressWrap.appendChild(progressText);
-      progressWrap.appendChild(progress);
+/* IMPORTANT:
+   Progress আগে,
+   Chapter list পরে
+*/
 
-
-      card.appendChild(grid);
-      card.appendChild(progressWrap);
+card.appendChild(progressWrap);
+card.appendChild(grid);
 
       app.appendChild(card);
 
