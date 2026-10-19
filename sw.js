@@ -1,4 +1,4 @@
-const CACHE_NAME = "syllabus-tracker-v4";
+const CACHE_NAME = "syllabus-tracker-v5";
 
 const APP_FILES = [
   "./",
