@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0f172a">
-
 <title>Syllabus Tracker</title>
 
 <link rel="manifest" href="./manifest.webmanifest">
@@ -30,6 +29,9 @@
   --danger:#dc2626;
   --danger-soft:#fef2f2;
 
+  --purple:#7c3aed;
+  --purple-soft:#f5f3ff;
+
   --shadow:0 8px 30px rgba(15,23,42,.07);
   --radius:18px;
 }
@@ -54,6 +56,9 @@ body.dark{
   --danger:#f87171;
   --danger-soft:#450a0a;
 
+  --purple:#a78bfa;
+  --purple-soft:#2e1065;
+
   --shadow:0 8px 30px rgba(0,0,0,.25);
 }
 
@@ -73,10 +78,8 @@ body{
     "Noto Sans",
     system-ui,
     sans-serif;
-
   background:var(--bg);
   color:var(--text);
-
   transition:.25s ease;
 }
 
@@ -90,6 +93,10 @@ button{
   cursor:pointer;
 }
 
+button:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
 
 /* ================= HEADER ================= */
 
@@ -97,28 +104,19 @@ button{
   position:sticky;
   top:0;
   z-index:100;
-
   backdrop-filter:blur(14px);
-
-  background:color-mix(
-    in srgb,
-    var(--bg) 90%,
-    transparent
-  );
-
+  background:color-mix(in srgb,var(--bg) 90%,transparent);
   border-bottom:1px solid var(--border);
 }
 
 .topbar-inner{
   max-width:1200px;
   margin:auto;
-
   padding:16px 20px;
 
   display:flex;
   justify-content:space-between;
   align-items:center;
-
   gap:15px;
 }
 
@@ -138,23 +136,18 @@ button{
   border:1px solid var(--border);
   background:var(--card);
   color:var(--text);
-
   padding:9px 14px;
   border-radius:12px;
-
   font-weight:750;
 }
-
 
 /* ================= MAIN ================= */
 
 .container{
   max-width:1200px;
   margin:auto;
-
   padding:28px 20px 45px;
 }
-
 
 /* ================= DASHBOARD ================= */
 
@@ -162,18 +155,14 @@ button{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:14px;
-
   margin-bottom:18px;
 }
 
 .stat-card{
   background:var(--card);
-
   border:1px solid var(--border);
   border-radius:var(--radius);
-
   padding:18px;
-
   box-shadow:var(--shadow);
 }
 
@@ -195,26 +184,54 @@ button{
   font-size:12px;
 }
 
+/* ================= QUICK STATS ================= */
 
-/* ================= OVERALL PROGRESS ================= */
+.quick-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-bottom:20px;
+}
+
+.quick-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:17px;
+  box-shadow:var(--shadow);
+}
+
+.quick-icon{
+  font-size:21px;
+}
+
+.quick-label{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:750;
+}
+
+.quick-value{
+  margin-top:4px;
+  font-size:22px;
+  font-weight:850;
+}
+
+/* ================= OVERALL ================= */
 
 .overall-card{
   background:var(--card);
-
   border:1px solid var(--border);
   border-radius:var(--radius);
-
   padding:18px;
-
   box-shadow:var(--shadow);
-
   margin-bottom:20px;
 }
 
 .overall-top{
   display:flex;
   justify-content:space-between;
-
   margin-bottom:10px;
 }
 
@@ -226,9 +243,7 @@ button{
 .progress-track{
   width:100%;
   height:10px;
-
   background:var(--border);
-
   border-radius:999px;
   overflow:hidden;
 }
@@ -236,56 +251,30 @@ button{
 .progress-fill{
   height:100%;
   width:0;
-
-  background:linear-gradient(
-    90deg,
-    var(--primary),
-    #7c3aed
-  );
-
+  background:linear-gradient(90deg,var(--primary),#7c3aed);
   border-radius:999px;
-
   transition:width .3s ease;
 }
-
 
 /* ================= CONTINUE ================= */
 
 .continue-card{
-  background:
-    linear-gradient(
-      135deg,
-      var(--primary-soft),
-      var(--card)
-    );
-
-  border:1px solid
-    color-mix(
-      in srgb,
-      var(--primary) 30%,
-      var(--border)
-    );
-
+  background:linear-gradient(135deg,var(--primary-soft),var(--card));
+  border:1px solid color-mix(in srgb,var(--primary) 30%,var(--border));
   border-radius:var(--radius);
-
   padding:17px 18px;
-
   margin-bottom:20px;
 
   display:none;
-
   justify-content:space-between;
   align-items:center;
-
   gap:15px;
 }
 
 .continue-label{
   color:var(--primary);
-
   font-size:12px;
   font-weight:850;
-
   text-transform:uppercase;
 }
 
@@ -303,30 +292,56 @@ button{
 
 .continue-btn{
   border:0;
-
   background:var(--primary);
   color:white;
-
   padding:10px 15px;
-
   border-radius:11px;
-
   font-weight:800;
 }
 
+/* ================= NAV TABS ================= */
+
+.main-tabs{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:20px;
+}
+
+.main-tab{
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  padding:10px 15px;
+  border-radius:11px;
+  font-size:13px;
+  font-weight:850;
+}
+
+.main-tab.active{
+  background:var(--primary);
+  border-color:var(--primary);
+  color:#fff;
+}
+
+/* ================= PANELS ================= */
+
+.app-panel{
+  display:none;
+}
+
+.app-panel.active{
+  display:block;
+}
 
 /* ================= TOOLBAR ================= */
 
 .toolbar{
   background:var(--card);
-
   border:1px solid var(--border);
   border-radius:var(--radius);
-
   padding:15px;
-
   margin-bottom:20px;
-
   box-shadow:var(--shadow);
 }
 
@@ -339,16 +354,11 @@ button{
 .search,
 .select{
   width:100%;
-
   border:1px solid var(--border);
-
   background:var(--soft);
   color:var(--text);
-
   border-radius:12px;
-
   padding:11px 13px;
-
   outline:none;
 }
 
@@ -360,11 +370,8 @@ button{
 .filter-row{
   display:flex;
   flex-wrap:wrap;
-
   gap:8px;
-
   margin-top:12px;
-
   align-items:center;
 }
 
@@ -377,14 +384,10 @@ button{
 .filter-btn,
 .action-small{
   border:1px solid var(--border);
-
   background:var(--soft);
   color:var(--text);
-
   border-radius:10px;
-
   padding:8px 12px;
-
   font-size:12px;
   font-weight:800;
 }
@@ -399,7 +402,6 @@ button{
   flex:1;
 }
 
-
 /* ================= SUBJECT ================= */
 
 #subjects{
@@ -410,45 +412,39 @@ button{
 
 .subject{
   background:var(--card);
-
   border:1px solid var(--border);
-
   border-radius:var(--radius);
-
   box-shadow:var(--shadow);
-
   overflow:hidden;
+
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+}
+
+.subject:hover{
+  transform:translateY(-2px);
+  border-color:color-mix(in srgb,var(--primary) 35%,var(--border));
+  box-shadow:0 12px 35px rgba(15,23,42,.09);
 }
 
 .subject-header{
   padding:17px 18px;
-
   display:flex;
   align-items:center;
-
   gap:14px;
-
   border-bottom:1px solid var(--border);
-
   cursor:pointer;
-
   user-select:none;
 }
 
 .subject-icon{
   width:42px;
   height:42px;
-
   flex-shrink:0;
-
   display:grid;
   place-items:center;
-
   border-radius:13px;
-
   background:var(--primary-soft);
   color:var(--primary);
-
   font-size:19px;
 }
 
@@ -476,32 +472,23 @@ button{
 .subject-progress-text{
   display:flex;
   justify-content:space-between;
-
   margin-bottom:5px;
-
   color:var(--muted);
-
   font-size:11px;
   font-weight:700;
 }
 
 .subject-track{
   height:7px;
-
   background:var(--border);
-
   border-radius:999px;
-
   overflow:hidden;
 }
 
 .subject-fill{
   height:100%;
-
   background:var(--success);
-
   border-radius:999px;
-
   transition:.3s ease;
 }
 
@@ -523,7 +510,6 @@ button{
   padding:14px;
 }
 
-
 /* ================= CHAPTER ================= */
 
 .chapter-list{
@@ -534,17 +520,11 @@ button{
 .chapter{
   display:flex;
   align-items:center;
-
   gap:11px;
-
   padding:11px 12px;
-
   border:1px solid var(--border);
-
   background:var(--soft);
-
   border-radius:13px;
-
   transition:.2s ease;
 }
 
@@ -555,41 +535,34 @@ button{
 
 .chapter.in-progress{
   background:var(--warning-soft);
-
-  border-color:
-    color-mix(
-      in srgb,
-      var(--warning) 30%,
-      var(--border)
-    );
+  border-color:color-mix(in srgb,var(--warning) 30%,var(--border));
 }
 
 .chapter.complete{
   background:var(--success-soft);
+  border-color:color-mix(in srgb,var(--success) 30%,var(--border));
+}
 
-  border-color:
-    color-mix(
-      in srgb,
-      var(--success) 30%,
-      var(--border)
-    );
+.chapter.continue-highlight{
+  animation:continuePulse .7s ease-in-out 0s 3;
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 18%,transparent);
+}
+
+@keyframes continuePulse{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-3px);}
 }
 
 .chapter-number{
   width:34px;
   height:34px;
-
   flex-shrink:0;
-
   display:grid;
   place-items:center;
-
   border-radius:10px;
-
   background:var(--border);
-
   color:var(--muted);
-
   font-size:11px;
   font-weight:850;
 }
@@ -617,9 +590,7 @@ button{
 
 .chapter-status{
   margin-top:3px;
-
   color:var(--muted);
-
   font-size:11px;
 }
 
@@ -633,24 +604,16 @@ button{
   font-weight:750;
 }
 
-
-/* ================= STATUS BUTTON ================= */
+/* ================= STATUS ================= */
 
 .status-btn{
   min-width:125px;
-
   flex-shrink:0;
-
   border:1px solid var(--border);
-
   background:var(--card);
-
   color:var(--text);
-
   border-radius:10px;
-
   padding:8px 10px;
-
   font-size:12px;
   font-weight:800;
 
@@ -678,147 +641,794 @@ button{
   color:#fff;
 }
 
-
-/* ================= SUBJECT HOVER ================= */
-
-.subject{
-  transition:
-    transform .2s ease,
-    box-shadow .2s ease,
-    border-color .2s ease;
-}
-
-.subject:hover{
-  transform:translateY(-2px);
-  border-color:
-    color-mix(
-      in srgb,
-      var(--primary) 35%,
-      var(--border)
-    );
-  box-shadow:0 12px 35px rgba(15,23,42,.09);
-}
-
-
-/* ================= CONTINUE HIGHLIGHT ================= */
-
-.chapter.continue-highlight{
-  animation:continuePulse .7s ease-in-out 0s 3;
-  border-color:var(--primary);
-  box-shadow:
-    0 0 0 3px
-    color-mix(
-      in srgb,
-      var(--primary) 18%,
-      transparent
-    );
-}
-
-@keyframes continuePulse{
-  0%,100%{
-    transform:translateY(0);
-  }
-
-  50%{
-    transform:translateY(-3px);
-  }
-}
-
-
 /* ================= BOTTOM ================= */
 
 .bottom-actions{
   margin-top:25px;
-
   padding:16px;
-
   background:var(--card);
-
   border:1px solid var(--border);
-
   border-radius:var(--radius);
-
   box-shadow:var(--shadow);
 
   display:flex;
-
   justify-content:center;
-
   gap:10px;
 }
 
 .save-btn{
   border:0;
-
   background:var(--success);
   color:#fff;
-
   padding:11px 25px;
-
   border-radius:11px;
-
   font-weight:850;
-
   min-width:125px;
 }
 
 .reset-btn{
   border:1px solid var(--danger);
-
   background:var(--danger-soft);
   color:var(--danger);
-
   padding:10px 18px;
-
   border-radius:11px;
-
   font-weight:800;
 }
-
 
 /* ================= EMPTY ================= */
 
 .empty{
   background:var(--card);
-
   border:1px dashed var(--border);
-
   border-radius:var(--radius);
-
   padding:45px 20px;
-
   text-align:center;
-
   color:var(--muted);
 }
 
+/* ================= GENERIC CARD ================= */
+
+.section-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:18px;
+  margin-bottom:18px;
+}
+
+.section-title{
+  margin:0;
+  font-size:18px;
+  font-weight:850;
+}
+
+.section-sub{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* ================= EXAM PLANNER ================= */
+
+.exam-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:16px;
+}
+
+.primary-btn{
+  border:0;
+  background:var(--primary);
+  color:#fff;
+  padding:10px 15px;
+  border-radius:11px;
+  font-weight:850;
+}
+
+.exam-list{
+  display:grid;
+  gap:12px;
+}
+
+.exam-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:17px;
+  box-shadow:var(--shadow);
+  transition:.2s ease;
+}
+
+.exam-card:hover{
+  transform:translateY(-2px);
+}
+
+.exam-card-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.exam-name{
+  font-size:17px;
+  font-weight:850;
+}
+
+.exam-date{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.exam-countdown{
+  padding:7px 10px;
+  border-radius:10px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:11px;
+  font-weight:850;
+  white-space:nowrap;
+}
+
+.exam-countdown.danger{
+  background:var(--danger-soft);
+  color:var(--danger);
+}
+
+.exam-countdown.done{
+  background:var(--success-soft);
+  color:var(--success);
+}
+
+.exam-progress-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:15px;
+  margin-bottom:6px;
+  font-size:12px;
+  font-weight:800;
+}
+
+.exam-track{
+  height:8px;
+  background:var(--border);
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.exam-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--primary),var(--purple));
+  border-radius:999px;
+}
+
+.exam-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:12px;
+}
+
+.exam-tag{
+  padding:5px 8px;
+  border-radius:8px;
+  background:var(--soft);
+  color:var(--muted);
+  font-size:10px;
+  font-weight:800;
+}
+
+.exam-actions{
+  display:flex;
+  gap:8px;
+  margin-top:14px;
+}
+
+.exam-actions button{
+  border:1px solid var(--border);
+  background:var(--soft);
+  color:var(--text);
+  padding:8px 11px;
+  border-radius:9px;
+  font-size:11px;
+  font-weight:800;
+}
+
+.exam-actions .danger-action{
+  color:var(--danger);
+  border-color:color-mix(in srgb,var(--danger) 30%,var(--border));
+}
+
+/* ================= EXAM DETAIL ================= */
+
+.exam-detail{
+  display:none;
+}
+
+.exam-detail.show{
+  display:block;
+}
+
+.back-link{
+  border:0;
+  background:transparent;
+  color:var(--primary);
+  padding:0;
+  font-size:13px;
+  font-weight:850;
+}
+
+.exam-detail-head{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  align-items:flex-start;
+}
+
+.exam-detail-name{
+  margin:0;
+  font-size:23px;
+  font-weight:900;
+}
+
+.exam-detail-date{
+  margin-top:5px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.exam-big-percent{
+  font-size:30px;
+  color:var(--primary);
+  font-weight:900;
+}
+
+.exam-chapter-list{
+  display:grid;
+  gap:9px;
+  margin-top:16px;
+}
+
+.exam-chapter{
+  background:var(--soft);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px;
+}
+
+.exam-chapter-main{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.exam-chapter-check{
+  width:22px;
+  height:22px;
+  border-radius:7px;
+  border:1px solid var(--border);
+  background:var(--card);
+  display:grid;
+  place-items:center;
+  flex-shrink:0;
+}
+
+.exam-chapter.complete .exam-chapter-check{
+  background:var(--success);
+  border-color:var(--success);
+  color:#fff;
+}
+
+.exam-chapter-info{
+  flex:1;
+  min-width:0;
+}
+
+.exam-chapter-name{
+  font-size:13px;
+  font-weight:800;
+  line-height:1.4;
+}
+
+.exam-chapter-book{
+  margin-top:3px;
+  color:var(--muted);
+  font-size:10px;
+}
+
+.exam-priority{
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  border-radius:8px;
+  padding:6px 7px;
+  font-size:10px;
+  font-weight:800;
+}
+
+.exam-priority.high{
+  color:var(--danger);
+  border-color:var(--danger);
+}
+
+.exam-priority.medium{
+  color:var(--warning);
+  border-color:var(--warning);
+}
+
+.exam-priority.low{
+  color:var(--success);
+  border-color:var(--success);
+}
+
+.exam-actions-bottom{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:15px;
+}
+
+/* ================= FORM ================= */
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.form-field label{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:750;
+  margin-bottom:6px;
+}
+
+.form-field input,
+.form-field select{
+  width:100%;
+  border:1px solid var(--border);
+  background:var(--soft);
+  color:var(--text);
+  border-radius:11px;
+  padding:10px 11px;
+  outline:none;
+}
+
+.form-field input:focus,
+.form-field select:focus{
+  border-color:var(--primary);
+}
+
+.form-field.full{
+  grid-column:1/-1;
+}
+
+.chapter-picker{
+  max-height:340px;
+  overflow:auto;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--soft);
+  margin-top:8px;
+}
+
+.chapter-picker-group{
+  border-bottom:1px solid var(--border);
+}
+
+.chapter-picker-group:last-child{
+  border-bottom:0;
+}
+
+.chapter-picker-head{
+  padding:10px 12px;
+  font-size:12px;
+  font-weight:850;
+  color:var(--primary);
+  background:var(--card);
+  position:sticky;
+  top:0;
+  z-index:1;
+}
+
+.picker-chapter{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:9px 12px;
+  border-top:1px solid color-mix(in srgb,var(--border) 60%,transparent);
+}
+
+.picker-chapter input{
+  accent-color:var(--primary);
+}
+
+.picker-chapter label{
+  margin:0;
+  flex:1;
+  font-size:12px;
+  font-weight:650;
+  cursor:pointer;
+}
+
+.form-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:14px;
+}
+
+.secondary-btn{
+  border:1px solid var(--border);
+  background:var(--soft);
+  color:var(--text);
+  padding:10px 14px;
+  border-radius:10px;
+  font-weight:800;
+}
+
+/* ================= HISTORY ================= */
+
+.history-grid{
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  gap:15px;
+}
+
+.history-big{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  background:linear-gradient(135deg,var(--primary-soft),var(--card));
+  border:1px solid color-mix(in srgb,var(--primary) 25%,var(--border));
+  border-radius:18px;
+  padding:18px;
+}
+
+.history-big-value{
+  font-size:32px;
+  font-weight:900;
+  color:var(--primary);
+}
+
+.history-big-label{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:750;
+}
+
+.history-list{
+  display:grid;
+  gap:9px;
+  margin-top:14px;
+}
+
+.history-day{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  background:var(--soft);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px;
+}
+
+.history-day-date{
+  font-weight:850;
+  font-size:13px;
+}
+
+.history-day-meta{
+  color:var(--muted);
+  font-size:10px;
+  margin-top:3px;
+}
+
+.history-day-time{
+  color:var(--primary);
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.summary-list{
+  display:grid;
+  gap:9px;
+  margin-top:13px;
+}
+
+.summary-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px;
+  border-radius:10px;
+  background:var(--soft);
+  border:1px solid var(--border);
+}
+
+.summary-row-name{
+  font-size:11px;
+  font-weight:750;
+}
+
+.summary-row-time{
+  font-size:11px;
+  color:var(--primary);
+  font-weight:850;
+}
+
+/* ================= GOAL ================= */
+
+.goal-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+}
+
+.goal-input-wrap{
+  display:flex;
+  gap:7px;
+  align-items:center;
+}
+
+.goal-input{
+  width:100px;
+  border:1px solid var(--border);
+  background:var(--soft);
+  color:var(--text);
+  border-radius:10px;
+  padding:9px;
+  text-align:center;
+}
+
+.goal-progress{
+  margin-top:13px;
+}
+
+.goal-text{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:6px;
+  font-size:11px;
+  font-weight:800;
+  color:var(--muted);
+}
+
+/* ================= POMODORO ================= */
+
+.pomodoro-page{
+  position:fixed;
+  inset:0;
+  z-index:1800;
+  display:none;
+  overflow:auto;
+  background:var(--bg);
+}
+
+.pomodoro-page.show{
+  display:block;
+}
+
+.pomodoro-wrap{
+  min-height:100%;
+  width:min(100%,760px);
+  margin:auto;
+  padding:24px 20px 40px;
+}
+
+.pomodoro-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.pomodoro-back{
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  border-radius:12px;
+  padding:9px 13px;
+  font-weight:800;
+}
+
+.pomodoro-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:24px;
+  box-shadow:var(--shadow);
+  padding:28px 20px;
+  text-align:center;
+}
+
+.pomodoro-mode{
+  color:var(--primary);
+  font-size:14px;
+  font-weight:850;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+
+.pomodoro-time{
+  margin:12px 0 20px;
+  font-size:clamp(64px,16vw,120px);
+  line-height:1;
+  font-weight:900;
+  letter-spacing:-.04em;
+  font-variant-numeric:tabular-nums;
+}
+
+.pomodoro-actions{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:9px;
+}
+
+.pomodoro-actions button{
+  border:1px solid var(--border);
+  background:var(--soft);
+  color:var(--text);
+  border-radius:11px;
+  padding:10px 16px;
+  font-weight:800;
+}
+
+.pomodoro-actions .pomo-primary{
+  border-color:var(--primary);
+  background:var(--primary);
+  color:#fff;
+}
+
+.pomo-picker,
+.pomo-settings,
+.pomo-history{
+  margin-top:16px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:18px;
+}
+
+.pomo-picker-grid,
+.pomo-settings-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:12px;
+}
+
+.pomo-picker-field label,
+.pomo-field label{
+  display:block;
+  margin-bottom:5px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:750;
+}
+
+.pomo-picker-field select,
+.pomo-field input{
+  width:100%;
+  border:1px solid var(--border);
+  background:var(--soft);
+  color:var(--text);
+  border-radius:10px;
+  padding:10px 11px;
+  outline:none;
+}
+
+.pomo-picker-field select:disabled{
+  opacity:.65;
+  cursor:not-allowed;
+}
+
+.pomo-session{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:750;
+}
+
+.pomodoro-progress{
+  width:min(520px,90%);
+  height:10px;
+  margin:0 auto 25px;
+  background:var(--border);
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.pomodoro-progress-fill{
+  width:0%;
+  height:100%;
+  background:linear-gradient(90deg,var(--primary),#7c3aed);
+  border-radius:999px;
+  transition:width .25s linear;
+}
+
+.pomo-section-label{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:850;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+
+.pomo-apply{
+  width:100%;
+  margin-top:10px;
+  border:1px solid var(--primary);
+  background:var(--primary);
+  color:#fff;
+  border-radius:10px;
+  padding:10px;
+  font-weight:850;
+}
+
+.pomo-history-list{
+  display:grid;
+  gap:8px;
+  margin-top:12px;
+}
+
+.pomo-history-day{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:11px 12px;
+  border:1px solid var(--border);
+  background:var(--soft);
+  border-radius:12px;
+}
+
+.pomo-history-date{
+  font-weight:800;
+}
+
+.pomo-history-time{
+  color:var(--primary);
+  font-weight:850;
+  white-space:nowrap;
+}
+
+.pomo-history-details{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.6;
+}
 
 /* ================= TOAST ================= */
 
 #toast{
   position:fixed;
-
   right:18px;
   bottom:18px;
-
-  z-index:1500;
+  z-index:3000;
 
   background:var(--text);
   color:var(--bg);
 
   padding:11px 15px;
-
   border-radius:11px;
-
   font-size:13px;
   font-weight:750;
 
   opacity:0;
-
   pointer-events:none;
-
   transform:translateY(8px);
-
   transition:.25s ease;
 }
 
@@ -827,25 +1437,17 @@ button{
   transform:translateY(0);
 }
 
-
-/* ================= RESET MODAL ================= */
+/* ================= MODAL ================= */
 
 .modal{
   position:fixed;
-
   inset:0;
-
-  z-index:2000;
-
+  z-index:2500;
   display:none;
-
   align-items:center;
   justify-content:center;
-
   padding:20px;
-
   background:rgba(0,0,0,.60);
-
   backdrop-filter:blur(6px);
 }
 
@@ -854,24 +1456,15 @@ button{
 }
 
 .modal-box{
-  width:min(100%,380px);
-
+  width:min(100%,650px);
+  max-height:90vh;
+  overflow:auto;
   background:var(--card);
-
   color:var(--text);
-
   border:1px solid var(--border);
-
   border-radius:20px;
-
-  padding:25px;
-
-  box-shadow:
-    0 25px 70px
-    rgba(0,0,0,.3);
-
-  text-align:center;
-
+  padding:24px;
+  box-shadow:0 25px 70px rgba(0,0,0,.3);
   animation:modalPop .2s ease;
 }
 
@@ -880,7 +1473,6 @@ button{
     opacity:0;
     transform:scale(.95) translateY(8px);
   }
-
   to{
     opacity:1;
     transform:scale(1) translateY(0);
@@ -888,72 +1480,62 @@ button{
 }
 
 .modal-box h2{
-  margin:0 0 22px;
-
+  margin:0 0 18px;
   font-size:20px;
   font-weight:850;
 }
 
 .modal-actions{
   display:flex;
-
-  justify-content:center;
-
+  justify-content:flex-end;
   gap:10px;
+  margin-top:18px;
 }
 
 .modal-cancel,
 .modal-ok{
   min-width:105px;
-
   padding:10px 18px;
-
   border-radius:10px;
-
   font-size:13px;
   font-weight:850;
 }
 
 .modal-cancel{
   border:1px solid var(--border);
-
   background:var(--soft);
   color:var(--text);
 }
 
 .modal-ok{
   border:1px solid var(--danger);
-
   background:var(--danger);
   color:#fff;
 }
-
 
 /* ================= FOOTER ================= */
 
 footer{
   text-align:center;
-
   color:var(--muted);
-
   font-size:12px;
-
   padding:20px;
 }
-
 
 /* ================= RESPONSIVE ================= */
 
 @media(max-width:900px){
-
-  .dashboard{
+  .dashboard,
+  .quick-grid{
     grid-template-columns:repeat(2,1fr);
   }
 
+  .history-grid{
+    grid-template-columns:1fr;
+  }
 }
 
 @media(max-width:700px){
-
   .toolbar-main{
     grid-template-columns:1fr;
   }
@@ -962,10 +1544,16 @@ footer{
     display:none;
   }
 
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+
+  .form-field.full{
+    grid-column:auto;
+  }
 }
 
 @media(max-width:650px){
-
   .filter-row{
     align-items:stretch;
   }
@@ -985,20 +1573,20 @@ footer{
   .action-small{
     flex:1 1 calc(50% - 8px);
   }
-
 }
 
 @media(max-width:550px){
-
   .container{
     padding:20px 14px 35px;
   }
 
-  .dashboard{
+  .dashboard,
+  .quick-grid{
     gap:9px;
   }
 
-  .stat-card{
+  .stat-card,
+  .quick-card{
     padding:14px;
   }
 
@@ -1029,17 +1617,36 @@ footer{
     width:100%;
   }
 
-  .modal-box{
-    padding:22px 18px;
+  .exam-card-top,
+  .exam-detail-head,
+  .goal-card{
+    flex-direction:column;
+    align-items:stretch;
   }
 
+  .form-actions{
+    flex-direction:column;
+  }
+
+  .form-actions button{
+    width:100%;
+  }
+
+  .pomo-settings-grid,
+  .pomo-picker-grid{
+    grid-template-columns:1fr;
+  }
+
+  .pomodoro-wrap{
+    padding:16px 14px 30px;
+  }
+
+  .pomodoro-card{
+    padding:24px 14px;
+  }
 }
 
-
-/* ================= MOBILE HEADER ================= */
-
 @media(max-width:500px){
-
   .topbar-inner{
     padding:13px 12px;
   }
@@ -1056,725 +1663,543 @@ footer{
     padding:8px 10px;
     font-size:12px;
   }
-
 }
-
-
-/* ================= POMODORO ================= */
-
-.pomodoro-page{
-  position:fixed;
-
-  inset:0;
-
-  z-index:1800;
-
-  display:none;
-
-  overflow:auto;
-
-  background:var(--bg);
-}
-
-.pomodoro-page.show{
-  display:block;
-}
-
-.pomodoro-wrap{
-  min-height:100%;
-
-  width:min(100%,760px);
-
-  margin:auto;
-
-  padding:24px 20px 40px;
-}
-
-.pomodoro-top{
-  display:flex;
-
-  align-items:center;
-
-  justify-content:space-between;
-
-  gap:12px;
-
-  margin-bottom:18px;
-}
-
-.pomodoro-back{
-  border:1px solid var(--border);
-
-  background:var(--card);
-  color:var(--text);
-
-  border-radius:12px;
-
-  padding:9px 13px;
-
-  font-weight:800;
-}
-
-.pomodoro-card{
-  background:var(--card);
-
-  border:1px solid var(--border);
-
-  border-radius:24px;
-
-  box-shadow:var(--shadow);
-
-  padding:28px 20px;
-
-  text-align:center;
-}
-
-.pomodoro-mode{
-  color:var(--primary);
-
-  font-size:14px;
-
-  font-weight:850;
-
-  text-transform:uppercase;
-
-  letter-spacing:.05em;
-}
-
-.pomodoro-time{
-  margin:12px 0 20px;
-
-  font-size:clamp(64px,16vw,120px);
-
-  line-height:1;
-
-  font-weight:900;
-
-  letter-spacing:-.04em;
-
-  font-variant-numeric:tabular-nums;
-}
-
-.pomodoro-actions{
-  display:flex;
-
-  justify-content:center;
-
-  flex-wrap:wrap;
-
-  gap:9px;
-}
-
-.pomodoro-actions button{
-  border:1px solid var(--border);
-
-  background:var(--soft);
-  color:var(--text);
-
-  border-radius:11px;
-
-  padding:10px 16px;
-
-  font-weight:800;
-}
-
-.pomodoro-actions button:disabled{
-  opacity:.5;
-  cursor:not-allowed;
-}
-
-.pomodoro-actions .pomo-primary{
-  border-color:var(--primary);
-
-  background:var(--primary);
-
-  color:#fff;
-}
-
-.pomodoro-actions .pomo-primary:disabled{
-  opacity:.5;
-}
-
-.pomo-picker,
-.pomo-settings,
-.pomo-history{
-  margin-top:16px;
-
-  background:var(--card);
-
-  border:1px solid var(--border);
-
-  border-radius:18px;
-
-  padding:18px;
-}
-
-.pomo-picker-grid{
-  display:grid;
-
-  grid-template-columns:1fr 1fr;
-
-  gap:10px;
-
-  margin-top:12px;
-}
-
-.pomo-picker-field label{
-  display:block;
-
-  margin-bottom:5px;
-
-  color:var(--muted);
-
-  font-size:12px;
-
-  font-weight:750;
-}
-
-.pomo-picker-field select{
-  width:100%;
-
-  border:1px solid var(--border);
-
-  background:var(--soft);
-
-  color:var(--text);
-
-  border-radius:10px;
-
-  padding:10px 11px;
-
-  outline:none;
-}
-
-.pomo-picker-field select:focus{
-  border-color:var(--primary);
-}
-
-.pomo-picker-field select:disabled{
-  opacity:.65;
-
-  cursor:not-allowed;
-}
-
-.pomo-session{
-  margin-top:7px;
-
-  color:var(--muted);
-
-  font-size:12px;
-
-  font-weight:750;
-}
-
-.pomodoro-progress{
-  width:min(520px,90%);
-
-  height:10px;
-
-  margin:0 auto 25px;
-
-  background:var(--border);
-
-  border-radius:999px;
-
-  overflow:hidden;
-}
-
-.pomodoro-progress-fill{
-  width:0%;
-
-  height:100%;
-
-  background:
-    linear-gradient(
-      90deg,
-      var(--primary),
-      #7c3aed
-    );
-
-  border-radius:999px;
-
-  transition:width .25s linear;
-}
-
-.pomo-section-label{
-  color:var(--muted);
-
-  font-size:12px;
-
-  font-weight:850;
-
-  text-transform:uppercase;
-
-  letter-spacing:.04em;
-}
-
-.pomo-settings-grid{
-  display:grid;
-
-  grid-template-columns:1fr 1fr;
-
-  gap:10px;
-
-  margin-top:12px;
-}
-
-.pomo-field label{
-  display:block;
-
-  margin-bottom:5px;
-
-  color:var(--muted);
-
-  font-size:12px;
-
-  font-weight:750;
-}
-
-.pomo-field input{
-  width:100%;
-
-  border:1px solid var(--border);
-
-  background:var(--soft);
-
-  color:var(--text);
-
-  border-radius:10px;
-
-  padding:10px 11px;
-
-  outline:none;
-}
-
-.pomo-field input:focus{
-  border-color:var(--primary);
-}
-
-.pomo-apply{
-  width:100%;
-
-  margin-top:10px;
-
-  border:1px solid var(--primary);
-
-  background:var(--primary);
-
-  color:#fff;
-
-  border-radius:10px;
-
-  padding:10px;
-
-  font-weight:850;
-}
-
-.pomo-history-list{
-  display:grid;
-
-  gap:8px;
-
-  margin-top:12px;
-}
-
-.pomo-history-day{
-  display:flex;
-
-  justify-content:space-between;
-
-  align-items:center;
-
-  gap:12px;
-
-  padding:11px 12px;
-
-  border:1px solid var(--border);
-
-  background:var(--soft);
-
-  border-radius:12px;
-}
-
-.pomo-history-date{
-  font-weight:800;
-}
-
-.pomo-history-time{
-  color:var(--primary);
-
-  font-weight:850;
-
-  white-space:nowrap;
-}
-
-.pomo-history-details{
-  margin-top:10px;
-
-  color:var(--muted);
-
-  font-size:11px;
-
-  line-height:1.6;
-}
-
-.pomo-history-empty{
-  color:var(--muted);
-
-  font-size:13px;
-
-  padding:8px 0;
-}
-
-@media(max-width:550px){
-
-  .pomodoro-wrap{
-    padding:16px 14px 30px;
-  }
-
-  .pomodoro-card{
-    padding:24px 14px;
-  }
-
-  .pomo-settings-grid{
-    grid-template-columns:1fr;
-  }
-
-  .pomo-picker-grid{
-    grid-template-columns:1fr;
-  }
-
-}
-
 </style>
 </head>
 
-
 <body>
 
-
-<!-- ================= HEADER ================= -->
-
 <header class="topbar">
-
   <div class="topbar-inner">
-
     <div class="brand">
-
       <h1>📚 Syllabus Tracker</h1>
-
-      <p>
-        Track your syllabus progress easily
-      </p>
-
+      <p>Study • Track • Prepare • Complete</p>
     </div>
 
-    <button
-      id="themeBtn"
-      class="theme-btn"
-      type="button"
-    >
+    <button id="themeBtn" class="theme-btn" type="button">
       🌙 Dark
     </button>
-
   </div>
-
 </header>
-
 
 <main class="container">
 
+  <!-- ================= DASHBOARD ================= -->
 
-<!-- ================= DASHBOARD ================= -->
+  <section class="dashboard">
 
-<section class="dashboard">
-
-  <div class="stat-card">
-
-    <div class="stat-label">
-      Total Chapters
+    <div class="stat-card">
+      <div class="stat-label">Total Chapters</div>
+      <div id="total" class="stat-value">0</div>
+      <div class="stat-sub">Across all subjects</div>
     </div>
 
-    <div
-      id="total"
-      class="stat-value"
-    >
-      0
+    <div class="stat-card">
+      <div class="stat-label">Completed</div>
+      <div id="completed" class="stat-value">0</div>
+      <div class="stat-sub">Completed chapters</div>
     </div>
 
-    <div class="stat-sub">
-      Across all subjects
+    <div class="stat-card">
+      <div class="stat-label">In Progress</div>
+      <div id="inProgress" class="stat-value">0</div>
+      <div class="stat-sub">Currently in progress</div>
     </div>
 
-  </div>
-
-
-  <div class="stat-card">
-
-    <div class="stat-label">
-      Completed
+    <div class="stat-card">
+      <div class="stat-label">Overall Progress</div>
+      <div id="percent" class="stat-value">0%</div>
+      <div class="stat-sub">Syllabus completion</div>
     </div>
 
-    <div
-      id="completed"
-      class="stat-value"
-    >
-      0
+  </section>
+
+  <!-- ================= QUICK STATS ================= -->
+
+  <section class="quick-grid">
+
+    <div class="quick-card">
+      <div class="quick-icon">🍅</div>
+      <div class="quick-label">Today's Study</div>
+      <div id="todayStudyQuick" class="quick-value">0m</div>
     </div>
 
-    <div class="stat-sub">
-      Completed chapters
+    <div class="quick-card">
+      <div class="quick-icon">🔥</div>
+      <div class="quick-label">Study Streak</div>
+      <div id="streakQuick" class="quick-value">0 days</div>
     </div>
 
-  </div>
-
-
-  <div class="stat-card">
-
-    <div class="stat-label">
-      In Progress
+    <div class="quick-card">
+      <div class="quick-icon">🎯</div>
+      <div class="quick-label">Daily Goal</div>
+      <div id="goalQuick" class="quick-value">0%</div>
     </div>
 
-    <div
-      id="inProgress"
-      class="stat-value"
-    >
-      0
+    <div class="quick-card">
+      <div class="quick-icon">📝</div>
+      <div class="quick-label">Upcoming Exams</div>
+      <div id="upcomingExamQuick" class="quick-value">0</div>
     </div>
 
-    <div class="stat-sub">
-      Currently in progress
+  </section>
+
+  <!-- ================= OVERALL ================= -->
+
+  <section class="overall-card">
+
+    <div class="overall-top">
+      <strong>Overall Syllabus Progress</strong>
+      <span id="percentTop" class="overall-percent">0%</span>
     </div>
 
-  </div>
-
-
-  <div class="stat-card">
-
-    <div class="stat-label">
-      Overall Progress
+    <div class="progress-track">
+      <div id="overallFill" class="progress-fill"></div>
     </div>
 
-    <div
-      id="percent"
-      class="stat-value"
-    >
-      0.00%
+  </section>
+
+  <!-- ================= CONTINUE ================= -->
+
+  <section id="continueCard" class="continue-card">
+
+    <div>
+      <div class="continue-label">Continue Studying</div>
+
+      <div id="continueTitle" class="continue-title"></div>
+
+      <div id="continueSub" class="continue-sub"></div>
     </div>
 
-    <div class="stat-sub">
-      Syllabus completion
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- ================= OVERALL ================= -->
-
-<section class="overall-card">
-
-  <div class="overall-top">
-
-    <strong>
-      Overall Syllabus Progress
-    </strong>
-
-    <span
-      id="percentTop"
-      class="overall-percent"
-    >
-      0.00%
-    </span>
-
-  </div>
-
-  <div class="progress-track">
-
-    <div
-      id="overallFill"
-      class="progress-fill"
-    ></div>
-
-  </div>
-
-</section>
-
-
-<!-- ================= CONTINUE ================= -->
-
-<section
-  id="continueCard"
-  class="continue-card"
->
-
-  <div>
-
-    <div class="continue-label">
-      Continue Studying
-    </div>
-
-    <div
-      id="continueTitle"
-      class="continue-title"
-    ></div>
-
-    <div
-      id="continueSub"
-      class="continue-sub"
-    ></div>
-
-  </div>
-
-
-  <button
-    id="continueBtn"
-    class="continue-btn"
-    type="button"
-  >
-    Continue →
-  </button>
-
-</section>
-
-
-<!-- ================= TOOLBAR ================= -->
-
-<section class="toolbar">
-
-  <div class="toolbar-main">
-
-    <input
-      id="search"
-      class="search"
-      type="search"
-      placeholder="🔎 Search chapter or subject..."
-    >
-
-
-    <select
-      id="subjectFilter"
-      class="select"
-    >
-
-      <option value="all">
-        📚 All Subjects
-      </option>
-
-    </select>
-
-  </div>
-
-
-  <div class="filter-row">
-
-    <span class="filter-label">
-      Status:
-    </span>
-
-
-    <button
-      class="filter-btn active"
-      data-status="all"
-      type="button"
-    >
-      All
+    <button id="continueBtn" class="continue-btn" type="button">
+      Continue →
     </button>
 
+  </section>
+
+  <!-- ================= MAIN TABS ================= -->
+
+  <nav class="main-tabs">
 
     <button
-      class="filter-btn"
-      data-status="not-started"
+      class="main-tab active"
+      data-tab="syllabus"
       type="button"
     >
-      ⚪ Not Started
+      📚 Syllabus
     </button>
-
 
     <button
-      class="filter-btn"
-      data-status="in-progress"
+      class="main-tab"
+      data-tab="exams"
       type="button"
     >
-      🟡 In Progress
+      🎯 Exam Planner
     </button>
-
 
     <button
-      class="filter-btn"
-      data-status="complete"
+      class="main-tab"
+      data-tab="history"
       type="button"
     >
-      🟢 Complete
+      📊 Study History
     </button>
 
+  </nav>
 
-    <span class="spacer"></span>
+  <!-- ===================================================
+       SYLLABUS PANEL
+  ==================================================== -->
 
+  <section id="syllabusPanel" class="app-panel active">
 
-    <button
-      id="expandBtn"
-      class="action-small"
-      type="button"
-    >
-      Expand All
-    </button>
+    <section class="toolbar">
 
+      <div class="toolbar-main">
 
-    <button
-      id="pomodoroOpenBtn"
-      class="action-small"
-      type="button"
-    >
-      🍅 Pomodoro
-    </button>
+        <input
+          id="search"
+          class="search"
+          type="search"
+          placeholder="🔎 Search chapter or subject..."
+        >
 
+        <select id="subjectFilter" class="select">
+          <option value="all">📚 All Subjects</option>
+        </select>
 
-    <button
-      id="collapseBtn"
-      class="action-small"
-      type="button"
-    >
-      Collapse All
-    </button>
+      </div>
 
-  </div>
+      <div class="filter-row">
 
-</section>
+        <span class="filter-label">Status:</span>
 
+        <button
+          class="filter-btn active"
+          data-status="all"
+          type="button"
+        >
+          All
+        </button>
 
-<!-- ================= SUBJECTS ================= -->
+        <button
+          class="filter-btn"
+          data-status="not-started"
+          type="button"
+        >
+          ⚪ Not Started
+        </button>
 
-<section id="subjects"></section>
+        <button
+          class="filter-btn"
+          data-status="in-progress"
+          type="button"
+        >
+          🟡 In Progress
+        </button>
 
+        <button
+          class="filter-btn"
+          data-status="complete"
+          type="button"
+        >
+          🟢 Complete
+        </button>
 
-<!-- ================= BOTTOM ================= -->
+        <span class="spacer"></span>
 
-<section class="bottom-actions">
+        <button
+          id="expandBtn"
+          class="action-small"
+          type="button"
+        >
+          Expand All
+        </button>
 
-  <button
-    id="saveBtn"
-    class="save-btn"
-    type="button"
-  >
-    💾 Save
-  </button>
+        <button
+          id="pomodoroOpenBtn"
+          class="action-small"
+          type="button"
+        >
+          🍅 Pomodoro
+        </button>
 
+        <button
+          id="collapseBtn"
+          class="action-small"
+          type="button"
+        >
+          Collapse All
+        </button>
 
-  <button
-    id="resetBtn"
-    class="reset-btn"
-    type="button"
-  >
-    🗑️ Reset All
-  </button>
+      </div>
 
-</section>
+    </section>
 
+    <section id="subjects"></section>
+
+    <section class="bottom-actions">
+
+      <button id="saveBtn" class="save-btn" type="button">
+        💾 Save
+      </button>
+
+      <button id="resetBtn" class="reset-btn" type="button">
+        🗑️ Reset All
+      </button>
+
+    </section>
+
+  </section>
+
+  <!-- ===================================================
+       EXAM PLANNER PANEL
+  ==================================================== -->
+
+  <section id="examsPanel" class="app-panel">
+
+    <div id="examListView">
+
+      <div class="exam-top">
+
+        <div>
+          <h2 class="section-title">🎯 Exam Planner</h2>
+          <p class="section-sub">
+            Select only the chapters that are coming in your exam.
+          </p>
+        </div>
+
+        <button id="newExamBtn" class="primary-btn" type="button">
+          ＋ New Exam
+        </button>
+
+      </div>
+
+      <div id="examList" class="exam-list"></div>
+
+    </div>
+
+    <!-- Exam Detail -->
+
+    <div id="examDetailView" class="exam-detail">
+
+      <div class="section-card">
+
+        <button id="backToExamsBtn" class="back-link" type="button">
+          ← Back to Exams
+        </button>
+
+        <div style="height:15px"></div>
+
+        <div class="exam-detail-head">
+
+          <div>
+            <h2 id="examDetailName" class="exam-detail-name"></h2>
+            <div id="examDetailDate" class="exam-detail-date"></div>
+          </div>
+
+          <div id="examDetailPercent" class="exam-big-percent">
+            0%
+          </div>
+
+        </div>
+
+        <div class="exam-progress-row">
+          <span>Preparation</span>
+          <span id="examDetailProgressText">0 / 0</span>
+        </div>
+
+        <div class="exam-track">
+          <div id="examDetailFill" class="exam-fill"></div>
+        </div>
+
+        <div class="exam-actions-bottom">
+
+          <button
+            id="examPomodoroBtn"
+            class="primary-btn"
+            type="button"
+          >
+            🍅 Study with Pomodoro
+          </button>
+
+          <button
+            id="editExamBtn"
+            class="secondary-btn"
+            type="button"
+          >
+            ✏️ Edit Exam
+          </button>
+
+          <button
+            id="deleteExamDetailBtn"
+            class="secondary-btn"
+            type="button"
+          >
+            🗑️ Delete
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="section-card">
+
+        <h3 class="section-title">Exam Chapters</h3>
+
+        <p class="section-sub">
+          Complete status is synced with your main syllabus.
+        </p>
+
+        <div id="examChapterList" class="exam-chapter-list"></div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ===================================================
+       HISTORY PANEL
+  ==================================================== -->
+
+  <section id="historyPanel" class="app-panel">
+
+    <div class="section-card">
+
+      <div class="history-grid">
+
+        <div>
+
+          <h2 class="section-title">📊 Study History</h2>
+
+          <p class="section-sub">
+            Your actual Pomodoro Focus time is recorded here.
+          </p>
+
+          <div id="todayHistoryBig" class="history-big" style="margin-top:15px;">
+
+            <div>
+              <div class="history-big-label">Today</div>
+              <div id="todayHistoryValue" class="history-big-value">
+                0m
+              </div>
+            </div>
+
+            <div style="font-size:34px;">🍅</div>
+
+          </div>
+
+          <div id="historyList" class="history-list"></div>
+
+        </div>
+
+        <div>
+
+          <h3 class="section-title">📈 Weekly Summary</h3>
+
+          <p class="section-sub">
+            Last 7 days of study time.
+          </p>
+
+          <div id="weeklySummary" class="summary-list"></div>
+
+          <div style="margin-top:18px;">
+
+            <h3 class="section-title">🔥 Study Streak</h3>
+
+            <div
+              id="streakDetail"
+              style="
+                margin-top:10px;
+                font-size:28px;
+                font-weight:900;
+                color:var(--primary);
+              "
+            >
+              0 days
+            </div>
+
+            <div
+              id="streakSub"
+              style="
+                margin-top:4px;
+                color:var(--muted);
+                font-size:11px;
+              "
+            >
+              Start studying to build your streak.
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Daily Goal -->
+
+    <div class="section-card">
+
+      <div class="goal-card">
+
+        <div>
+          <h3 class="section-title">🎯 Daily Study Goal</h3>
+
+          <p class="section-sub">
+            Set how many minutes you want to study every day.
+          </p>
+        </div>
+
+        <div class="goal-input-wrap">
+
+          <input
+            id="dailyGoalInput"
+            class="goal-input"
+            type="number"
+            min="1"
+            max="1440"
+            value="120"
+          >
+
+          <span style="color:var(--muted);font-size:12px;font-weight:800;">
+            min/day
+          </span>
+
+          <button
+            id="saveGoalBtn"
+            class="primary-btn"
+            type="button"
+          >
+            Save
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="goal-progress">
+
+        <div class="goal-text">
+          <span id="goalProgressText">0 / 120 min</span>
+          <span id="goalProgressPercent">0%</span>
+        </div>
+
+        <div class="progress-track">
+          <div id="goalFill" class="progress-fill"></div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Book Statistics -->
+
+    <div class="section-card">
+
+      <h3 class="section-title">📚 Book-wise Study Time</h3>
+
+      <p class="section-sub">
+        Total recorded Focus time by book.
+      </p>
+
+      <div id="bookStats" class="summary-list"></div>
+
+    </div>
+
+    <div class="section-card">
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:10px;
+      ">
+
+        <div>
+          <h3 class="section-title">🧹 History Controls</h3>
+          <p class="section-sub">
+            This only clears Pomodoro study history.
+          </p>
+        </div>
+
+        <button
+          id="clearHistoryBtn"
+          class="reset-btn"
+          type="button"
+        >
+          Clear History
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
 
 </main>
-
 
 <footer>
   <div>©turabi_alam</div>
@@ -1782,25 +2207,26 @@ footer{
   <div>Made with ❤️ for HSC Students</div>
 </footer>
 
-
 <!-- ================= TOAST ================= -->
 
 <div id="toast"></div>
 
-
 <!-- ================= RESET MODAL ================= -->
 
-<div
-  id="resetModal"
-  class="modal"
-  aria-hidden="true"
->
+<div id="resetModal" class="modal" aria-hidden="true">
 
   <div class="modal-box">
 
-    <h2>
-      Do you want to reset your progress?
-    </h2>
+    <h2>Do you want to reset your progress?</h2>
+
+    <p style="
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.6;
+    ">
+      Your syllabus progress and last studied chapter will be reset.
+      Exam plans and study history will remain safe.
+    </p>
 
     <div class="modal-actions">
 
@@ -1811,7 +2237,6 @@ footer{
       >
         Cancel
       </button>
-
 
       <button
         id="confirmReset"
@@ -1827,22 +2252,87 @@ footer{
 
 </div>
 
+<!-- ================= EXAM MODAL ================= -->
 
-<!-- ================= POMODORO PAGE ================= -->
+<div id="examModal" class="modal" aria-hidden="true">
 
-<section
-  id="pomodoroPage"
-  class="pomodoro-page"
-  aria-hidden="true"
->
+  <div class="modal-box">
+
+    <h2 id="examModalTitle">Create New Exam</h2>
+
+    <div class="form-grid">
+
+      <div class="form-field">
+        <label for="examNameInput">Exam Name</label>
+
+        <input
+          id="examNameInput"
+          type="text"
+          placeholder="e.g. Physics Monthly Test"
+        >
+      </div>
+
+      <div class="form-field">
+        <label for="examDateInput">Exam Date</label>
+
+        <input
+          id="examDateInput"
+          type="date"
+        >
+      </div>
+
+      <div class="form-field full">
+
+        <label>
+          Select chapters for this exam
+        </label>
+
+        <div
+          id="examChapterPicker"
+          class="chapter-picker"
+        ></div>
+
+      </div>
+
+    </div>
+
+    <div class="modal-actions">
+
+      <button
+        id="cancelExamBtn"
+        class="modal-cancel"
+        type="button"
+      >
+        Cancel
+      </button>
+
+      <button
+        id="saveExamBtn"
+        class="modal-ok"
+        style="
+          background:var(--primary);
+          border-color:var(--primary);
+        "
+        type="button"
+      >
+        Save Exam
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= POMODORO ================= -->
+
+<section id="pomodoroPage" class="pomodoro-page" aria-hidden="true">
 
   <div class="pomodoro-wrap">
 
     <div class="pomodoro-top">
 
-      <strong>
-        🍅 Pomodoro Timer
-      </strong>
+      <strong>🍅 Pomodoro Timer</strong>
 
       <button
         id="pomodoroBackBtn"
@@ -1854,15 +2344,11 @@ footer{
 
     </div>
 
-
-    <!-- ================= CHAPTER PICKER ================= -->
-
     <div class="pomo-picker">
 
       <div class="pomo-section-label">
         Choose what you are studying
       </div>
-
 
       <div class="pomo-picker-grid">
 
@@ -1872,10 +2358,13 @@ footer{
             Book
           </label>
 
-          <select id="pomoBookSelect"></select>
+          <select id="pomoBookSelect">
+            <option value="">
+              Select Book
+            </option>
+          </select>
 
         </div>
-
 
         <div class="pomo-picker-field">
 
@@ -1883,12 +2372,15 @@ footer{
             Chapter
           </label>
 
-          <select id="pomoChapterSelect"></select>
+          <select id="pomoChapterSelect">
+            <option value="">
+              Select Chapter
+            </option>
+          </select>
 
         </div>
 
       </div>
-
 
       <div
         id="pomoSelectedChapter"
@@ -1899,26 +2391,15 @@ footer{
 
     </div>
 
-
-    <!-- ================= TIMER ================= -->
-
     <div class="pomodoro-card">
 
-      <div
-        id="pomoMode"
-        class="pomodoro-mode"
-      >
+      <div id="pomoMode" class="pomodoro-mode">
         Focus • Session 1
       </div>
 
-
-      <div
-        id="pomoTime"
-        class="pomodoro-time"
-      >
+      <div id="pomoTime" class="pomodoro-time">
         25:00
       </div>
-
 
       <div class="pomodoro-progress">
 
@@ -1928,7 +2409,6 @@ footer{
         ></div>
 
       </div>
-
 
       <div class="pomodoro-actions">
 
@@ -1940,7 +2420,6 @@ footer{
           ▶ Start
         </button>
 
-
         <button
           id="pomoPause"
           type="button"
@@ -1948,14 +2427,12 @@ footer{
           ⏸ Pause
         </button>
 
-
         <button
           id="pomoReset"
           type="button"
         >
           ↺ Reset
         </button>
-
 
         <button
           id="pomoSkip"
@@ -1968,15 +2445,11 @@ footer{
 
     </div>
 
-
-    <!-- ================= SETTINGS ================= -->
-
     <div class="pomo-settings">
 
       <div class="pomo-section-label">
         Timer Settings
       </div>
-
 
       <div class="pomo-settings-grid">
 
@@ -1996,7 +2469,6 @@ footer{
 
         </div>
 
-
         <div class="pomo-field">
 
           <label for="pomoBreakInput">
@@ -2015,7 +2487,6 @@ footer{
 
       </div>
 
-
       <button
         id="pomoApply"
         class="pomo-apply"
@@ -2026,15 +2497,11 @@ footer{
 
     </div>
 
-
-    <!-- ================= DAILY HISTORY ================= -->
-
     <div class="pomo-history">
 
       <div class="pomo-section-label">
-        Daily Study History
+        Recent Daily Study History
       </div>
-
 
       <div
         id="pomoHistoryList"
@@ -2047,7 +2514,6 @@ footer{
 
 </section>
 
-
 <script>
 
 /* =====================================================
@@ -2057,19 +2523,15 @@ footer{
 const books = {
 
   "Physics 1st Paper":10,
-
   "Physics 2nd Paper":11,
 
   "Chemistry 1st Paper":5,
-
   "Chemistry 2nd Paper":5,
 
   "Higher Math 1st Paper":10,
-
   "Higher Math 2nd Paper":10,
 
   "Botany":12,
-
   "Zoology":12
 
 };
@@ -2190,84 +2652,122 @@ const chapterNames = {
 const STORAGE_KEY="syllabusTracker";
 const THEME_KEY="syllabusTheme";
 const LAST_KEY="syllabusLastChapter";
+const COLLAPSED_KEY="syllabusCollapsed";
+
+const HISTORY_KEY="pomodoroDailyHistory";
+const FOCUS_KEY="pomodoroFocus";
+const BREAK_KEY="pomodoroBreak";
+
+const EXAMS_KEY="studentExamPlanner";
+const GOAL_KEY="dailyStudyGoal";
+
+
+/* =====================================================
+   BASIC STATE
+===================================================== */
 
 let progress={};
 let lastChapter=null;
 let collapsed={};
 
+let exams=[];
+let selectedExamId=null;
+let editingExamId=null;
+
+let dailyGoal=120;
+
+
+/* =====================================================
+   LOAD STORAGE
+===================================================== */
 
 try{
 
   const saved=
     JSON.parse(
-      localStorage.getItem(
-        STORAGE_KEY
-      ) || "{}"
+      localStorage.getItem(STORAGE_KEY) || "{}"
     );
 
+  Object.entries(saved).forEach(([key,value])=>{
 
-  Object.entries(saved).forEach(
-    ([key,value])=>{
-
-      if(
-        value==="in-progress" ||
-        value==="complete"
-      ){
-
-        progress[key]=value;
-
-      }
-
-      /* Old version support */
-
-      else if(value===true){
-
-        progress[key]="complete";
-
-      }
-
+    if(
+      value==="in-progress" ||
+      value==="complete"
+    ){
+      progress[key]=value;
     }
-  );
 
-}catch(e){}
+    else if(value===true){
+      progress[key]="complete";
+    }
+
+  });
+
+}catch(e){
+  progress={};
+}
 
 
 try{
 
   lastChapter=
     JSON.parse(
-      localStorage.getItem(
-        LAST_KEY
-      ) || "null"
+      localStorage.getItem(LAST_KEY) || "null"
     );
 
-}catch(e){}
+}catch(e){
+  lastChapter=null;
+}
 
 
 try{
 
   collapsed=
     JSON.parse(
-      localStorage.getItem(
-        "syllabusCollapsed"
-      ) || "{}"
+      localStorage.getItem(COLLAPSED_KEY) || "{}"
     );
 
-}catch(e){}
+}catch(e){
+  collapsed={};
+}
+
+
+try{
+
+  const savedExams=
+    JSON.parse(
+      localStorage.getItem(EXAMS_KEY) || "[]"
+    );
+
+  if(Array.isArray(savedExams)){
+    exams=savedExams;
+  }
+
+}catch(e){
+  exams=[];
+}
+
+
+dailyGoal=
+  Math.min(
+    1440,
+    Math.max(
+      1,
+      Number(
+        localStorage.getItem(GOAL_KEY)
+      ) || 120
+    )
+  );
 
 
 /* =====================================================
-   STATE
+   GENERAL STATE
 ===================================================== */
 
 const state={
-
   search:"",
-
   subject:"all",
-
   status:"all"
-
 };
 
 
@@ -2276,15 +2776,13 @@ const state={
 ===================================================== */
 
 function key(book,chapter){
-
   return `${book}__${chapter}`;
-
 }
 
 
 function getStatus(book,chapter){
 
-  return (
+  return(
     progress[
       key(book,chapter)
     ] || "not-started"
@@ -2293,26 +2791,14 @@ function getStatus(book,chapter){
 }
 
 
-function setStatus(
-  book,
-  chapter,
-  status
-){
+function setStatus(book,chapter,status){
 
-  const k=
-    key(book,chapter);
+  const k=key(book,chapter);
 
-
-  if(
-    status==="not-started"
-  ){
-
+  if(status==="not-started"){
     delete progress[k];
-
   }else{
-
     progress[k]=status;
-
   }
 
 }
@@ -2328,48 +2814,31 @@ function saveData(){
 }
 
 
-function remember(
-  book,
-  chapter
-){
+function remember(book,chapter){
 
   lastChapter={
     book,
     chapter
   };
 
-
   localStorage.setItem(
     LAST_KEY,
-    JSON.stringify(
-      lastChapter
-    )
+    JSON.stringify(lastChapter)
   );
 
 }
 
 
 /* =====================================================
-   STATUS CLICK
+   STATUS
 ===================================================== */
 
-function handleStatus(
-  book,
-  chapter
-){
+function handleStatus(book,chapter){
 
   const current=
-    getStatus(
-      book,
-      chapter
-    );
+    getStatus(book,chapter);
 
-
-  /* Not Started → In Progress */
-
-  if(
-    current==="not-started"
-  ){
+  if(current==="not-started"){
 
     setStatus(
       book,
@@ -2377,31 +2846,17 @@ function handleStatus(
       "in-progress"
     );
 
-
-    remember(
-      book,
-      chapter
-    );
-
-
+    remember(book,chapter);
     saveData();
-
     render();
 
-    showToast(
-      "🟡 In Progress"
-    );
+    showToast("🟡 In Progress");
 
     return;
-
   }
 
 
-  /* In Progress → Complete */
-
-  if(
-    current==="in-progress"
-  ){
+  if(current==="in-progress"){
 
     setStatus(
       book,
@@ -2409,32 +2864,17 @@ function handleStatus(
       "complete"
     );
 
-
-    remember(
-      book,
-      chapter
-    );
-
-
+    remember(book,chapter);
     saveData();
-
     render();
 
-    showToast(
-      "🟢 Complete!"
-    );
+    showToast("🟢 Complete!");
 
     return;
-
   }
 
 
-  /* Complete → Not Started
-     NO CONFIRMATION */
-
-  if(
-    current==="complete"
-  ){
+  if(current==="complete"){
 
     setStatus(
       book,
@@ -2442,20 +2882,11 @@ function handleStatus(
       "not-started"
     );
 
-
-    remember(
-      book,
-      chapter
-    );
-
-
+    remember(book,chapter);
     saveData();
-
     render();
 
-    showToast(
-      "⚪ Not Started"
-    );
+    showToast("⚪ Not Started");
 
   }
 
@@ -2481,31 +2912,23 @@ function completedCount(){
 
   let count=0;
 
+  Object.keys(books).forEach(book=>{
 
-  Object.keys(books)
-    .forEach(book=>{
+    for(
+      let i=1;
+      i<=books[book];
+      i++
+    ){
 
-      for(
-        let i=1;
-        i<=books[book];
-        i++
+      if(
+        getStatus(book,i)==="complete"
       ){
-
-        if(
-          getStatus(
-            book,
-            i
-          )==="complete"
-        ){
-
-          count++;
-
-        }
-
+        count++;
       }
 
-    });
+    }
 
+  });
 
   return count;
 
@@ -2516,31 +2939,23 @@ function inProgressCount(){
 
   let count=0;
 
+  Object.keys(books).forEach(book=>{
 
-  Object.keys(books)
-    .forEach(book=>{
+    for(
+      let i=1;
+      i<=books[book];
+      i++
+    ){
 
-      for(
-        let i=1;
-        i<=books[book];
-        i++
+      if(
+        getStatus(book,i)==="in-progress"
       ){
-
-        if(
-          getStatus(
-            book,
-            i
-          )==="in-progress"
-        ){
-
-          count++;
-
-        }
-
+        count++;
       }
 
-    });
+    }
 
+  });
 
   return count;
 
@@ -2551,7 +2966,6 @@ function bookCompleted(book){
 
   let count=0;
 
-
   for(
     let i=1;
     i<=books[book];
@@ -2559,20 +2973,211 @@ function bookCompleted(book){
   ){
 
     if(
-      getStatus(
-        book,
-        i
-      )==="complete"
+      getStatus(book,i)==="complete"
     ){
-
       count++;
-
     }
 
   }
 
-
   return count;
+
+}
+
+
+/* =====================================================
+   DATE / HISTORY HELPERS
+===================================================== */
+
+function todayKey(date=new Date()){
+
+  const y=date.getFullYear();
+  const m=String(date.getMonth()+1).padStart(2,"0");
+  const d=String(date.getDate()).padStart(2,"0");
+
+  return `${y}-${m}-${d}`;
+
+}
+
+
+function prettyDate(day){
+
+  const parts=day.split("-").map(Number);
+
+  const date=
+    new Date(
+      parts[0],
+      parts[1]-1,
+      parts[2]
+    );
+
+  const today=todayKey();
+
+  const yesterday=
+    todayKey(
+      new Date(Date.now()-86400000)
+    );
+
+  if(day===today){
+    return "Today";
+  }
+
+  if(day===yesterday){
+    return "Yesterday";
+  }
+
+  return date.toLocaleDateString(
+    undefined,
+    {
+      day:"numeric",
+      month:"short",
+      year:"numeric"
+    }
+  );
+
+}
+
+
+function formatDuration(seconds){
+
+  const total=
+    Math.max(
+      0,
+      Math.round(seconds)
+    );
+
+  const hours=
+    Math.floor(total/3600);
+
+  const minutes=
+    Math.floor(
+      (total%3600)/60
+    );
+
+  const secs=
+    total%60;
+
+  if(hours){
+    return `${hours}h ${minutes}m`;
+  }
+
+  if(minutes){
+    return `${minutes}m${secs ? ` ${secs}s` : ""}`;
+  }
+
+  return `${secs}s`;
+
+}
+
+
+function loadHistory(){
+
+  try{
+
+    const data=
+      JSON.parse(
+        localStorage.getItem(HISTORY_KEY) || "{}"
+      );
+
+    return(
+      data &&
+      typeof data==="object"
+        ? data
+        : {}
+    );
+
+  }catch(e){
+    return {};
+  }
+
+}
+
+
+function saveHistory(history){
+
+  localStorage.setItem(
+    HISTORY_KEY,
+    JSON.stringify(history)
+  );
+
+}
+
+
+function todayStudySeconds(){
+
+  const history=loadHistory();
+
+  return Number(
+    history[todayKey()]?.totalSeconds || 0
+  );
+
+}
+
+
+function getStudyDays(){
+
+  const history=loadHistory();
+
+  return Object.keys(history)
+    .filter(
+      day=>
+        Number(
+          history[day]?.totalSeconds || 0
+        )>0
+    );
+
+}
+
+
+function calculateStreak(){
+
+  const history=loadHistory();
+
+  let streak=0;
+
+  let cursor=
+    new Date();
+
+  const today=
+    todayKey(cursor);
+
+  if(
+    Number(
+      history[today]?.totalSeconds || 0
+    )<=0
+  ){
+
+    cursor=
+      new Date(
+        Date.now()-86400000
+      );
+
+  }
+
+  while(true){
+
+    const day=
+      todayKey(cursor);
+
+    const seconds=
+      Number(
+        history[day]?.totalSeconds || 0
+      );
+
+    if(seconds<=0){
+      break;
+    }
+
+    streak++;
+
+    cursor=
+      new Date(
+        cursor.getTime()-86400000
+      );
+
+  }
+
+  return streak;
 
 }
 
@@ -2597,102 +3202,110 @@ function updateDashboard(){
       ? (complete/total*100).toFixed(2)
       : "0.00";
 
-
   document.getElementById(
     "total"
   ).textContent=total;
-
 
   document.getElementById(
     "completed"
   ).textContent=complete;
 
-
   document.getElementById(
     "inProgress"
   ).textContent=active;
-
 
   document.getElementById(
     "percent"
   ).textContent=
     `${percent}%`;
 
-
   document.getElementById(
     "percentTop"
   ).textContent=
     `${percent}%`;
-
 
   document.getElementById(
     "overallFill"
   ).style.width=
     `${percent}%`;
 
+  const today=
+    todayStudySeconds();
+
+  const goalPercent=
+    dailyGoal
+      ? Math.min(
+          100,
+          Math.round(
+            today/(dailyGoal*60)*100
+          )
+        )
+      : 0;
+
+  document.getElementById(
+    "todayStudyQuick"
+  ).textContent=
+    formatDuration(today);
+
+  document.getElementById(
+    "streakQuick"
+  ).textContent=
+    `${calculateStreak()} days`;
+
+  document.getElementById(
+    "goalQuick"
+  ).textContent=
+    `${goalPercent}%`;
+
+  document.getElementById(
+    "upcomingExamQuick"
+  ).textContent=
+    exams.filter(
+      exam=>
+        daysUntilExam(exam.date)>=0
+    ).length;
+
 }
 
 
 /* =====================================================
-   FILTER MATCH
+   FILTER
 ===================================================== */
 
-function matches(
-  book,
-  chapter
-){
+function matches(book,chapter){
 
   const name=
-    chapterNames[
-      book
-    ][chapter-1];
-
+    chapterNames[book][chapter-1];
 
   const search=
     state.search
       .trim()
       .toLowerCase();
 
-
   if(
     search &&
-    !book.toLowerCase()
-      .includes(search) &&
-    !name.toLowerCase()
-      .includes(search)
+    !book.toLowerCase().includes(search) &&
+    !name.toLowerCase().includes(search)
   ){
-
     return false;
-
   }
-
 
   if(
     state.subject!=="all" &&
     state.subject!==book
   ){
-
     return false;
-
   }
 
-
   const status=
-    getStatus(
-      book,
-      chapter
-    );
-
+    getStatus(book,chapter);
 
   if(
     state.status!=="all" &&
     status!==state.status
   ){
-
     return false;
-
   }
-
 
   return true;
 
@@ -2710,33 +3323,22 @@ function buildSubjectFilter(){
       "subjectFilter"
     );
 
-
   select.innerHTML=
     `<option value="all">
       📚 All Subjects
     </option>`;
 
+  Object.keys(books).forEach(book=>{
 
-  Object.keys(books)
-    .forEach(book=>{
+    const option=
+      document.createElement("option");
 
-      const option=
-        document.createElement(
-          "option"
-        );
+    option.value=book;
+    option.textContent=book;
 
+    select.appendChild(option);
 
-      option.value=book;
-
-      option.textContent=book;
-
-
-      select.appendChild(
-        option
-      );
-
-    });
-
+  });
 
   select.value=
     state.subject;
@@ -2755,18 +3357,15 @@ function updateContinue(){
       "continueCard"
     );
 
-
   if(
     !lastChapter ||
     !books[lastChapter.book]
   ){
 
     card.style.display="none";
-
     return;
 
   }
-
 
   const name=
     chapterNames[
@@ -2775,17 +3374,14 @@ function updateContinue(){
       lastChapter.chapter-1
     ];
 
-
   document.getElementById(
     "continueTitle"
   ).textContent=name;
-
 
   document.getElementById(
     "continueSub"
   ).textContent=
     `${lastChapter.book} • Chapter ${lastChapter.chapter}`;
-
 
   card.style.display="flex";
 
@@ -2793,551 +3389,416 @@ function updateContinue(){
 
 
 /* =====================================================
-   RENDER
+   RENDER SYLLABUS
 ===================================================== */
 
 function render(){
 
   updateDashboard();
-
   buildSubjectFilter();
-
   updateContinue();
-
 
   const container=
     document.getElementById(
       "subjects"
     );
 
-
   container.innerHTML="";
-
 
   let visibleSubjects=0;
 
+  Object.keys(books).forEach(
+    (book,index)=>{
 
-  Object.keys(books)
-    .forEach(
-      (book,index)=>{
+      const visible=[];
 
-        const visible=[];
-
-
-        for(
-          let chapter=1;
-          chapter<=books[book];
-          chapter++
-        ){
-
-          if(
-            matches(
-              book,
-              chapter
-            )
-          ){
-
-            visible.push(
-              chapter
-            );
-
-          }
-
-        }
-
+      for(
+        let chapter=1;
+        chapter<=books[book];
+        chapter++
+      ){
 
         if(
-          visible.length===0
+          matches(book,chapter)
         ){
-
-          return;
-
+          visible.push(chapter);
         }
 
+      }
 
-        visibleSubjects++;
+      if(
+        visible.length===0
+      ){
+        return;
+      }
 
+      visibleSubjects++;
 
-        const card=
-          document.createElement(
-            "article"
-          );
+      const card=
+        document.createElement("article");
 
+      card.className="subject";
+      card.dataset.book=book;
 
-        card.className="subject";
+      if(
+        collapsed[book] &&
+        !state.search &&
+        state.status==="all"
+      ){
 
+        card.classList.add(
+          "collapsed"
+        );
 
-        if(
-          collapsed[book] &&
-          !state.search &&
-          state.status==="all"
-        ){
-
-          card.classList.add(
-            "collapsed"
-          );
-
-        }
-
-
-        /* HEADER */
-
-        const header=
-          document.createElement(
-            "div"
-          );
+      }
 
 
-        header.className=
-          "subject-header";
+      const header=
+        document.createElement("div");
+
+      header.className=
+        "subject-header";
 
 
-        const icons=[
-          "⚛️",
-          "🔬",
-          "🧪",
-          "🧫",
-          "📐",
-          "📊",
-          "🌱",
-          "🦎"
+      const icons=[
+        "⚛️",
+        "🔬",
+        "🧪",
+        "🧫",
+        "📐",
+        "📊",
+        "🌱",
+        "🦎"
+      ];
+
+      const icon=
+        document.createElement("div");
+
+      icon.className=
+        "subject-icon";
+
+      icon.textContent=
+        icons[
+          index%icons.length
         ];
 
 
-        const icon=
-          document.createElement(
-            "div"
-          );
+      const info=
+        document.createElement("div");
 
+      info.className=
+        "subject-info";
 
-        icon.className=
-          "subject-icon";
 
+      const title=
+        document.createElement("h2");
 
-        icon.textContent=
-          icons[
-            index % icons.length
-          ];
+      title.className=
+        "subject-title";
 
+      title.textContent=book;
 
-        const info=
-          document.createElement(
-            "div"
-          );
 
+      const meta=
+        document.createElement("div");
 
-        info.className=
-          "subject-info";
+      meta.className=
+        "subject-meta";
 
+      const complete=
+        bookCompleted(book);
 
-        const title=
-          document.createElement(
-            "h2"
-          );
+      let active=0;
 
+      for(
+        let i=1;
+        i<=books[book];
+        i++
+      ){
 
-        title.className=
-          "subject-title";
-
-
-        title.textContent=book;
-
-
-        const meta=
-          document.createElement(
-            "div"
-          );
-
-
-        meta.className=
-          "subject-meta";
-
-
-        const complete=
-          bookCompleted(book);
-
-
-        const active=
-          [...Array(books[book])]
-            .filter(
-              (_,i)=>
-                getStatus(
-                  book,
-                  i+1
-                )==="in-progress"
-            )
-            .length;
-
-
-        meta.textContent=
-          `${complete} complete • ${active} in progress • ${books[book]} total`;
-
-
-        info.appendChild(title);
-
-        info.appendChild(meta);
-
-
-        const progressBox=
-          document.createElement(
-            "div"
-          );
-
-
-        progressBox.className=
-          "subject-progress";
-
-
-        const progressText=
-          document.createElement(
-            "div"
-          );
-
-
-        progressText.className=
-          "subject-progress-text";
-
-
-        const percent=
-          books[book]
-            ? (complete/books[book]*100).toFixed(2)
-            : "0.00";
-
-
-        progressText.innerHTML=
-          `<span>${complete}/${books[book]}</span>
-           <span>${percent}%</span>`;
-
-
-        const track=
-          document.createElement(
-            "div"
-          );
-
-
-        track.className=
-          "subject-track";
-
-
-        const fill=
-          document.createElement(
-            "div"
-          );
-
-
-        fill.className=
-          "subject-fill";
-
-
-        fill.style.width=
-          `${percent}%`;
-
-
-        track.appendChild(fill);
-
-        progressBox.appendChild(
-          progressText
-        );
-
-        progressBox.appendChild(
-          track
-        );
-
-
-        const chevron=
-          document.createElement(
-            "div"
-          );
-
-
-        chevron.className=
-          "chevron";
-
-
-        chevron.textContent="⌄";
-
-
-        header.appendChild(icon);
-
-        header.appendChild(info);
-
-        header.appendChild(progressBox);
-
-        header.appendChild(chevron);
-
-
-        header.addEventListener(
-          "click",
-          ()=>{
-
-            const isCollapsed=
-              card.classList.toggle(
-                "collapsed"
-              );
-
-
-            collapsed[book]=
-              isCollapsed;
-
-
-            localStorage.setItem(
-              "syllabusCollapsed",
-              JSON.stringify(
-                collapsed
-              )
-            );
-
-          }
-        );
-
-
-        /* BODY */
-
-        const body=
-          document.createElement(
-            "div"
-          );
-
-
-        body.className=
-          "subject-body";
-
-
-        const list=
-          document.createElement(
-            "div"
-          );
-
-
-        list.className=
-          "chapter-list";
-
-
-        visible.forEach(
-          chapter=>{
-
-            const status=
-              getStatus(
-                book,
-                chapter
-              );
-
-
-            const row=
-              document.createElement(
-                "div"
-              );
-
-
-            row.className=
-              "chapter";
-
-
-            row.dataset.chapter=
-              String(chapter);
-
-
-            if(
-              status==="in-progress"
-            ){
-
-              row.classList.add(
-                "in-progress"
-              );
-
-            }
-
-
-            if(
-              status==="complete"
-            ){
-
-              row.classList.add(
-                "complete"
-              );
-
-            }
-
-
-            const number=
-              document.createElement(
-                "div"
-              );
-
-
-            number.className=
-              "chapter-number";
-
-
-            number.textContent=
-              String(chapter)
-                .padStart(2,"0");
-
-
-            const content=
-              document.createElement(
-                "div"
-              );
-
-
-            content.className=
-              "chapter-content";
-
-
-            const name=
-              document.createElement(
-                "div"
-              );
-
-
-            name.className=
-              "chapter-name";
-
-
-            /*
-              FIXED NAME:
-              No input.
-              No editing.
-            */
-
-            name.textContent=
-              chapterNames[
-                book
-              ][chapter-1];
-
-
-            const statusText=
-              document.createElement(
-                "div"
-              );
-
-
-            statusText.className=
-              "chapter-status";
-
-
-            if(
-              status==="not-started"
-            ){
-
-              statusText.textContent=
-                "Not Started";
-
-            }
-
-            else if(
-              status==="in-progress"
-            ){
-
-              statusText.textContent=
-                "In Progress";
-
-            }
-
-            else{
-
-              statusText.textContent=
-                "✓ Complete";
-
-            }
-
-
-            content.appendChild(name);
-
-            content.appendChild(
-              statusText
-            );
-
-
-            const button=
-              document.createElement(
-                "button"
-              );
-
-
-            button.type="button";
-
-            button.className=
-              "status-btn";
-
-
-            if(
-              status==="not-started"
-            ){
-
-              button.textContent=
-                "⚪ Not Started";
-
-            }
-
-            else if(
-              status==="in-progress"
-            ){
-
-              button.textContent=
-                "🟡 In Progress";
-
-
-              button.classList.add(
-                "in-progress"
-              );
-
-            }
-
-            else{
-
-              button.textContent=
-                "✓ Complete";
-
-
-              button.classList.add(
-                "complete"
-              );
-
-            }
-
-
-            button.addEventListener(
-              "click",
-              event=>{
-
-                event.stopPropagation();
-
-
-                handleStatus(
-                  book,
-                  chapter
-                );
-
-              }
-            );
-
-
-            row.appendChild(number);
-
-            row.appendChild(content);
-
-            row.appendChild(button);
-
-
-            list.appendChild(row);
-
-          }
-        );
-
-
-        body.appendChild(list);
-
-
-        card.appendChild(header);
-
-        card.appendChild(body);
-
-
-        container.appendChild(card);
+        if(
+          getStatus(book,i)==="in-progress"
+        ){
+          active++;
+        }
 
       }
-    );
+
+      meta.textContent=
+        `${complete} complete • ${active} in progress • ${books[book]} total`;
+
+      info.appendChild(title);
+      info.appendChild(meta);
+
+
+      const progressBox=
+        document.createElement("div");
+
+      progressBox.className=
+        "subject-progress";
+
+
+      const progressText=
+        document.createElement("div");
+
+      progressText.className=
+        "subject-progress-text";
+
+
+      const percent=
+        (
+          complete/
+          books[book]*
+          100
+        ).toFixed(2);
+
+      progressText.innerHTML=
+        `<span>${complete}/${books[book]}</span>
+         <span>${percent}%</span>`;
+
+
+      const track=
+        document.createElement("div");
+
+      track.className=
+        "subject-track";
+
+
+      const fill=
+        document.createElement("div");
+
+      fill.className=
+        "subject-fill";
+
+      fill.style.width=
+        `${percent}%`;
+
+      track.appendChild(fill);
+
+      progressBox.appendChild(
+        progressText
+      );
+
+      progressBox.appendChild(
+        track
+      );
+
+
+      const chevron=
+        document.createElement("div");
+
+      chevron.className=
+        "chevron";
+
+      chevron.textContent="⌄";
+
+
+      header.appendChild(icon);
+      header.appendChild(info);
+      header.appendChild(progressBox);
+      header.appendChild(chevron);
+
+
+      header.addEventListener(
+        "click",
+        ()=>{
+
+          const isCollapsed=
+            card.classList.toggle(
+              "collapsed"
+            );
+
+          collapsed[book]=
+            isCollapsed;
+
+          localStorage.setItem(
+            COLLAPSED_KEY,
+            JSON.stringify(collapsed)
+          );
+
+        }
+      );
+
+
+      const body=
+        document.createElement("div");
+
+      body.className=
+        "subject-body";
+
+
+      const list=
+        document.createElement("div");
+
+      list.className=
+        "chapter-list";
+
+
+      visible.forEach(chapter=>{
+
+        const status=
+          getStatus(
+            book,
+            chapter
+          );
+
+        const row=
+          document.createElement("div");
+
+        row.className="chapter";
+
+        row.dataset.chapter=
+          String(chapter);
+
+        if(
+          status==="in-progress"
+        ){
+          row.classList.add(
+            "in-progress"
+          );
+        }
+
+        if(
+          status==="complete"
+        ){
+          row.classList.add(
+            "complete"
+          );
+        }
+
+
+        const number=
+          document.createElement("div");
+
+        number.className=
+          "chapter-number";
+
+        number.textContent=
+          String(chapter)
+            .padStart(2,"0");
+
+
+        const content=
+          document.createElement("div");
+
+        content.className=
+          "chapter-content";
+
+
+        const name=
+          document.createElement("div");
+
+        name.className=
+          "chapter-name";
+
+        name.textContent=
+          chapterNames[
+            book
+          ][chapter-1];
+
+
+        const statusText=
+          document.createElement("div");
+
+        statusText.className=
+          "chapter-status";
+
+
+        if(
+          status==="not-started"
+        ){
+          statusText.textContent=
+            "Not Started";
+        }
+        else if(
+          status==="in-progress"
+        ){
+          statusText.textContent=
+            "In Progress";
+        }
+        else{
+          statusText.textContent=
+            "✓ Complete";
+        }
+
+
+        content.appendChild(name);
+        content.appendChild(statusText);
+
+
+        const button=
+          document.createElement("button");
+
+        button.type="button";
+        button.className=
+          "status-btn";
+
+
+        if(
+          status==="not-started"
+        ){
+
+          button.textContent=
+            "⚪ Not Started";
+
+        }
+        else if(
+          status==="in-progress"
+        ){
+
+          button.textContent=
+            "🟡 In Progress";
+
+          button.classList.add(
+            "in-progress"
+          );
+
+        }
+        else{
+
+          button.textContent=
+            "✓ Complete";
+
+          button.classList.add(
+            "complete"
+          );
+
+        }
+
+
+        button.addEventListener(
+          "click",
+          event=>{
+
+            event.stopPropagation();
+
+            handleStatus(
+              book,
+              chapter
+            );
+
+          }
+        );
+
+
+        row.appendChild(number);
+        row.appendChild(content);
+        row.appendChild(button);
+
+        list.appendChild(row);
+
+      });
+
+
+      body.appendChild(list);
+
+      card.appendChild(header);
+      card.appendChild(body);
+
+      container.appendChild(card);
+
+    }
+  );
 
 
   if(
@@ -3353,7 +3814,6 @@ function render(){
 
   }
 
-
   updateFilterButtons();
 
 }
@@ -3366,9 +3826,7 @@ function render(){
 function updateFilterButtons(){
 
   document
-    .querySelectorAll(
-      ".filter-btn"
-    )
+    .querySelectorAll(".filter-btn")
     .forEach(btn=>{
 
       btn.classList.toggle(
@@ -3388,39 +3846,76 @@ function updateFilterButtons(){
 
 let toastTimer;
 
-
 function showToast(message){
 
   const toast=
-    document.getElementById(
-      "toast"
-    );
-
+    document.getElementById("toast");
 
   toast.textContent=message;
 
-
   toast.classList.add("show");
 
-
-  clearTimeout(
-    toastTimer
-  );
-
+  clearTimeout(toastTimer);
 
   toastTimer=
     setTimeout(
       ()=>{
-
         toast.classList.remove(
           "show"
         );
-
       },
       1800
     );
 
 }
+
+
+/* =====================================================
+   TABS
+===================================================== */
+
+document
+  .querySelectorAll(".main-tab")
+  .forEach(button=>{
+
+    button.addEventListener(
+      "click",
+      ()=>{
+
+        const tab=
+          button.dataset.tab;
+
+        document
+          .querySelectorAll(".main-tab")
+          .forEach(btn=>{
+            btn.classList.toggle(
+              "active",
+              btn===button
+            );
+          });
+
+        document
+          .querySelectorAll(".app-panel")
+          .forEach(panel=>{
+            panel.classList.toggle(
+              "active",
+              panel.id===
+                `${tab}Panel`
+            );
+          });
+
+        if(tab==="exams"){
+          renderExams();
+        }
+
+        if(tab==="history"){
+          renderAllHistory();
+        }
+
+      }
+    );
+
+  });
 
 
 /* =====================================================
@@ -3436,7 +3931,6 @@ document
       state.search=
         event.target.value;
 
-
       render();
 
     }
@@ -3448,16 +3942,13 @@ document
 ===================================================== */
 
 document
-  .getElementById(
-    "subjectFilter"
-  )
+  .getElementById("subjectFilter")
   .addEventListener(
     "change",
     event=>{
 
       state.subject=
         event.target.value;
-
 
       render();
 
@@ -3470,27 +3961,22 @@ document
 ===================================================== */
 
 document
-  .querySelectorAll(
-    ".filter-btn"
-  )
-  .forEach(
-    button=>{
+  .querySelectorAll(".filter-btn")
+  .forEach(button=>{
 
-      button.addEventListener(
-        "click",
-        ()=>{
+    button.addEventListener(
+      "click",
+      ()=>{
 
-          state.status=
-            button.dataset.status;
+        state.status=
+          button.dataset.status;
 
+        render();
 
-          render();
+      }
+    );
 
-        }
-      );
-
-    }
-  );
+  });
 
 
 /* =====================================================
@@ -3505,28 +3991,22 @@ document
 
       saveData();
 
-
       const button=
         document.getElementById(
           "saveBtn"
         );
 
-
       button.textContent=
         "✅ Saved";
-
 
       showToast(
         "✅ Progress saved"
       );
 
-
       setTimeout(
         ()=>{
-
           button.textContent=
             "💾 Save";
-
         },
         1500
       );
@@ -3545,11 +4025,6 @@ const resetModal=
   );
 
 
-/*
-  Reset All button:
-  NO browser confirm().
-*/
-
 document
   .getElementById("resetBtn")
   .addEventListener(
@@ -3560,7 +4035,6 @@ document
         "show"
       );
 
-
       resetModal.setAttribute(
         "aria-hidden",
         "false"
@@ -3570,46 +4044,36 @@ document
   );
 
 
-/* Cancel */
-
 document
-  .getElementById(
-    "cancelReset"
-  )
+  .getElementById("cancelReset")
   .addEventListener(
     "click",
-    ()=>{
-
-      resetModal.classList.remove(
-        "show"
-      );
-
-
-      resetModal.setAttribute(
-        "aria-hidden",
-        "true"
-      );
-
-    }
+    closeResetModal
   );
 
 
-/* OK */
+function closeResetModal(){
+
+  resetModal.classList.remove(
+    "show"
+  );
+
+  resetModal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+}
+
 
 document
-  .getElementById(
-    "confirmReset"
-  )
+  .getElementById("confirmReset")
   .addEventListener(
     "click",
     ()=>{
 
       progress={};
-
       lastChapter=null;
-
-      collapsed={};
-
 
       localStorage.removeItem(
         STORAGE_KEY
@@ -3619,24 +4083,15 @@ document
         LAST_KEY
       );
 
+      collapsed={};
+
       localStorage.removeItem(
-        "syllabusCollapsed"
+        COLLAPSED_KEY
       );
 
-
-      resetModal.classList.remove(
-        "show"
-      );
-
-
-      resetModal.setAttribute(
-        "aria-hidden",
-        "true"
-      );
-
+      closeResetModal();
 
       render();
-
 
       showToast(
         "✅ Progress reset"
@@ -3646,53 +4101,14 @@ document
   );
 
 
-/* Click outside modal */
-
 resetModal.addEventListener(
   "click",
   event=>{
 
     if(
-      event.target===
-      resetModal
+      event.target===resetModal
     ){
-
-      resetModal.classList.remove(
-        "show"
-      );
-
-
-      resetModal.setAttribute(
-        "aria-hidden",
-        "true"
-      );
-
-    }
-
-  }
-);
-
-
-/* ESC */
-
-document.addEventListener(
-  "keydown",
-  event=>{
-
-    if(
-      event.key==="Escape"
-    ){
-
-      resetModal.classList.remove(
-        "show"
-      );
-
-
-      resetModal.setAttribute(
-        "aria-hidden",
-        "true"
-      );
-
+      closeResetModal();
     }
 
   }
@@ -3700,34 +4116,24 @@ document.addEventListener(
 
 
 /* =====================================================
-   EXPAND ALL
+   EXPAND / COLLAPSE
 ===================================================== */
 
 document
-  .getElementById(
-    "expandBtn"
-  )
+  .getElementById("expandBtn")
   .addEventListener(
     "click",
     ()=>{
 
       Object.keys(books)
-        .forEach(
-          book=>{
-
-            collapsed[book]=false;
-
-          }
-        );
-
+        .forEach(book=>{
+          collapsed[book]=false;
+        });
 
       localStorage.setItem(
-        "syllabusCollapsed",
-        JSON.stringify(
-          collapsed
-        )
+        COLLAPSED_KEY,
+        JSON.stringify(collapsed)
       );
-
 
       render();
 
@@ -3735,35 +4141,21 @@ document
   );
 
 
-/* =====================================================
-   COLLAPSE ALL
-===================================================== */
-
 document
-  .getElementById(
-    "collapseBtn"
-  )
+  .getElementById("collapseBtn")
   .addEventListener(
     "click",
     ()=>{
 
       Object.keys(books)
-        .forEach(
-          book=>{
-
-            collapsed[book]=true;
-
-          }
-        );
-
+        .forEach(book=>{
+          collapsed[book]=true;
+        });
 
       localStorage.setItem(
-        "syllabusCollapsed",
-        JSON.stringify(
-          collapsed
-        )
+        COLLAPSED_KEY,
+        JSON.stringify(collapsed)
       );
-
 
       render();
 
@@ -3776,9 +4168,7 @@ document
 ===================================================== */
 
 document
-  .getElementById(
-    "continueBtn"
-  )
+  .getElementById("continueBtn")
   .addEventListener(
     "click",
     ()=>{
@@ -3787,19 +4177,15 @@ document
         return;
       }
 
-
       state.search="";
       state.subject="all";
       state.status="all";
-
 
       document.getElementById(
         "search"
       ).value="";
 
-
       render();
-
 
       setTimeout(
         ()=>{
@@ -3809,50 +4195,34 @@ document
               `.subject[data-book="${CSS.escape(lastChapter.book)}"]`
             );
 
-
           if(target){
+
+            target.scrollIntoView({
+              behavior:"smooth",
+              block:"center"
+            });
 
             const chapterRow=
               target.querySelector(
                 `.chapter[data-chapter="${lastChapter.chapter}"]`
               );
 
-
             if(chapterRow){
-
-              target.classList.remove(
-                "collapsed"
-              );
-
-              collapsed[lastChapter.book]=false;
-
-
-              localStorage.setItem(
-                "syllabusCollapsed",
-                JSON.stringify(
-                  collapsed
-                )
-              );
-
 
               chapterRow.scrollIntoView({
                 behavior:"smooth",
                 block:"center"
               });
 
-
               chapterRow.classList.add(
                 "continue-highlight"
               );
 
-
               setTimeout(
                 ()=>{
-
                   chapterRow.classList.remove(
                     "continue-highlight"
                   );
-
                 },
                 2500
               );
@@ -3880,14 +4250,12 @@ function setTheme(theme){
     theme==="dark"
   );
 
-
   document.getElementById(
     "themeBtn"
   ).textContent=
     theme==="dark"
       ? "☀️ Light"
       : "🌙 Dark";
-
 
   localStorage.setItem(
     THEME_KEY,
@@ -3898,9 +4266,7 @@ function setTheme(theme){
 
 
 document
-  .getElementById(
-    "themeBtn"
-  )
+  .getElementById("themeBtn")
   .addEventListener(
     "click",
     ()=>{
@@ -3909,7 +4275,6 @@ document
         document.body.classList.contains(
           "dark"
         );
-
 
       setTheme(
         dark
@@ -3920,10 +4285,6 @@ document
     }
   );
 
-
-/* =====================================================
-   LOAD THEME
-===================================================== */
 
 try{
 
@@ -3941,51 +4302,1580 @@ try{
 
 
 /* =====================================================
-   AUTO SAVE SAFETY
+   EXAM HELPERS
 ===================================================== */
 
-window.addEventListener(
-  "beforeunload",
-  ()=>{
+function generateId(){
 
-    saveData();
+  return(
+    Date.now().toString(36)+
+    Math.random()
+      .toString(36)
+      .slice(2)
+  );
 
+}
+
+
+function daysUntilExam(dateString){
+
+  if(!dateString){
+    return 999999;
   }
-);
+
+  const today=
+    new Date();
+
+  today.setHours(
+    0,0,0,0
+  );
+
+  const target=
+    new Date(
+      `${dateString}T00:00:00`
+    );
+
+  target.setHours(
+    0,0,0,0
+  );
+
+  return Math.ceil(
+    (
+      target.getTime()-
+      today.getTime()
+    )/
+    86400000
+  );
+
+}
 
 
-/* =====================================================
-   START
-===================================================== */
+function formatExamDate(dateString){
 
-render();
+  if(!dateString){
+    return "No date";
+  }
 
+  const date=
+    new Date(
+      `${dateString}T00:00:00`
+    );
 
-/* Optional PWA service worker */
-
-if(
-  "serviceWorker" in navigator
-){
-
-  window.addEventListener(
-    "load",
-    ()=>{
-
-      navigator.serviceWorker
-        .register("./sw.js")
-        .catch(
-          ()=>{}
-        );
-
+  return date.toLocaleDateString(
+    undefined,
+    {
+      day:"numeric",
+      month:"short",
+      year:"numeric"
     }
   );
 
 }
 
-</script>
+
+function examSelectedChapters(exam){
+
+  return Array.isArray(exam.chapters)
+    ? exam.chapters
+    : [];
+
+}
 
 
-<script>
+function examProgress(exam){
+
+  const chapters=
+    examSelectedChapters(exam);
+
+  if(!chapters.length){
+    return {
+      complete:0,
+      total:0,
+      percent:0
+    };
+  }
+
+  let complete=0;
+
+  chapters.forEach(item=>{
+
+    if(
+      getStatus(
+        item.book,
+        item.chapter
+      )==="complete"
+    ){
+      complete++;
+    }
+
+  });
+
+  return{
+    complete,
+    total:chapters.length,
+    percent:
+      Number(
+        (
+          complete/
+          chapters.length*
+          100
+        ).toFixed(2)
+      )
+  };
+
+}
+
+
+function saveExams(){
+
+  localStorage.setItem(
+    EXAMS_KEY,
+    JSON.stringify(exams)
+  );
+
+}
+
+
+/* =====================================================
+   EXAM LIST
+===================================================== */
+
+function renderExams(){
+
+  if(
+    selectedExamId
+  ){
+
+    renderExamDetail();
+    return;
+
+  }
+
+  const list=
+    document.getElementById(
+      "examList"
+    );
+
+  if(!exams.length){
+
+    list.innerHTML=
+      `<div class="empty">
+        🎯<br><br>
+        <strong>No exams planned yet</strong><br>
+        Create an exam and select its chapters.
+      </div>`;
+
+    return;
+
+  }
+
+
+  const sorted=
+    [...exams].sort(
+      (a,b)=>
+        (a.date||"9999")
+          .localeCompare(
+            b.date||"9999"
+          )
+    );
+
+
+  list.innerHTML=
+    sorted.map(exam=>{
+
+      const stats=
+        examProgress(exam);
+
+      const days=
+        daysUntilExam(
+          exam.date
+        );
+
+      let countdown="";
+
+      let cls="";
+
+      if(days<0){
+
+        countdown=
+          "Exam passed";
+
+        cls="done";
+
+      }
+      else if(days===0){
+
+        countdown=
+          "Today";
+
+        cls="danger";
+
+      }
+      else if(days===1){
+
+        countdown=
+          "1 day left";
+
+        cls="danger";
+
+      }
+      else if(days<=3){
+
+        countdown=
+          `${days} days left`;
+
+        cls="danger";
+
+      }
+      else{
+
+        countdown=
+          `${days} days left`;
+
+      }
+
+
+      return `
+        <article class="exam-card">
+
+          <div class="exam-card-top">
+
+            <div>
+              <div class="exam-name">
+                ${escapeHtml(exam.name)}
+              </div>
+
+              <div class="exam-date">
+                📅 ${formatExamDate(exam.date)}
+              </div>
+            </div>
+
+            <div class="exam-countdown ${cls}">
+              ${countdown}
+            </div>
+
+          </div>
+
+          <div class="exam-progress-row">
+            <span>Preparation</span>
+            <span>${stats.complete}/${stats.total} • ${stats.percent}%</span>
+          </div>
+
+          <div class="exam-track">
+            <div
+              class="exam-fill"
+              style="width:${stats.percent}%"
+            ></div>
+          </div>
+
+          <div class="exam-meta">
+
+            <span class="exam-tag">
+              📚 ${stats.total} chapters
+            </span>
+
+            <span class="exam-tag">
+              🟢 ${stats.complete} complete
+            </span>
+
+            <span class="exam-tag">
+              ⚪ ${stats.total-stats.complete} remaining
+            </span>
+
+          </div>
+
+          <div class="exam-actions">
+
+            <button
+              data-open-exam="${exam.id}"
+              type="button"
+            >
+              👁️ Open Preparation
+            </button>
+
+            <button
+              data-edit-exam="${exam.id}"
+              type="button"
+            >
+              ✏️ Edit
+            </button>
+
+            <button
+              class="danger-action"
+              data-delete-exam="${exam.id}"
+              type="button"
+            >
+              🗑️ Delete
+            </button>
+
+          </div>
+
+        </article>
+      `;
+
+    }).join("");
+
+
+  list
+    .querySelectorAll(
+      "[data-open-exam]"
+    )
+    .forEach(btn=>{
+
+      btn.addEventListener(
+        "click",
+        ()=>{
+          selectedExamId=
+            btn.dataset.openExam;
+
+          renderExams();
+        }
+      );
+
+    });
+
+
+  list
+    .querySelectorAll(
+      "[data-edit-exam]"
+    )
+    .forEach(btn=>{
+
+      btn.addEventListener(
+        "click",
+        ()=>{
+          openExamModal(
+            btn.dataset.editExam
+          );
+        }
+      );
+
+    });
+
+
+  list
+    .querySelectorAll(
+      "[data-delete-exam]"
+    )
+    .forEach(btn=>{
+
+      btn.addEventListener(
+        "click",
+        ()=>{
+
+          if(
+            confirm(
+              "Delete this exam plan?"
+            )
+          ){
+
+            exams=
+              exams.filter(
+                exam=>
+                  exam.id!==btn.dataset.deleteExam
+              );
+
+            saveExams();
+
+            renderExams();
+            updateDashboard();
+
+            showToast(
+              "🗑️ Exam deleted"
+            );
+
+          }
+
+        }
+      );
+
+    });
+
+}
+
+
+function escapeHtml(value){
+
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+/* =====================================================
+   EXAM DETAIL
+===================================================== */
+
+function renderExamDetail(){
+
+  const exam=
+    exams.find(
+      item=>
+        item.id===selectedExamId
+    );
+
+  if(!exam){
+
+    selectedExamId=null;
+    renderExams();
+    return;
+
+  }
+
+  document.getElementById(
+    "examListView"
+  ).style.display="none";
+
+  const detail=
+    document.getElementById(
+      "examDetailView"
+    );
+
+  detail.classList.add("show");
+
+
+  const stats=
+    examProgress(exam);
+
+  document.getElementById(
+    "examDetailName"
+  ).textContent=
+    exam.name;
+
+  document.getElementById(
+    "examDetailDate"
+  ).textContent=
+    `📅 ${formatExamDate(exam.date)}`;
+
+  document.getElementById(
+    "examDetailPercent"
+  ).textContent=
+    `${stats.percent}%`;
+
+  document.getElementById(
+    "examDetailProgressText"
+  ).textContent=
+    `${stats.complete} / ${stats.total} complete`;
+
+  document.getElementById(
+    "examDetailFill"
+  ).style.width=
+    `${stats.percent}%`;
+
+
+  const list=
+    document.getElementById(
+      "examChapterList"
+    );
+
+  const chapters=
+    examSelectedChapters(exam);
+
+
+  if(!chapters.length){
+
+    list.innerHTML=
+      `<div class="empty">
+        No chapters selected.
+      </div>`;
+
+    return;
+
+  }
+
+
+  list.innerHTML=
+    chapters.map(
+      (item,index)=>{
+
+        const status=
+          getStatus(
+            item.book,
+            item.chapter
+          );
+
+        const name=
+          chapterNames[
+            item.book
+          ]?.[
+            item.chapter-1
+          ] ||
+          `Chapter ${item.chapter}`;
+
+        const priority=
+          item.priority || "medium";
+
+        return `
+          <div class="exam-chapter ${status==="complete" ? "complete" : ""}">
+
+            <div class="exam-chapter-main">
+
+              <button
+                class="exam-chapter-check"
+                data-exam-status="${index}"
+                type="button"
+                title="Toggle syllabus status"
+              >
+                ${status==="complete" ? "✓" : ""}
+              </button>
+
+              <div class="exam-chapter-info">
+
+                <div class="exam-chapter-name">
+                  ${escapeHtml(name)}
+                </div>
+
+                <div class="exam-chapter-book">
+                  ${escapeHtml(item.book)}
+                  • Chapter ${item.chapter}
+                  • ${statusText(status)}
+                </div>
+
+              </div>
+
+              <select
+                class="exam-priority ${priority}"
+                data-priority-index="${index}"
+                aria-label="Priority"
+              >
+
+                <option
+                  value="high"
+                  ${priority==="high" ? "selected" : ""}
+                >
+                  🔴 High
+                </option>
+
+                <option
+                  value="medium"
+                  ${priority==="medium" ? "selected" : ""}
+                >
+                  🟡 Medium
+                </option>
+
+                <option
+                  value="low"
+                  ${priority==="low" ? "selected" : ""}
+                >
+                  🟢 Low
+                </option>
+
+              </select>
+
+            </div>
+
+          </div>
+        `;
+
+      }
+    ).join("");
+
+
+  list
+    .querySelectorAll(
+      "[data-exam-status]"
+    )
+    .forEach(btn=>{
+
+      btn.addEventListener(
+        "click",
+        ()=>{
+
+          const index=
+            Number(
+              btn.dataset.examStatus
+            );
+
+          const item=
+            chapters[index];
+
+          const current=
+            getStatus(
+              item.book,
+              item.chapter
+            );
+
+          if(
+            current==="complete"
+          ){
+
+            setStatus(
+              item.book,
+              item.chapter,
+              "not-started"
+            );
+
+          }else{
+
+            setStatus(
+              item.book,
+              item.chapter,
+              "complete"
+            );
+
+          }
+
+          remember(
+            item.book,
+            item.chapter
+          );
+
+          saveData();
+          render();
+          renderExamDetail();
+
+          showToast(
+            current==="complete"
+              ? "⚪ Not Started"
+              : "🟢 Complete!"
+          );
+
+        }
+      );
+
+    });
+
+
+  list
+    .querySelectorAll(
+      "[data-priority-index]"
+    )
+    .forEach(select=>{
+
+      select.addEventListener(
+        "change",
+        ()=>{
+
+          const index=
+            Number(
+              select.dataset.priorityIndex
+            );
+
+          exam.chapters[index].priority=
+            select.value;
+
+          saveExams();
+
+        }
+      );
+
+    });
+
+}
+
+
+function statusText(status){
+
+  if(status==="complete"){
+    return "Complete";
+  }
+
+  if(status==="in-progress"){
+    return "In Progress";
+  }
+
+  return "Not Started";
+
+}
+
+
+/* =====================================================
+   EXAM MODAL
+===================================================== */
+
+const examModal=
+  document.getElementById(
+    "examModal"
+  );
+
+
+function openExamModal(examId=null){
+
+  editingExamId=
+    examId;
+
+  const title=
+    document.getElementById(
+      "examModalTitle"
+    );
+
+  const nameInput=
+    document.getElementById(
+      "examNameInput"
+    );
+
+  const dateInput=
+    document.getElementById(
+      "examDateInput"
+    );
+
+
+  let exam=null;
+
+  if(examId){
+
+    exam=
+      exams.find(
+        item=>
+          item.id===examId
+      );
+
+  }
+
+
+  title.textContent=
+    exam
+      ? "Edit Exam"
+      : "Create New Exam";
+
+  nameInput.value=
+    exam?.name || "";
+
+  dateInput.value=
+    exam?.date || "";
+
+  buildExamChapterPicker(
+    exam?.chapters || []
+  );
+
+
+  examModal.classList.add(
+    "show"
+  );
+
+  examModal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+}
+
+
+function closeExamModal(){
+
+  examModal.classList.remove(
+    "show"
+  );
+
+  examModal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+  editingExamId=null;
+
+}
+
+
+function buildExamChapterPicker(
+  selected=[]
+){
+
+  const container=
+    document.getElementById(
+      "examChapterPicker"
+    );
+
+  const selectedMap={};
+
+  selected.forEach(item=>{
+
+    selectedMap[
+      key(
+        item.book,
+        item.chapter
+      )
+    ]=item;
+
+  });
+
+
+  container.innerHTML=
+    Object.keys(books)
+      .map(book=>{
+
+        return `
+          <div class="chapter-picker-group">
+
+            <div class="chapter-picker-head">
+              ${escapeHtml(book)}
+            </div>
+
+            ${chapterNames[book]
+              .map((name,index)=>{
+
+                const chapter=
+                  index+1;
+
+                const k=
+                  key(
+                    book,
+                    chapter
+                  );
+
+                const checked=
+                  selectedMap[k]
+                    ? "checked"
+                    : "";
+
+                const priority=
+                  selectedMap[k]?.priority ||
+                  "medium";
+
+                return `
+                  <div class="picker-chapter">
+
+                    <input
+                      type="checkbox"
+                      id="pick_${CSS.escape(k)}"
+                      data-picker-book="${escapeHtml(book)}"
+                      data-picker-chapter="${chapter}"
+                      data-picker-priority="${priority}"
+                      ${checked}
+                    >
+
+                    <label
+                      for="pick_${CSS.escape(k)}"
+                    >
+                      ${chapter}. ${escapeHtml(name)}
+                    </label>
+
+                  </div>
+                `;
+
+              }).join("")}
+
+          </div>
+        `;
+
+      }).join("");
+
+}
+
+
+document
+  .getElementById("newExamBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+      openExamModal();
+    }
+  );
+
+
+document
+  .getElementById("cancelExamBtn")
+  .addEventListener(
+    "click",
+    closeExamModal
+  );
+
+
+examModal.addEventListener(
+  "click",
+  event=>{
+
+    if(
+      event.target===examModal
+    ){
+      closeExamModal();
+    }
+
+  }
+);
+
+
+document
+  .getElementById("saveExamBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      const name=
+        document.getElementById(
+          "examNameInput"
+        ).value.trim();
+
+      const date=
+        document.getElementById(
+          "examDateInput"
+        ).value;
+
+
+      if(!name){
+
+        showToast(
+          "⚠️ Enter exam name"
+        );
+
+        return;
+
+      }
+
+
+      if(!date){
+
+        showToast(
+          "⚠️ Select exam date"
+        );
+
+        return;
+
+      }
+
+
+      const checked=
+        [
+          ...document.querySelectorAll(
+            "#examChapterPicker input[type='checkbox']:checked"
+          )
+        ];
+
+
+      if(!checked.length){
+
+        showToast(
+          "⚠️ Select at least one chapter"
+        );
+
+        return;
+
+      }
+
+
+      const chapters=
+        checked.map(input=>({
+
+          book:
+            input.dataset.pickerBook,
+
+          chapter:
+            Number(
+              input.dataset.pickerChapter
+            ),
+
+          priority:
+            input.dataset.pickerPriority ||
+            "medium"
+
+        }));
+
+
+      if(editingExamId){
+
+        const exam=
+          exams.find(
+            item=>
+              item.id===editingExamId
+          );
+
+        if(exam){
+
+          const oldPriorities={};
+
+          exam.chapters.forEach(item=>{
+
+            oldPriorities[
+              key(
+                item.book,
+                item.chapter
+              )
+            ]=
+              item.priority ||
+              "medium";
+
+          });
+
+
+          chapters.forEach(item=>{
+
+            const k=
+              key(
+                item.book,
+                item.chapter
+              );
+
+            item.priority=
+              oldPriorities[k] ||
+              "medium";
+
+          });
+
+
+          exam.name=name;
+          exam.date=date;
+          exam.chapters=chapters;
+
+        }
+
+      }else{
+
+        exams.push({
+
+          id:generateId(),
+
+          name,
+
+          date,
+
+          createdAt:
+            Date.now(),
+
+          chapters
+
+        });
+
+      }
+
+
+      saveExams();
+
+      closeExamModal();
+
+      renderExams();
+      updateDashboard();
+
+      showToast(
+        editingExamId
+          ? "✅ Exam updated"
+          : "🎯 Exam created"
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   EXAM DETAIL BUTTONS
+===================================================== */
+
+document
+  .getElementById("backToExamsBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      selectedExamId=null;
+
+      document.getElementById(
+        "examListView"
+      ).style.display="block";
+
+      document
+        .getElementById(
+          "examDetailView"
+        )
+        .classList.remove("show");
+
+      renderExams();
+
+    }
+  );
+
+
+document
+  .getElementById("editExamBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      if(selectedExamId){
+        openExamModal(
+          selectedExamId
+        );
+      }
+
+    }
+  );
+
+
+document
+  .getElementById(
+    "deleteExamDetailBtn"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
+
+      if(!selectedExamId){
+        return;
+      }
+
+      if(
+        confirm(
+          "Delete this exam plan?"
+        )
+      ){
+
+        exams=
+          exams.filter(
+            exam=>
+              exam.id!==selectedExamId
+          );
+
+        selectedExamId=null;
+
+        saveExams();
+
+        document.getElementById(
+          "examListView"
+        ).style.display="block";
+
+        document
+          .getElementById(
+            "examDetailView"
+          )
+          .classList.remove("show");
+
+        renderExams();
+        updateDashboard();
+
+        showToast(
+          "🗑️ Exam deleted"
+        );
+
+      }
+
+    }
+  );
+
+
+document
+  .getElementById("examPomodoroBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      const exam=
+        exams.find(
+          item=>
+            item.id===selectedExamId
+        );
+
+      if(!exam){
+        return;
+      }
+
+      const remainingChapters=
+        exam.chapters.filter(
+          item=>
+            getStatus(
+              item.book,
+              item.chapter
+            )!=="complete"
+        );
+
+      if(!remainingChapters.length){
+
+        showToast(
+          "🎉 All exam chapters are complete!"
+        );
+
+        return;
+
+      }
+
+
+      const target=
+        remainingChapters[0];
+
+      openPomodoroFor(
+        target.book,
+        target.chapter
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   GOAL
+===================================================== */
+
+function renderGoal(){
+
+  const today=
+    todayStudySeconds();
+
+  const target=
+    dailyGoal*60;
+
+  const percent=
+    target
+      ? Math.min(
+          100,
+          Math.round(
+            today/target*100
+          )
+        )
+      : 0;
+
+  document.getElementById(
+    "dailyGoalInput"
+  ).value=
+    dailyGoal;
+
+  document.getElementById(
+    "goalProgressText"
+  ).textContent=
+    `${formatDuration(today)} / ${dailyGoal}m`;
+
+  document.getElementById(
+    "goalProgressPercent"
+  ).textContent=
+    `${percent}%`;
+
+  document.getElementById(
+    "goalFill"
+  ).style.width=
+    `${percent}%`;
+
+}
+
+
+document
+  .getElementById("saveGoalBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      dailyGoal=
+        Math.min(
+          1440,
+          Math.max(
+            1,
+            Number(
+              document.getElementById(
+                "dailyGoalInput"
+              ).value
+            ) || 120
+          )
+        );
+
+      localStorage.setItem(
+        GOAL_KEY,
+        String(dailyGoal)
+      );
+
+      renderGoal();
+      updateDashboard();
+
+      showToast(
+        `🎯 Daily goal: ${dailyGoal} minutes`
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   HISTORY RENDER
+===================================================== */
+
+function renderAllHistory(){
+
+  renderHistoryList();
+  renderWeeklySummary();
+  renderBookStats();
+  renderGoal();
+
+  const streak=
+    calculateStreak();
+
+  document.getElementById(
+    "streakDetail"
+  ).textContent=
+    `${streak} day${streak===1 ? "" : "s"}`;
+
+  document.getElementById(
+    "streakSub"
+  ).textContent=
+    streak
+      ? "Keep going! Your study streak is active."
+      : "Start studying to build your streak.";
+
+}
+
+
+function renderHistoryList(){
+
+  const container=
+    document.getElementById(
+      "historyList"
+    );
+
+  const history=
+    loadHistory();
+
+  const days=
+    Object.keys(history)
+      .filter(
+        day=>
+          Number(
+            history[day]?.totalSeconds || 0
+          )>0
+      )
+      .sort(
+        (a,b)=>
+          b.localeCompare(a)
+      );
+
+
+  document.getElementById(
+    "todayHistoryValue"
+  ).textContent=
+    formatDuration(
+      todayStudySeconds()
+    );
+
+
+  if(!days.length){
+
+    container.innerHTML=
+      `<div class="empty">
+        📊<br><br>
+        No study history yet.
+      </div>`;
+
+    return;
+
+  }
+
+
+  container.innerHTML=
+    days.map(day=>{
+
+      const data=
+        history[day];
+
+      const sessions=
+        Number(
+          data.sessions || 0
+        );
+
+      return `
+        <div class="history-day">
+
+          <div>
+
+            <div class="history-day-date">
+              ${prettyDate(day)}
+            </div>
+
+            <div class="history-day-meta">
+              ${sessions} focus session${sessions===1 ? "" : "s"}
+            </div>
+
+          </div>
+
+          <div class="history-day-time">
+            ${formatDuration(data.totalSeconds || 0)}
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+}
+
+
+function renderWeeklySummary(){
+
+  const container=
+    document.getElementById(
+      "weeklySummary"
+    );
+
+  const history=
+    loadHistory();
+
+  let total=0;
+
+  const rows=[];
+
+  for(
+    let i=0;
+    i<7;
+    i++
+  ){
+
+    const date=
+      new Date(
+        Date.now()-
+        i*86400000
+      );
+
+    const day=
+      todayKey(date);
+
+    const seconds=
+      Number(
+        history[day]?.totalSeconds || 0
+      );
+
+    total+=seconds;
+
+    rows.push({
+      day,
+      seconds
+    });
+
+  }
+
+
+  container.innerHTML=
+    rows.map(row=>{
+
+      return `
+        <div class="summary-row">
+
+          <div class="summary-row-name">
+            ${prettyDate(row.day)}
+          </div>
+
+          <div class="summary-row-time">
+            ${formatDuration(row.seconds)}
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+
+  container.innerHTML+=`
+    <div class="summary-row"
+      style="
+        background:var(--primary-soft);
+        border-color:color-mix(
+          in srgb,
+          var(--primary) 25%,
+          var(--border)
+        );
+      "
+    >
+
+      <div class="summary-row-name">
+        7 Day Total
+      </div>
+
+      <div class="summary-row-time">
+        ${formatDuration(total)}
+      </div>
+
+    </div>
+  `;
+
+}
+
+
+function renderBookStats(){
+
+  const container=
+    document.getElementById(
+      "bookStats"
+    );
+
+  const history=
+    loadHistory();
+
+  const totals={};
+
+  Object.values(history)
+    .forEach(day=>{
+
+      Object.entries(
+        day.byBook || {}
+      ).forEach(
+        ([book,seconds])=>{
+
+          totals[book]=
+            (
+              totals[book] || 0
+            )+
+            Number(seconds || 0);
+
+        }
+      );
+
+    });
+
+
+  const rows=
+    Object.keys(books)
+      .map(book=>({
+
+        book,
+
+        seconds:
+          totals[book] || 0
+
+      }))
+      .sort(
+        (a,b)=>
+          b.seconds-a.seconds
+      );
+
+
+  container.innerHTML=
+    rows.map(row=>{
+
+      return `
+        <div class="summary-row">
+
+          <div class="summary-row-name">
+            ${escapeHtml(row.book)}
+          </div>
+
+          <div class="summary-row-time">
+            ${formatDuration(row.seconds)}
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+}
+
+
+/* =====================================================
+   CLEAR HISTORY
+===================================================== */
+
+document
+  .getElementById("clearHistoryBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      if(
+        !confirm(
+          "Clear all Pomodoro study history?"
+        )
+      ){
+        return;
+      }
+
+      localStorage.removeItem(
+        HISTORY_KEY
+      );
+
+      renderAllHistory();
+      updateDashboard();
+
+      showToast(
+        "🧹 Study history cleared"
+      );
+
+    }
+  );
+
 
 /* =====================================================
    POMODORO
@@ -3998,113 +5888,85 @@ if(
       "pomodoroPage"
     );
 
-
   const openBtn=
     document.getElementById(
       "pomodoroOpenBtn"
     );
-
 
   const backBtn=
     document.getElementById(
       "pomodoroBackBtn"
     );
 
-
   const modeEl=
     document.getElementById(
       "pomoMode"
     );
-
 
   const timeEl=
     document.getElementById(
       "pomoTime"
     );
 
-
   const progressFill=
     document.getElementById(
       "pomoProgressFill"
     );
-
 
   const startBtn=
     document.getElementById(
       "pomoStart"
     );
 
-
   const pauseBtn=
     document.getElementById(
       "pomoPause"
     );
-
 
   const resetBtn=
     document.getElementById(
       "pomoReset"
     );
 
-
   const skipBtn=
     document.getElementById(
       "pomoSkip"
     );
-
 
   const bookSelect=
     document.getElementById(
       "pomoBookSelect"
     );
 
-
   const chapterSelect=
     document.getElementById(
       "pomoChapterSelect"
     );
-
 
   const selectedChapterEl=
     document.getElementById(
       "pomoSelectedChapter"
     );
 
-
   const historyList=
     document.getElementById(
       "pomoHistoryList"
     );
-
 
   const focusInput=
     document.getElementById(
       "pomoFocusInput"
     );
 
-
   const breakInput=
     document.getElementById(
       "pomoBreakInput"
     );
 
-
   const applyBtn=
     document.getElementById(
       "pomoApply"
     );
-
-
-  const FOCUS_KEY=
-    "pomodoroFocus";
-
-
-  const BREAK_KEY=
-    "pomodoroBreak";
-
-
-  const HISTORY_KEY=
-    "pomodoroDailyHistory";
 
 
   let focusMinutes=
@@ -4125,76 +5987,33 @@ if(
 
   let mode="focus";
 
-
   let remaining=
     focusMinutes*60;
 
-
   let timer=null;
 
-
   let endTime=null;
-
 
   let lastAccountedRemaining=
     remaining;
 
-
   let audioContext=null;
-
 
   let sessionNumber=1;
 
-
   let sessionStarted=false;
-
 
   let selectedBook="";
 
-
   let selectedChapter="";
-
-
-  let history={};
-
-
-  try{
-
-    const saved=
-      JSON.parse(
-        localStorage.getItem(
-          HISTORY_KEY
-        ) || "{}"
-      );
-
-
-    if(
-      saved &&
-      typeof saved==="object"
-    ){
-
-      history=saved;
-
-    }
-
-  }catch(e){
-
-    history={};
-
-  }
 
 
   focusInput.value=
     focusMinutes;
 
-
   breakInput.value=
     breakMinutes;
 
-
-/* =====================================================
-   TIME HELPERS
-===================================================== */
 
   function formatTime(seconds){
 
@@ -4204,170 +6023,23 @@ if(
         Math.floor(seconds)
       );
 
-
     const mins=
       Math.floor(
         safe/60
       );
 
-
     const secs=
       safe%60;
 
-
-    return `${String(mins).padStart(2,"0")}:${String(secs).padStart(2,"0")}`;
-
-  }
-
-
-  function todayKey(
-    date=new Date()
-  ){
-
-    const y=
-      date.getFullYear();
-
-
-    const m=
-      String(
-        date.getMonth()+1
-      ).padStart(2,"0");
-
-
-    const d=
-      String(
-        date.getDate()
-      ).padStart(2,"0");
-
-
-    return `${y}-${m}-${d}`;
-
-  }
-
-
-  function prettyDate(key){
-
-    const parts=
-      key
-        .split("-")
-        .map(Number);
-
-
-    const date=
-      new Date(
-        parts[0],
-        parts[1]-1,
-        parts[2]
-      );
-
-
-    const today=
-      todayKey();
-
-
-    const yesterday=
-      todayKey(
-        new Date(
-          Date.now()-86400000
-        )
-      );
-
-
-    if(
-      key===today
-    ){
-
-      return "Today";
-
-    }
-
-
-    if(
-      key===yesterday
-    ){
-
-      return "Yesterday";
-
-    }
-
-
-    return date.toLocaleDateString(
-      undefined,
-      {
-        day:"numeric",
-        month:"short",
-        year:"numeric"
-      }
+    return(
+      `${String(mins).padStart(2,"0")}:`+
+      `${String(secs).padStart(2,"0")}`
     );
 
   }
 
 
-  function formatStudyDuration(
-    seconds
-  ){
-
-    const total=
-      Math.max(
-        0,
-        Math.round(seconds)
-      );
-
-
-    const hours=
-      Math.floor(
-        total/3600
-      );
-
-
-    const minutes=
-      Math.floor(
-        (total%3600)/60
-      );
-
-
-    const secs=
-      total%60;
-
-
-    if(hours){
-
-      return `${hours}h ${minutes}m`;
-
-    }
-
-
-    if(minutes){
-
-      return `${minutes}m ${secs ? `${secs}s` : ""}`.trim();
-
-    }
-
-
-    return `${secs}s`;
-
-  }
-
-
-/* =====================================================
-   HISTORY
-===================================================== */
-
-  function saveHistory(){
-
-    localStorage.setItem(
-      HISTORY_KEY,
-      JSON.stringify(
-        history
-      )
-    );
-
-  }
-
-
-  function addStudySeconds(
-    seconds
-  ){
+  function addStudySeconds(seconds){
 
     if(
       mode!=="focus" ||
@@ -4375,22 +6047,22 @@ if(
       !selectedChapter ||
       seconds<=0
     ){
-
       return;
-
     }
 
+
+    const history=
+      loadHistory();
 
     const day=
       todayKey();
 
-
-    if(
-      !history[day]
-    ){
+    if(!history[day]){
 
       history[day]={
         totalSeconds:0,
+        sessions:0,
+        byBook:{},
         byChapter:{}
       };
 
@@ -4399,19 +6071,29 @@ if(
 
     history[day].totalSeconds=
       (
-        history[day].totalSeconds ||
-        0
-      ) + seconds;
+        history[day].totalSeconds || 0
+      )+
+      seconds;
+
+
+    history[day].byBook=
+      history[day].byBook || {};
+
+    history[day].byBook[selectedBook]=
+      (
+        history[day].byBook[selectedBook] || 0
+      )+
+      seconds;
 
 
     const chapterKey=
-      `${selectedBook}__${selectedChapter}`;
-
+      key(
+        selectedBook,
+        Number(selectedChapter)
+      );
 
     history[day].byChapter=
-      history[day].byChapter ||
-      {};
-
+      history[day].byChapter || {};
 
     history[day].byChapter[
       chapterKey
@@ -4420,7 +6102,34 @@ if(
         history[day].byChapter[
           chapterKey
         ] || 0
-      ) + seconds;
+      )+
+      seconds;
+
+
+    saveHistory(history);
+
+  }
+
+
+  function recordFocusSession(){
+
+    const history=
+      loadHistory();
+
+    const day=
+      todayKey();
+
+    if(!history[day]){
+      return;
+    }
+
+    history[day].sessions=
+      (
+        history[day].sessions || 0
+      )+
+      1;
+
+    saveHistory(history);
 
   }
 
@@ -4431,113 +6140,68 @@ if(
       mode!=="focus" ||
       !sessionStarted
     ){
-
       return;
-
     }
 
 
-    let current=
-      remaining;
-
-
-    if(
-      timer &&
-      endTime
-    ){
-
-      current=
-        Math.max(
-          0,
-          Math.ceil(
-            (
-              endTime-
-              Date.now()
-            )/1000
-          )
-        );
-
-
-      remaining=
-        current;
-
-    }
-
-
-    current=
+    const current=
       Math.max(
         0,
         Math.min(
-          current,
+          remaining,
           lastAccountedRemaining
         )
       );
-
 
     const delta=
       lastAccountedRemaining-
       current;
 
+    if(delta>0){
 
-    if(
-      delta>0
-    ){
-
-      addStudySeconds(
-        delta
-      );
-
+      addStudySeconds(delta);
 
       lastAccountedRemaining=
         current;
 
-
-      saveHistory();
-
-      renderHistory();
+      renderAllHistory();
+      updateDashboard();
 
     }
 
   }
 
 
-  function renderHistory(){
+  function renderPomoHistory(){
 
-    if(!historyList){
-
-      return;
-
-    }
-
+    const history=
+      loadHistory();
 
     const days=
       Object.keys(history)
-
         .filter(
           day=>
-            history[day] &&
             Number(
-              history[day]
-                .totalSeconds
+              history[day]?.totalSeconds || 0
             )>0
         )
-
         .sort(
           (a,b)=>
             b.localeCompare(a)
-        );
+        )
+        .slice(0,7);
 
 
-    if(
-      !days.length
-    ){
+    if(!days.length){
 
       historyList.innerHTML=
-        `
-        <div class="pomo-history-empty">
+        `<div style="
+          color:var(--muted);
+          font-size:13px;
+          padding:8px 0;
+        ">
           No study time recorded yet.
-        </div>
-        `;
+        </div>`;
 
       return;
 
@@ -4545,169 +6209,151 @@ if(
 
 
     historyList.innerHTML=
-      days
-        .map(
-          day=>{
+      days.map(day=>{
 
-            const data=
-              history[day];
+        const data=
+          history[day];
 
+        const details=
+          Object.entries(
+            data.byChapter || {}
+          )
+          .sort(
+            (a,b)=>
+              b[1]-a[1]
+          )
+          .slice(0,3)
+          .map(
+            ([compound,seconds])=>{
 
-            const details=
-              Object.entries(
-                data.byChapter || {}
-              )
+              const split=
+                compound.lastIndexOf(
+                  "__"
+                );
 
-              .sort(
-                (a,b)=>
-                  b[1]-a[1]
-              )
+              const book=
+                split>=0
+                  ? compound.slice(
+                      0,
+                      split
+                    )
+                  : compound;
 
-              .slice(0,4)
+              const chapter=
+                split>=0
+                  ? Number(
+                      compound.slice(
+                        split+2
+                      )
+                    )
+                  : 0;
 
-              .map(
-                ([compound,seconds])=>{
+              const name=
+                chapterNames[
+                  book
+                ]?.[
+                  chapter-1
+                ] ||
+                `Chapter ${chapter}`;
 
-                  const split=
-                    compound.lastIndexOf(
-                      "__"
-                    );
+              return(
+                `${book} • ${name}: `+
+                `${formatDuration(seconds)}`
+              );
 
-
-                  const book=
-                    split>=0
-                      ? compound.slice(
-                          0,
-                          split
-                        )
-                      : compound;
-
-
-                  const chapter=
-                    split>=0
-                      ? Number(
-                          compound.slice(
-                            split+2
-                          )
-                        )
-                      : 0;
-
-
-                  const name=
-                    chapterNames[
-                      book
-                    ]?.[
-                      chapter-1
-                    ] ||
-                    `Chapter ${chapter}`;
-
-
-                  return `${book} • ${name}: ${formatStudyDuration(seconds)}`;
-
-                }
-              )
-
-              .join("<br>");
+            }
+          )
+          .join("<br>");
 
 
-            return `
-              <div class="pomo-history-day">
+        return `
+          <div class="pomo-history-day">
 
-                <div>
+            <div>
 
-                  <div class="pomo-history-date">
-                    ${prettyDate(day)}
-                  </div>
-
-                  ${
-                    details
-                      ? `
-                        <div class="pomo-history-details">
-                          ${details}
-                        </div>
-                      `
-                      : ""
-                  }
-
-                </div>
-
-
-                <div class="pomo-history-time">
-                  ${formatStudyDuration(
-                    data.totalSeconds
-                  )}
-                </div>
-
+              <div class="pomo-history-date">
+                ${prettyDate(day)}
               </div>
-            `;
 
-          }
-        )
-        .join("");
+              <div class="pomo-history-details">
+                ${details}
+              </div>
+
+            </div>
+
+            <div class="pomo-history-time">
+              ${formatDuration(
+                data.totalSeconds || 0
+              )}
+            </div>
+
+          </div>
+        `;
+
+      }).join("");
 
   }
 
 
-/* =====================================================
-   BOOK / CHAPTER PICKER
-===================================================== */
+  function populateBooks(
+    preferredBook="",
+    preferredChapter=""
+  ){
 
-  function populateBooks(){
-
-    const current=
-      selectedBook;
-
-
-    bookSelect.innerHTML="";
+    bookSelect.innerHTML=
+      `<option value="">
+        Select Book
+      </option>`;
 
 
     Object.keys(books)
-      .forEach(
-        book=>{
+      .forEach(book=>{
 
-          const option=
-            document.createElement(
-              "option"
-            );
-
-
-          option.value=
-            book;
-
-
-          option.textContent=
-            book;
-
-
-          bookSelect.appendChild(
-            option
+        const option=
+          document.createElement(
+            "option"
           );
 
-        }
-      );
+        option.value=book;
+        option.textContent=book;
+
+        bookSelect.appendChild(
+          option
+        );
+
+      });
 
 
-    selectedBook=
-      current &&
-      books[current]
-        ? current
-        : Object.keys(
-            books
-          )[0];
+    if(
+      preferredBook &&
+      books[preferredBook]
+    ){
+
+      selectedBook=
+        preferredBook;
+
+    }
 
 
     bookSelect.value=
       selectedBook;
 
 
-    populateChapters();
+    populateChapters(
+      preferredChapter
+    );
 
   }
 
 
-  function populateChapters(){
+  function populateChapters(
+    preferredChapter=""
+  ){
 
-    chapterSelect.innerHTML="";
+    chapterSelect.innerHTML=
+      `<option value="">
+        Select Chapter
+      </option>`;
 
 
     const names=
@@ -4717,26 +6363,18 @@ if(
 
 
     names.forEach(
-      (
-        name,
-        index
-      )=>{
+      (name,index)=>{
 
         const option=
           document.createElement(
             "option"
           );
 
-
         option.value=
-          String(
-            index+1
-          );
-
+          String(index+1);
 
         option.textContent=
           `${index+1}. ${name}`;
-
 
         chapterSelect.appendChild(
           option
@@ -4746,15 +6384,15 @@ if(
     );
 
 
-    selectedChapter=
-      (
-        selectedChapter &&
-        Number(
-          selectedChapter
-        )<=names.length
-      )
-        ? selectedChapter
-        : "1";
+    if(
+      preferredChapter &&
+      Number(preferredChapter)<=names.length
+    ){
+
+      selectedChapter=
+        String(preferredChapter);
+
+    }
 
 
     chapterSelect.value=
@@ -4772,39 +6410,36 @@ if(
       chapterNames[
         selectedBook
       ]?.[
-        Number(
-          selectedChapter
-        )-1
+        Number(selectedChapter)-1
       ] || "";
 
 
-    selectedChapterEl.textContent=
-      name
+    if(name){
 
-        ? `Studying: ${selectedBook} • Chapter ${selectedChapter} — ${name}`
+      selectedChapterEl.textContent=
+        `Studying: ${selectedBook} • `+
+        `Chapter ${selectedChapter} — ${name}`;
 
-        : "Select a book and chapter, then press Start.";
+    }else{
+
+      selectedChapterEl.textContent=
+        "Select a book and chapter, then press Start.";
+
+    }
 
   }
 
 
-  function lockPicker(
-    locked
-  ){
+  function lockPicker(locked){
 
     bookSelect.disabled=
       locked;
-
 
     chapterSelect.disabled=
       locked;
 
   }
 
-
-/* =====================================================
-   DISPLAY
-===================================================== */
 
   function updateDisplay(){
 
@@ -4819,19 +6454,15 @@ if(
     const progress=
       totalSeconds
         ? (
-            (
-              totalSeconds-
-              remaining
-            )/
+            (totalSeconds-
+            remaining)/
             totalSeconds
           )*100
         : 0;
 
 
     timeEl.textContent=
-      formatTime(
-        remaining
-      );
+      formatTime(remaining);
 
 
     modeEl.textContent=
@@ -4851,12 +6482,12 @@ if(
 
 
     document.title=
-      page.classList.contains(
-        "show"
-      )
-
-        ? `${formatTime(remaining)} • ${mode==="focus" ? "Focus" : "Break"} • Syllabus Tracker`
-
+      page.classList.contains("show")
+        ? `${formatTime(remaining)} • ${
+            mode==="focus"
+              ? "Focus"
+              : "Break"
+          } • Syllabus Tracker`
         : "Syllabus Tracker";
 
 
@@ -4869,22 +6500,18 @@ if(
     pauseBtn.disabled=
       !timer;
 
+
+    applyBtn.disabled=
+      !!timer;
+
   }
 
-
-/* =====================================================
-   TIMER
-===================================================== */
 
   function stopInterval(){
 
     if(timer){
 
-      clearInterval(
-        timer
-      );
-
-
+      clearInterval(timer);
       timer=null;
 
     }
@@ -4898,7 +6525,7 @@ if(
 
       audioContext=
         audioContext ||
-        new (
+        new(
           window.AudioContext ||
           window.webkitAudioContext
         )();
@@ -4908,75 +6535,54 @@ if(
         audioContext.currentTime;
 
 
-      [
-        0,
-        0.18,
-        0.36
-      ].forEach(
-        (
-          offset,
-          i
-        )=>{
+      [0,0.18,0.36]
+        .forEach(
+          (offset,i)=>{
 
-          const osc=
-            audioContext.createOscillator();
+            const osc=
+              audioContext.createOscillator();
 
+            const gain=
+              audioContext.createGain();
 
-          const gain=
-            audioContext.createGain();
+            osc.type="sine";
+
+            osc.frequency.value=
+              [660,880,1047][i];
 
 
-          osc.type=
-            "sine";
+            gain.gain.setValueAtTime(
+              0.0001,
+              now+offset
+            );
+
+            gain.gain.exponentialRampToValueAtTime(
+              0.22,
+              now+offset+0.02
+            );
+
+            gain.gain.exponentialRampToValueAtTime(
+              0.0001,
+              now+offset+0.16
+            );
 
 
-          osc.frequency.value=
-            [
-              660,
-              880,
-              1047
-            ][i];
+            osc.connect(gain);
+            gain.connect(
+              audioContext.destination
+            );
 
 
-          gain.gain.setValueAtTime(
-            0.0001,
-            now+offset
-          );
+            osc.start(
+              now+offset
+            );
 
+            osc.stop(
+              now+offset+0.18
+            );
 
-          gain.gain.exponentialRampToValueAtTime(
-            0.22,
-            now+offset+0.02
-          );
-
-
-          gain.gain.exponentialRampToValueAtTime(
-            0.0001,
-            now+offset+0.16
-          );
-
-
-          osc.connect(
-            gain
-          );
-
-
-          gain.connect(
-            audioContext.destination
-          );
-
-
-          osc.start(
-            now+offset
-          );
-
-
-          osc.stop(
-            now+offset+0.18
-          );
-
-        }
-      );
+          }
+        );
 
     }catch(e){}
 
@@ -4991,24 +6597,25 @@ if(
       !selectedChapter
     ){
 
+      if(
+        !selectedBook ||
+        !selectedChapter
+      ){
+
+        showToast(
+          "📚 First select Book and Chapter"
+        );
+
+      }
+
       return;
 
     }
 
 
-    sessionStarted=
-      true;
+    sessionStarted=true;
 
-
-    /*
-      Once a session starts,
-      book and chapter stay locked.
-    */
-
-    lockPicker(
-      true
-    );
-
+    lockPicker(true);
 
     lastAccountedRemaining=
       remaining;
@@ -5023,22 +6630,19 @@ if(
 
       audioContext=
         audioContext ||
-        new (
+        new(
           window.AudioContext ||
           window.webkitAudioContext
         )();
 
 
       if(
-        audioContext.state===
-        "suspended"
+        audioContext.state==="suspended"
       ){
 
         audioContext
           .resume()
-          .catch(
-            ()=>{}
-          );
+          .catch(()=>{});
 
       }
 
@@ -5052,7 +6656,6 @@ if(
           const now=
             Date.now();
 
-
           const next=
             Math.max(
               0,
@@ -5060,15 +6663,11 @@ if(
                 (
                   endTime-
                   now
-                )/1000
+                )/
+                1000
               )
             );
 
-
-          /*
-            Only Focus time is counted
-            in daily study history.
-          */
 
           if(
             mode==="focus"
@@ -5082,32 +6681,14 @@ if(
               );
 
 
-            if(
-              delta>0
-            ){
+            if(delta>0){
 
               addStudySeconds(
                 delta
               );
 
-
               lastAccountedRemaining=
                 next;
-
-
-              /*
-                Save periodically,
-                and always at the end.
-              */
-
-              if(
-                delta>=10 ||
-                next===0
-              ){
-
-                saveHistory();
-
-              }
 
             }
 
@@ -5117,15 +6698,8 @@ if(
           remaining=
             next;
 
-
           updateDisplay();
 
-
-          /*
-            Focus finished:
-            Focus → Break
-            and Break starts automatically.
-          */
 
           if(
             remaining<=0
@@ -5140,36 +6714,29 @@ if(
               mode==="focus"
             ){
 
-              addStudySeconds(
+              const delta=
                 Math.max(
                   0,
                   lastAccountedRemaining
-                )
-              );
+                );
 
+              if(delta>0){
+                addStudySeconds(delta);
+              }
 
-              lastAccountedRemaining=
-                0;
+              lastAccountedRemaining=0;
 
+              recordFocusSession();
 
-              saveHistory();
-
-              renderHistory();
+              renderAllHistory();
+              updateDashboard();
 
             }
 
 
             playEndSound();
 
-
-            /*
-              Automatically switch
-              and automatically start.
-            */
-
-            switchMode(
-              true
-            );
+            switchMode(true);
 
           }
 
@@ -5186,9 +6753,7 @@ if(
   function pauseTimer(){
 
     if(!timer){
-
       return;
-
     }
 
 
@@ -5199,7 +6764,8 @@ if(
           (
             endTime-
             Date.now()
-          )/1000
+          )/
+          1000
         )
       );
 
@@ -5216,24 +6782,19 @@ if(
         );
 
 
-      if(
-        delta>0
-      ){
+      if(delta>0){
 
         addStudySeconds(
           delta
         );
-
 
         lastAccountedRemaining=
           current;
 
       }
 
-
-      saveHistory();
-
-      renderHistory();
+      renderAllHistory();
+      updateDashboard();
 
     }
 
@@ -5241,13 +6802,9 @@ if(
     remaining=
       current;
 
-
     stopInterval();
 
-
-    endTime=
-      null;
-
+    endTime=null;
 
     updateDisplay();
 
@@ -5268,45 +6825,27 @@ if(
 
     stopInterval();
 
+    endTime=null;
 
-    endTime=
-      null;
+    mode="focus";
 
+    sessionNumber=1;
 
-    mode=
-      "focus";
-
-
-    sessionNumber=
-      1;
-
-
-    sessionStarted=
-      false;
-
+    sessionStarted=false;
 
     remaining=
       focusMinutes*60;
 
-
     lastAccountedRemaining=
       remaining;
 
-
-    /*
-      Reset unlocks Book + Chapter,
-      so a new session can be started
-      with another selection.
-    */
-
-    lockPicker(
-      false
-    );
-
+    lockPicker(false);
 
     updateDisplay();
 
-    renderHistory();
+    renderPomoHistory();
+
+    renderAllHistory();
 
   }
 
@@ -5317,39 +6856,23 @@ if(
 
     stopInterval();
 
-    endTime=
-      null;
+    endTime=null;
 
 
     if(
       mode==="focus"
     ){
 
-      /*
-        Focus 1 → Break 1
-      */
-
-      mode=
-        "break";
-
+      mode="break";
 
       remaining=
         breakMinutes*60;
 
     }else{
 
-      /*
-        Break 1 → Focus 2
-        Break 2 → Focus 3
-        etc.
-      */
-
-      mode=
-        "focus";
-
+      mode="focus";
 
       sessionNumber++;
-
 
       remaining=
         focusMinutes*60;
@@ -5364,9 +6887,7 @@ if(
     updateDisplay();
 
 
-    if(
-      autoStart
-    ){
+    if(autoStart){
 
       startTimer();
 
@@ -5375,32 +6896,57 @@ if(
   }
 
 
-/* =====================================================
-   OPEN / CLOSE
-===================================================== */
-
   function openPomodoro(){
 
     page.classList.add(
       "show"
     );
 
-
     page.setAttribute(
       "aria-hidden",
       "false"
     );
 
-
     document.body.style.overflow=
       "hidden";
 
+    renderPomoHistory();
+    updateDisplay();
 
-    populateBooks();
+  }
 
 
-    renderHistory();
+  function openPomodoroFor(
+    book,
+    chapter
+  ){
 
+    selectedBook=
+      book;
+
+    selectedChapter=
+      String(chapter);
+
+    mode="focus";
+
+    sessionNumber=1;
+
+    sessionStarted=false;
+
+    remaining=
+      focusMinutes*60;
+
+    lastAccountedRemaining=
+      remaining;
+
+    lockPicker(false);
+
+    populateBooks(
+      book,
+      chapter
+    );
+
+    openPomodoro();
 
     updateDisplay();
 
@@ -5408,11 +6954,6 @@ if(
 
 
   function closePomodoro(){
-
-    /*
-      Going back does NOT pause
-      the timer.
-    */
 
     if(
       mode==="focus" &&
@@ -5423,21 +6964,16 @@ if(
 
     }
 
-
     page.classList.remove(
       "show"
     );
-
 
     page.setAttribute(
       "aria-hidden",
       "true"
     );
 
-
-    document.body.style.overflow=
-      "";
-
+    document.body.style.overflow="";
 
     document.title=
       "Syllabus Tracker";
@@ -5445,21 +6981,10 @@ if(
   }
 
 
-/* =====================================================
-   SETTINGS
-===================================================== */
-
   function applySettings(){
 
-    /*
-      Settings cannot be changed
-      while timer is running.
-    */
-
     if(timer){
-
       return;
-
     }
 
 
@@ -5490,7 +7015,6 @@ if(
     focusMinutes=
       newFocus;
 
-
     breakMinutes=
       newBreak;
 
@@ -5501,7 +7025,6 @@ if(
         focusMinutes
       )
     );
-
 
     localStorage.setItem(
       BREAK_KEY,
@@ -5514,7 +7037,6 @@ if(
     focusInput.value=
       focusMinutes;
 
-
     breakInput.value=
       breakMinutes;
 
@@ -5522,73 +7044,46 @@ if(
     resetTimer();
 
 
-    if(
-      typeof showToast===
-      "function"
-    ){
-
-      showToast(
-        "🍅 Pomodoro settings saved"
-      );
-
-    }
+    showToast(
+      "🍅 Pomodoro settings saved"
+    );
 
   }
 
-
-/* =====================================================
-   BOOK SELECT
-===================================================== */
 
   bookSelect.addEventListener(
     "change",
     ()=>{
 
       if(timer){
-
         return;
-
       }
-
 
       selectedBook=
         bookSelect.value;
 
-
-      selectedChapter=
-        "1";
-
+      selectedChapter="";
 
       populateChapters();
-
 
       updateDisplay();
 
     }
   );
 
-
-/* =====================================================
-   CHAPTER SELECT
-===================================================== */
 
   chapterSelect.addEventListener(
     "change",
     ()=>{
 
       if(timer){
-
         return;
-
       }
-
 
       selectedChapter=
         chapterSelect.value;
 
-
       updateSelectedChapterText();
-
 
       updateDisplay();
 
@@ -5596,98 +7091,55 @@ if(
   );
 
 
-/* =====================================================
-   BUTTONS
-===================================================== */
-
-  if(openBtn){
-
-    openBtn.addEventListener(
-      "click",
-      openPomodoro
-    );
-
-  }
+  openBtn.addEventListener(
+    "click",
+    openPomodoro
+  );
 
 
-  if(backBtn){
-
-    backBtn.addEventListener(
-      "click",
-      closePomodoro
-    );
-
-  }
+  backBtn.addEventListener(
+    "click",
+    closePomodoro
+  );
 
 
-  if(startBtn){
-
-    startBtn.addEventListener(
-      "click",
-      startTimer
-    );
-
-  }
+  startBtn.addEventListener(
+    "click",
+    startTimer
+  );
 
 
-  if(pauseBtn){
-
-    pauseBtn.addEventListener(
-      "click",
-      pauseTimer
-    );
-
-  }
+  pauseBtn.addEventListener(
+    "click",
+    pauseTimer
+  );
 
 
-  if(resetBtn){
-
-    resetBtn.addEventListener(
-      "click",
-      resetTimer
-    );
-
-  }
+  resetBtn.addEventListener(
+    "click",
+    resetTimer
+  );
 
 
-  if(skipBtn){
+  skipBtn.addEventListener(
+    "click",
+    ()=>{
 
-    skipBtn.addEventListener(
-      "click",
-      ()=>{
+      if(!timer){
 
-        /*
-          Skip is manual only when
-          timer is not running.
-        */
-
-        if(!timer){
-
-          switchMode(
-            false
-          );
-
-        }
+        switchMode(false);
 
       }
-    );
 
-  }
-
-
-  if(applyBtn){
-
-    applyBtn.addEventListener(
-      "click",
-      applySettings
-    );
-
-  }
+    }
+  );
 
 
-/* =====================================================
-   ESC
-===================================================== */
+  applyBtn.addEventListener(
+    "click",
+    applySettings
+  );
+
 
   document.addEventListener(
     "keydown",
@@ -5695,9 +7147,7 @@ if(
 
       if(
         event.key==="Escape" &&
-        page.classList.contains(
-          "show"
-        )
+        page.classList.contains("show")
       ){
 
         closePomodoro();
@@ -5707,10 +7157,6 @@ if(
     }
   );
 
-
-/* =====================================================
-   SAVE HISTORY BEFORE LEAVING
-===================================================== */
 
   window.addEventListener(
     "beforeunload",
@@ -5725,27 +7171,124 @@ if(
 
       }
 
-
-      saveHistory();
-
     }
   );
 
 
-/* =====================================================
-   INITIALIZE POMODORO
-===================================================== */
-
   populateBooks();
-
-  renderHistory();
-
+  renderPomoHistory();
   updateDisplay();
 
 })();
 
-</script>
 
+/* =====================================================
+   KEYBOARD ESC
+===================================================== */
+
+document.addEventListener(
+  "keydown",
+  event=>{
+
+    if(event.key==="Escape"){
+
+      closeResetModal();
+      closeExamModal();
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   AUTO REFRESH DAILY STATS
+===================================================== */
+
+setInterval(
+  ()=>{
+
+    updateDashboard();
+
+    if(
+      document
+        .getElementById(
+          "historyPanel"
+        )
+        .classList.contains("active")
+    ){
+
+      renderAllHistory();
+
+    }
+
+    if(
+      document
+        .getElementById(
+          "examsPanel"
+        )
+        .classList.contains("active")
+    ){
+
+      renderExams();
+
+    }
+
+  },
+  60000
+);
+
+
+/* =====================================================
+   AUTO SAVE
+===================================================== */
+
+window.addEventListener(
+  "beforeunload",
+  ()=>{
+
+    saveData();
+    saveExams();
+
+  }
+);
+
+
+/* =====================================================
+   START
+===================================================== */
+
+render();
+
+renderAllHistory();
+
+renderExams();
+
+
+/* =====================================================
+   OPTIONAL PWA SERVICE WORKER
+===================================================== */
+
+if(
+  "serviceWorker" in navigator
+){
+
+  window.addEventListener(
+    "load",
+    ()=>{
+
+      navigator.serviceWorker
+        .register("./sw.js")
+        .catch(
+          ()=>{}
+        );
+
+    }
+  );
+
+}
+
+</script>
 
 </body>
 </html>
