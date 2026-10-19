@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -86,7 +87,6 @@ h1{
   box-shadow:0 2px 8px rgba(0,0,0,.04);
 }
 
-/* Stats Grid for Overall Progress Cards */
 .stats-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
@@ -141,19 +141,18 @@ h1{
   border-color:var(--done-border);
 }
 
+/* =========================
+   FIXED CHAPTER NAME
+========================= */
+
 .chapterName{
   flex:1;
   min-width:0;
-  border:1px solid var(--border);
-  border-radius:7px;
   padding:8px 9px;
-  background:var(--card);
   color:var(--text);
-  outline:none;
-}
-
-.chapterName:focus{
-  border-color:var(--green);
+  font-weight:500;
+  line-height:1.4;
+  word-break:break-word;
 }
 
 .select{
@@ -195,6 +194,7 @@ h1{
 }
 
 /* Progress */
+
 .progress-wrap{
   margin-top:10px;
   margin-bottom:18px;
@@ -222,6 +222,7 @@ h1{
 }
 
 /* Footer */
+
 .footer{
   display:flex;
   justify-content:center;
@@ -231,6 +232,7 @@ h1{
 }
 
 /* Copyright */
+
 .copyright{
   text-align:center;
   color:var(--muted);
@@ -241,6 +243,7 @@ h1{
 }
 
 @media(max-width:600px){
+
   .container{
     padding:12px;
   }
@@ -260,6 +263,7 @@ h1{
   .chapterName{
     min-width:0;
   }
+
 }
 </style>
 </head>
@@ -269,12 +273,15 @@ h1{
 <div class="container">
 
   <div class="header">
+
     <div>
+
       <h1>📚 Syllabus Tracker</h1>
 
       <div class="sub">
         Select a chapter when you complete it. Your progress is saved automatically.
       </div>
+
     </div>
 
     <button
@@ -283,6 +290,7 @@ h1{
       onclick="toggleDarkMode()">
       🌙 Dark
     </button>
+
   </div>
 
   <div id="app"></div>
@@ -352,7 +360,7 @@ const permanentChapterNames = {
     "কাজ, শক্তি ও ক্ষমতা",
     "মহাকর্ষ ও অভিকর্ষ",
     "পদার্থের গাঠনিক ধর্ম",
-    "পর্যায়বৃত্ত গতি",
+    "পর্যাবৃত্ত গতি",
     "তরঙ্গ",
     "আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব"
   ],
@@ -456,15 +464,13 @@ let saved = JSON.parse(
 
 
 /* =========================
-   REMOVE OLD GENERIC NAMES
+   REMOVE ALL OLD CUSTOM
+   CHAPTER NAMES
 ========================= */
 
 Object.keys(saved).forEach(k => {
 
-  if(
-    k.startsWith("name__") &&
-    /^Chapter\s+\d+$/i.test(saved[k])
-  ){
+  if(k.startsWith("name__")){
 
     delete saved[k];
 
@@ -503,7 +509,6 @@ function render(){
 
   /* =========================
      CALCULATE TOTAL FIRST
-     FOR OVERALL PROGRESS
   ========================= */
 
   let total = 0;
@@ -527,36 +532,101 @@ function render(){
 
 
   /* =========================
-     OVERALL PROGRESS (3 CARDS)
+     OVERALL PROGRESS
   ========================= */
 
-  const percent = total === 0 ? "0.00" : ((completed / total) * 100).toFixed(2);
-  const remainingPercent = total === 0 ? "100.00" : (100 - parseFloat(percent)).toFixed(2);
+  const percent =
+    total === 0
+      ? "0.00"
+      : ((completed / total) * 100).toFixed(2);
 
-  const statsGrid = document.createElement("div");
-  statsGrid.className = "stats-grid";
+  const remainingPercent =
+    total === 0
+      ? "100.00"
+      : (100 - parseFloat(percent)).toFixed(2);
+
+
+  const statsGrid =
+    document.createElement("div");
+
+  statsGrid.className =
+    "stats-grid";
+
 
   statsGrid.innerHTML = `
-    <div class="stat-card">
-      <div class="stat-label">Total Chapters</div>
-      <div class="stat-value">${total}</div>
-    </div>
 
     <div class="stat-card">
-      <div class="stat-label">Completed</div>
-      <div class="stat-value">${completed}</div>
-    </div>
 
-    <div class="stat-card">
-      <div class="stat-label">Overall Progress</div>
-      <div class="stat-value">${percent}% <span style="font-size:14px; color:var(--muted); font-weight:normal;">(Remaining: ${remainingPercent}%)</span></div>
-      <div class="progress-wrap" style="margin-top:10px; margin-bottom:0;">
-        <div class="progress">
-          <div class="progress-bar" style="width:${percent}%"></div>
-        </div>
+      <div class="stat-label">
+        Total Chapters
       </div>
+
+      <div class="stat-value">
+        ${total}
+      </div>
+
     </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-label">
+        Completed
+      </div>
+
+      <div class="stat-value">
+        ${completed}
+      </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-label">
+        Overall Progress
+      </div>
+
+      <div class="stat-value">
+
+        ${percent}%
+
+        <span
+          style="
+            font-size:14px;
+            color:var(--muted);
+            font-weight:normal;
+          "
+        >
+          (Remaining: ${remainingPercent}%)
+        </span>
+
+      </div>
+
+
+      <div
+        class="progress-wrap"
+        style="
+          margin-top:10px;
+          margin-bottom:0;
+        "
+      >
+
+        <div class="progress">
+
+          <div
+            class="progress-bar"
+            style="width:${percent}%"
+          ></div>
+
+        </div>
+
+      </div>
+
+    </div>
+
   `;
+
 
   app.appendChild(statsGrid);
 
@@ -571,7 +641,8 @@ function render(){
       const card =
         document.createElement("div");
 
-      card.className = "card";
+      card.className =
+        "card";
 
 
       /* Subject title */
@@ -582,14 +653,14 @@ function render(){
       title.className =
         "book-title";
 
-      title.textContent = book;
+      title.textContent =
+        book;
 
       card.appendChild(title);
 
 
       /* =========================
          SUBJECT PROGRESS
-         BEFORE CHAPTERS
       ========================= */
 
       const bookCompleted =
@@ -655,8 +726,6 @@ function render(){
       );
 
 
-      /* Progress comes BEFORE chapters */
-
       card.appendChild(
         progressWrap
       );
@@ -669,7 +738,8 @@ function render(){
       const grid =
         document.createElement("div");
 
-      grid.className = "grid";
+      grid.className =
+        "grid";
 
 
       for(
@@ -690,116 +760,55 @@ function render(){
           (isDone ? " done" : "");
 
 
-        const nameKey =
-          "name__" +
-          key(book, c);
-
-
-        let savedName =
-          saved[nameKey];
-
-
-        if(
-          !savedName ||
-          /^Chapter\s+\d+$/i.test(savedName)
-        ){
-
-          savedName =
-            permanentChapterNames[book]?.[
-              c - 1
-            ] ||
-            `Chapter ${c}`;
-
-        }
-
-
-        row.innerHTML = `
-
-          <input
-            class="chapterName"
-            value="${String(savedName)
-              .replace(/&/g,"&amp;")
-              .replace(/"/g,"&quot;")
-              .replace(/</g,"&lt;")
-              .replace(/>/g,"&gt;")}"
-            aria-label="Chapter ${c} name"
-          >
-
-          <button class="${
-            isDone
-              ? "selected"
-              : "select"
-          }">
-
-            ${
-              isDone
-                ? "Selected"
-                : "Select"
-            }
-
-          </button>
-
-        `;
-
-
         /* =========================
-           SAVE CHAPTER NAME
+           FIXED CHAPTER NAME
         ========================= */
 
-        const input =
-          row.querySelector(
-            ".chapterName"
-          );
+        const name =
+          document.createElement("div");
+
+        name.className =
+          "chapterName";
 
 
-        input.addEventListener(
-          "change",
-          () => {
-
-            const value =
-              input.value.trim();
+        name.textContent =
+          permanentChapterNames[book]?.[c - 1]
+          || `Chapter ${c}`;
 
 
-            if(value){
-
-              saved[nameKey] =
-                value;
-
-            }else{
-
-              delete saved[nameKey];
-
-            }
+        /*
+          IMPORTANT:
+          এখানে কোনো input নেই।
+          কোনো change event নেই।
+          কোনো save-name function নেই।
+          তাই user chapter name edit করতে পারবে না।
+        */
 
 
-            localStorage.setItem(
-              "syllabusTracker",
-              JSON.stringify(saved)
-            );
-
-          }
-        );
-
-
-        input.addEventListener(
-          "keydown",
-          (e) => {
-
-            if(e.key === "Enter"){
-
-              input.blur();
-
-            }
-
-          }
-        );
+        row.appendChild(name);
 
 
         /* =========================
            SELECT / UNSELECT
         ========================= */
 
-        row.querySelector("button").onclick =
+        const button =
+          document.createElement("button");
+
+
+        button.className =
+          isDone
+            ? "selected"
+            : "select";
+
+
+        button.textContent =
+          isDone
+            ? "Selected"
+            : "Select";
+
+
+        button.onclick =
           () => {
 
             saved[key(book, c)] =
@@ -817,12 +826,13 @@ function render(){
           };
 
 
+        row.appendChild(button);
+
+
         grid.appendChild(row);
 
       }
 
-
-      /* Chapters after progress */
 
       card.appendChild(grid);
 
@@ -1032,3 +1042,4 @@ if("serviceWorker" in navigator){
 
 </body>
 </html>
+```
