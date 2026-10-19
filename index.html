@@ -76,9 +76,13 @@
         BlinkMacSystemFont,
         "Segoe UI",
         sans-serif;
+
       background: var(--bg);
       color: var(--text);
-      transition: background 0.25s ease, color 0.25s ease;
+
+      transition:
+        background 0.25s ease,
+        color 0.25s ease;
     }
 
     button,
@@ -91,31 +95,43 @@
       cursor: pointer;
     }
 
-    /* =========================
+    /* =========================================================
        HEADER
-    ========================== */
+    ========================================================== */
 
     .topbar {
       position: sticky;
       top: 0;
       z-index: 100;
+
       backdrop-filter: blur(14px);
-      background: color-mix(in srgb, var(--bg) 88%, transparent);
+
+      background:
+        color-mix(
+          in srgb,
+          var(--bg) 88%,
+          transparent
+        );
+
       border-bottom: 1px solid var(--border);
     }
 
     .topbar-inner {
       max-width: 1200px;
       margin: auto;
+
       padding: 16px 20px;
+
       display: flex;
       align-items: center;
       justify-content: space-between;
+
       gap: 15px;
     }
 
     .brand h1 {
       margin: 0;
+
       font-size: 24px;
       line-height: 1.2;
       font-weight: 800;
@@ -123,17 +139,23 @@
 
     .brand p {
       margin: 5px 0 0;
+
       color: var(--muted);
       font-size: 13px;
     }
 
     .theme-btn {
       border: 1px solid var(--border);
+
       background: var(--card);
       color: var(--text);
+
       padding: 9px 14px;
+
       border-radius: 12px;
+
       font-weight: 700;
+
       transition: 0.2s ease;
     }
 
@@ -142,68 +164,94 @@
       border-color: var(--primary);
     }
 
-    /* =========================
+    /* =========================================================
        MAIN
-    ========================== */
+    ========================================================== */
 
     .container {
       max-width: 1200px;
       margin: auto;
+
       padding: 28px 20px 45px;
     }
 
-    /* =========================
+    /* =========================================================
        DASHBOARD
-    ========================== */
+    ========================================================== */
 
     .dashboard {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+
+      grid-template-columns:
+        repeat(4, 1fr);
+
       gap: 14px;
+
       margin-bottom: 18px;
     }
 
     .stat-card {
       background: var(--card);
+
       border: 1px solid var(--border);
+
       border-radius: var(--radius);
+
       padding: 18px;
+
       box-shadow: var(--shadow);
     }
 
     .stat-label {
       color: var(--muted);
+
       font-size: 13px;
       font-weight: 700;
+
       margin-bottom: 7px;
     }
 
     .stat-value {
       font-size: 28px;
       font-weight: 850;
+
       line-height: 1;
     }
 
     .stat-sub {
       margin-top: 7px;
+
       color: var(--muted);
+
       font-size: 12px;
     }
 
+    /* =========================================================
+       OVERALL PROGRESS
+    ========================================================== */
+
     .overall-progress-card {
       background: var(--card);
+
       border: 1px solid var(--border);
+
       border-radius: var(--radius);
+
       padding: 18px;
+
       box-shadow: var(--shadow);
+
       margin-bottom: 20px;
     }
 
     .overall-progress-top {
       display: flex;
+
       justify-content: space-between;
-      gap: 10px;
       align-items: center;
+
+      gap: 10px;
+
       margin-bottom: 10px;
     }
 
@@ -219,36 +267,61 @@
     .progress-track {
       width: 100%;
       height: 10px;
+
       background: var(--border);
+
       border-radius: 999px;
+
       overflow: hidden;
     }
 
     .progress-fill {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, var(--primary), #7c3aed);
+
+      background:
+        linear-gradient(
+          90deg,
+          var(--primary),
+          #7c3aed
+        );
+
       border-radius: inherit;
-      transition: width 0.35s ease;
+
+      transition:
+        width 0.35s ease;
     }
 
-    /* =========================
+    /* =========================================================
        CONTINUE CARD
-    ========================== */
+    ========================================================== */
 
     .continue-card {
-      background: linear-gradient(
-        135deg,
-        var(--primary-soft),
-        var(--card)
-      );
-      border: 1px solid color-mix(in srgb, var(--primary) 30%, var(--border));
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary-soft),
+          var(--card)
+        );
+
+      border:
+        1px solid
+        color-mix(
+          in srgb,
+          var(--primary) 30%,
+          var(--border)
+        );
+
       border-radius: var(--radius);
+
       padding: 17px 18px;
+
       margin-bottom: 20px;
+
       display: flex;
       align-items: center;
       justify-content: space-between;
+
       gap: 15px;
     }
 
@@ -258,10 +331,13 @@
 
     .continue-label {
       color: var(--primary);
+
       font-size: 12px;
       font-weight: 800;
+
       text-transform: uppercase;
       letter-spacing: 0.5px;
+
       margin-bottom: 4px;
     }
 
@@ -273,84 +349,118 @@
     .continue-subtitle {
       color: var(--muted);
       font-size: 13px;
+
       margin-top: 3px;
     }
 
     .continue-btn {
       flex-shrink: 0;
+
       border: none;
+
       background: var(--primary);
       color: white;
+
       padding: 10px 15px;
+
       border-radius: 11px;
+
       font-weight: 800;
     }
 
-    /* =========================
+    /* =========================================================
        TOOLBAR
-    ========================== */
+    ========================================================== */
 
     .toolbar {
       background: var(--card);
+
       border: 1px solid var(--border);
+
       border-radius: var(--radius);
+
       padding: 15px;
+
       margin-bottom: 20px;
+
       box-shadow: var(--shadow);
     }
 
     .toolbar-main {
       display: grid;
-      grid-template-columns: 1fr 220px;
+
+      grid-template-columns:
+        1fr 220px;
+
       gap: 10px;
     }
 
     .search-box,
     .subject-select {
       width: 100%;
+
       border: 1px solid var(--border);
+
       background: var(--card-soft);
       color: var(--text);
+
       border-radius: 12px;
+
       padding: 11px 13px;
+
       outline: none;
+
       transition: 0.2s ease;
     }
 
     .search-box:focus,
     .subject-select:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px color-mix(
-        in srgb,
-        var(--primary) 15%,
-        transparent
-      );
+
+      box-shadow:
+        0 0 0 3px
+        color-mix(
+          in srgb,
+          var(--primary) 15%,
+          transparent
+        );
     }
 
     .filter-row {
       display: flex;
+
       flex-wrap: wrap;
+
       gap: 8px;
+
       margin-top: 12px;
+
       align-items: center;
     }
 
     .filter-label {
       color: var(--muted);
+
       font-size: 12px;
       font-weight: 800;
+
       margin-right: 2px;
     }
 
     .filter-btn,
     .collapse-btn {
       border: 1px solid var(--border);
+
       background: var(--card-soft);
       color: var(--text);
+
       border-radius: 10px;
+
       padding: 8px 12px;
+
       font-size: 12px;
       font-weight: 800;
+
       transition: 0.2s ease;
     }
 
@@ -361,7 +471,9 @@
 
     .filter-btn.active {
       background: var(--primary);
+
       color: white;
+
       border-color: var(--primary);
     }
 
@@ -369,55 +481,76 @@
       flex: 1;
     }
 
-    /* =========================
+    /* =========================================================
        SUBJECT CARDS
-    ========================== */
+    ========================================================== */
 
     #subjectsContainer {
       display: flex;
+
       flex-direction: column;
+
       gap: 16px;
     }
 
     .subject-card {
       background: var(--card);
+
       border: 1px solid var(--border);
+
       border-radius: var(--radius);
+
       box-shadow: var(--shadow);
+
       overflow: hidden;
-      animation: fadeUp 0.25s ease;
+
+      animation:
+        fadeUp 0.25s ease;
     }
 
     @keyframes fadeUp {
+
       from {
         opacity: 0;
         transform: translateY(5px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
       }
+
     }
 
     .subject-header {
       padding: 17px 18px;
+
       display: flex;
       align-items: center;
+
       gap: 14px;
+
       border-bottom: 1px solid var(--border);
+
       cursor: pointer;
+
       user-select: none;
     }
 
     .subject-icon {
       width: 42px;
       height: 42px;
+
       border-radius: 13px;
+
       background: var(--primary-soft);
       color: var(--primary);
+
       display: grid;
       place-items: center;
+
       font-size: 19px;
+
       flex-shrink: 0;
     }
 
@@ -428,60 +561,84 @@
 
     .subject-title-row {
       display: flex;
+
       align-items: center;
+
       gap: 8px;
+
       flex-wrap: wrap;
     }
 
     .subject-title {
       margin: 0;
+
       font-size: 17px;
       font-weight: 850;
     }
 
     .subject-meta {
       color: var(--muted);
+
       font-size: 12px;
+
       margin-top: 4px;
     }
 
     .subject-progress-area {
       width: 180px;
+
       flex-shrink: 0;
     }
 
     .subject-progress-text {
       display: flex;
+
       justify-content: space-between;
+
       color: var(--muted);
+
       font-size: 11px;
       font-weight: 700;
+
       margin-bottom: 5px;
     }
 
     .subject-progress-track {
       height: 7px;
+
       background: var(--border);
+
       border-radius: 999px;
+
       overflow: hidden;
     }
 
     .subject-progress-fill {
       height: 100%;
+
       background: var(--success);
+
       border-radius: inherit;
-      transition: width 0.3s ease;
+
+      transition:
+        width 0.3s ease;
     }
 
     .chevron {
       color: var(--muted);
+
       font-size: 18px;
+
       width: 25px;
+
       text-align: center;
-      transition: transform 0.25s ease;
+
+      transition:
+        transform 0.25s ease;
     }
 
-    .subject-card.collapsed .chevron {
+    .subject-card.collapsed
+    .chevron {
       transform: rotate(-90deg);
     }
 
@@ -489,13 +646,14 @@
       padding: 14px;
     }
 
-    .subject-card.collapsed .subject-body {
+    .subject-card.collapsed
+    .subject-body {
       display: none;
     }
 
-    /* =========================
+    /* =========================================================
        CHAPTER ROW
-    ========================== */
+    ========================================================== */
 
     .chapter-list {
       display: grid;
@@ -504,12 +662,19 @@
 
     .chapter-row {
       display: flex;
+
       align-items: center;
+
       gap: 11px;
+
       padding: 11px 12px;
+
       border: 1px solid var(--border);
+
       background: var(--card-soft);
+
       border-radius: 13px;
+
       transition:
         border-color 0.2s ease,
         transform 0.2s ease,
@@ -517,45 +682,75 @@
     }
 
     .chapter-row:hover {
-      border-color: color-mix(
-        in srgb,
-        var(--primary) 45%,
-        var(--border)
-      );
+      border-color:
+        color-mix(
+          in srgb,
+          var(--primary) 45%,
+          var(--border)
+        );
+
       transform: translateY(-1px);
     }
 
-    .chapter-row.completed {
-      background: var(--success-soft);
-      border-color: color-mix(
-        in srgb,
-        var(--success) 30%,
-        var(--border)
-      );
+    /* ---------- NOT STARTED ---------- */
+
+    .chapter-row.not-started {
+      background: var(--card-soft);
     }
 
-    .chapter-row.last-selected {
-      box-shadow: 0 0 0 2px color-mix(
-        in srgb,
-        var(--primary) 20%,
-        transparent
-      );
+    /* ---------- IN PROGRESS ---------- */
+
+    .chapter-row.in-progress {
+      background: var(--warning-soft);
+
+      border-color:
+        color-mix(
+          in srgb,
+          var(--warning) 30%,
+          var(--border)
+        );
+    }
+
+    /* ---------- COMPLETE ---------- */
+
+    .chapter-row.completed {
+      background: var(--success-soft);
+
+      border-color:
+        color-mix(
+          in srgb,
+          var(--success) 30%,
+          var(--border)
+        );
     }
 
     .chapter-number {
       width: 34px;
       height: 34px;
+
       border-radius: 10px;
+
       background: var(--border);
+
       color: var(--muted);
+
       display: grid;
       place-items: center;
+
       font-size: 11px;
       font-weight: 850;
+
       flex-shrink: 0;
     }
 
-    .completed .chapter-number {
+    .chapter-row.in-progress
+    .chapter-number {
+      background: var(--warning);
+      color: white;
+    }
+
+    .chapter-row.completed
+    .chapter-number {
       background: var(--success);
       color: white;
     }
@@ -567,43 +762,84 @@
 
     .chapter-name {
       font-size: 14px;
+
       font-weight: 750;
+
       line-height: 1.45;
     }
 
     .chapter-status-text {
-      margin-top: 2px;
+      margin-top: 3px;
+
       font-size: 11px;
+
       color: var(--muted);
     }
 
-    .completed .chapter-status-text {
-      color: var(--success);
+    .chapter-row.in-progress
+    .chapter-status-text {
+      color: var(--warning);
+
       font-weight: 750;
     }
 
+    .chapter-row.completed
+    .chapter-status-text {
+      color: var(--success);
+
+      font-weight: 750;
+    }
+
+    /* =========================================================
+       STATUS BUTTON
+    ========================================================== */
+
     .status-btn {
       border: 1px solid var(--border);
+
       background: var(--card);
+
       color: var(--text);
+
       border-radius: 10px;
-      min-width: 118px;
+
+      min-width: 125px;
+
       padding: 8px 10px;
+
       font-size: 12px;
       font-weight: 800;
+
       transition: 0.2s ease;
+
       flex-shrink: 0;
     }
 
-    .status-btn.in-progress:hover {
+    .status-btn.not-started:hover {
+      border-color: var(--primary);
+
+      color: var(--primary);
+
+      background: var(--primary-soft);
+    }
+
+    .status-btn.in-progress {
       border-color: var(--warning);
+
       background: var(--warning-soft);
+
       color: var(--warning);
+    }
+
+    .status-btn.in-progress:hover {
+      filter: brightness(0.96);
     }
 
     .status-btn.complete {
       background: var(--success);
+
       border-color: var(--success);
+
       color: white;
     }
 
@@ -611,150 +847,227 @@
       filter: brightness(0.95);
     }
 
-    /* =========================
-       EMPTY STATE
-    ========================== */
+    /* =========================================================
+       LAST SELECTED
+    ========================================================== */
+
+    .chapter-row.last-selected {
+      box-shadow:
+        0 0 0 2px
+        color-mix(
+          in srgb,
+          var(--primary) 20%,
+          transparent
+        );
+    }
+
+    /* =========================================================
+       EMPTY
+    ========================================================== */
 
     .empty-state {
       background: var(--card);
+
       border: 1px dashed var(--border);
+
       border-radius: var(--radius);
+
       padding: 45px 20px;
+
       text-align: center;
+
       color: var(--muted);
     }
 
     .empty-icon {
       font-size: 38px;
+
       margin-bottom: 8px;
     }
 
     .empty-state strong {
       display: block;
+
       color: var(--text);
+
       margin-bottom: 5px;
     }
 
-    /* =========================
-       FOOTER ACTIONS
-    ========================== */
+    /* =========================================================
+       BOTTOM ACTIONS
+    ========================================================== */
 
     .bottom-actions {
       margin-top: 25px;
+
       padding: 16px;
+
       background: var(--card);
+
       border: 1px solid var(--border);
+
       border-radius: var(--radius);
+
       box-shadow: var(--shadow);
 
       display: flex;
+
       align-items: center;
+
       justify-content: center;
+
       gap: 10px;
+
       flex-wrap: wrap;
     }
 
+    /*
+      IMPORTANT:
+      Only ONE Save button exists here.
+    */
+
     .save-btn {
       border: none;
+
       background: var(--success);
+
       color: white;
+
       padding: 11px 22px;
+
       border-radius: 11px;
+
       font-weight: 850;
+
       min-width: 120px;
+
       transition: 0.2s ease;
     }
 
     .save-btn:hover {
       transform: translateY(-1px);
+
       filter: brightness(0.96);
     }
 
     .backup-btn,
     .reset-btn {
       border: 1px solid var(--border);
+
       background: var(--card-soft);
+
       color: var(--text);
+
       padding: 10px 15px;
+
       border-radius: 11px;
+
       font-weight: 800;
+
       transition: 0.2s ease;
     }
 
     .backup-btn:hover {
       border-color: var(--primary);
+
       color: var(--primary);
     }
 
     .reset-btn:hover {
       border-color: var(--danger);
+
       color: var(--danger);
+
       background: var(--danger-soft);
     }
 
-    /* =========================
+    /* =========================================================
        TOAST
-    ========================== */
+    ========================================================== */
 
     #toastContainer {
       position: fixed;
+
       right: 18px;
       bottom: 18px;
+
       z-index: 500;
+
       display: flex;
+
       flex-direction: column;
+
       gap: 8px;
+
       pointer-events: none;
     }
 
     .toast {
       background: var(--text);
+
       color: var(--bg);
+
       padding: 11px 15px;
+
       border-radius: 11px;
+
       font-size: 13px;
+
       font-weight: 750;
+
       box-shadow: var(--shadow);
-      animation: toastIn 0.25s ease;
+
+      animation:
+        toastIn 0.25s ease;
     }
 
     @keyframes toastIn {
+
       from {
         opacity: 0;
         transform: translateY(8px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
       }
+
     }
 
-    /* =========================
+    /* =========================================================
        FOOTER
-    ========================== */
+    ========================================================== */
 
     footer {
       text-align: center;
+
       color: var(--muted);
+
       font-size: 12px;
+
       padding: 20px;
     }
 
-    /* =========================
+    /* =========================================================
        RESPONSIVE
-    ========================== */
+    ========================================================== */
 
     @media (max-width: 900px) {
+
       .dashboard {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns:
+          repeat(2, 1fr);
       }
 
       .subject-progress-area {
         width: 150px;
       }
+
     }
 
     @media (max-width: 700px) {
+
       .topbar-inner {
         padding: 13px 15px;
       }
@@ -764,7 +1077,8 @@
       }
 
       .container {
-        padding: 20px 14px 35px;
+        padding:
+          20px 14px 35px;
       }
 
       .toolbar-main {
@@ -789,11 +1103,13 @@
       }
 
       .status-btn {
-        min-width: 105px;
+        min-width: 110px;
       }
+
     }
 
     @media (max-width: 520px) {
+
       .dashboard {
         gap: 9px;
       }
@@ -808,6 +1124,7 @@
 
       .continue-card {
         align-items: flex-start;
+
         flex-direction: column;
       }
 
@@ -829,8 +1146,10 @@
       }
 
       .status-btn {
-        min-width: 92px;
+        min-width: 96px;
+
         padding: 7px 8px;
+
         font-size: 11px;
       }
 
@@ -853,96 +1172,173 @@
       .toast {
         text-align: center;
       }
+
     }
   </style>
 </head>
 
+
 <body>
 
-  <!-- =========================
+  <!-- =========================================================
        HEADER
-  ========================== -->
+  ========================================================== -->
 
   <header class="topbar">
+
     <div class="topbar-inner">
 
       <div class="brand">
+
         <h1>📚 Syllabus Tracker</h1>
-        <p>Track your syllabus progress easily</p>
+
+        <p>
+          Track your syllabus progress easily
+        </p>
+
       </div>
+
 
       <button
         class="theme-btn"
         id="themeToggle"
         type="button"
-        aria-label="Toggle dark mode"
       >
         🌙 Dark
       </button>
 
     </div>
+
   </header>
 
 
   <main class="container">
 
-    <!-- =========================
+    <!-- =======================================================
          DASHBOARD
-    ========================== -->
+    ======================================================== -->
 
     <section class="dashboard">
 
       <div class="stat-card">
-        <div class="stat-label">Total Chapters</div>
-        <div class="stat-value" id="totalChapters">0</div>
-        <div class="stat-sub">Across all subjects</div>
+
+        <div class="stat-label">
+          Total Chapters
+        </div>
+
+        <div
+          class="stat-value"
+          id="totalChapters"
+        >
+          0
+        </div>
+
+        <div class="stat-sub">
+          Across all subjects
+        </div>
+
       </div>
 
-      <div class="stat-card">
-        <div class="stat-label">Completed</div>
-        <div class="stat-value" id="completedChapters">0</div>
-        <div class="stat-sub">Finished chapters</div>
-      </div>
 
       <div class="stat-card">
-        <div class="stat-label">Remaining</div>
-        <div class="stat-value" id="remainingChapters">0</div>
-        <div class="stat-sub">Chapters left</div>
+
+        <div class="stat-label">
+          Completed
+        </div>
+
+        <div
+          class="stat-value"
+          id="completedChapters"
+        >
+          0
+        </div>
+
+        <div class="stat-sub">
+          Finished chapters
+        </div>
+
       </div>
 
+
       <div class="stat-card">
-        <div class="stat-label">Overall Progress</div>
-        <div class="stat-value" id="overallPercent">0%</div>
-        <div class="stat-sub">Your syllabus completion</div>
+
+        <div class="stat-label">
+          In Progress
+        </div>
+
+        <div
+          class="stat-value"
+          id="inProgressChapters"
+        >
+          0
+        </div>
+
+        <div class="stat-sub">
+          Currently studying
+        </div>
+
+      </div>
+
+
+      <div class="stat-card">
+
+        <div class="stat-label">
+          Overall Progress
+        </div>
+
+        <div
+          class="stat-value"
+          id="overallPercent"
+        >
+          0%
+        </div>
+
+        <div class="stat-sub">
+          Your syllabus completion
+        </div>
+
       </div>
 
     </section>
 
 
-    <!-- =========================
+    <!-- =======================================================
          OVERALL PROGRESS
-    ========================== -->
+    ======================================================== -->
 
     <section class="overall-progress-card">
 
       <div class="overall-progress-top">
-        <strong>Overall Syllabus Progress</strong>
-        <span class="overall-percent" id="overallPercentTop">0%</span>
+
+        <strong>
+          Overall Syllabus Progress
+        </strong>
+
+        <span
+          class="overall-percent"
+          id="overallPercentTop"
+        >
+          0%
+        </span>
+
       </div>
 
+
       <div class="progress-track">
+
         <div
           class="progress-fill"
           id="overallProgressFill"
         ></div>
+
       </div>
 
     </section>
 
 
-    <!-- =========================
-         CONTINUE
-    ========================== -->
+    <!-- =======================================================
+         CONTINUE STUDYING
+    ======================================================== -->
 
     <section
       class="continue-card"
@@ -951,7 +1347,10 @@
     >
 
       <div class="continue-info">
-        <div class="continue-label">Continue Studying</div>
+
+        <div class="continue-label">
+          Continue Studying
+        </div>
 
         <div
           class="continue-title"
@@ -962,7 +1361,9 @@
           class="continue-subtitle"
           id="continueSubtitle"
         ></div>
+
       </div>
+
 
       <button
         class="continue-btn"
@@ -975,9 +1376,9 @@
     </section>
 
 
-    <!-- =========================
+    <!-- =======================================================
          SEARCH / FILTER
-    ========================== -->
+    ======================================================== -->
 
     <section class="toolbar">
 
@@ -992,12 +1393,17 @@
           aria-label="Search chapters"
         />
 
+
         <select
           id="subjectFilter"
           class="subject-select"
           aria-label="Filter by subject"
         >
-          <option value="all">📚 All Subjects</option>
+
+          <option value="all">
+            📚 All Subjects
+          </option>
+
         </select>
 
       </div>
@@ -1005,7 +1411,10 @@
 
       <div class="filter-row">
 
-        <span class="filter-label">Status:</span>
+        <span class="filter-label">
+          Status:
+        </span>
+
 
         <button
           class="filter-btn active"
@@ -1015,13 +1424,24 @@
           All
         </button>
 
+
         <button
           class="filter-btn"
-          data-status="remaining"
+          data-status="not-started"
+          type="button"
+        >
+          ⚪ Not Started
+        </button>
+
+
+        <button
+          class="filter-btn"
+          data-status="in-progress"
           type="button"
         >
           🟡 In Progress
         </button>
+
 
         <button
           class="filter-btn"
@@ -1031,7 +1451,9 @@
           🟢 Complete
         </button>
 
+
         <div class="toolbar-spacer"></div>
+
 
         <button
           class="collapse-btn"
@@ -1040,6 +1462,7 @@
         >
           Expand All
         </button>
+
 
         <button
           class="collapse-btn"
@@ -1054,17 +1477,17 @@
     </section>
 
 
-    <!-- =========================
+    <!-- =======================================================
          SUBJECTS
-    ========================== -->
+    ======================================================== -->
 
     <section id="subjectsContainer"></section>
 
 
-    <!-- =========================
+    <!-- =======================================================
          BOTTOM ACTIONS
          ONLY ONE SAVE BUTTON
-    ========================== -->
+    ======================================================== -->
 
     <section class="bottom-actions">
 
@@ -1076,6 +1499,7 @@
         💾 Save
       </button>
 
+
       <button
         class="backup-btn"
         id="backupBtn"
@@ -1083,6 +1507,7 @@
       >
         📦 Backup
       </button>
+
 
       <button
         class="backup-btn"
@@ -1092,6 +1517,7 @@
         ♻️ Restore
       </button>
 
+
       <button
         class="reset-btn"
         id="resetBtn"
@@ -1099,6 +1525,7 @@
       >
         🗑️ Reset All
       </button>
+
 
       <input
         type="file"
@@ -1122,25 +1549,34 @@
 
   <script>
     /* =========================================================
-       DATA
+       BOOK / CHAPTER DATA
     ========================================================== */
 
     const books = {
+
       "Physics 1st Paper": 10,
+
       "Physics 2nd Paper": 11,
+
       "Chemistry 1st Paper": 5,
+
       "Chemistry 2nd Paper": 5,
+
       "Higher Math 1st Paper": 10,
+
       "Higher Math 2nd Paper": 10,
+
       "Botany": 12,
+
       "Zoology": 12
+
     };
 
 
     /*
-      IMPORTANT:
-      Chapter names are permanent.
-      There is NO editable chapter-name field anywhere.
+      Chapter names are PERMANENT.
+
+      Users cannot edit them.
     */
 
     const permanentChapterNames = {
@@ -1158,6 +1594,7 @@
         "আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব"
       ],
 
+
       "Physics 2nd Paper": [
         "তাপগতিবিদ্যা",
         "স্থির তড়িৎ",
@@ -1172,6 +1609,7 @@
         "জ্যোতির্বিজ্ঞান"
       ],
 
+
       "Chemistry 1st Paper": [
         "ল্যাবরেটরির নিরাপদ ব্যবহার",
         "গুণগত রসায়ন",
@@ -1180,6 +1618,7 @@
         "কর্মমুখী রসায়ন"
       ],
 
+
       "Chemistry 2nd Paper": [
         "পরিবেশ রসায়ন",
         "জৈব রসায়ন",
@@ -1187,6 +1626,7 @@
         "তড়িৎ রসায়ন",
         "অর্থনৈতিক রসায়ন"
       ],
+
 
       "Higher Math 1st Paper": [
         "ম্যাট্রিক্স ও নির্ণায়ক",
@@ -1201,6 +1641,7 @@
         "যোগজীকরণ"
       ],
 
+
       "Higher Math 2nd Paper": [
         "বাস্তব সংখ্যা ও অসমতা",
         "যোগাশ্রয়ী প্রোগ্রাম",
@@ -1213,6 +1654,7 @@
         "সমতলে বস্তুকণার গতি",
         "সম্ভাবনা"
       ],
+
 
       "Botany": [
         "কোষ ও এর গঠন",
@@ -1229,6 +1671,7 @@
         "পরিবেশ ও সংরক্ষণ"
       ],
 
+
       "Zoology": [
         "প্রাণীর বৈচিত্র্য ও শ্রেণিবিন্যাস",
         "প্রাণীর পরিচিতি",
@@ -1243,6 +1686,7 @@
         "জিনতত্ত্ব ও বিবর্তন",
         "প্রাণীর আচরণ"
       ]
+
     };
 
 
@@ -1250,15 +1694,28 @@
        STORAGE
     ========================================================== */
 
-    const STORAGE_KEY = "syllabusTracker";
-    const THEME_KEY = "syllabusTheme";
-    const LAST_KEY = "syllabusLastChapter";
-    const COLLAPSE_KEY = "syllabusCollapsed";
+    const STORAGE_KEY =
+      "syllabusTracker";
+
+    const THEME_KEY =
+      "syllabusTheme";
+
+    const LAST_KEY =
+      "syllabusLastChapter";
+
+    const COLLAPSE_KEY =
+      "syllabusCollapsed";
 
 
-    function readJSON(key, fallback) {
+    function readJSON(
+      key,
+      fallback
+    ) {
+
       try {
-        const value = localStorage.getItem(key);
+
+        const value =
+          localStorage.getItem(key);
 
         if (!value) {
           return fallback;
@@ -1267,76 +1724,157 @@
         return JSON.parse(value);
 
       } catch (error) {
+
         return fallback;
+
       }
+
     }
 
 
-    function writeJSON(key, value) {
+    function writeJSON(
+      key,
+      value
+    ) {
+
       try {
-        localStorage.setItem(key, JSON.stringify(value));
+
+        localStorage.setItem(
+          key,
+          JSON.stringify(value)
+        );
+
         return true;
+
       } catch (error) {
+
         return false;
+
       }
+
     }
 
 
     function removeStorage(key) {
+
       try {
+
         localStorage.removeItem(key);
-      } catch (error) {
-        // Ignore storage errors.
-      }
+
+      } catch (error) {}
+
     }
 
 
     /* =========================================================
-       LOAD / CLEAN PROGRESS
+       PROGRESS MODEL
     ========================================================== */
 
-    const rawProgress = readJSON(STORAGE_KEY, {});
-    const progress = {};
-
-    const validProgressKeys = new Set();
-
-    Object.entries(books).forEach(([book, count]) => {
-
-      for (let chapter = 1; chapter <= count; chapter++) {
-
-        validProgressKeys.add(
-          `${book}__${chapter}`
-        );
-
-      }
-
-    });
-
-
     /*
-      Only valid completion keys are restored.
+      IMPORTANT:
 
-      This also automatically removes any old:
-      name__...
-      chapter-name editing data.
+      Progress is now stored as:
+
+      "not-started"
+      "in-progress"
+      "complete"
+
+      Older true/false data is also understood:
+      true → complete
+      false → not-started
     */
 
-    Object.entries(rawProgress || {}).forEach(([key, value]) => {
+    const rawProgress =
+      readJSON(
+        STORAGE_KEY,
+        {}
+      );
 
-      if (
-        validProgressKeys.has(key) &&
-        value === true
-      ) {
-        progress[key] = true;
+
+    const progress = {};
+
+
+    const validProgressKeys =
+      new Set();
+
+
+    Object.entries(books)
+      .forEach(
+        ([book, count]) => {
+
+          for (
+            let chapter = 1;
+            chapter <= count;
+            chapter++
+          ) {
+
+            validProgressKeys.add(
+              `${book}__${chapter}`
+            );
+
+          }
+
+        }
+      );
+
+
+    Object.entries(
+      rawProgress || {}
+    ).forEach(
+      ([key, value]) => {
+
+        if (
+          !validProgressKeys.has(key)
+        ) {
+          return;
+        }
+
+
+        /*
+          New format
+        */
+
+        if (
+          value === "not-started" ||
+          value === "in-progress" ||
+          value === "complete"
+        ) {
+
+          progress[key] =
+            value;
+
+          return;
+
+        }
+
+
+        /*
+          Old format compatibility.
+        */
+
+        if (value === true) {
+
+          progress[key] =
+            "complete";
+
+        }
+
       }
+    );
 
-    });
 
+    let lastChapter =
+      readJSON(
+        LAST_KEY,
+        null
+      );
 
-    let lastChapter = readJSON(LAST_KEY, null);
 
     let collapsedSubjects =
-      readJSON(COLLAPSE_KEY, {});
+      readJSON(
+        COLLAPSE_KEY,
+        {}
+      );
 
 
     /* =========================================================
@@ -1344,65 +1882,149 @@
     ========================================================== */
 
     const state = {
+
       search: "",
+
       subject: "all",
+
       status: "all"
+
     };
 
 
     /* =========================================================
-       HELPERS
+       STATUS HELPERS
     ========================================================== */
 
-    function progressKey(book, chapter) {
+    function progressKey(
+      book,
+      chapter
+    ) {
+
       return `${book}__${chapter}`;
+
     }
 
 
-    function isComplete(book, chapter) {
-      return progress[progressKey(book, chapter)] === true;
+    function getStatus(
+      book,
+      chapter
+    ) {
+
+      return (
+        progress[
+          progressKey(
+            book,
+            chapter
+          )
+        ] || "not-started"
+      );
+
     }
 
 
-    function setComplete(book, chapter, value) {
+    function setStatus(
+      book,
+      chapter,
+      status
+    ) {
 
-      const key = progressKey(book, chapter);
-
-      if (value) {
-        progress[key] = true;
-      } else {
-        delete progress[key];
-      }
+      progress[
+        progressKey(
+          book,
+          chapter
+        )
+      ] = status;
 
     }
 
 
     function getBookCompleted(book) {
 
-      let completed = 0;
+      let count = 0;
+
 
       for (
         let chapter = 1;
         chapter <= books[book];
         chapter++
       ) {
-        if (isComplete(book, chapter)) {
-          completed++;
+
+        if (
+          getStatus(
+            book,
+            chapter
+          ) === "complete"
+        ) {
+
+          count++;
+
         }
+
       }
 
-      return completed;
+
+      return count;
+
+    }
+
+
+    function getBookInProgress(book) {
+
+      let count = 0;
+
+
+      for (
+        let chapter = 1;
+        chapter <= books[book];
+        chapter++
+      ) {
+
+        if (
+          getStatus(
+            book,
+            chapter
+          ) === "in-progress"
+        ) {
+
+          count++;
+
+        }
+
+      }
+
+
+      return count;
+
     }
 
 
     function getBookPercent(book) {
 
-      const total = books[book];
-      const completed = getBookCompleted(book);
+      const total =
+        books[book];
+
+      const completed =
+        getBookCompleted(book);
+
 
       return total
-        ? Math.round((completed / total) * 100)
+        ? Math.round(
+            (completed / total) * 100
+          )
         : 0;
+
+    }
+
+
+    function getTotalChapters() {
+
+      return Object.values(books)
+        .reduce(
+          (sum, count) =>
+            sum + count,
+          0
+        );
 
     }
 
@@ -1411,36 +2033,36 @@
 
       let total = 0;
 
-      Object.keys(books).forEach(book => {
-        total += getBookCompleted(book);
-      });
+
+      Object.keys(books)
+        .forEach(book => {
+
+          total +=
+            getBookCompleted(book);
+
+        });
+
 
       return total;
 
     }
 
 
-    function getTotalChapters() {
+    function getTotalInProgress() {
 
-      return Object.values(books).reduce(
-        (sum, count) => sum + count,
-        0
-      );
-
-    }
+      let total = 0;
 
 
-    function escapeText(value) {
-      return String(value ?? "");
-    }
+      Object.keys(books)
+        .forEach(book => {
+
+          total +=
+            getBookInProgress(book);
+
+        });
 
 
-    function slugify(value) {
-
-      return String(value)
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
+      return total;
 
     }
 
@@ -1452,26 +2074,50 @@
     function showToast(message) {
 
       const container =
-        document.getElementById("toastContainer");
+        document.getElementById(
+          "toastContainer"
+        );
+
 
       const toast =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
-      toast.className = "toast";
-      toast.textContent = message;
 
-      container.appendChild(toast);
+      toast.className =
+        "toast";
 
-      setTimeout(() => {
 
-        toast.style.opacity = "0";
-        toast.style.transform = "translateY(8px)";
+      toast.textContent =
+        message;
 
-        setTimeout(() => {
-          toast.remove();
-        }, 200);
 
-      }, 1800);
+      container.appendChild(
+        toast
+      );
+
+
+      setTimeout(
+        () => {
+
+          toast.style.opacity =
+            "0";
+
+          toast.style.transform =
+            "translateY(8px)";
+
+
+          setTimeout(
+            () => {
+              toast.remove();
+            },
+            200
+          );
+
+        },
+        1800
+      );
 
     }
 
@@ -1480,14 +2126,28 @@
        SAVE
     ========================================================== */
 
-    function saveProgress(showMessage = true) {
+    function saveProgress(
+      showMessage = true
+    ) {
 
       const success =
-        writeJSON(STORAGE_KEY, progress);
+        writeJSON(
+          STORAGE_KEY,
+          progress
+        );
 
-      if (success && showMessage) {
-        showToast("✅ Saved successfully");
+
+      if (
+        success &&
+        showMessage
+      ) {
+
+        showToast(
+          "✅ Saved successfully"
+        );
+
       }
+
 
       return success;
 
@@ -1498,15 +2158,27 @@
        LAST CHAPTER
     ========================================================== */
 
-    function rememberChapter(book, chapter) {
+    function rememberChapter(
+      book,
+      chapter
+    ) {
 
       lastChapter = {
+
         book,
+
         chapter,
-        time: Date.now()
+
+        time:
+          Date.now()
+
       };
 
-      writeJSON(LAST_KEY, lastChapter);
+
+      writeJSON(
+        LAST_KEY,
+        lastChapter
+      );
 
     }
 
@@ -1522,24 +2194,26 @@
         theme === "dark"
       );
 
+
       const button =
-        document.getElementById("themeToggle");
+        document.getElementById(
+          "themeToggle"
+        );
 
-      if (theme === "dark") {
 
-        button.textContent = "☀️ Light";
+      button.textContent =
+        theme === "dark"
+          ? "☀️ Light"
+          : "🌙 Dark";
 
-      } else {
-
-        button.textContent = "🌙 Dark";
-
-      }
 
       try {
+
         localStorage.setItem(
           THEME_KEY,
           theme
         );
+
       } catch (error) {}
 
     }
@@ -1549,11 +2223,16 @@
 
       let theme = "light";
 
+
       try {
+
         theme =
-          localStorage.getItem(THEME_KEY)
-          || "light";
+          localStorage.getItem(
+            THEME_KEY
+          ) || "light";
+
       } catch (error) {}
+
 
       applyTheme(theme);
 
@@ -1561,42 +2240,55 @@
 
 
     /* =========================================================
-       FILTER CHECK
+       FILTER MATCH
     ========================================================== */
 
-    function chapterMatches(book, chapter) {
+    function chapterMatches(
+      book,
+      chapter
+    ) {
 
       const name =
-        permanentChapterNames[book]?.[chapter - 1]
+        permanentChapterNames[
+          book
+        ]?.[chapter - 1]
         || `Chapter ${chapter}`;
 
+
       const search =
-        state.search.trim().toLowerCase();
+        state.search
+          .trim()
+          .toLowerCase();
+
 
       const matchesSearch =
         !search ||
-        book.toLowerCase().includes(search) ||
-        name.toLowerCase().includes(search);
+        book
+          .toLowerCase()
+          .includes(search) ||
+        name
+          .toLowerCase()
+          .includes(search);
+
 
       if (!matchesSearch) {
         return false;
       }
 
 
-      if (state.status === "completed") {
-
-        if (!isComplete(book, chapter)) {
-          return false;
-        }
-
-      }
+      const status =
+        getStatus(
+          book,
+          chapter
+        );
 
 
-      if (state.status === "remaining") {
+      if (
+        state.status !== "all" &&
+        status !== state.status
+      ) {
 
-        if (isComplete(book, chapter)) {
-          return false;
-        }
+        return false;
 
       }
 
@@ -1612,8 +2304,11 @@
         state.subject !== "all" &&
         state.subject !== book
       ) {
+
         return false;
+
       }
+
 
       for (
         let chapter = 1;
@@ -1621,11 +2316,19 @@
         chapter++
       ) {
 
-        if (chapterMatches(book, chapter)) {
+        if (
+          chapterMatches(
+            book,
+            chapter
+          )
+        ) {
+
           return true;
+
         }
 
       }
+
 
       return false;
 
@@ -1633,7 +2336,7 @@
 
 
     /* =========================================================
-       UPDATE DASHBOARD
+       DASHBOARD
     ========================================================== */
 
     function updateDashboard() {
@@ -1641,87 +2344,127 @@
       const total =
         getTotalChapters();
 
+
       const completed =
         getTotalCompleted();
 
-      const remaining =
-        total - completed;
+
+      const inProgress =
+        getTotalInProgress();
+
+
+      const notStarted =
+        total -
+        completed -
+        inProgress;
+
 
       const percent =
         total
-          ? Math.round((completed / total) * 100)
+          ? Math.round(
+              (completed / total) * 100
+            )
           : 0;
 
 
       document.getElementById(
         "totalChapters"
-      ).textContent = total;
+      ).textContent =
+        total;
 
 
       document.getElementById(
         "completedChapters"
-      ).textContent = completed;
+      ).textContent =
+        completed;
 
 
       document.getElementById(
-        "remainingChapters"
-      ).textContent = remaining;
+        "inProgressChapters"
+      ).textContent =
+        inProgress;
 
 
       document.getElementById(
         "overallPercent"
-      ).textContent = `${percent}%`;
+      ).textContent =
+        `${percent}%`;
 
 
       document.getElementById(
         "overallPercentTop"
-      ).textContent = `${percent}%`;
+      ).textContent =
+        `${percent}%`;
 
 
       document.getElementById(
         "overallProgressFill"
-      ).style.width = `${percent}%`;
+      ).style.width =
+        `${percent}%`;
 
     }
 
 
     /* =========================================================
-       SUBJECT FILTER OPTIONS
+       SUBJECT SELECT
     ========================================================== */
 
     function buildSubjectFilter() {
 
       const select =
-        document.getElementById("subjectFilter");
+        document.getElementById(
+          "subjectFilter"
+        );
 
-      const current =
-        state.subject;
 
       select.innerHTML = "";
 
+
       const allOption =
-        document.createElement("option");
-
-      allOption.value = "all";
-      allOption.textContent = "📚 All Subjects";
-
-      select.appendChild(allOption);
+        document.createElement(
+          "option"
+        );
 
 
-      Object.keys(books).forEach(book => {
-
-        const option =
-          document.createElement("option");
-
-        option.value = book;
-        option.textContent = book;
-
-        select.appendChild(option);
-
-      });
+      allOption.value =
+        "all";
 
 
-      select.value = current;
+      allOption.textContent =
+        "📚 All Subjects";
+
+
+      select.appendChild(
+        allOption
+      );
+
+
+      Object.keys(books)
+        .forEach(book => {
+
+          const option =
+            document.createElement(
+              "option"
+            );
+
+
+          option.value =
+            book;
+
+
+          option.textContent =
+            book;
+
+
+          select.appendChild(
+            option
+          );
+
+        });
+
+
+      select.value =
+        state.subject;
 
     }
 
@@ -1733,16 +2476,22 @@
     function updateContinueCard() {
 
       const card =
-        document.getElementById("continueCard");
+        document.getElementById(
+          "continueCard"
+        );
+
 
       if (
         !lastChapter ||
         !books[lastChapter.book] ||
         lastChapter.chapter < 1 ||
-        lastChapter.chapter > books[lastChapter.book]
+        lastChapter.chapter >
+          books[lastChapter.book]
       ) {
 
-        card.style.display = "none";
+        card.style.display =
+          "none";
+
         return;
 
       }
@@ -1751,17 +2500,22 @@
       const book =
         lastChapter.book;
 
+
       const chapter =
         lastChapter.chapter;
 
+
       const name =
-        permanentChapterNames[book]?.[chapter - 1]
+        permanentChapterNames[
+          book
+        ]?.[chapter - 1]
         || `Chapter ${chapter}`;
 
 
       document.getElementById(
         "continueTitle"
-      ).textContent = name;
+      ).textContent =
+        name;
 
 
       document.getElementById(
@@ -1770,7 +2524,159 @@
         `${book} • Chapter ${chapter}`;
 
 
-      card.style.display = "flex";
+      card.style.display =
+        "flex";
+
+    }
+
+
+    /* =========================================================
+       CHAPTER STATUS CLICK
+    ========================================================== */
+
+    function handleStatusClick(
+      book,
+      chapter
+    ) {
+
+      const current =
+        getStatus(
+          book,
+          chapter
+        );
+
+
+      /*
+        1. Not Started
+           ↓
+        In Progress
+      */
+
+      if (
+        current === "not-started"
+      ) {
+
+        setStatus(
+          book,
+          chapter,
+          "in-progress"
+        );
+
+
+        rememberChapter(
+          book,
+          chapter
+        );
+
+
+        saveProgress(false);
+
+        render();
+
+
+        showToast(
+          "🟡 Chapter is now In Progress"
+        );
+
+
+        return;
+
+      }
+
+
+      /*
+        2. In Progress
+           ↓
+        Complete
+      */
+
+      if (
+        current === "in-progress"
+      ) {
+
+        setStatus(
+          book,
+          chapter,
+          "complete"
+        );
+
+
+        rememberChapter(
+          book,
+          chapter
+        );
+
+
+        saveProgress(false);
+
+        render();
+
+
+        showToast(
+          "🟢 Chapter Completed!"
+        );
+
+
+        return;
+
+      }
+
+
+      /*
+        3. Complete
+           ↓
+        Confirmation
+           ↓
+        Not Started
+      */
+
+      if (
+        current === "complete"
+      ) {
+
+        const confirmed =
+          confirm(
+            "এই chapter-টি আবার Not Started করতে চান?\n\n" +
+            "Confirm করলে chapter-এর status আবার Not Started হবে।"
+          );
+
+
+        if (!confirmed) {
+
+          return;
+
+        }
+
+
+        setStatus(
+          book,
+          chapter,
+          "not-started"
+        );
+
+
+        /*
+          If this was the last selected
+          chapter, keep it as last chapter
+          so user can easily find it again.
+        */
+
+        rememberChapter(
+          book,
+          chapter
+        );
+
+
+        saveProgress(false);
+
+        render();
+
+
+        showToast(
+          "⚪ Chapter is now Not Started"
+        );
+
+      }
 
     }
 
@@ -1779,33 +2685,54 @@
        SUBJECT CARD
     ========================================================== */
 
-    function createSubjectCard(book, bookIndex) {
+    function createSubjectCard(
+      book,
+      bookIndex
+    ) {
 
       const completed =
         getBookCompleted(book);
 
+
+      const inProgress =
+        getBookInProgress(book);
+
+
       const total =
         books[book];
+
 
       const percent =
         getBookPercent(book);
 
-      const card =
-        document.createElement("article");
 
-      card.className = "subject-card";
+      const card =
+        document.createElement(
+          "article"
+        );
+
+
+      card.className =
+        "subject-card";
+
 
       const isSearching =
         state.search.trim() !== "" ||
         state.status !== "all" ||
         state.subject !== "all";
 
+
       const isCollapsed =
         !isSearching &&
         collapsedSubjects[book] === true;
 
+
       if (isCollapsed) {
-        card.classList.add("collapsed");
+
+        card.classList.add(
+          "collapsed"
+        );
+
       }
 
 
@@ -1816,15 +2743,20 @@
       /* ---------- Header ---------- */
 
       const header =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       header.className =
         "subject-header";
+
 
       header.setAttribute(
         "role",
         "button"
       );
+
 
       header.setAttribute(
         "tabindex",
@@ -1833,100 +2765,165 @@
 
 
       const icon =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       icon.className =
         "subject-icon";
 
+
+      const icons = [
+        "⚛️",
+        "🔬",
+        "🧪",
+        "🧫",
+        "📐",
+        "📊",
+        "🌱",
+        "🦎"
+      ];
+
+
       icon.textContent =
-        ["⚛️", "🔬", "🧪", "🧫", "📐", "📊", "🌱", "🦎"][bookIndex % 8];
+        icons[
+          bookIndex % icons.length
+        ];
 
 
       const info =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       info.className =
         "subject-info";
 
 
       const titleRow =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       titleRow.className =
         "subject-title-row";
 
 
       const title =
-        document.createElement("h2");
+        document.createElement(
+          "h2"
+        );
+
 
       title.className =
         "subject-title";
 
+
       title.textContent =
-        escapeText(book);
+        book;
 
 
-      titleRow.appendChild(title);
+      titleRow.appendChild(
+        title
+      );
 
 
       const meta =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       meta.className =
         "subject-meta";
 
+
       meta.textContent =
-        `${completed} of ${total} completed`;
+        `${completed} complete • ${inProgress} in progress • ${total} total`;
 
 
-      info.appendChild(titleRow);
-      info.appendChild(meta);
+      info.appendChild(
+        titleRow
+      );
+
+
+      info.appendChild(
+        meta
+      );
 
 
       const progressArea =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       progressArea.className =
         "subject-progress-area";
 
 
       const progressText =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       progressText.className =
         "subject-progress-text";
 
 
       const progressLeft =
-        document.createElement("span");
+        document.createElement(
+          "span"
+        );
+
 
       progressLeft.textContent =
         `${completed}/${total}`;
 
 
       const progressRight =
-        document.createElement("span");
+        document.createElement(
+          "span"
+        );
+
 
       progressRight.textContent =
         `${percent}%`;
 
 
-      progressText.appendChild(progressLeft);
-      progressText.appendChild(progressRight);
+      progressText.appendChild(
+        progressLeft
+      );
+
+
+      progressText.appendChild(
+        progressRight
+      );
 
 
       const progressTrack =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       progressTrack.className =
         "subject-progress-track";
 
 
       const progressFill =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       progressFill.className =
         "subject-progress-fill";
+
 
       progressFill.style.width =
         `${percent}%`;
@@ -1941,25 +2938,44 @@
         progressText
       );
 
+
       progressArea.appendChild(
         progressTrack
       );
 
 
       const chevron =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       chevron.className =
         "chevron";
+
 
       chevron.textContent =
         "⌄";
 
 
-      header.appendChild(icon);
-      header.appendChild(info);
-      header.appendChild(progressArea);
-      header.appendChild(chevron);
+      header.appendChild(
+        icon
+      );
+
+
+      header.appendChild(
+        info
+      );
+
+
+      header.appendChild(
+        progressArea
+      );
+
+
+      header.appendChild(
+        chevron
+      );
 
 
       /* ---------- Toggle ---------- */
@@ -1967,10 +2983,14 @@
       function toggleSubject() {
 
         const collapsed =
-          card.classList.toggle("collapsed");
+          card.classList.toggle(
+            "collapsed"
+          );
+
 
         collapsedSubjects[book] =
           collapsed;
+
 
         writeJSON(
           COLLAPSE_KEY,
@@ -1996,6 +3016,7 @@
           ) {
 
             event.preventDefault();
+
             toggleSubject();
 
           }
@@ -2007,14 +3028,20 @@
       /* ---------- Body ---------- */
 
       const body =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       body.className =
         "subject-body";
 
 
       const chapterList =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       chapterList.className =
         "chapter-list";
@@ -2026,24 +3053,69 @@
         chapter++
       ) {
 
-        if (!chapterMatches(book, chapter)) {
+        if (
+          !chapterMatches(
+            book,
+            chapter
+          )
+        ) {
+
           continue;
+
         }
 
 
-        const complete =
-          isComplete(book, chapter);
+        const status =
+          getStatus(
+            book,
+            chapter
+          );
 
 
         const row =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
+
+
+        /*
+          Status-specific class
+        */
 
         row.className =
           "chapter-row";
 
 
-        if (complete) {
-          row.classList.add("completed");
+        if (
+          status === "not-started"
+        ) {
+
+          row.classList.add(
+            "not-started"
+          );
+
+        }
+
+
+        if (
+          status === "in-progress"
+        ) {
+
+          row.classList.add(
+            "in-progress"
+          );
+
+        }
+
+
+        if (
+          status === "complete"
+        ) {
+
+          row.classList.add(
+            "completed"
+          );
+
         }
 
 
@@ -2053,7 +3125,9 @@
           lastChapter.chapter === chapter
         ) {
 
-          row.classList.add("last-selected");
+          row.classList.add(
+            "last-selected"
+          );
 
         }
 
@@ -2062,98 +3136,186 @@
           `chapter-${bookIndex}-${chapter}`;
 
 
-        /* Number */
+        /* ---------- Number ---------- */
 
         const number =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
+
 
         number.className =
           "chapter-number";
 
+
         number.textContent =
-          String(chapter).padStart(2, "0");
+          String(
+            chapter
+          ).padStart(
+            2,
+            "0"
+          );
 
 
-        /* Content */
+        /* ---------- Content ---------- */
 
         const content =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
+
 
         content.className =
           "chapter-content";
 
 
         const name =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
+
 
         name.className =
           "chapter-name";
 
+
         /*
-          IMPORTANT:
-          textContent is used.
-          So chapter names cannot become editable HTML.
+          Chapter name is fixed.
+          No input.
+          No contenteditable.
         */
 
         name.textContent =
-          permanentChapterNames[book]?.[chapter - 1]
+          permanentChapterNames[
+            book
+          ]?.[chapter - 1]
           || `Chapter ${chapter}`;
 
 
         const statusText =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
+
 
         statusText.className =
           "chapter-status-text";
 
-        statusText.textContent =
-          complete
-            ? "✓ Complete"
-            : "In Progress";
+
+        if (
+          status === "not-started"
+        ) {
+
+          statusText.textContent =
+            "Not Started";
+
+        }
 
 
-        content.appendChild(name);
-        content.appendChild(statusText);
+        if (
+          status === "in-progress"
+        ) {
+
+          statusText.textContent =
+            "In Progress";
+
+        }
 
 
-        /* Status Button */
+        if (
+          status === "complete"
+        ) {
+
+          statusText.textContent =
+            "✓ Complete";
+
+        }
+
+
+        content.appendChild(
+          name
+        );
+
+
+        content.appendChild(
+          statusText
+        );
+
+
+        /* ---------- Status Button ---------- */
 
         const statusBtn =
-          document.createElement("button");
+          document.createElement(
+            "button"
+          );
+
 
         statusBtn.type =
           "button";
+
 
         statusBtn.className =
           "status-btn";
 
 
-        if (complete) {
+        if (
+          status === "not-started"
+        ) {
 
           statusBtn.classList.add(
-            "complete"
+            "not-started"
           );
+
 
           statusBtn.textContent =
-            "✓ Complete";
+            "⚪ Not Started";
+
 
           statusBtn.setAttribute(
-            "aria-pressed",
-            "true"
+            "aria-label",
+            `${book}, chapter ${chapter}: Not Started`
           );
 
-        } else {
+        }
+
+
+        if (
+          status === "in-progress"
+        ) {
 
           statusBtn.classList.add(
             "in-progress"
           );
 
+
           statusBtn.textContent =
             "🟡 In Progress";
 
+
           statusBtn.setAttribute(
-            "aria-pressed",
-            "false"
+            "aria-label",
+            `${book}, chapter ${chapter}: In Progress`
+          );
+
+        }
+
+
+        if (
+          status === "complete"
+        ) {
+
+          statusBtn.classList.add(
+            "complete"
+          );
+
+
+          statusBtn.textContent =
+            "✓ Complete";
+
+
+          statusBtn.setAttribute(
+            "aria-label",
+            `${book}, chapter ${chapter}: Complete`
           );
 
         }
@@ -2166,59 +3328,51 @@
             event.stopPropagation();
 
 
-            /*
-              Toggle:
-              In Progress → Complete
-              Complete → In Progress
-            */
-
-            setComplete(
-              book,
-              chapter,
-              !complete
-            );
-
-
-            rememberChapter(
+            handleStatusClick(
               book,
               chapter
-            );
-
-
-            /*
-              Auto-save keeps progress safe,
-              but the main Save button remains
-              available at the bottom.
-            */
-
-            saveProgress(false);
-
-            render();
-
-            showToast(
-              !complete
-                ? "🟢 Chapter completed"
-                : "🟡 Moved to In Progress"
             );
 
           }
         );
 
 
-        row.appendChild(number);
-        row.appendChild(content);
-        row.appendChild(statusBtn);
+        row.appendChild(
+          number
+        );
 
-        chapterList.appendChild(row);
+
+        row.appendChild(
+          content
+        );
+
+
+        row.appendChild(
+          statusBtn
+        );
+
+
+        chapterList.appendChild(
+          row
+        );
 
       }
 
 
-      body.appendChild(chapterList);
+      body.appendChild(
+        chapterList
+      );
 
 
-      card.appendChild(header);
-      card.appendChild(body);
+      card.appendChild(
+        header
+      );
+
+
+      card.appendChild(
+        body
+      );
+
 
       return card;
 
@@ -2243,42 +3397,58 @@
           "subjectsContainer"
         );
 
-      container.innerHTML = "";
+
+      container.innerHTML =
+        "";
 
 
       let visibleBooks = 0;
 
 
-      Object.keys(books).forEach(
-        (book, index) => {
+      Object.keys(books)
+        .forEach(
+          (book, index) => {
 
-          if (!bookMatches(book)) {
-            return;
-          }
+            if (
+              !bookMatches(book)
+            ) {
+
+              return;
+
+            }
 
 
-          const card =
-            createSubjectCard(
-              book,
-              index
+            const card =
+              createSubjectCard(
+                book,
+                index
+              );
+
+
+            container.appendChild(
+              card
             );
 
 
-          container.appendChild(card);
+            visibleBooks++;
 
-          visibleBooks++;
-
-        }
-      );
+          }
+        );
 
 
-      if (visibleBooks === 0) {
+      if (
+        visibleBooks === 0
+      ) {
 
         const empty =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
+
 
         empty.className =
           "empty-state";
+
 
         empty.innerHTML = `
           <div class="empty-icon">🔎</div>
@@ -2286,7 +3456,10 @@
           <span>Try another search or filter.</span>
         `;
 
-        container.appendChild(empty);
+
+        container.appendChild(
+          empty
+        );
 
       }
 
@@ -2303,60 +3476,84 @@
     function updateFilterButtons() {
 
       document
-        .querySelectorAll(".filter-btn")
-        .forEach(button => {
+        .querySelectorAll(
+          ".filter-btn"
+        )
+        .forEach(
+          button => {
 
-          button.classList.toggle(
-            "active",
-            button.dataset.status ===
-            state.status
-          );
+            button.classList.toggle(
+              "active",
+              button.dataset.status ===
+                state.status
+            );
 
-        });
+          }
+        );
 
     }
 
 
     /* =========================================================
-       EXPAND / COLLAPSE ALL
+       EXPAND / COLLAPSE
     ========================================================== */
 
     function expandAll() {
 
-      Object.keys(books).forEach(
-        book => {
-          collapsedSubjects[book] = false;
-        }
-      );
+      Object.keys(books)
+        .forEach(
+          book => {
+
+            collapsedSubjects[
+              book
+            ] = false;
+
+          }
+        );
+
 
       writeJSON(
         COLLAPSE_KEY,
         collapsedSubjects
       );
 
+
       render();
 
-      showToast("📖 All subjects expanded");
+
+      showToast(
+        "📖 All subjects expanded"
+      );
 
     }
 
 
     function collapseAll() {
 
-      Object.keys(books).forEach(
-        book => {
-          collapsedSubjects[book] = true;
-        }
-      );
+      Object.keys(books)
+        .forEach(
+          book => {
+
+            collapsedSubjects[
+              book
+            ] = true;
+
+          }
+        );
+
 
       writeJSON(
         COLLAPSE_KEY,
         collapsedSubjects
       );
 
+
       render();
 
-      showToast("📕 All subjects collapsed");
+
+      showToast(
+        "📕 All subjects collapsed"
+      );
 
     }
 
@@ -2369,16 +3566,20 @@
 
       const backup = {
 
-        app: "Syllabus Tracker",
+        app:
+          "Syllabus Tracker",
 
-        version: 2,
+        version:
+          3,
 
         exportedAt:
           new Date().toISOString(),
 
-        progress: progress,
+        progress:
+          progress,
 
-        lastChapter: lastChapter
+        lastChapter:
+          lastChapter
 
       };
 
@@ -2393,40 +3594,60 @@
             )
           ],
           {
-            type: "application/json"
+            type:
+              "application/json"
           }
         );
 
 
       const url =
-        URL.createObjectURL(blob);
+        URL.createObjectURL(
+          blob
+        );
 
 
       const link =
-        document.createElement("a");
+        document.createElement(
+          "a"
+        );
+
 
       const date =
         new Date()
           .toISOString()
-          .slice(0, 10);
+          .slice(
+            0,
+            10
+          );
 
 
-      link.href = url;
+      link.href =
+        url;
+
 
       link.download =
         `syllabus-tracker-backup-${date}.json`;
 
 
-      document.body.appendChild(link);
+      document.body.appendChild(
+        link
+      );
+
 
       link.click();
 
+
       link.remove();
 
-      URL.revokeObjectURL(url);
+
+      URL.revokeObjectURL(
+        url
+      );
 
 
-      showToast("📦 Backup downloaded");
+      showToast(
+        "📦 Backup downloaded"
+      );
 
     }
 
@@ -2441,136 +3662,209 @@
         new FileReader();
 
 
-      reader.onload = event => {
+      reader.onload =
+        event => {
 
-        try {
+          try {
 
-          const backup =
-            JSON.parse(
-              event.target.result
-            );
-
-
-          if (
-            !backup ||
-            typeof backup !== "object" ||
-            typeof backup.progress !== "object"
-          ) {
-
-            throw new Error(
-              "Invalid backup"
-            );
-
-          }
+            const backup =
+              JSON.parse(
+                event.target.result
+              );
 
 
-          /*
-            Clear current progress.
-          */
+            if (
+              !backup ||
+              typeof backup !==
+                "object" ||
+              typeof backup.progress !==
+                "object"
+            ) {
 
-          Object.keys(progress)
-            .forEach(key => {
-              delete progress[key];
-            });
-
-
-          /*
-            Restore only valid chapter
-            completion keys.
-
-            Chapter names are NEVER restored
-            from backup.
-          */
-
-          Object.entries(
-            backup.progress
-          ).forEach(
-            ([key, value]) => {
-
-              if (
-                validProgressKeys.has(key) &&
-                value === true
-              ) {
-
-                progress[key] = true;
-
-              }
+              throw new Error(
+                "Invalid backup"
+              );
 
             }
-          );
 
 
-          /*
-            Restore last chapter only if valid.
-          */
+            /*
+              Clear current progress.
+            */
 
-          if (
-            backup.lastChapter &&
-            books[backup.lastChapter.book] &&
-            Number.isInteger(
-              backup.lastChapter.chapter
-            ) &&
-            backup.lastChapter.chapter >= 1 &&
-            backup.lastChapter.chapter <=
-              books[backup.lastChapter.book]
-          ) {
+            Object.keys(
+              progress
+            ).forEach(
+              key => {
 
-            lastChapter = {
-              book:
-                backup.lastChapter.book,
+                delete progress[key];
 
-              chapter:
-                backup.lastChapter.chapter,
-
-              time:
-                backup.lastChapter.time
-                || Date.now()
-            };
-
-            writeJSON(
-              LAST_KEY,
-              lastChapter
+              }
             );
 
-          } else {
 
-            lastChapter = null;
+            /*
+              Restore only valid
+              chapter statuses.
+            */
 
-            removeStorage(LAST_KEY);
+            Object.entries(
+              backup.progress
+            ).forEach(
+              ([key, value]) => {
+
+                if (
+                  !validProgressKeys.has(
+                    key
+                  )
+                ) {
+
+                  return;
+
+                }
+
+
+                if (
+                  value ===
+                    "not-started" ||
+                  value ===
+                    "in-progress" ||
+                  value ===
+                    "complete"
+                ) {
+
+                  /*
+                    We don't need to store
+                    "not-started", because
+                    that is the default.
+                  */
+
+                  if (
+                    value !==
+                      "not-started"
+                  ) {
+
+                    progress[key] =
+                      value;
+
+                  }
+
+                }
+
+
+                /*
+                  Old backup compatibility.
+                */
+
+                if (
+                  value === true
+                ) {
+
+                  progress[key] =
+                    "complete";
+
+                }
+
+              }
+            );
+
+
+            /*
+              Restore last chapter.
+            */
+
+            if (
+              backup.lastChapter &&
+              books[
+                backup.lastChapter.book
+              ] &&
+              Number.isInteger(
+                backup.lastChapter.chapter
+              ) &&
+              backup.lastChapter.chapter >=
+                1 &&
+              backup.lastChapter.chapter <=
+                books[
+                  backup.lastChapter.book
+                ]
+            ) {
+
+              lastChapter = {
+
+                book:
+                  backup
+                    .lastChapter
+                    .book,
+
+                chapter:
+                  backup
+                    .lastChapter
+                    .chapter,
+
+                time:
+                  backup
+                    .lastChapter
+                    .time ||
+                  Date.now()
+
+              };
+
+
+              writeJSON(
+                LAST_KEY,
+                lastChapter
+              );
+
+            } else {
+
+              lastChapter =
+                null;
+
+
+              removeStorage(
+                LAST_KEY
+              );
+
+            }
+
+
+            saveProgress(
+              false
+            );
+
+
+            render();
+
+
+            showToast(
+              "♻️ Backup restored successfully"
+            );
+
+
+          } catch (error) {
+
+            showToast(
+              "❌ Invalid backup file"
+            );
 
           }
 
-
-          saveProgress(false);
-
-          render();
-
-          showToast(
-            "♻️ Backup restored successfully"
-          );
+        };
 
 
-        } catch (error) {
+      reader.onerror =
+        () => {
 
           showToast(
-            "❌ Invalid backup file"
+            "❌ Could not read backup"
           );
 
-        }
-
-      };
+        };
 
 
-      reader.onerror = () => {
-
-        showToast(
-          "❌ Could not read backup"
-        );
-
-      };
-
-
-      reader.readAsText(file);
+      reader.readAsText(
+        file
+      );
 
     }
 
@@ -2584,6 +3878,7 @@
       const confirmed =
         confirm(
           "সব chapter-এর progress reset হবে।\n\n" +
+          "সবগুলো chapter আবার Not Started হবে।\n\n" +
           "Chapter names পরিবর্তন হবে না।\n\n" +
           "আপনি কি নিশ্চিত?"
         );
@@ -2594,25 +3889,36 @@
       }
 
 
-      Object.keys(progress)
-        .forEach(key => {
+      Object.keys(
+        progress
+      ).forEach(
+        key => {
+
           delete progress[key];
-        });
+
+        }
+      );
 
 
-      lastChapter = null;
+      lastChapter =
+        null;
+
 
       removeStorage(
         LAST_KEY
       );
 
 
-      saveProgress(false);
+      saveProgress(
+        false
+      );
+
 
       render();
 
+
       showToast(
-        "🗑️ All progress reset"
+        "🗑️ All chapters are now Not Started"
       );
 
     }
@@ -2623,15 +3929,20 @@
     ========================================================== */
 
     document
-      .getElementById("themeToggle")
+      .getElementById(
+        "themeToggle"
+      )
       .addEventListener(
         "click",
         () => {
 
           const isDark =
-            document.body.classList.contains(
-              "dark"
-            );
+            document.body
+              .classList
+              .contains(
+                "dark"
+              );
+
 
           applyTheme(
             isDark
@@ -2644,7 +3955,9 @@
 
 
     document
-      .getElementById("chapterSearch")
+      .getElementById(
+        "chapterSearch"
+      )
       .addEventListener(
         "input",
         event => {
@@ -2652,11 +3965,12 @@
           state.search =
             event.target.value;
 
+
           render();
 
+
           /*
-            Keep cursor inside search box
-            after re-render.
+            Keep cursor in search.
           */
 
           const search =
@@ -2664,7 +3978,9 @@
               "chapterSearch"
             );
 
+
           search.focus();
+
 
           search.setSelectionRange(
             state.search.length,
@@ -2676,7 +3992,9 @@
 
 
     document
-      .getElementById("subjectFilter")
+      .getElementById(
+        "subjectFilter"
+      )
       .addEventListener(
         "change",
         event => {
@@ -2684,32 +4002,44 @@
           state.subject =
             event.target.value;
 
+
           render();
 
+
           if (
-            state.subject !== "all"
+            state.subject !==
+            "all"
           ) {
 
             const index =
-              Object.keys(books)
-                .indexOf(
-                  state.subject
-                );
+              Object.keys(
+                books
+              ).indexOf(
+                state.subject
+              );
 
-            if (index >= 0) {
 
-              requestAnimationFrame(() => {
+            if (
+              index >= 0
+            ) {
 
-                document
-                  .getElementById(
-                    `subject-${index}`
-                  )
-                  ?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                  });
+              requestAnimationFrame(
+                () => {
 
-              });
+                  document
+                    .getElementById(
+                      `subject-${index}`
+                    )
+                    ?.scrollIntoView({
+                      behavior:
+                        "smooth",
+
+                      block:
+                        "start"
+                    });
+
+                }
+              );
 
             }
 
@@ -2720,26 +4050,33 @@
 
 
     document
-      .querySelectorAll(".filter-btn")
-      .forEach(button => {
+      .querySelectorAll(
+        ".filter-btn"
+      )
+      .forEach(
+        button => {
 
-        button.addEventListener(
-          "click",
-          () => {
+          button.addEventListener(
+            "click",
+            () => {
 
-            state.status =
-              button.dataset.status;
+              state.status =
+                button.dataset.status;
 
-            render();
 
-          }
-        );
+              render();
 
-      });
+            }
+          );
+
+        }
+      );
 
 
     document
-      .getElementById("expandAllBtn")
+      .getElementById(
+        "expandAllBtn"
+      )
       .addEventListener(
         "click",
         expandAll
@@ -2747,7 +4084,9 @@
 
 
     document
-      .getElementById("collapseAllBtn")
+      .getElementById(
+        "collapseAllBtn"
+      )
       .addEventListener(
         "click",
         collapseAll
@@ -2755,11 +4094,13 @@
 
 
     /*
-      THE ONLY MAIN SAVE BUTTON
+      ONLY MAIN SAVE BUTTON
     */
 
     document
-      .getElementById("saveBtn")
+      .getElementById(
+        "saveBtn"
+      )
       .addEventListener(
         "click",
         () => {
@@ -2773,18 +4114,24 @@
                 "saveBtn"
               );
 
+
             const oldText =
               button.textContent;
+
 
             button.textContent =
               "✅ Saved";
 
-            setTimeout(() => {
 
-              button.textContent =
-                oldText;
+            setTimeout(
+              () => {
 
-            }, 1600);
+                button.textContent =
+                  oldText;
+
+              },
+              1600
+            );
 
           }
 
@@ -2793,7 +4140,9 @@
 
 
     document
-      .getElementById("backupBtn")
+      .getElementById(
+        "backupBtn"
+      )
       .addEventListener(
         "click",
         createBackup
@@ -2801,7 +4150,9 @@
 
 
     document
-      .getElementById("restoreBtn")
+      .getElementById(
+        "restoreBtn"
+      )
       .addEventListener(
         "click",
         () => {
@@ -2817,38 +4168,52 @@
 
 
     document
-      .getElementById("restoreFile")
+      .getElementById(
+        "restoreFile"
+      )
       .addEventListener(
         "change",
         event => {
 
           const file =
-            event.target.files?.[0];
+            event.target
+              .files?.[0];
+
 
           if (file) {
-            restoreBackup(file);
+
+            restoreBackup(
+              file
+            );
+
           }
 
-          event.target.value = "";
+
+          event.target.value =
+            "";
 
         }
       );
 
 
     document
-      .getElementById("resetBtn")
+      .getElementById(
+        "resetBtn"
+      )
       .addEventListener(
         "click",
         resetAll
       );
 
 
-    /*
-      Continue studying button
-    */
+    /* =========================================================
+       CONTINUE BUTTON
+    ========================================================== */
 
     document
-      .getElementById("continueBtn")
+      .getElementById(
+        "continueBtn"
+      )
       .addEventListener(
         "click",
         () => {
@@ -2859,67 +4224,111 @@
 
 
           const index =
-            Object.keys(books)
-              .indexOf(
-                lastChapter.book
-              );
+            Object.keys(
+              books
+            ).indexOf(
+              lastChapter.book
+            );
 
 
-          if (index < 0) {
+          if (
+            index < 0
+          ) {
+
             return;
+
           }
 
 
-          const target =
-            document.getElementById(
-              `chapter-${index}-${lastChapter.chapter}`
-            );
+          /*
+            If filters are active,
+            clear them first so the
+            target chapter becomes visible.
+          */
+
+          state.search =
+            "";
+
+          state.subject =
+            "all";
+
+          state.status =
+            "all";
 
 
-          if (target) {
+          render();
 
-            target.scrollIntoView({
-              behavior: "smooth",
-              block: "center"
-            });
 
-            target.animate(
-              [
-                {
-                  transform: "scale(1)"
-                },
-                {
-                  transform: "scale(1.02)"
-                },
-                {
-                  transform: "scale(1)"
-                }
-              ],
-              {
-                duration: 450
+          requestAnimationFrame(
+            () => {
+
+              const target =
+                document.getElementById(
+                  `chapter-${index}-${lastChapter.chapter}`
+                );
+
+
+              if (target) {
+
+                target.scrollIntoView({
+                  behavior:
+                    "smooth",
+
+                  block:
+                    "center"
+                });
+
+
+                target.animate(
+                  [
+                    {
+                      transform:
+                        "scale(1)"
+                    },
+
+                    {
+                      transform:
+                        "scale(1.02)"
+                    },
+
+                    {
+                      transform:
+                        "scale(1)"
+                    }
+
+                  ],
+                  {
+                    duration:
+                      450
+                  }
+                );
+
               }
-            );
 
-          }
+            }
+          );
 
         }
       );
 
 
     /* =========================================================
-       BEFORE UNLOAD
-       ========================================================= */
+       AUTO SAVE ON EXIT
+    ========================================================== */
 
     window.addEventListener(
       "beforeunload",
       () => {
 
         /*
-          Keep progress safe even if the
-          user forgets to press Save.
+          Save automatically as a safety net.
+          The visible Save button still remains
+          at the bottom.
         */
 
-        saveProgress(false);
+        saveProgress(
+          false
+        );
 
       }
     );
@@ -2936,13 +4345,15 @@
   </script>
 
 
-  <!-- =========================
+  <!-- =========================================================
        SERVICE WORKER
-  ========================== -->
+  ========================================================== -->
 
   <script>
+
     if (
-      "serviceWorker" in navigator
+      "serviceWorker" in
+      navigator
     ) {
 
       window.addEventListener(
@@ -2951,14 +4362,17 @@
 
           navigator.serviceWorker
             .register("./sw.js")
-            .catch(() => {
-              // Service worker is optional.
-            });
+            .catch(
+              () => {
+                // Optional.
+              }
+            );
 
         }
       );
 
     }
+
   </script>
 
 </body>
