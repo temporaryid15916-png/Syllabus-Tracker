@@ -1,6 +1,6 @@
 {
-  "name": "Syllabus Tracker",
-  "short_name": "Syllabus",
+  "name": "Syllabus-Tracker",
+  "short_name": "Syllabus-Tracker",
   "description": "HSC 1st & 2nd Year syllabus progress tracking app",
   "start_url": "./",
   "scope": "./",
