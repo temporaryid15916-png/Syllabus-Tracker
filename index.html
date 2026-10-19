@@ -7374,6 +7374,23 @@ if(
 }
 
 </script>
+<script>
+(function(){
+  const splash = document.getElementById("appSplash");
 
+  if(!splash) return;
+
+  window.addEventListener("load", function(){
+    setTimeout(function(){
+      splash.classList.add("hide");
+
+      setTimeout(function(){
+        splash.remove();
+      }, 500);
+
+    }, 1200);
+  });
+})();
+</script>
 </body>
 </html>
