@@ -95,9 +95,9 @@
       cursor: pointer;
     }
 
-    /* =========================================================
+    /* =====================================================
        HEADER
-    ========================================================== */
+    ====================================================== */
 
     .topbar {
       position: sticky;
@@ -106,12 +106,11 @@
 
       backdrop-filter: blur(14px);
 
-      background:
-        color-mix(
-          in srgb,
-          var(--bg) 88%,
-          transparent
-        );
+      background: color-mix(
+        in srgb,
+        var(--bg) 88%,
+        transparent
+      );
 
       border-bottom: 1px solid var(--border);
     }
@@ -164,9 +163,9 @@
       border-color: var(--primary);
     }
 
-    /* =========================================================
+    /* =====================================================
        MAIN
-    ========================================================== */
+    ====================================================== */
 
     .container {
       max-width: 1200px;
@@ -175,9 +174,9 @@
       padding: 28px 20px 45px;
     }
 
-    /* =========================================================
+    /* =====================================================
        DASHBOARD
-    ========================================================== */
+    ====================================================== */
 
     .dashboard {
       display: grid;
@@ -226,9 +225,9 @@
       font-size: 12px;
     }
 
-    /* =========================================================
+    /* =====================================================
        OVERALL PROGRESS
-    ========================================================== */
+    ====================================================== */
 
     .overall-progress-card {
       background: var(--card);
@@ -292,9 +291,9 @@
         width 0.35s ease;
     }
 
-    /* =========================================================
+    /* =====================================================
        CONTINUE CARD
-    ========================================================== */
+    ====================================================== */
 
     .continue-card {
       background:
@@ -368,9 +367,9 @@
       font-weight: 800;
     }
 
-    /* =========================================================
+    /* =====================================================
        TOOLBAR
-    ========================================================== */
+    ====================================================== */
 
     .toolbar {
       background: var(--card);
@@ -481,9 +480,9 @@
       flex: 1;
     }
 
-    /* =========================================================
+    /* =====================================================
        SUBJECT CARDS
-    ========================================================== */
+    ====================================================== */
 
     #subjectsContainer {
       display: flex;
@@ -509,7 +508,6 @@
     }
 
     @keyframes fadeUp {
-
       from {
         opacity: 0;
         transform: translateY(5px);
@@ -519,7 +517,6 @@
         opacity: 1;
         transform: translateY(0);
       }
-
     }
 
     .subject-header {
@@ -651,9 +648,9 @@
       display: none;
     }
 
-    /* =========================================================
+    /* =====================================================
        CHAPTER ROW
-    ========================================================== */
+    ====================================================== */
 
     .chapter-list {
       display: grid;
@@ -692,13 +689,9 @@
       transform: translateY(-1px);
     }
 
-    /* ---------- NOT STARTED ---------- */
-
     .chapter-row.not-started {
       background: var(--card-soft);
     }
-
-    /* ---------- IN PROGRESS ---------- */
 
     .chapter-row.in-progress {
       background: var(--warning-soft);
@@ -710,8 +703,6 @@
           var(--border)
         );
     }
-
-    /* ---------- COMPLETE ---------- */
 
     .chapter-row.completed {
       background: var(--success-soft);
@@ -790,9 +781,9 @@
       font-weight: 750;
     }
 
-    /* =========================================================
+    /* =====================================================
        STATUS BUTTON
-    ========================================================== */
+    ====================================================== */
 
     .status-btn {
       border: 1px solid var(--border);
@@ -847,10 +838,6 @@
       filter: brightness(0.95);
     }
 
-    /* =========================================================
-       LAST SELECTED
-    ========================================================== */
-
     .chapter-row.last-selected {
       box-shadow:
         0 0 0 2px
@@ -861,9 +848,9 @@
         );
     }
 
-    /* =========================================================
+    /* =====================================================
        EMPTY
-    ========================================================== */
+    ====================================================== */
 
     .empty-state {
       background: var(--card);
@@ -893,9 +880,9 @@
       margin-bottom: 5px;
     }
 
-    /* =========================================================
+    /* =====================================================
        BOTTOM ACTIONS
-    ========================================================== */
+    ====================================================== */
 
     .bottom-actions {
       margin-top: 25px;
@@ -922,8 +909,7 @@
     }
 
     /*
-      IMPORTANT:
-      Only ONE Save button exists here.
+      ONLY ONE SAVE BUTTON
     */
 
     .save-btn {
@@ -933,13 +919,13 @@
 
       color: white;
 
-      padding: 11px 22px;
+      padding: 11px 24px;
 
       border-radius: 11px;
 
       font-weight: 850;
 
-      min-width: 120px;
+      min-width: 125px;
 
       transition: 0.2s ease;
     }
@@ -950,7 +936,6 @@
       filter: brightness(0.96);
     }
 
-    .backup-btn,
     .reset-btn {
       border: 1px solid var(--border);
 
@@ -958,19 +943,13 @@
 
       color: var(--text);
 
-      padding: 10px 15px;
+      padding: 10px 16px;
 
       border-radius: 11px;
 
       font-weight: 800;
 
       transition: 0.2s ease;
-    }
-
-    .backup-btn:hover {
-      border-color: var(--primary);
-
-      color: var(--primary);
     }
 
     .reset-btn:hover {
@@ -981,9 +960,9 @@
       background: var(--danger-soft);
     }
 
-    /* =========================================================
+    /* =====================================================
        TOAST
-    ========================================================== */
+    ====================================================== */
 
     #toastContainer {
       position: fixed;
@@ -1022,7 +1001,6 @@
     }
 
     @keyframes toastIn {
-
       from {
         opacity: 0;
         transform: translateY(8px);
@@ -1032,12 +1010,11 @@
         opacity: 1;
         transform: translateY(0);
       }
-
     }
 
-    /* =========================================================
+    /* =====================================================
        FOOTER
-    ========================================================== */
+    ====================================================== */
 
     footer {
       text-align: center;
@@ -1049,9 +1026,9 @@
       padding: 20px;
     }
 
-    /* =========================================================
+    /* =====================================================
        RESPONSIVE
-    ========================================================== */
+    ====================================================== */
 
     @media (max-width: 900px) {
 
@@ -1158,7 +1135,6 @@
       }
 
       .save-btn,
-      .backup-btn,
       .reset-btn {
         width: 100%;
       }
@@ -1180,9 +1156,9 @@
 
 <body>
 
-  <!-- =========================================================
+  <!-- =====================================================
        HEADER
-  ========================================================== -->
+  ====================================================== -->
 
   <header class="topbar">
 
@@ -1214,9 +1190,9 @@
 
   <main class="container">
 
-    <!-- =======================================================
+    <!-- ===================================================
          DASHBOARD
-    ======================================================== -->
+    ==================================================== -->
 
     <section class="dashboard">
 
@@ -1302,9 +1278,9 @@
     </section>
 
 
-    <!-- =======================================================
+    <!-- ===================================================
          OVERALL PROGRESS
-    ======================================================== -->
+    ==================================================== -->
 
     <section class="overall-progress-card">
 
@@ -1336,9 +1312,9 @@
     </section>
 
 
-    <!-- =======================================================
-         CONTINUE STUDYING
-    ======================================================== -->
+    <!-- ===================================================
+         CONTINUE
+    ==================================================== -->
 
     <section
       class="continue-card"
@@ -1376,9 +1352,9 @@
     </section>
 
 
-    <!-- =======================================================
+    <!-- ===================================================
          SEARCH / FILTER
-    ======================================================== -->
+    ==================================================== -->
 
     <section class="toolbar">
 
@@ -1477,17 +1453,17 @@
     </section>
 
 
-    <!-- =======================================================
+    <!-- ===================================================
          SUBJECTS
-    ======================================================== -->
+    ==================================================== -->
 
     <section id="subjectsContainer"></section>
 
 
-    <!-- =======================================================
+    <!-- ===================================================
          BOTTOM ACTIONS
          ONLY ONE SAVE BUTTON
-    ======================================================== -->
+    ==================================================== -->
 
     <section class="bottom-actions">
 
@@ -1501,38 +1477,12 @@
 
 
       <button
-        class="backup-btn"
-        id="backupBtn"
-        type="button"
-      >
-        📦 Backup
-      </button>
-
-
-      <button
-        class="backup-btn"
-        id="restoreBtn"
-        type="button"
-      >
-        ♻️ Restore
-      </button>
-
-
-      <button
         class="reset-btn"
         id="resetBtn"
         type="button"
       >
         🗑️ Reset All
       </button>
-
-
-      <input
-        type="file"
-        id="restoreFile"
-        accept=".json,application/json"
-        hidden
-      />
 
     </section>
 
@@ -1548,9 +1498,10 @@
 
 
   <script>
-    /* =========================================================
-       BOOK / CHAPTER DATA
-    ========================================================== */
+
+    /* =====================================================
+       BOOKS
+    ====================================================== */
 
     const books = {
 
@@ -1573,11 +1524,9 @@
     };
 
 
-    /*
-      Chapter names are PERMANENT.
-
-      Users cannot edit them.
-    */
+    /* =====================================================
+       PERMANENT CHAPTER NAMES
+    ====================================================== */
 
     const permanentChapterNames = {
 
@@ -1594,7 +1543,6 @@
         "আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব"
       ],
 
-
       "Physics 2nd Paper": [
         "তাপগতিবিদ্যা",
         "স্থির তড়িৎ",
@@ -1609,7 +1557,6 @@
         "জ্যোতির্বিজ্ঞান"
       ],
 
-
       "Chemistry 1st Paper": [
         "ল্যাবরেটরির নিরাপদ ব্যবহার",
         "গুণগত রসায়ন",
@@ -1618,7 +1565,6 @@
         "কর্মমুখী রসায়ন"
       ],
 
-
       "Chemistry 2nd Paper": [
         "পরিবেশ রসায়ন",
         "জৈব রসায়ন",
@@ -1626,7 +1572,6 @@
         "তড়িৎ রসায়ন",
         "অর্থনৈতিক রসায়ন"
       ],
-
 
       "Higher Math 1st Paper": [
         "ম্যাট্রিক্স ও নির্ণায়ক",
@@ -1641,7 +1586,6 @@
         "যোগজীকরণ"
       ],
 
-
       "Higher Math 2nd Paper": [
         "বাস্তব সংখ্যা ও অসমতা",
         "যোগাশ্রয়ী প্রোগ্রাম",
@@ -1654,7 +1598,6 @@
         "সমতলে বস্তুকণার গতি",
         "সম্ভাবনা"
       ],
-
 
       "Botany": [
         "কোষ ও এর গঠন",
@@ -1670,7 +1613,6 @@
         "জীবপ্রযুক্তি",
         "পরিবেশ ও সংরক্ষণ"
       ],
-
 
       "Zoology": [
         "প্রাণীর বৈচিত্র্য ও শ্রেণিবিন্যাস",
@@ -1690,9 +1632,9 @@
     };
 
 
-    /* =========================================================
+    /* =====================================================
        STORAGE
-    ========================================================== */
+    ====================================================== */
 
     const STORAGE_KEY =
       "syllabusTracker";
@@ -1766,23 +1708,9 @@
     }
 
 
-    /* =========================================================
-       PROGRESS MODEL
-    ========================================================== */
-
-    /*
-      IMPORTANT:
-
-      Progress is now stored as:
-
-      "not-started"
-      "in-progress"
-      "complete"
-
-      Older true/false data is also understood:
-      true → complete
-      false → not-started
-    */
+    /* =====================================================
+       LOAD PROGRESS
+    ====================================================== */
 
     const rawProgress =
       readJSON(
@@ -1818,6 +1746,16 @@
       );
 
 
+    /*
+      New format:
+        not-started
+        in-progress
+        complete
+
+      Old format:
+        true = complete
+    */
+
     Object.entries(
       rawProgress || {}
     ).forEach(
@@ -1830,12 +1768,7 @@
         }
 
 
-        /*
-          New format
-        */
-
         if (
-          value === "not-started" ||
           value === "in-progress" ||
           value === "complete"
         ) {
@@ -1843,16 +1776,16 @@
           progress[key] =
             value;
 
-          return;
-
         }
 
 
         /*
-          Old format compatibility.
+          Old saved data compatibility
         */
 
-        if (value === true) {
+        else if (
+          value === true
+        ) {
 
           progress[key] =
             "complete";
@@ -1877,9 +1810,9 @@
       );
 
 
-    /* =========================================================
+    /* =====================================================
        FILTER STATE
-    ========================================================== */
+    ====================================================== */
 
     const state = {
 
@@ -1892,9 +1825,9 @@
     };
 
 
-    /* =========================================================
-       STATUS HELPERS
-    ========================================================== */
+    /* =====================================================
+       STATUS
+    ====================================================== */
 
     function progressKey(
       book,
@@ -1929,15 +1862,37 @@
       status
     ) {
 
-      progress[
+      const key =
         progressKey(
           book,
           chapter
-        )
-      ] = status;
+        );
+
+
+      /*
+        Not Started is the default,
+        so don't needlessly store it.
+      */
+
+      if (
+        status === "not-started"
+      ) {
+
+        delete progress[key];
+
+      } else {
+
+        progress[key] =
+          status;
+
+      }
 
     }
 
+
+    /* =====================================================
+       COUNTERS
+    ====================================================== */
 
     function getBookCompleted(book) {
 
@@ -2004,6 +1959,7 @@
       const total =
         books[book];
 
+
       const completed =
         getBookCompleted(book);
 
@@ -2067,9 +2023,9 @@
     }
 
 
-    /* =========================================================
+    /* =====================================================
        TOAST
-    ========================================================== */
+    ====================================================== */
 
     function showToast(message) {
 
@@ -2110,7 +2066,9 @@
 
           setTimeout(
             () => {
+
               toast.remove();
+
             },
             200
           );
@@ -2122,9 +2080,9 @@
     }
 
 
-    /* =========================================================
+    /* =====================================================
        SAVE
-    ========================================================== */
+    ====================================================== */
 
     function saveProgress(
       showMessage = true
@@ -2154,9 +2112,9 @@
     }
 
 
-    /* =========================================================
+    /* =====================================================
        LAST CHAPTER
-    ========================================================== */
+    ====================================================== */
 
     function rememberChapter(
       book,
@@ -2183,9 +2141,9 @@
     }
 
 
-    /* =========================================================
+    /* =====================================================
        THEME
-    ========================================================== */
+    ====================================================== */
 
     function applyTheme(theme) {
 
@@ -2239,9 +2197,9 @@
     }
 
 
-    /* =========================================================
-       FILTER MATCH
-    ========================================================== */
+    /* =====================================================
+       FILTER
+    ====================================================== */
 
     function chapterMatches(
       book,
@@ -2335,9 +2293,9 @@
     }
 
 
-    /* =========================================================
+    /* =====================================================
        DASHBOARD
-    ========================================================== */
+    ====================================================== */
 
     function updateDashboard() {
 
@@ -2351,12 +2309,6 @@
 
       const inProgress =
         getTotalInProgress();
-
-
-      const notStarted =
-        total -
-        completed -
-        inProgress;
 
 
       const percent =
@@ -2405,9 +2357,9 @@
     }
 
 
-    /* =========================================================
-       SUBJECT SELECT
-    ========================================================== */
+    /* =====================================================
+       SUBJECT FILTER
+    ====================================================== */
 
     function buildSubjectFilter() {
 
@@ -2417,7 +2369,8 @@
         );
 
 
-      select.innerHTML = "";
+      select.innerHTML =
+        "";
 
 
       const allOption =
@@ -2469,9 +2422,9 @@
     }
 
 
-    /* =========================================================
+    /* =====================================================
        CONTINUE CARD
-    ========================================================== */
+    ====================================================== */
 
     function updateContinueCard() {
 
@@ -2530,9 +2483,9 @@
     }
 
 
-    /* =========================================================
-       CHAPTER STATUS CLICK
-    ========================================================== */
+    /* =====================================================
+       STATUS FLOW
+    ====================================================== */
 
     function handleStatusClick(
       book,
@@ -2547,9 +2500,9 @@
 
 
       /*
-        1. Not Started
-           ↓
-        In Progress
+        NOT STARTED
+        ↓
+        IN PROGRESS
       */
 
       if (
@@ -2575,7 +2528,7 @@
 
 
         showToast(
-          "🟡 Chapter is now In Progress"
+          "🟡 In Progress"
         );
 
 
@@ -2585,9 +2538,9 @@
 
 
       /*
-        2. In Progress
-           ↓
-        Complete
+        IN PROGRESS
+        ↓
+        COMPLETE
       */
 
       if (
@@ -2613,7 +2566,7 @@
 
 
         showToast(
-          "🟢 Chapter Completed!"
+          "🟢 Complete!"
         );
 
 
@@ -2623,30 +2576,16 @@
 
 
       /*
-        3. Complete
-           ↓
-        Confirmation
-           ↓
-        Not Started
+        COMPLETE
+        ↓
+        NOT STARTED
+
+        NO CONFIRMATION
       */
 
       if (
         current === "complete"
       ) {
-
-        const confirmed =
-          confirm(
-            "এই chapter-টি আবার Not Started করতে চান?\n\n" +
-            "Confirm করলে chapter-এর status আবার Not Started হবে।"
-          );
-
-
-        if (!confirmed) {
-
-          return;
-
-        }
-
 
         setStatus(
           book,
@@ -2654,12 +2593,6 @@
           "not-started"
         );
 
-
-        /*
-          If this was the last selected
-          chapter, keep it as last chapter
-          so user can easily find it again.
-        */
 
         rememberChapter(
           book,
@@ -2673,7 +2606,7 @@
 
 
         showToast(
-          "⚪ Chapter is now Not Started"
+          "⚪ Not Started"
         );
 
       }
@@ -2681,9 +2614,9 @@
     }
 
 
-    /* =========================================================
+    /* =====================================================
        SUBJECT CARD
-    ========================================================== */
+    ====================================================== */
 
     function createSubjectCard(
       book,
@@ -2740,7 +2673,7 @@
         `subject-${bookIndex}`;
 
 
-      /* ---------- Header ---------- */
+      /* ---------- HEADER ---------- */
 
       const header =
         document.createElement(
@@ -2978,8 +2911,6 @@
       );
 
 
-      /* ---------- Toggle ---------- */
-
       function toggleSubject() {
 
         const collapsed =
@@ -3025,7 +2956,7 @@
       );
 
 
-      /* ---------- Body ---------- */
+      /* ---------- BODY ---------- */
 
       const body =
         document.createElement(
@@ -3077,10 +3008,6 @@
             "div"
           );
 
-
-        /*
-          Status-specific class
-        */
 
         row.className =
           "chapter-row";
@@ -3136,7 +3063,7 @@
           `chapter-${bookIndex}-${chapter}`;
 
 
-        /* ---------- Number ---------- */
+        /* ---------- NUMBER ---------- */
 
         const number =
           document.createElement(
@@ -3157,7 +3084,7 @@
           );
 
 
-        /* ---------- Content ---------- */
+        /* ---------- CONTENT ---------- */
 
         const content =
           document.createElement(
@@ -3180,9 +3107,9 @@
 
 
         /*
-          Chapter name is fixed.
-          No input.
-          No contenteditable.
+          FIXED CHAPTER NAME.
+          NO INPUT.
+          NO EDITING.
         */
 
         name.textContent =
@@ -3242,7 +3169,7 @@
         );
 
 
-        /* ---------- Status Button ---------- */
+        /* ---------- BUTTON ---------- */
 
         const statusBtn =
           document.createElement(
@@ -3270,12 +3197,6 @@
           statusBtn.textContent =
             "⚪ Not Started";
 
-
-          statusBtn.setAttribute(
-            "aria-label",
-            `${book}, chapter ${chapter}: Not Started`
-          );
-
         }
 
 
@@ -3291,12 +3212,6 @@
           statusBtn.textContent =
             "🟡 In Progress";
 
-
-          statusBtn.setAttribute(
-            "aria-label",
-            `${book}, chapter ${chapter}: In Progress`
-          );
-
         }
 
 
@@ -3311,12 +3226,6 @@
 
           statusBtn.textContent =
             "✓ Complete";
-
-
-          statusBtn.setAttribute(
-            "aria-label",
-            `${book}, chapter ${chapter}: Complete`
-          );
 
         }
 
@@ -3379,9 +3288,9 @@
     }
 
 
-    /* =========================================================
+    /* =====================================================
        RENDER
-    ========================================================== */
+    ====================================================== */
 
     function render() {
 
@@ -3450,11 +3359,53 @@
           "empty-state";
 
 
-        empty.innerHTML = `
-          <div class="empty-icon">🔎</div>
-          <strong>No chapters found</strong>
-          <span>Try another search or filter.</span>
-        `;
+        const icon =
+          document.createElement(
+            "div"
+          );
+
+
+        icon.className =
+          "empty-icon";
+
+
+        icon.textContent =
+          "🔎";
+
+
+        const strong =
+          document.createElement(
+            "strong"
+          );
+
+
+        strong.textContent =
+          "No chapters found";
+
+
+        const text =
+          document.createElement(
+            "span"
+          );
+
+
+        text.textContent =
+          "Try another search or filter.";
+
+
+        empty.appendChild(
+          icon
+        );
+
+
+        empty.appendChild(
+          strong
+        );
+
+
+        empty.appendChild(
+          text
+        );
 
 
         container.appendChild(
@@ -3469,9 +3420,9 @@
     }
 
 
-    /* =========================================================
-       FILTER BUTTON UI
-    ========================================================== */
+    /* =====================================================
+       FILTER BUTTONS
+    ====================================================== */
 
     function updateFilterButtons() {
 
@@ -3494,9 +3445,9 @@
     }
 
 
-    /* =========================================================
+    /* =====================================================
        EXPAND / COLLAPSE
-    ========================================================== */
+    ====================================================== */
 
     function expandAll() {
 
@@ -3558,320 +3509,9 @@
     }
 
 
-    /* =========================================================
-       BACKUP
-    ========================================================== */
-
-    function createBackup() {
-
-      const backup = {
-
-        app:
-          "Syllabus Tracker",
-
-        version:
-          3,
-
-        exportedAt:
-          new Date().toISOString(),
-
-        progress:
-          progress,
-
-        lastChapter:
-          lastChapter
-
-      };
-
-
-      const blob =
-        new Blob(
-          [
-            JSON.stringify(
-              backup,
-              null,
-              2
-            )
-          ],
-          {
-            type:
-              "application/json"
-          }
-        );
-
-
-      const url =
-        URL.createObjectURL(
-          blob
-        );
-
-
-      const link =
-        document.createElement(
-          "a"
-        );
-
-
-      const date =
-        new Date()
-          .toISOString()
-          .slice(
-            0,
-            10
-          );
-
-
-      link.href =
-        url;
-
-
-      link.download =
-        `syllabus-tracker-backup-${date}.json`;
-
-
-      document.body.appendChild(
-        link
-      );
-
-
-      link.click();
-
-
-      link.remove();
-
-
-      URL.revokeObjectURL(
-        url
-      );
-
-
-      showToast(
-        "📦 Backup downloaded"
-      );
-
-    }
-
-
-    /* =========================================================
-       RESTORE
-    ========================================================== */
-
-    function restoreBackup(file) {
-
-      const reader =
-        new FileReader();
-
-
-      reader.onload =
-        event => {
-
-          try {
-
-            const backup =
-              JSON.parse(
-                event.target.result
-              );
-
-
-            if (
-              !backup ||
-              typeof backup !==
-                "object" ||
-              typeof backup.progress !==
-                "object"
-            ) {
-
-              throw new Error(
-                "Invalid backup"
-              );
-
-            }
-
-
-            /*
-              Clear current progress.
-            */
-
-            Object.keys(
-              progress
-            ).forEach(
-              key => {
-
-                delete progress[key];
-
-              }
-            );
-
-
-            /*
-              Restore only valid
-              chapter statuses.
-            */
-
-            Object.entries(
-              backup.progress
-            ).forEach(
-              ([key, value]) => {
-
-                if (
-                  !validProgressKeys.has(
-                    key
-                  )
-                ) {
-
-                  return;
-
-                }
-
-
-                if (
-                  value ===
-                    "not-started" ||
-                  value ===
-                    "in-progress" ||
-                  value ===
-                    "complete"
-                ) {
-
-                  /*
-                    We don't need to store
-                    "not-started", because
-                    that is the default.
-                  */
-
-                  if (
-                    value !==
-                      "not-started"
-                  ) {
-
-                    progress[key] =
-                      value;
-
-                  }
-
-                }
-
-
-                /*
-                  Old backup compatibility.
-                */
-
-                if (
-                  value === true
-                ) {
-
-                  progress[key] =
-                    "complete";
-
-                }
-
-              }
-            );
-
-
-            /*
-              Restore last chapter.
-            */
-
-            if (
-              backup.lastChapter &&
-              books[
-                backup.lastChapter.book
-              ] &&
-              Number.isInteger(
-                backup.lastChapter.chapter
-              ) &&
-              backup.lastChapter.chapter >=
-                1 &&
-              backup.lastChapter.chapter <=
-                books[
-                  backup.lastChapter.book
-                ]
-            ) {
-
-              lastChapter = {
-
-                book:
-                  backup
-                    .lastChapter
-                    .book,
-
-                chapter:
-                  backup
-                    .lastChapter
-                    .chapter,
-
-                time:
-                  backup
-                    .lastChapter
-                    .time ||
-                  Date.now()
-
-              };
-
-
-              writeJSON(
-                LAST_KEY,
-                lastChapter
-              );
-
-            } else {
-
-              lastChapter =
-                null;
-
-
-              removeStorage(
-                LAST_KEY
-              );
-
-            }
-
-
-            saveProgress(
-              false
-            );
-
-
-            render();
-
-
-            showToast(
-              "♻️ Backup restored successfully"
-            );
-
-
-          } catch (error) {
-
-            showToast(
-              "❌ Invalid backup file"
-            );
-
-          }
-
-        };
-
-
-      reader.onerror =
-        () => {
-
-          showToast(
-            "❌ Could not read backup"
-          );
-
-        };
-
-
-      reader.readAsText(
-        file
-      );
-
-    }
-
-
-    /* =========================================================
+    /* =====================================================
        RESET ALL
-    ========================================================== */
+    ====================================================== */
 
     function resetAll() {
 
@@ -3924,9 +3564,9 @@
     }
 
 
-    /* =========================================================
+    /* =====================================================
        EVENT LISTENERS
-    ========================================================== */
+    ====================================================== */
 
     document
       .getElementById(
@@ -3968,10 +3608,6 @@
 
           render();
 
-
-          /*
-            Keep cursor in search.
-          */
 
           const search =
             document.getElementById(
@@ -4093,9 +3729,10 @@
       );
 
 
-    /*
-      ONLY MAIN SAVE BUTTON
-    */
+    /* =====================================================
+       SAVE BUTTON
+       ONLY ONE SAVE BUTTON IN THE APP
+    ====================================================== */
 
     document
       .getElementById(
@@ -4139,62 +3776,9 @@
       );
 
 
-    document
-      .getElementById(
-        "backupBtn"
-      )
-      .addEventListener(
-        "click",
-        createBackup
-      );
-
-
-    document
-      .getElementById(
-        "restoreBtn"
-      )
-      .addEventListener(
-        "click",
-        () => {
-
-          document
-            .getElementById(
-              "restoreFile"
-            )
-            .click();
-
-        }
-      );
-
-
-    document
-      .getElementById(
-        "restoreFile"
-      )
-      .addEventListener(
-        "change",
-        event => {
-
-          const file =
-            event.target
-              .files?.[0];
-
-
-          if (file) {
-
-            restoreBackup(
-              file
-            );
-
-          }
-
-
-          event.target.value =
-            "";
-
-        }
-      );
-
+    /* =====================================================
+       RESET BUTTON
+    ====================================================== */
 
     document
       .getElementById(
@@ -4206,9 +3790,9 @@
       );
 
 
-    /* =========================================================
+    /* =====================================================
        CONTINUE BUTTON
-    ========================================================== */
+    ====================================================== */
 
     document
       .getElementById(
@@ -4239,12 +3823,6 @@
 
           }
 
-
-          /*
-            If filters are active,
-            clear them first so the
-            target chapter becomes visible.
-          */
 
           state.search =
             "";
@@ -4312,31 +3890,29 @@
       );
 
 
-    /* =========================================================
-       AUTO SAVE ON EXIT
-    ========================================================== */
+    /* =====================================================
+       SAFETY AUTO-SAVE
+    ====================================================== */
 
     window.addEventListener(
       "beforeunload",
       () => {
 
         /*
-          Save automatically as a safety net.
-          The visible Save button still remains
-          at the bottom.
+          This is only a safety net.
+          The visible Save button remains
+          the main manual save control.
         */
 
-        saveProgress(
-          false
-        );
+        saveProgress(false);
 
       }
     );
 
 
-    /* =========================================================
+    /* =====================================================
        START APP
-    ========================================================== */
+    ====================================================== */
 
     loadTheme();
 
@@ -4345,9 +3921,9 @@
   </script>
 
 
-  <!-- =========================================================
+  <!-- =====================================================
        SERVICE WORKER
-  ========================================================== -->
+  ====================================================== -->
 
   <script>
 
@@ -4363,9 +3939,7 @@
           navigator.serviceWorker
             .register("./sw.js")
             .catch(
-              () => {
-                // Optional.
-              }
+              () => {}
             );
 
         }
