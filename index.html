@@ -1,1 +1,4683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f172a">
 
+<title>Syllabus Tracker</title>
+
+<link rel="manifest" href="./manifest.webmanifest">
+
+<style>
+:root{
+  --bg:#f4f7fb;
+  --card:#fff;
+  --soft:#f8fafc;
+  --text:#172033;
+  --muted:#667085;
+  --border:#e5e7eb;
+
+  --primary:#2563eb;
+  --primary-soft:#eff6ff;
+
+  --success:#16a34a;
+  --success-soft:#ecfdf3;
+
+  --warning:#f59e0b;
+  --warning-soft:#fffbeb;
+
+  --danger:#dc2626;
+  --danger-soft:#fef2f2;
+
+  --shadow:0 8px 30px rgba(15,23,42,.07);
+  --radius:18px;
+}
+
+body.dark{
+  --bg:#0b1120;
+  --card:#111827;
+  --soft:#182233;
+  --text:#f3f4f6;
+  --muted:#9ca3af;
+  --border:#263244;
+
+  --primary:#60a5fa;
+  --primary-soft:#172554;
+
+  --success:#4ade80;
+  --success-soft:#052e16;
+
+  --warning:#fbbf24;
+  --warning-soft:#422006;
+
+  --danger:#f87171;
+  --danger-soft:#450a0a;
+
+  --shadow:0 8px 30px rgba(0,0,0,.25);
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+
+  font-family:
+    Inter,
+    "Noto Sans Bengali",
+    "Noto Sans",
+    system-ui,
+    sans-serif;
+
+  background:var(--bg);
+  color:var(--text);
+
+  transition:.25s ease;
+}
+
+button,
+input,
+select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+
+/* ================= HEADER ================= */
+
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:100;
+
+  backdrop-filter:blur(14px);
+
+  background:color-mix(
+    in srgb,
+    var(--bg) 90%,
+    transparent
+  );
+
+  border-bottom:1px solid var(--border);
+}
+
+.topbar-inner{
+  max-width:1200px;
+  margin:auto;
+
+  padding:16px 20px;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  gap:15px;
+}
+
+.brand h1{
+  margin:0;
+  font-size:24px;
+  font-weight:850;
+}
+
+.brand p{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.theme-btn{
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+
+  padding:9px 14px;
+  border-radius:12px;
+
+  font-weight:750;
+
+  transition:.15s ease;
+}
+
+.theme-btn:hover{
+  transform:translateY(-1px);
+  border-color:var(--primary);
+}
+
+
+/* ================= MAIN ================= */
+
+.container{
+  max-width:1200px;
+  margin:auto;
+
+  padding:28px 20px 45px;
+}
+
+
+/* ================= DASHBOARD ================= */
+
+.dashboard{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+
+  margin-bottom:18px;
+}
+
+.stat-card{
+  background:var(--card);
+
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+
+  padding:18px;
+
+  box-shadow:var(--shadow);
+}
+
+.stat-label{
+  color:var(--muted);
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:7px;
+}
+
+.stat-value{
+  font-size:28px;
+  font-weight:850;
+}
+
+.stat-sub{
+  margin-top:7px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+
+/* ================= OVERALL PROGRESS ================= */
+
+.overall-card{
+  background:var(--card);
+
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+
+  padding:18px;
+
+  box-shadow:var(--shadow);
+
+  margin-bottom:20px;
+}
+
+.overall-top{
+  display:flex;
+  justify-content:space-between;
+
+  margin-bottom:10px;
+}
+
+.overall-percent{
+  color:var(--primary);
+  font-weight:850;
+}
+
+.progress-track{
+  width:100%;
+  height:10px;
+
+  background:var(--border);
+
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.progress-fill{
+  height:100%;
+  width:0;
+
+  background:linear-gradient(
+    90deg,
+    var(--primary),
+    #7c3aed
+  );
+
+  border-radius:999px;
+
+  transition:width .3s ease;
+}
+
+
+/* ================= CONTINUE ================= */
+
+.continue-card{
+  background:
+    linear-gradient(
+      135deg,
+      var(--primary-soft),
+      var(--card)
+    );
+
+  border:1px solid
+    color-mix(
+      in srgb,
+      var(--primary) 30%,
+      var(--border)
+    );
+
+  border-radius:var(--radius);
+
+  padding:17px 18px;
+
+  margin-bottom:20px;
+
+  display:none;
+
+  justify-content:space-between;
+  align-items:center;
+
+  gap:15px;
+}
+
+.continue-label{
+  color:var(--primary);
+
+  font-size:12px;
+  font-weight:850;
+
+  text-transform:uppercase;
+}
+
+.continue-title{
+  margin-top:4px;
+  font-size:16px;
+  font-weight:850;
+}
+
+.continue-sub{
+  margin-top:3px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.continue-btn{
+  border:0;
+
+  background:var(--primary);
+  color:white;
+
+  padding:10px 15px;
+
+  border-radius:11px;
+
+  font-weight:800;
+
+  transition:.15s ease;
+}
+
+.continue-btn:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.05);
+}
+
+
+/* ================= TOOLBAR ================= */
+
+.toolbar{
+  background:var(--card);
+
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+
+  padding:15px;
+
+  margin-bottom:20px;
+
+  box-shadow:var(--shadow);
+}
+
+.toolbar-main{
+  display:grid;
+  grid-template-columns:1fr 220px;
+  gap:10px;
+}
+
+.search,
+.select{
+  width:100%;
+
+  border:1px solid var(--border);
+
+  background:var(--soft);
+  color:var(--text);
+
+  border-radius:12px;
+
+  padding:11px 13px;
+
+  outline:none;
+}
+
+.search:focus,
+.select:focus{
+  border-color:var(--primary);
+}
+
+.filter-row{
+  display:flex;
+  flex-wrap:wrap;
+
+  gap:8px;
+
+  margin-top:12px;
+
+  align-items:center;
+}
+
+.filter-label{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+}
+
+.filter-btn,
+.action-small{
+  border:1px solid var(--border);
+
+  background:var(--soft);
+  color:var(--text);
+
+  border-radius:10px;
+
+  padding:8px 12px;
+
+  font-size:12px;
+  font-weight:800;
+
+  transition:.15s ease;
+}
+
+.filter-btn:hover,
+.action-small:hover{
+  border-color:var(--primary);
+}
+
+.filter-btn.active{
+  background:var(--primary);
+  color:#fff;
+  border-color:var(--primary);
+}
+
+.spacer{
+  flex:1;
+}
+
+
+/* ================= SUBJECT ================= */
+
+#subjects{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.subject{
+  background:var(--card);
+
+  border:1px solid var(--border);
+
+  border-radius:var(--radius);
+
+  box-shadow:var(--shadow);
+
+  overflow:hidden;
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease,
+    border-color .2s ease;
+}
+
+.subject:hover{
+  transform:translateY(-2px);
+
+  border-color:
+    color-mix(
+      in srgb,
+      var(--primary) 35%,
+      var(--border)
+    );
+
+  box-shadow:
+    0 12px 35px
+    rgba(15,23,42,.09);
+}
+
+.subject-header{
+  padding:17px 18px;
+
+  display:flex;
+  align-items:center;
+
+  gap:14px;
+
+  border-bottom:1px solid var(--border);
+
+  cursor:pointer;
+
+  user-select:none;
+}
+
+.subject-icon{
+  width:42px;
+  height:42px;
+
+  flex-shrink:0;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:13px;
+
+  background:var(--primary-soft);
+  color:var(--primary);
+
+  font-size:19px;
+}
+
+.subject-info{
+  flex:1;
+  min-width:0;
+}
+
+.subject-title{
+  margin:0;
+  font-size:17px;
+  font-weight:850;
+}
+
+.subject-meta{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.subject-progress{
+  width:180px;
+}
+
+.subject-progress-text{
+  display:flex;
+  justify-content:space-between;
+
+  margin-bottom:5px;
+
+  color:var(--muted);
+
+  font-size:11px;
+  font-weight:700;
+}
+
+.subject-track{
+  height:7px;
+
+  background:var(--border);
+
+  border-radius:999px;
+
+  overflow:hidden;
+}
+
+.subject-fill{
+  height:100%;
+
+  background:var(--success);
+
+  border-radius:999px;
+
+  transition:.3s ease;
+}
+
+.chevron{
+  color:var(--muted);
+  font-size:18px;
+
+  transition:.25s ease;
+}
+
+.subject.collapsed .chevron{
+  transform:rotate(-90deg);
+}
+
+.subject.collapsed .subject-body{
+  display:none;
+}
+
+.subject-body{
+  padding:14px;
+}
+
+
+/* ================= CHAPTER ================= */
+
+.chapter-list{
+  display:grid;
+  gap:8px;
+}
+
+.chapter{
+  display:flex;
+  align-items:center;
+
+  gap:11px;
+
+  padding:11px 12px;
+
+  border:1px solid var(--border);
+
+  background:var(--soft);
+
+  border-radius:13px;
+
+  transition:.2s ease;
+}
+
+.chapter:hover{
+  border-color:var(--primary);
+  transform:translateY(-1px);
+}
+
+.chapter.in-progress{
+  background:var(--warning-soft);
+
+  border-color:
+    color-mix(
+      in srgb,
+      var(--warning) 30%,
+      var(--border)
+    );
+}
+
+.chapter.complete{
+  background:var(--success-soft);
+
+  border-color:
+    color-mix(
+      in srgb,
+      var(--success) 30%,
+      var(--border)
+    );
+}
+
+.chapter-number{
+  width:34px;
+  height:34px;
+
+  flex-shrink:0;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:10px;
+
+  background:var(--border);
+
+  color:var(--muted);
+
+  font-size:11px;
+  font-weight:850;
+}
+
+.chapter.in-progress .chapter-number{
+  background:var(--warning);
+  color:#fff;
+}
+
+.chapter.complete .chapter-number{
+  background:var(--success);
+  color:#fff;
+}
+
+.chapter-content{
+  flex:1;
+  min-width:0;
+}
+
+.chapter-name{
+  font-size:14px;
+  font-weight:750;
+  line-height:1.45;
+}
+
+.chapter-status{
+  margin-top:3px;
+
+  color:var(--muted);
+
+  font-size:11px;
+}
+
+.chapter.in-progress .chapter-status{
+  color:var(--warning);
+  font-weight:750;
+}
+
+.chapter.complete .chapter-status{
+  color:var(--success);
+  font-weight:750;
+}
+
+
+/* ================= CONTINUE HIGHLIGHT ================= */
+
+.chapter.continue-highlight{
+  animation:continuePulse .7s ease-in-out 0s 3;
+
+  border-color:var(--primary);
+
+  box-shadow:
+    0 0 0 3px
+    color-mix(
+      in srgb,
+      var(--primary) 18%,
+      transparent
+    );
+}
+
+@keyframes continuePulse{
+  0%,100%{
+    transform:translateY(0);
+  }
+
+  50%{
+    transform:translateY(-3px);
+  }
+}
+
+
+/* ================= STATUS BUTTON ================= */
+
+.status-btn{
+  min-width:125px;
+
+  flex-shrink:0;
+
+  border:1px solid var(--border);
+
+  background:var(--card);
+
+  color:var(--text);
+
+  border-radius:10px;
+
+  padding:8px 10px;
+
+  font-size:12px;
+  font-weight:800;
+
+  transition:
+    transform .15s ease,
+    box-shadow .15s ease;
+}
+
+.status-btn:hover{
+  transform:translateY(-1px);
+
+  box-shadow:
+    0 4px 12px
+    rgba(15,23,42,.08);
+}
+
+.status-btn:active{
+  transform:translateY(0);
+}
+
+.status-btn.in-progress{
+  border-color:var(--warning);
+  background:var(--warning-soft);
+  color:var(--warning);
+}
+
+.status-btn.complete{
+  border-color:var(--success);
+  background:var(--success);
+  color:#fff;
+}
+
+
+/* ================= BOTTOM ================= */
+
+.bottom-actions{
+  margin-top:25px;
+
+  padding:16px;
+
+  background:var(--card);
+
+  border:1px solid var(--border);
+
+  border-radius:var(--radius);
+
+  box-shadow:var(--shadow);
+
+  display:flex;
+
+  justify-content:center;
+
+  gap:10px;
+}
+
+.save-btn{
+  border:0;
+
+  background:var(--success);
+  color:#fff;
+
+  padding:11px 25px;
+
+  border-radius:11px;
+
+  font-weight:850;
+
+  min-width:125px;
+
+  transition:.15s ease;
+}
+
+.save-btn:hover{
+  transform:translateY(-1px);
+}
+
+.reset-btn{
+  border:1px solid var(--danger);
+
+  background:var(--danger-soft);
+  color:var(--danger);
+
+  padding:10px 18px;
+
+  border-radius:11px;
+
+  font-weight:800;
+
+  transition:.15s ease;
+}
+
+.reset-btn:hover{
+  transform:translateY(-1px);
+}
+
+
+/* ================= EMPTY ================= */
+
+.empty{
+  background:var(--card);
+
+  border:1px dashed var(--border);
+
+  border-radius:var(--radius);
+
+  padding:45px 20px;
+
+  text-align:center;
+
+  color:var(--muted);
+}
+
+
+/* ================= TOAST ================= */
+
+#toast{
+  position:fixed;
+
+  right:18px;
+  bottom:18px;
+
+  z-index:1500;
+
+  background:var(--text);
+  color:var(--bg);
+
+  padding:11px 15px;
+
+  border-radius:11px;
+
+  font-size:13px;
+  font-weight:750;
+
+  opacity:0;
+
+  pointer-events:none;
+
+  transform:translateY(8px);
+
+  transition:.25s ease;
+}
+
+#toast.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+
+/* ================= RESET MODAL ================= */
+
+.modal{
+  position:fixed;
+
+  inset:0;
+
+  z-index:2000;
+
+  display:none;
+
+  align-items:center;
+  justify-content:center;
+
+  padding:20px;
+
+  background:rgba(0,0,0,.60);
+
+  backdrop-filter:blur(6px);
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-box{
+  width:min(100%,380px);
+
+  background:var(--card);
+
+  color:var(--text);
+
+  border:1px solid var(--border);
+
+  border-radius:20px;
+
+  padding:25px;
+
+  box-shadow:
+    0 25px 70px
+    rgba(0,0,0,.3);
+
+  text-align:center;
+
+  animation:modalPop .2s ease;
+}
+
+@keyframes modalPop{
+  from{
+    opacity:0;
+    transform:scale(.95) translateY(8px);
+  }
+
+  to{
+    opacity:1;
+    transform:scale(1) translateY(0);
+  }
+}
+
+.modal-box h2{
+  margin:0 0 22px;
+
+  font-size:20px;
+  font-weight:850;
+}
+
+.modal-actions{
+  display:flex;
+
+  justify-content:center;
+
+  gap:10px;
+}
+
+.modal-cancel,
+.modal-ok{
+  min-width:105px;
+
+  padding:10px 18px;
+
+  border-radius:10px;
+
+  font-size:13px;
+  font-weight:850;
+}
+
+.modal-cancel{
+  border:1px solid var(--border);
+
+  background:var(--soft);
+  color:var(--text);
+}
+
+.modal-ok{
+  border:1px solid var(--danger);
+
+  background:var(--danger);
+  color:#fff;
+}
+
+
+/* ================= POMODORO ================= */
+
+.pomodoro-page{
+  display:none;
+
+  min-height:calc(100vh - 73px);
+
+  padding:20px 0 50px;
+}
+
+.pomodoro-page.show{
+  display:block;
+}
+
+.pomodoro-wrap{
+  max-width:900px;
+
+  margin:auto;
+
+  padding:10px 20px 30px;
+}
+
+.pomodoro-top{
+  display:flex;
+
+  align-items:center;
+  justify-content:space-between;
+
+  gap:12px;
+
+  margin-bottom:18px;
+}
+
+.pomodoro-back{
+  border:1px solid var(--border);
+
+  background:var(--card);
+  color:var(--text);
+
+  border-radius:10px;
+
+  padding:9px 13px;
+
+  font-size:12px;
+  font-weight:800;
+}
+
+.pomodoro-card{
+  background:var(--card);
+
+  border:1px solid var(--border);
+
+  border-radius:24px;
+
+  box-shadow:var(--shadow);
+
+  padding:42px 20px;
+
+  text-align:center;
+}
+
+.pomodoro-mode{
+  color:var(--primary);
+
+  font-size:13px;
+  font-weight:850;
+
+  text-transform:uppercase;
+
+  letter-spacing:.08em;
+
+  margin-bottom:12px;
+}
+
+.pomodoro-time{
+  font-size:clamp(60px,12vw,110px);
+
+  line-height:1;
+
+  font-weight:900;
+
+  letter-spacing:-.05em;
+
+  margin-bottom:25px;
+}
+
+.pomodoro-progress{
+  width:min(520px,90%);
+
+  height:10px;
+
+  margin:0 auto 25px;
+
+  background:var(--border);
+
+  border-radius:999px;
+
+  overflow:hidden;
+}
+
+.pomodoro-progress-fill{
+  width:0%;
+
+  height:100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--primary),
+      #7c3aed
+    );
+
+  border-radius:999px;
+
+  transition:width .25s linear;
+}
+
+.pomodoro-actions{
+  display:flex;
+
+  justify-content:center;
+
+  flex-wrap:wrap;
+
+  gap:10px;
+
+  margin-bottom:28px;
+}
+
+.pomodoro-actions button{
+  border:1px solid var(--border);
+
+  background:var(--soft);
+  color:var(--text);
+
+  border-radius:11px;
+
+  padding:10px 17px;
+
+  font-weight:800;
+}
+
+.pomodoro-actions .pomo-primary{
+  border-color:var(--primary);
+
+  background:var(--primary);
+
+  color:#fff;
+}
+
+.pomo-last,
+.pomo-settings{
+  max-width:650px;
+
+  margin:0 auto;
+
+  padding:18px;
+
+  border:1px solid var(--border);
+
+  background:var(--soft);
+
+  border-radius:16px;
+
+  text-align:left;
+}
+
+.pomo-last{
+  margin-bottom:14px;
+}
+
+.pomo-section-label{
+  color:var(--muted);
+
+  font-size:11px;
+  font-weight:850;
+
+  text-transform:uppercase;
+
+  letter-spacing:.06em;
+
+  margin-bottom:6px;
+}
+
+.pomo-last-title{
+  font-size:16px;
+  font-weight:850;
+}
+
+.pomo-last-sub{
+  margin-top:4px;
+
+  color:var(--muted);
+
+  font-size:12px;
+}
+
+.pomo-settings-grid{
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:12px;
+}
+
+.pomo-field label{
+  display:block;
+
+  margin-bottom:6px;
+
+  color:var(--muted);
+
+  font-size:12px;
+  font-weight:750;
+}
+
+.pomo-field input{
+  width:100%;
+
+  border:1px solid var(--border);
+
+  background:var(--card);
+  color:var(--text);
+
+  border-radius:10px;
+
+  padding:9px 10px;
+
+  outline:none;
+}
+
+.pomo-field input:focus{
+  border-color:var(--primary);
+}
+
+.pomo-apply{
+  width:100%;
+
+  margin-top:12px;
+
+  border:1px solid var(--primary);
+
+  background:var(--primary);
+
+  color:#fff;
+
+  border-radius:10px;
+
+  padding:10px;
+
+  font-weight:800;
+}
+
+
+/* ================= FOOTER ================= */
+
+footer{
+  text-align:center;
+
+  color:var(--muted);
+
+  font-size:12px;
+
+  padding:20px;
+}
+
+footer div + div{
+  margin-top:4px;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:900px){
+
+  .dashboard{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
+
+@media(max-width:700px){
+
+  .toolbar-main{
+    grid-template-columns:1fr;
+  }
+
+  .subject-progress{
+    display:none;
+  }
+
+}
+
+@media(max-width:650px){
+
+  .filter-row{
+    align-items:stretch;
+  }
+
+  .filter-label{
+    width:100%;
+  }
+
+  .filter-btn{
+    flex:1 1 auto;
+  }
+
+  .spacer{
+    display:none;
+  }
+
+  .action-small{
+    flex:1 1 calc(50% - 8px);
+  }
+
+}
+
+@media(max-width:550px){
+
+  .container{
+    padding:20px 14px 35px;
+  }
+
+  .dashboard{
+    gap:9px;
+  }
+
+  .stat-card{
+    padding:14px;
+  }
+
+  .stat-value{
+    font-size:23px;
+  }
+
+  .chapter{
+    align-items:flex-start;
+  }
+
+  .chapter-name{
+    font-size:13px;
+  }
+
+  .status-btn{
+    min-width:100px;
+
+    padding:7px 8px;
+
+    font-size:11px;
+  }
+
+  .bottom-actions{
+    flex-direction:column;
+  }
+
+  .save-btn,
+  .reset-btn{
+    width:100%;
+  }
+
+  .modal-box{
+    padding:22px 18px;
+  }
+
+  .pomodoro-wrap{
+    padding:16px 14px 30px;
+  }
+
+  .pomodoro-card{
+    padding:24px 14px;
+  }
+
+  .pomo-settings-grid{
+    grid-template-columns:1fr;
+  }
+
+}
+
+@media(max-width:500px){
+
+  .topbar-inner{
+    padding:13px 12px;
+  }
+
+  .brand h1{
+    font-size:20px;
+  }
+
+  .brand p{
+    font-size:11px;
+  }
+
+  .theme-btn{
+    padding:8px 10px;
+    font-size:12px;
+  }
+
+  .pomodoro-top{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+}
+</style>
+</head>
+
+
+<body>
+
+<!-- ================= HEADER ================= -->
+
+<header class="topbar">
+
+  <div class="topbar-inner">
+
+    <div class="brand">
+
+      <h1>📚 Syllabus Tracker</h1>
+
+      <p>
+        Track your syllabus progress easily
+      </p>
+
+    </div>
+
+    <button
+      id="themeBtn"
+      class="theme-btn"
+      type="button"
+    >
+      🌙 Dark
+    </button>
+
+  </div>
+
+</header>
+
+
+<!-- ================= TRACKER PAGE ================= -->
+
+<main
+  id="trackerPage"
+  class="container"
+>
+
+
+<!-- ================= DASHBOARD ================= -->
+
+<section class="dashboard">
+
+  <div class="stat-card">
+
+    <div class="stat-label">
+      Total Chapters
+    </div>
+
+    <div
+      id="total"
+      class="stat-value"
+    >
+      0
+    </div>
+
+    <div class="stat-sub">
+      Across all subjects
+    </div>
+
+  </div>
+
+
+  <div class="stat-card">
+
+    <div class="stat-label">
+      Completed
+    </div>
+
+    <div
+      id="completed"
+      class="stat-value"
+    >
+      0
+    </div>
+
+    <div class="stat-sub">
+      Completed chapters
+    </div>
+
+  </div>
+
+
+  <div class="stat-card">
+
+    <div class="stat-label">
+      In Progress
+    </div>
+
+    <div
+      id="inProgress"
+      class="stat-value"
+    >
+      0
+    </div>
+
+    <div class="stat-sub">
+      Currently in progress
+    </div>
+
+  </div>
+
+
+  <div class="stat-card">
+
+    <div class="stat-label">
+      Overall Progress
+    </div>
+
+    <div
+      id="percent"
+      class="stat-value"
+    >
+      0%
+    </div>
+
+    <div class="stat-sub">
+      Syllabus completion
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= OVERALL ================= -->
+
+<section class="overall-card">
+
+  <div class="overall-top">
+
+    <strong>
+      Overall Syllabus Progress
+    </strong>
+
+    <span
+      id="percentTop"
+      class="overall-percent"
+    >
+      0%
+    </span>
+
+  </div>
+
+  <div class="progress-track">
+
+    <div
+      id="overallFill"
+      class="progress-fill"
+    ></div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= CONTINUE ================= -->
+
+<section
+  id="continueCard"
+  class="continue-card"
+>
+
+  <div>
+
+    <div class="continue-label">
+      Continue Studying
+    </div>
+
+    <div
+      id="continueTitle"
+      class="continue-title"
+    ></div>
+
+    <div
+      id="continueSub"
+      class="continue-sub"
+    ></div>
+
+  </div>
+
+
+  <button
+    id="continueBtn"
+    class="continue-btn"
+    type="button"
+  >
+    Continue →
+  </button>
+
+</section>
+
+
+<!-- ================= TOOLBAR ================= -->
+
+<section class="toolbar">
+
+  <div class="toolbar-main">
+
+    <input
+      id="search"
+      class="search"
+      type="search"
+      placeholder="🔎 Search chapter or subject..."
+    >
+
+
+    <select
+      id="subjectFilter"
+      class="select"
+    >
+
+      <option value="all">
+        📚 All Subjects
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <div class="filter-row">
+
+    <span class="filter-label">
+      Status:
+    </span>
+
+
+    <button
+      class="filter-btn active"
+      data-status="all"
+      type="button"
+    >
+      All
+    </button>
+
+
+    <button
+      class="filter-btn"
+      data-status="not-started"
+      type="button"
+    >
+      ⚪ Not Started
+    </button>
+
+
+    <button
+      class="filter-btn"
+      data-status="in-progress"
+      type="button"
+    >
+      🟡 In Progress
+    </button>
+
+
+    <button
+      class="filter-btn"
+      data-status="complete"
+      type="button"
+    >
+      🟢 Complete
+    </button>
+
+
+    <span class="spacer"></span>
+
+
+    <button
+      id="expandBtn"
+      class="action-small"
+      type="button"
+    >
+      Expand All
+    </button>
+
+
+    <button
+      id="collapseBtn"
+      class="action-small"
+      type="button"
+    >
+      Collapse All
+    </button>
+
+
+    <button
+      id="pomodoroOpenBtn"
+      class="action-small"
+      type="button"
+    >
+      🍅 Pomodoro
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- ================= SUBJECTS ================= -->
+
+<section id="subjects"></section>
+
+
+<!-- ================= BOTTOM ================= -->
+
+<section class="bottom-actions">
+
+  <button
+    id="saveBtn"
+    class="save-btn"
+    type="button"
+  >
+    💾 Save
+  </button>
+
+
+  <button
+    id="resetBtn"
+    class="reset-btn"
+    type="button"
+  >
+    🗑️ Reset All
+  </button>
+
+</section>
+
+</main>
+
+
+<!-- ================= POMODORO PAGE ================= -->
+
+<section
+  id="pomodoroPage"
+  class="pomodoro-page"
+  aria-hidden="true"
+>
+
+  <div class="pomodoro-wrap">
+
+    <div class="pomodoro-top">
+
+      <strong>
+        🍅 Pomodoro Timer
+      </strong>
+
+      <button
+        id="pomodoroBackBtn"
+        class="pomodoro-back"
+        type="button"
+      >
+        ← Back to Tracker
+      </button>
+
+    </div>
+
+
+    <div class="pomodoro-card">
+
+      <div
+        id="pomoMode"
+        class="pomodoro-mode"
+      >
+        Focus
+      </div>
+
+
+      <div
+        id="pomoTime"
+        class="pomodoro-time"
+      >
+        25:00
+      </div>
+
+
+      <div class="pomodoro-progress">
+
+        <div
+          id="pomoProgressFill"
+          class="pomodoro-progress-fill"
+        ></div>
+
+      </div>
+
+
+      <div class="pomodoro-actions">
+
+        <button
+          id="pomoStartBtn"
+          class="pomo-primary"
+          type="button"
+        >
+          ▶ Start
+        </button>
+
+        <button
+          id="pomoPauseBtn"
+          type="button"
+        >
+          ⏸ Pause
+        </button>
+
+        <button
+          id="pomoResetBtn"
+          type="button"
+        >
+          ↻ Reset
+        </button>
+
+      </div>
+
+
+      <div class="pomo-last">
+
+        <div class="pomo-section-label">
+          Last Studied Chapter
+        </div>
+
+        <div
+          id="pomoLastTitle"
+          class="pomo-last-title"
+        >
+          No chapter studied yet
+        </div>
+
+        <div
+          id="pomoLastSub"
+          class="pomo-last-sub"
+        >
+          Start a chapter from the tracker to see it here.
+        </div>
+
+      </div>
+
+
+      <div class="pomo-settings">
+
+        <div class="pomo-section-label">
+          Timer Settings
+        </div>
+
+        <div class="pomo-settings-grid">
+
+          <div class="pomo-field">
+
+            <label for="focusMinutes">
+              Focus minutes
+            </label>
+
+            <input
+              id="focusMinutes"
+              type="number"
+              min="1"
+              max="180"
+              value="25"
+            >
+
+          </div>
+
+
+          <div class="pomo-field">
+
+            <label for="breakMinutes">
+              Break minutes
+            </label>
+
+            <input
+              id="breakMinutes"
+              type="number"
+              min="1"
+              max="60"
+              value="5"
+            >
+
+          </div>
+
+        </div>
+
+
+        <button
+          id="pomoApplyBtn"
+          class="pomo-apply"
+          type="button"
+        >
+          Apply Settings
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<footer>
+
+  <div>©turabi_alam</div>
+
+  <div>Study • Track • Complete</div>
+
+  <div>Made with ❤️ for HSC Students</div>
+
+</footer>
+
+
+<!-- ================= TOAST ================= -->
+
+<div id="toast"></div>
+
+
+<!-- ================= RESET MODAL ================= -->
+
+<div
+  id="resetModal"
+  class="modal"
+  aria-hidden="true"
+>
+
+  <div class="modal-box">
+
+    <h2>
+      Do you want to reset your progress?
+    </h2>
+
+    <div class="modal-actions">
+
+      <button
+        id="cancelReset"
+        class="modal-cancel"
+        type="button"
+      >
+        Cancel
+      </button>
+
+
+      <button
+        id="confirmReset"
+        class="modal-ok"
+        type="button"
+      >
+        Yes
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   BOOKS
+===================================================== */
+
+const books = {
+
+  "Physics 1st Paper":10,
+
+  "Physics 2nd Paper":11,
+
+  "Chemistry 1st Paper":5,
+
+  "Chemistry 2nd Paper":5,
+
+  "Higher Math 1st Paper":10,
+
+  "Higher Math 2nd Paper":10,
+
+  "Botany":12,
+
+  "Zoology":12
+
+};
+
+
+/* =====================================================
+   FIXED CHAPTER NAMES
+===================================================== */
+
+const chapterNames = {
+
+  "Physics 1st Paper":[
+
+    "ভৌত জগত ও পরিমাপ",
+
+    "ভেক্টর",
+
+    "গতিবিদ্যা",
+
+    "নিউটনিয়ান বলবিদ্যা",
+
+    "কাজ, শক্তি ও ক্ষমতা",
+
+    "মহাকর্ষ ও অভিকর্ষ",
+
+    "পদার্থের গাঠনিক ধর্ম",
+
+    "পর্যাবৃত্ত গতি",
+
+    "তরঙ্গ",
+
+    "আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব"
+
+  ],
+
+
+  "Physics 2nd Paper":[
+
+    "তাপগতিবিদ্যা",
+
+    "স্থির তড়িৎ",
+
+    "চল তড়িৎ",
+
+    "তড়িৎ প্রবাহের চৌম্বক ক্রিয়া",
+
+    "তড়িৎচৌম্বকীয় আবেশ ও পরিবর্তী প্রবাহ",
+
+    "জ্যামিতিক আলোকবিজ্ঞান",
+
+    "ভৌত আলোকবিজ্ঞান",
+
+    "আধুনিক পদার্থবিজ্ঞানের সূচনা",
+
+    "পরমাণু মডেল ও নিউক্লিয়ার পদার্থবিজ্ঞান",
+
+    "সেমিকন্ডাক্টর ও ইলেকট্রনিক্স",
+
+    "জ্যোতির্বিজ্ঞান"
+
+  ],
+
+
+  "Chemistry 1st Paper":[
+
+    "ল্যাবরেটরির নিরাপদ ব্যবহার",
+
+    "গুণগত রসায়ন",
+
+    "মৌলের পর্যায়বৃত্ত ধর্ম ও রাসায়নিক বন্ধন",
+
+    "রাসায়নিক পরিবর্তন",
+
+    "কর্মমুখী রসায়ন"
+
+  ],
+
+
+  "Chemistry 2nd Paper":[
+
+    "পরিবেশ রসায়ন",
+
+    "জৈব রসায়ন",
+
+    "পরিমাণগত রসায়ন",
+
+    "তড়িৎ রসায়ন",
+
+    "অর্থনৈতিক রসায়ন"
+
+  ],
+
+
+  "Higher Math 1st Paper":[
+
+    "ম্যাট্রিক্স ও নির্ণায়ক",
+
+    "ভেক্টর",
+
+    "সরলরেখা",
+
+    "বৃত্ত",
+
+    "বিন্যাস ও সমাবেশ",
+
+    "ত্রিকোণমিতিক অনুপাত",
+
+    "সংযুক্ত কোণের ত্রিকোণমিতিক অনুপাত",
+
+    "ফাংশন ও ফাংশনের লেখচিত্র",
+
+    "অন্তরীকরণ",
+
+    "যোগজীকরণ"
+
+  ],
+
+
+  "Higher Math 2nd Paper":[
+
+    "বাস্তব সংখ্যা ও অসমতা",
+
+    "যোগাশ্রয়ী প্রোগ্রাম",
+
+    "জটিল সংখ্যা",
+
+    "বহুপদী ও বহুপদী সমীকরণ",
+
+    "দ্বিপদী বিস্তৃতি",
+
+    "কণিক",
+
+    "বিপরীত ত্রিকোণমিতিক ফাংশন ও ত্রিকোণমিতিক সমীকরণ",
+
+    "স্থিতিবিদ্যা",
+
+    "সমতলে বস্তুকণার গতি",
+
+    "সম্ভাবনা"
+
+  ],
+
+
+  "Botany":[
+
+    "কোষ ও এর গঠন",
+
+    "কোষ বিভাজন",
+
+    "কোষ রসায়ন",
+
+    "অণুজীব",
+
+    "শৈবাল ও ছত্রাক",
+
+    "ব্রায়োফাইটা ও টেরিডোফাইটা",
+
+    "নগ্নবীজী ও আবৃতবীজী উদ্ভিদ",
+
+    "টিস্যু ও টিস্যুতন্ত্র",
+
+    "উদ্ভিদ শারীরতত্ত্ব",
+
+    "উদ্ভিদ প্রজনন",
+
+    "জীবপ্রযুক্তি",
+
+    "পরিবেশ ও সংরক্ষণ"
+
+  ],
+
+
+  "Zoology":[
+
+    "প্রাণীর বৈচিত্র্য ও শ্রেণিবিন্যাস",
+
+    "প্রাণীর পরিচিতি",
+
+    "পরিপাক ও শোষণ",
+
+    "রক্ত ও সঞ্চালন",
+
+    "শ্বাসক্রিয়া ও শ্বসন",
+
+    "বর্জ্য নিষ্কাশন",
+
+    "চলন ও অঙ্গচালনা",
+
+    "সমন্বয় ও নিয়ন্ত্রণ",
+
+    "মানব জীবনের প্রজনন",
+
+    "মানবদেহের প্রতিরক্ষা",
+
+    "জিনতত্ত্ব ও বিবর্তন",
+
+    "প্রাণীর আচরণ"
+
+  ]
+
+};
+
+
+/* =====================================================
+   STORAGE
+===================================================== */
+
+const STORAGE_KEY="syllabusTracker";
+const THEME_KEY="syllabusTheme";
+const LAST_KEY="syllabusLastChapter";
+
+let progress={};
+let lastChapter=null;
+let collapsed={};
+
+
+try{
+
+  const saved=
+    JSON.parse(
+      localStorage.getItem(
+        STORAGE_KEY
+      ) || "{}"
+    );
+
+
+  Object.entries(saved).forEach(
+    ([key,value])=>{
+
+      if(
+        value==="in-progress" ||
+        value==="complete"
+      ){
+
+        progress[key]=value;
+
+      }
+
+      /* Old version support */
+
+      else if(value===true){
+
+        progress[key]="complete";
+
+      }
+
+    }
+  );
+
+}catch(e){}
+
+
+try{
+
+  lastChapter=
+    JSON.parse(
+      localStorage.getItem(
+        LAST_KEY
+      ) || "null"
+    );
+
+}catch(e){}
+
+
+try{
+
+  collapsed=
+    JSON.parse(
+      localStorage.getItem(
+        "syllabusCollapsed"
+      ) || "{}"
+    );
+
+}catch(e){}
+
+
+/* =====================================================
+   STATE
+===================================================== */
+
+const state={
+
+  search:"",
+
+  subject:"all",
+
+  status:"all"
+
+};
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+function key(book,chapter){
+
+  return `${book}__${chapter}`;
+
+}
+
+
+function getStatus(book,chapter){
+
+  return (
+
+    progress[
+      key(book,chapter)
+    ] || "not-started"
+
+  );
+
+}
+
+
+function setStatus(
+  book,
+  chapter,
+  status
+){
+
+  const k=
+    key(book,chapter);
+
+
+  if(
+    status==="not-started"
+  ){
+
+    delete progress[k];
+
+  }else{
+
+    progress[k]=status;
+
+  }
+
+}
+
+
+function saveData(){
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(progress)
+  );
+
+}
+
+
+function remember(
+  book,
+  chapter
+){
+
+  lastChapter={
+
+    book,
+
+    chapter
+
+  };
+
+
+  localStorage.setItem(
+    LAST_KEY,
+    JSON.stringify(
+      lastChapter
+    )
+  );
+
+}
+
+
+/* =====================================================
+   STATUS CLICK
+===================================================== */
+
+function handleStatus(
+  book,
+  chapter
+){
+
+  const current=
+    getStatus(
+      book,
+      chapter
+    );
+
+
+  /* Not Started → In Progress */
+
+  if(
+    current==="not-started"
+  ){
+
+    setStatus(
+      book,
+      chapter,
+      "in-progress"
+    );
+
+
+    remember(
+      book,
+      chapter
+    );
+
+
+    saveData();
+
+    render();
+
+
+    showToast(
+      "🟡 In Progress"
+    );
+
+    return;
+
+  }
+
+
+  /* In Progress → Complete */
+
+  if(
+    current==="in-progress"
+  ){
+
+    setStatus(
+      book,
+      chapter,
+      "complete"
+    );
+
+
+    remember(
+      book,
+      chapter
+    );
+
+
+    saveData();
+
+    render();
+
+
+    showToast(
+      "🟢 Complete!"
+    );
+
+    return;
+
+  }
+
+
+  /* Complete → Not Started
+     NO CONFIRMATION */
+
+  if(
+    current==="complete"
+  ){
+
+    setStatus(
+      book,
+      chapter,
+      "not-started"
+    );
+
+
+    remember(
+      book,
+      chapter
+    );
+
+
+    saveData();
+
+    render();
+
+
+    showToast(
+      "⚪ Not Started"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   COUNTS
+===================================================== */
+
+function totalChapters(){
+
+  return Object.values(books)
+    .reduce(
+      (a,b)=>a+b,
+      0
+    );
+
+}
+
+
+function completedCount(){
+
+  let count=0;
+
+
+  Object.keys(books)
+    .forEach(book=>{
+
+      for(
+        let i=1;
+        i<=books[book];
+        i++
+      ){
+
+        if(
+          getStatus(
+            book,
+            i
+          )==="complete"
+        ){
+
+          count++;
+
+        }
+
+      }
+
+    });
+
+
+  return count;
+
+}
+
+
+function inProgressCount(){
+
+  let count=0;
+
+
+  Object.keys(books)
+    .forEach(book=>{
+
+      for(
+        let i=1;
+        i<=books[book];
+        i++
+      ){
+
+        if(
+          getStatus(
+            book,
+            i
+          )==="in-progress"
+        ){
+
+          count++;
+
+        }
+
+      }
+
+    });
+
+
+  return count;
+
+}
+
+
+function bookCompleted(book){
+
+  let count=0;
+
+
+  for(
+    let i=1;
+    i<=books[book];
+    i++
+  ){
+
+    if(
+      getStatus(
+        book,
+        i
+      )==="complete"
+    ){
+
+      count++;
+
+    }
+
+  }
+
+
+  return count;
+
+}
+
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+function updateDashboard(){
+
+  const total=
+    totalChapters();
+
+  const complete=
+    completedCount();
+
+  const active=
+    inProgressCount();
+
+  const percent=
+    total
+      ? (complete/total*100)
+      : 0;
+
+
+  document.getElementById(
+    "total"
+  ).textContent=total;
+
+
+  document.getElementById(
+    "completed"
+  ).textContent=complete;
+
+
+  document.getElementById(
+    "inProgress"
+  ).textContent=active;
+
+
+  document.getElementById(
+    "percent"
+  ).textContent=
+    `${percent.toFixed(2)}%`;
+
+
+  document.getElementById(
+    "percentTop"
+  ).textContent=
+    `${percent.toFixed(2)}%`;
+
+
+  document.getElementById(
+    "overallFill"
+  ).style.width=
+    `${percent}%`;
+
+}
+
+
+/* =====================================================
+   FILTER MATCH
+===================================================== */
+
+function matches(
+  book,
+  chapter
+){
+
+  const name=
+    chapterNames[
+      book
+    ][chapter-1];
+
+
+  const search=
+    state.search
+      .trim()
+      .toLowerCase();
+
+
+  if(
+    search &&
+    !book.toLowerCase()
+      .includes(search) &&
+    !name.toLowerCase()
+      .includes(search)
+  ){
+
+    return false;
+
+  }
+
+
+  if(
+    state.subject!=="all" &&
+    state.subject!==book
+  ){
+
+    return false;
+
+  }
+
+
+  const status=
+    getStatus(
+      book,
+      chapter
+    );
+
+
+  if(
+    state.status!=="all" &&
+    status!==state.status
+  ){
+
+    return false;
+
+  }
+
+
+  return true;
+
+}
+
+
+/* =====================================================
+   SUBJECT FILTER
+===================================================== */
+
+function buildSubjectFilter(){
+
+  const select=
+    document.getElementById(
+      "subjectFilter"
+    );
+
+
+  select.innerHTML=
+    `<option value="all">
+      📚 All Subjects
+    </option>`;
+
+
+  Object.keys(books)
+    .forEach(book=>{
+
+      const option=
+        document.createElement(
+          "option"
+        );
+
+
+      option.value=book;
+
+      option.textContent=book;
+
+
+      select.appendChild(
+        option
+      );
+
+    });
+
+
+  select.value=
+    state.subject;
+
+}
+
+
+/* =====================================================
+   CONTINUE
+===================================================== */
+
+function updateContinue(){
+
+  const card=
+    document.getElementById(
+      "continueCard"
+    );
+
+
+  if(
+    !lastChapter ||
+    !books[lastChapter.book]
+  ){
+
+    card.style.display="none";
+
+    return;
+
+  }
+
+
+  const name=
+    chapterNames[
+      lastChapter.book
+    ][
+      lastChapter.chapter-1
+    ];
+
+
+  document.getElementById(
+    "continueTitle"
+  ).textContent=name;
+
+
+  document.getElementById(
+    "continueSub"
+  ).textContent=
+    `${lastChapter.book} • Chapter ${lastChapter.chapter}`;
+
+
+  card.style.display="flex";
+
+}
+
+
+/* =====================================================
+   RENDER
+===================================================== */
+
+function render(){
+
+  updateDashboard();
+
+  buildSubjectFilter();
+
+  updateContinue();
+
+
+  const container=
+    document.getElementById(
+      "subjects"
+    );
+
+
+  container.innerHTML="";
+
+
+  let visibleSubjects=0;
+
+
+  Object.keys(books)
+    .forEach(
+      (book,index)=>{
+
+        const visible=[];
+
+
+        for(
+          let chapter=1;
+          chapter<=books[book];
+          chapter++
+        ){
+
+          if(
+            matches(
+              book,
+              chapter
+            )
+          ){
+
+            visible.push(
+              chapter
+            );
+
+          }
+
+        }
+
+
+        if(
+          visible.length===0
+        ){
+
+          return;
+
+        }
+
+
+        visibleSubjects++;
+
+
+        const card=
+          document.createElement(
+            "article"
+          );
+
+
+        card.className="subject";
+
+
+        if(
+          collapsed[book] &&
+          !state.search &&
+          state.status==="all"
+        ){
+
+          card.classList.add(
+            "collapsed"
+          );
+
+        }
+
+
+        /* HEADER */
+
+        const header=
+          document.createElement(
+            "div"
+          );
+
+
+        header.className=
+          "subject-header";
+
+
+        const icons=[
+
+          "⚛️",
+          "🔬",
+          "🧪",
+          "🧫",
+          "📐",
+          "📊",
+          "🌱",
+          "🦎"
+
+        ];
+
+
+        const icon=
+          document.createElement(
+            "div"
+          );
+
+
+        icon.className=
+          "subject-icon";
+
+
+        icon.textContent=
+          icons[
+            index % icons.length
+          ];
+
+
+        const info=
+          document.createElement(
+            "div"
+          );
+
+
+        info.className=
+          "subject-info";
+
+
+        const title=
+          document.createElement(
+            "h2"
+          );
+
+
+        title.className=
+          "subject-title";
+
+
+        title.textContent=book;
+
+
+        const meta=
+          document.createElement(
+            "div"
+          );
+
+
+        meta.className=
+          "subject-meta";
+
+
+        const complete=
+          bookCompleted(book);
+
+
+        const active=
+          [...Array(books[book])]
+            .filter(
+              (_,i)=>
+                getStatus(
+                  book,
+                  i+1
+                )==="in-progress"
+            )
+            .length;
+
+
+        meta.textContent=
+          `${complete} complete • ${active} in progress • ${books[book]} total`;
+
+
+        info.appendChild(title);
+
+        info.appendChild(meta);
+
+
+        const progressBox=
+          document.createElement(
+            "div"
+          );
+
+
+        progressBox.className=
+          "subject-progress";
+
+
+        const progressText=
+          document.createElement(
+            "div"
+          );
+
+
+        progressText.className=
+          "subject-progress-text";
+
+
+        const percent=
+          books[book]
+            ? complete/
+              books[book]*
+              100
+            : 0;
+
+
+        progressText.innerHTML=
+          `<span>${complete}/${books[book]}</span>
+           <span>${percent.toFixed(2)}%</span>`;
+
+
+        const track=
+          document.createElement(
+            "div"
+          );
+
+
+        track.className=
+          "subject-track";
+
+
+        const fill=
+          document.createElement(
+            "div"
+          );
+
+
+        fill.className=
+          "subject-fill";
+
+
+        fill.style.width=
+          `${percent}%`;
+
+
+        track.appendChild(fill);
+
+
+        progressBox.appendChild(
+          progressText
+        );
+
+        progressBox.appendChild(
+          track
+        );
+
+
+        const chevron=
+          document.createElement(
+            "div"
+          );
+
+
+        chevron.className=
+          "chevron";
+
+
+        chevron.textContent="⌄";
+
+
+        header.appendChild(icon);
+
+        header.appendChild(info);
+
+        header.appendChild(progressBox);
+
+        header.appendChild(chevron);
+
+
+        header.addEventListener(
+          "click",
+          ()=>{
+
+            const isCollapsed=
+              card.classList.toggle(
+                "collapsed"
+              );
+
+
+            collapsed[book]=
+              isCollapsed;
+
+
+            localStorage.setItem(
+              "syllabusCollapsed",
+              JSON.stringify(
+                collapsed
+              )
+            );
+
+          }
+        );
+
+
+        /* BODY */
+
+        const body=
+          document.createElement(
+            "div"
+          );
+
+
+        body.className=
+          "subject-body";
+
+
+        const list=
+          document.createElement(
+            "div"
+          );
+
+
+        list.className=
+          "chapter-list";
+
+
+        visible.forEach(
+          chapter=>{
+
+            const status=
+              getStatus(
+                book,
+                chapter
+              );
+
+
+            const row=
+              document.createElement(
+                "div"
+              );
+
+
+            row.className=
+              "chapter";
+
+
+            row.dataset.book=book;
+
+            row.dataset.chapter=
+              String(chapter);
+
+
+            if(
+              status==="in-progress"
+            ){
+
+              row.classList.add(
+                "in-progress"
+              );
+
+            }
+
+
+            if(
+              status==="complete"
+            ){
+
+              row.classList.add(
+                "complete"
+              );
+
+            }
+
+
+            const number=
+              document.createElement(
+                "div"
+              );
+
+
+            number.className=
+              "chapter-number";
+
+
+            number.textContent=
+              String(chapter)
+                .padStart(2,"0");
+
+
+            const content=
+              document.createElement(
+                "div"
+              );
+
+
+            content.className=
+              "chapter-content";
+
+
+            const name=
+              document.createElement(
+                "div"
+              );
+
+
+            name.className=
+              "chapter-name";
+
+
+            /*
+              FIXED NAME:
+              No input.
+              No editing.
+            */
+
+            name.textContent=
+              chapterNames[
+                book
+              ][chapter-1];
+
+
+            const statusText=
+              document.createElement(
+                "div"
+              );
+
+
+            statusText.className=
+              "chapter-status";
+
+
+            if(
+              status==="not-started"
+            ){
+
+              statusText.textContent=
+                "Not Started";
+
+            }
+
+            else if(
+              status==="in-progress"
+            ){
+
+              statusText.textContent=
+                "In Progress";
+
+            }
+
+            else{
+
+              statusText.textContent=
+                "✓ Complete";
+
+            }
+
+
+            content.appendChild(name);
+
+            content.appendChild(
+              statusText
+            );
+
+
+            const button=
+              document.createElement(
+                "button"
+              );
+
+
+            button.type="button";
+
+            button.className=
+              "status-btn";
+
+
+            if(
+              status==="not-started"
+            ){
+
+              button.textContent=
+                "⚪ Not Started";
+
+            }
+
+            else if(
+              status==="in-progress"
+            ){
+
+              button.textContent=
+                "🟡 In Progress";
+
+              button.classList.add(
+                "in-progress"
+              );
+
+            }
+
+            else{
+
+              button.textContent=
+                "✓ Complete";
+
+              button.classList.add(
+                "complete"
+              );
+
+            }
+
+
+            button.addEventListener(
+              "click",
+              event=>{
+
+                event.stopPropagation();
+
+
+                handleStatus(
+                  book,
+                  chapter
+                );
+
+              }
+            );
+
+
+            row.appendChild(number);
+
+            row.appendChild(content);
+
+            row.appendChild(button);
+
+
+            list.appendChild(row);
+
+          }
+        );
+
+
+        body.appendChild(list);
+
+
+        card.appendChild(header);
+
+        card.appendChild(body);
+
+
+        container.appendChild(card);
+
+      }
+    );
+
+
+  if(
+    visibleSubjects===0
+  ){
+
+    container.innerHTML=
+      `<div class="empty">
+        🔎<br><br>
+        <strong>No chapters found</strong><br>
+        Try another search or filter.
+      </div>`;
+
+  }
+
+
+  updateFilterButtons();
+
+}
+
+
+/* =====================================================
+   FILTER BUTTONS
+===================================================== */
+
+function updateFilterButtons(){
+
+  document
+    .querySelectorAll(
+      ".filter-btn"
+    )
+    .forEach(btn=>{
+
+      btn.classList.toggle(
+        "active",
+        btn.dataset.status===
+          state.status
+      );
+
+    });
+
+}
+
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+let toastTimer;
+
+
+function showToast(message){
+
+  const toast=
+    document.getElementById(
+      "toast"
+    );
+
+
+  toast.textContent=message;
+
+  toast.classList.add("show");
+
+
+  clearTimeout(
+    toastTimer
+  );
+
+
+  toastTimer=
+    setTimeout(
+      ()=>{
+
+        toast.classList.remove(
+          "show"
+        );
+
+      },
+      1800
+    );
+
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+document
+  .getElementById("search")
+  .addEventListener(
+    "input",
+    event=>{
+
+      state.search=
+        event.target.value;
+
+      render();
+
+    }
+  );
+
+
+/* =====================================================
+   SUBJECT FILTER
+===================================================== */
+
+document
+  .getElementById(
+    "subjectFilter"
+  )
+  .addEventListener(
+    "change",
+    event=>{
+
+      state.subject=
+        event.target.value;
+
+      render();
+
+    }
+  );
+
+
+/* =====================================================
+   STATUS FILTER
+===================================================== */
+
+document
+  .querySelectorAll(
+    ".filter-btn"
+  )
+  .forEach(
+    button=>{
+
+      button.addEventListener(
+        "click",
+        ()=>{
+
+          state.status=
+            button.dataset.status;
+
+          render();
+
+        }
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   SAVE
+===================================================== */
+
+document
+  .getElementById("saveBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      saveData();
+
+
+      const button=
+        document.getElementById(
+          "saveBtn"
+        );
+
+
+      button.textContent=
+        "✅ Saved";
+
+
+      showToast(
+        "✅ Progress saved"
+      );
+
+
+      setTimeout(
+        ()=>{
+
+          button.textContent=
+            "💾 Save";
+
+        },
+        1500
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   RESET MODAL
+===================================================== */
+
+const resetModal=
+  document.getElementById(
+    "resetModal"
+  );
+
+
+/*
+  Reset All button:
+  NO browser confirm().
+*/
+
+document
+  .getElementById("resetBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      resetModal.classList.add(
+        "show"
+      );
+
+
+      resetModal.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+    }
+  );
+
+
+/* Cancel */
+
+document
+  .getElementById(
+    "cancelReset"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
+
+      resetModal.classList.remove(
+        "show"
+      );
+
+
+      resetModal.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+    }
+  );
+
+
+/* OK */
+
+document
+  .getElementById(
+    "confirmReset"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
+
+      progress={};
+
+      lastChapter=null;
+
+      collapsed={};
+
+
+      localStorage.removeItem(
+        STORAGE_KEY
+      );
+
+      localStorage.removeItem(
+        LAST_KEY
+      );
+
+      localStorage.removeItem(
+        "syllabusCollapsed"
+      );
+
+
+      resetModal.classList.remove(
+        "show"
+      );
+
+
+      resetModal.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+
+      render();
+
+
+      showToast(
+        "✅ Progress reset"
+      );
+
+    }
+  );
+
+
+/* Click outside modal */
+
+resetModal.addEventListener(
+  "click",
+  event=>{
+
+    if(
+      event.target===
+      resetModal
+    ){
+
+      resetModal.classList.remove(
+        "show"
+      );
+
+
+      resetModal.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+    }
+
+  }
+);
+
+
+/* ESC */
+
+document.addEventListener(
+  "keydown",
+  event=>{
+
+    if(
+      event.key==="Escape"
+    ){
+
+      resetModal.classList.remove(
+        "show"
+      );
+
+
+      resetModal.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   EXPAND ALL
+===================================================== */
+
+document
+  .getElementById(
+    "expandBtn"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
+
+      Object.keys(books)
+        .forEach(
+          book=>{
+
+            collapsed[book]=false;
+
+          }
+        );
+
+
+      localStorage.setItem(
+        "syllabusCollapsed",
+        JSON.stringify(
+          collapsed
+        )
+      );
+
+
+      render();
+
+    }
+  );
+
+
+/* =====================================================
+   COLLAPSE ALL
+===================================================== */
+
+document
+  .getElementById(
+    "collapseBtn"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
+
+      Object.keys(books)
+        .forEach(
+          book=>{
+
+            collapsed[book]=true;
+
+          }
+        );
+
+
+      localStorage.setItem(
+        "syllabusCollapsed",
+        JSON.stringify(
+          collapsed
+        )
+      );
+
+
+      render();
+
+    }
+  );
+
+
+/* =====================================================
+   CONTINUE
+===================================================== */
+
+document
+  .getElementById(
+    "continueBtn"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
+
+      if(!lastChapter){
+        return;
+      }
+
+
+      state.search="";
+
+      state.subject="all";
+
+      state.status="all";
+
+
+      document.getElementById(
+        "search"
+      ).value="";
+
+
+      document.getElementById(
+        "subjectFilter"
+      ).value="all";
+
+
+      render();
+
+
+      setTimeout(
+        ()=>{
+
+          const target=
+            document.querySelector(
+              `.subject[data-book="${CSS.escape(lastChapter.book)}"]`
+            );
+
+
+          if(target){
+
+            target.scrollIntoView({
+              behavior:"smooth",
+              block:"center"
+            });
+
+
+            const chapterRow=
+              target.querySelector(
+                `.chapter[data-chapter="${lastChapter.chapter}"]`
+              );
+
+
+            if(chapterRow){
+
+              chapterRow.scrollIntoView({
+                behavior:"smooth",
+                block:"center"
+              });
+
+
+              chapterRow.classList.add(
+                "continue-highlight"
+              );
+
+
+              setTimeout(
+                ()=>{
+                  chapterRow.classList.remove(
+                    "continue-highlight"
+                  );
+                },
+                2500
+              );
+
+            }
+
+          }
+
+        },
+        50
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   THEME
+===================================================== */
+
+function setTheme(theme){
+
+  document.body.classList.toggle(
+    "dark",
+    theme==="dark"
+  );
+
+
+  document.getElementById(
+    "themeBtn"
+  ).textContent=
+    theme==="dark"
+      ? "☀️ Light"
+      : "🌙 Dark";
+
+
+  localStorage.setItem(
+    THEME_KEY,
+    theme
+  );
+
+}
+
+
+document
+  .getElementById(
+    "themeBtn"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
+
+      const dark=
+        document.body.classList.contains(
+          "dark"
+        );
+
+
+      setTheme(
+        dark
+          ? "light"
+          : "dark"
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   LOAD THEME
+===================================================== */
+
+try{
+
+  setTheme(
+    localStorage.getItem(
+      THEME_KEY
+    ) || "light"
+  );
+
+}catch(e){
+
+  setTheme("light");
+
+}
+
+
+/* =====================================================
+   AUTO SAVE SAFETY
+===================================================== */
+
+window.addEventListener(
+  "beforeunload",
+  ()=>{
+
+    saveData();
+
+  }
+);
+
+
+/* =====================================================
+   POMODORO
+===================================================== */
+
+const FOCUS_KEY=
+  "pomodoroFocusMinutes";
+
+const BREAK_KEY=
+  "pomodoroBreakMinutes";
+
+
+let focusMinutes=
+  Number(
+    localStorage.getItem(
+      FOCUS_KEY
+    )
+  ) || 25;
+
+
+let breakMinutes=
+  Number(
+    localStorage.getItem(
+      BREAK_KEY
+    )
+  ) || 5;
+
+
+let mode="focus";
+
+let remaining=
+  focusMinutes*60;
+
+let timer=null;
+
+let endTime=null;
+
+let audioContext=null;
+
+
+const trackerPage=
+  document.getElementById(
+    "trackerPage"
+  );
+
+
+const pomodoroPage=
+  document.getElementById(
+    "pomodoroPage"
+  );
+
+
+const pomodoroOpenBtn=
+  document.getElementById(
+    "pomodoroOpenBtn"
+  );
+
+
+const pomodoroBackBtn=
+  document.getElementById(
+    "pomodoroBackBtn"
+  );
+
+
+const pomoMode=
+  document.getElementById(
+    "pomoMode"
+  );
+
+
+const pomoTime=
+  document.getElementById(
+    "pomoTime"
+  );
+
+
+const pomoProgressFill=
+  document.getElementById(
+    "pomoProgressFill"
+  );
+
+
+const pomoStartBtn=
+  document.getElementById(
+    "pomoStartBtn"
+  );
+
+
+const pomoPauseBtn=
+  document.getElementById(
+    "pomoPauseBtn"
+  );
+
+
+const pomoResetBtn=
+  document.getElementById(
+    "pomoResetBtn"
+  );
+
+
+const focusInput=
+  document.getElementById(
+    "focusMinutes"
+  );
+
+
+const breakInput=
+  document.getElementById(
+    "breakMinutes"
+  );
+
+
+const pomoApplyBtn=
+  document.getElementById(
+    "pomoApplyBtn"
+  );
+
+
+const pomoLastTitle=
+  document.getElementById(
+    "pomoLastTitle"
+  );
+
+
+const pomoLastSub=
+  document.getElementById(
+    "pomoLastSub"
+  );
+
+
+focusInput.value=
+  focusMinutes;
+
+breakInput.value=
+  breakMinutes;
+
+
+/* ================= POMODORO DISPLAY ================= */
+
+function updatePomodoroLast(){
+
+  if(
+    lastChapter &&
+    books[lastChapter.book]
+  ){
+
+    const name=
+      chapterNames[
+        lastChapter.book
+      ][
+        lastChapter.chapter-1
+      ];
+
+
+    pomoLastTitle.textContent=
+      name;
+
+
+    pomoLastSub.textContent=
+      `${lastChapter.book} • Chapter ${lastChapter.chapter}`;
+
+  }else{
+
+    pomoLastTitle.textContent=
+      "No chapter studied yet";
+
+
+    pomoLastSub.textContent=
+      "Start a chapter from the tracker to see it here.";
+
+  }
+
+}
+
+
+function formatTime(seconds){
+
+  const safe=
+    Math.max(
+      0,
+      Math.floor(seconds)
+    );
+
+
+  const minutes=
+    Math.floor(
+      safe/60
+    );
+
+
+  const secs=
+    safe%60;
+
+
+  return (
+    String(minutes).padStart(2,"0")
+    +
+    ":"
+    +
+    String(secs).padStart(2,"0")
+  );
+
+}
+
+
+function updatePomodoroDisplay(){
+
+  pomoMode.textContent=
+    mode==="focus"
+      ? "Focus"
+      : "Break";
+
+
+  pomoTime.textContent=
+    formatTime(
+      remaining
+    );
+
+
+  const totalSeconds=
+    (
+      mode==="focus"
+        ? focusMinutes
+        : breakMinutes
+    ) * 60;
+
+
+  const progress=
+    totalSeconds
+      ? (
+          (
+            totalSeconds-
+            remaining
+          ) /
+          totalSeconds
+        ) * 100
+      : 0;
+
+
+  pomoProgressFill.style.width=
+    `${Math.min(
+      100,
+      Math.max(
+        0,
+        progress
+      )
+    )}%`;
+
+
+  pomoStartBtn.textContent=
+    timer
+      ? "▶ Running"
+      : "▶ Start";
+
+}
+
+
+/* ================= POMODORO SOUND ================= */
+
+function playEndSound(){
+
+  try{
+
+    audioContext=
+      audioContext ||
+      new (
+        window.AudioContext ||
+        window.webkitAudioContext
+      )();
+
+
+    if(
+      audioContext.state==="suspended"
+    ){
+
+      audioContext.resume()
+        .catch(()=>{});
+
+    }
+
+
+    const oscillator=
+      audioContext.createOscillator();
+
+
+    const gain=
+      audioContext.createGain();
+
+
+    oscillator.type="sine";
+
+    oscillator.frequency.setValueAtTime(
+      880,
+      audioContext.currentTime
+    );
+
+
+    oscillator.frequency.exponentialRampToValueAtTime(
+      660,
+      audioContext.currentTime+0.25
+    );
+
+
+    gain.gain.setValueAtTime(
+      0.0001,
+      audioContext.currentTime
+    );
+
+
+    gain.gain.exponentialRampToValueAtTime(
+      0.18,
+      audioContext.currentTime+0.02
+    );
+
+
+    gain.gain.exponentialRampToValueAtTime(
+      0.0001,
+      audioContext.currentTime+0.55
+    );
+
+
+    oscillator.connect(gain);
+
+    gain.connect(
+      audioContext.destination
+    );
+
+
+    oscillator.start();
+
+    oscillator.stop(
+      audioContext.currentTime+0.55
+    );
+
+  }catch(e){}
+
+}
+
+
+/* ================= POMODORO INTERVAL ================= */
+
+function stopPomodoroInterval(){
+
+  if(timer){
+
+    clearInterval(timer);
+
+    timer=null;
+
+  }
+
+}
+
+
+/* ================= START ================= */
+
+function startTimer(){
+
+  if(timer){
+    return;
+  }
+
+
+  try{
+
+    audioContext=
+      audioContext ||
+      new (
+        window.AudioContext ||
+        window.webkitAudioContext
+      )();
+
+
+    if(
+      audioContext.state==="suspended"
+    ){
+
+      audioContext.resume()
+        .catch(()=>{});
+
+    }
+
+  }catch(e){}
+
+
+  endTime=
+    Date.now()+
+    remaining*1000;
+
+
+  timer=
+    setInterval(
+      ()=>{
+
+        remaining=
+          Math.max(
+            0,
+            Math.ceil(
+              (
+                endTime-
+                Date.now()
+              )/1000
+            )
+          );
+
+
+        updatePomodoroDisplay();
+
+
+        if(
+          remaining<=0
+        ){
+
+          stopPomodoroInterval();
+
+          endTime=null;
+
+
+          playEndSound();
+
+
+          switchPomodoroMode(
+            true
+          );
+
+        }
+
+      },
+      250
+    );
+
+
+  updatePomodoroDisplay();
+
+}
+
+
+/* ================= PAUSE ================= */
+
+function pauseTimer(){
+
+  if(
+    timer &&
+    endTime
+  ){
+
+    remaining=
+      Math.max(
+        0,
+        Math.ceil(
+          (
+            endTime-
+            Date.now()
+          )/1000
+        )
+      );
+
+  }
+
+
+  stopPomodoroInterval();
+
+  endTime=null;
+
+
+  updatePomodoroDisplay();
+
+}
+
+
+/* ================= SWITCH MODE ================= */
+
+function switchPomodoroMode(
+  automatic=false
+){
+
+  stopPomodoroInterval();
+
+  endTime=null;
+
+
+  mode=
+    mode==="focus"
+      ? "break"
+      : "focus";
+
+
+  remaining=
+    (
+      mode==="focus"
+        ? focusMinutes
+        : breakMinutes
+    ) * 60;
+
+
+  updatePomodoroDisplay();
+
+
+  if(automatic){
+
+    showToast(
+      mode==="focus"
+        ? "🍅 Break finished — Focus time!"
+        : "☕ Focus finished — Take a break!"
+    );
+
+  }
+
+}
+
+
+/* ================= RESET ================= */
+
+function resetPomodoro(){
+
+  stopPomodoroInterval();
+
+  endTime=null;
+
+
+  remaining=
+    (
+      mode==="focus"
+        ? focusMinutes
+        : breakMinutes
+    ) * 60;
+
+
+  updatePomodoroDisplay();
+
+}
+
+
+/* ================= OPEN ================= */
+
+function openPomodoro(){
+
+  updatePomodoroLast();
+
+  updatePomodoroDisplay();
+
+
+  trackerPage.style.display=
+    "none";
+
+
+  pomodoroPage.classList.add(
+    "show"
+  );
+
+
+  pomodoroPage.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+
+/* ================= BACK ================= */
+
+function closePomodoro(){
+
+  /*
+    IMPORTANT:
+    Timer keeps running when
+    going back to tracker.
+  */
+
+  pomodoroPage.classList.remove(
+    "show"
+  );
+
+
+  pomodoroPage.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  trackerPage.style.display=
+    "";
+
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+
+/* ================= SETTINGS ================= */
+
+function applyPomodoroSettings(){
+
+  const focus=
+    Math.min(
+      180,
+      Math.max(
+        1,
+        Number(
+          focusInput.value
+        ) || 25
+      )
+    );
+
+
+  const rest=
+    Math.min(
+      60,
+      Math.max(
+        1,
+        Number(
+          breakInput.value
+        ) || 5
+      )
+    );
+
+
+  focusMinutes=focus;
+
+  breakMinutes=rest;
+
+
+  focusInput.value=
+    focusMinutes;
+
+  breakInput.value=
+    breakMinutes;
+
+
+  localStorage.setItem(
+    FOCUS_KEY,
+    String(focusMinutes)
+  );
+
+
+  localStorage.setItem(
+    BREAK_KEY,
+    String(breakMinutes)
+  );
+
+
+  /*
+    Only reset the current
+    timer when it is paused.
+  */
+
+  if(!timer){
+
+    remaining=
+      (
+        mode==="focus"
+          ? focusMinutes
+          : breakMinutes
+      ) * 60;
+
+    updatePomodoroDisplay();
+
+  }
+
+
+  showToast(
+    "✅ Pomodoro settings applied"
+  );
+
+}
+
+
+/* ================= POMODORO EVENTS ================= */
+
+pomodoroOpenBtn.addEventListener(
+  "click",
+  openPomodoro
+);
+
+
+pomodoroBackBtn.addEventListener(
+  "click",
+  closePomodoro
+);
+
+
+pomoStartBtn.addEventListener(
+  "click",
+  startTimer
+);
+
+
+pomoPauseBtn.addEventListener(
+  "click",
+  pauseTimer
+);
+
+
+pomoResetBtn.addEventListener(
+  "click",
+  resetPomodoro
+);
+
+
+pomoApplyBtn.addEventListener(
+  "click",
+  applyPomodoroSettings
+);
+
+
+/* ================= POMODORO INIT ================= */
+
+updatePomodoroLast();
+
+updatePomodoroDisplay();
+
+
+/* =====================================================
+   START
+===================================================== */
+
+render();
+
+
+/* Optional PWA service worker */
+
+if(
+  "serviceWorker" in navigator
+){
+
+  window.addEventListener(
+    "load",
+    ()=>{
+
+      navigator.serviceWorker
+        .register("./sw.js")
+        .catch(
+          ()=>{}
+        );
+
+    }
+  );
+
+}
+
+</script>
+
+</body>
+</html>
