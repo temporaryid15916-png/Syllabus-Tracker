@@ -1858,12 +1858,10 @@ function updateDashboard(){
   const active=
     inProgressCount();
 
-  const percent=
+ const percent=
     total
-      ? Math.round(
-          complete/total*100
-        )
-      : 0;
+      ? (complete/total*100).toFixed(2)
+      : "0.00";
 
 
   document.getElementById(
@@ -2263,11 +2261,7 @@ function render(){
 
 
         const percent=
-          Math.round(
-            complete/
-            books[book]*
-            100
-          );
+          (complete/books[book]*100).toFixed(2);
 
 
         progressText.innerHTML=
