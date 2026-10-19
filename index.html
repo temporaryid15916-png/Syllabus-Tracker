@@ -1,3953 +1,3183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0f172a" />
-
-  <title>Syllabus Tracker</title>
-
-  <link rel="manifest" href="./manifest.webmanifest" />
-
-  <style>
-    :root {
-      --bg: #f4f7fb;
-      --card: #ffffff;
-      --card-soft: #f8fafc;
-      --text: #172033;
-      --muted: #667085;
-      --border: #e5e7eb;
-
-      --primary: #2563eb;
-      --primary-soft: #eff6ff;
-
-      --success: #16a34a;
-      --success-soft: #ecfdf3;
-
-      --warning: #f59e0b;
-      --warning-soft: #fffbeb;
-
-      --danger: #dc2626;
-      --danger-soft: #fef2f2;
-
-      --shadow: 0 8px 30px rgba(15, 23, 42, 0.07);
-      --radius: 18px;
-    }
-
-    body.dark {
-      --bg: #0b1120;
-      --card: #111827;
-      --card-soft: #182233;
-      --text: #f3f4f6;
-      --muted: #9ca3af;
-      --border: #263244;
-
-      --primary: #60a5fa;
-      --primary-soft: #172554;
-
-      --success: #4ade80;
-      --success-soft: #052e16;
-
-      --warning: #fbbf24;
-      --warning-soft: #422006;
-
-      --danger: #f87171;
-      --danger-soft: #450a0a;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f172a">
 
-      --shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
-    }
+<title>Syllabus Tracker</title>
 
-    * {
-      box-sizing: border-box;
-    }
+<link rel="manifest" href="./manifest.webmanifest">
 
-    html {
-      scroll-behavior: smooth;
-    }
+<style>
+:root{
+  --bg:#f4f7fb;
+  --card:#fff;
+  --soft:#f8fafc;
+  --text:#172033;
+  --muted:#667085;
+  --border:#e5e7eb;
 
-    body {
-      margin: 0;
-      font-family:
-        Inter,
-        "Noto Sans Bengali",
-        "Noto Sans",
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
+  --primary:#2563eb;
+  --primary-soft:#eff6ff;
 
-      background: var(--bg);
-      color: var(--text);
+  --success:#16a34a;
+  --success-soft:#ecfdf3;
 
-      transition:
-        background 0.25s ease,
-        color 0.25s ease;
-    }
+  --warning:#f59e0b;
+  --warning-soft:#fffbeb;
 
-    button,
-    input,
-    select {
-      font: inherit;
-    }
+  --danger:#dc2626;
+  --danger-soft:#fef2f2;
 
-    button {
-      cursor: pointer;
-    }
+  --shadow:0 8px 30px rgba(15,23,42,.07);
+  --radius:18px;
+}
 
-    /* =====================================================
-       HEADER
-    ====================================================== */
+body.dark{
+  --bg:#0b1120;
+  --card:#111827;
+  --soft:#182233;
+  --text:#f3f4f6;
+  --muted:#9ca3af;
+  --border:#263244;
 
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
+  --primary:#60a5fa;
+  --primary-soft:#172554;
 
-      backdrop-filter: blur(14px);
+  --success:#4ade80;
+  --success-soft:#052e16;
 
-      background: color-mix(
-        in srgb,
-        var(--bg) 88%,
-        transparent
-      );
+  --warning:#fbbf24;
+  --warning-soft:#422006;
 
-      border-bottom: 1px solid var(--border);
-    }
+  --danger:#f87171;
+  --danger-soft:#450a0a;
 
-    .topbar-inner {
-      max-width: 1200px;
-      margin: auto;
+  --shadow:0 8px 30px rgba(0,0,0,.25);
+}
 
-      padding: 16px 20px;
+*{
+  box-sizing:border-box;
+}
 
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+html{
+  scroll-behavior:smooth;
+}
 
-      gap: 15px;
-    }
+body{
+  margin:0;
+  font-family:
+    Inter,
+    "Noto Sans Bengali",
+    "Noto Sans",
+    system-ui,
+    sans-serif;
 
-    .brand h1 {
-      margin: 0;
+  background:var(--bg);
+  color:var(--text);
 
-      font-size: 24px;
-      line-height: 1.2;
-      font-weight: 800;
-    }
+  transition:.25s ease;
+}
 
-    .brand p {
-      margin: 5px 0 0;
+button,
+input,
+select{
+  font:inherit;
+}
 
-      color: var(--muted);
-      font-size: 13px;
-    }
+button{
+  cursor:pointer;
+}
 
-    .theme-btn {
-      border: 1px solid var(--border);
 
-      background: var(--card);
-      color: var(--text);
+/* ================= HEADER ================= */
 
-      padding: 9px 14px;
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:100;
 
-      border-radius: 12px;
+  backdrop-filter:blur(14px);
 
-      font-weight: 700;
+  background:color-mix(
+    in srgb,
+    var(--bg) 90%,
+    transparent
+  );
 
-      transition: 0.2s ease;
-    }
+  border-bottom:1px solid var(--border);
+}
 
-    .theme-btn:hover {
-      transform: translateY(-1px);
-      border-color: var(--primary);
-    }
+.topbar-inner{
+  max-width:1200px;
+  margin:auto;
 
-    /* =====================================================
-       MAIN
-    ====================================================== */
+  padding:16px 20px;
 
-    .container {
-      max-width: 1200px;
-      margin: auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 
-      padding: 28px 20px 45px;
-    }
+  gap:15px;
+}
 
-    /* =====================================================
-       DASHBOARD
-    ====================================================== */
+.brand h1{
+  margin:0;
+  font-size:24px;
+  font-weight:850;
+}
 
-    .dashboard {
-      display: grid;
+.brand p{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:13px;
+}
 
-      grid-template-columns:
-        repeat(4, 1fr);
+.theme-btn{
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
 
-      gap: 14px;
+  padding:9px 14px;
+  border-radius:12px;
 
-      margin-bottom: 18px;
-    }
+  font-weight:750;
+}
 
-    .stat-card {
-      background: var(--card);
 
-      border: 1px solid var(--border);
+/* ================= MAIN ================= */
 
-      border-radius: var(--radius);
+.container{
+  max-width:1200px;
+  margin:auto;
 
-      padding: 18px;
+  padding:28px 20px 45px;
+}
 
-      box-shadow: var(--shadow);
-    }
 
-    .stat-label {
-      color: var(--muted);
+/* ================= DASHBOARD ================= */
 
-      font-size: 13px;
-      font-weight: 700;
+.dashboard{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
 
-      margin-bottom: 7px;
-    }
+  margin-bottom:18px;
+}
 
-    .stat-value {
-      font-size: 28px;
-      font-weight: 850;
+.stat-card{
+  background:var(--card);
 
-      line-height: 1;
-    }
+  border:1px solid var(--border);
+  border-radius:var(--radius);
 
-    .stat-sub {
-      margin-top: 7px;
+  padding:18px;
 
-      color: var(--muted);
+  box-shadow:var(--shadow);
+}
 
-      font-size: 12px;
-    }
+.stat-label{
+  color:var(--muted);
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:7px;
+}
 
-    /* =====================================================
-       OVERALL PROGRESS
-    ====================================================== */
+.stat-value{
+  font-size:28px;
+  font-weight:850;
+}
 
-    .overall-progress-card {
-      background: var(--card);
+.stat-sub{
+  margin-top:7px;
+  color:var(--muted);
+  font-size:12px;
+}
 
-      border: 1px solid var(--border);
 
-      border-radius: var(--radius);
+/* ================= OVERALL PROGRESS ================= */
 
-      padding: 18px;
+.overall-card{
+  background:var(--card);
 
-      box-shadow: var(--shadow);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
 
-      margin-bottom: 20px;
-    }
+  padding:18px;
 
-    .overall-progress-top {
-      display: flex;
+  box-shadow:var(--shadow);
 
-      justify-content: space-between;
-      align-items: center;
+  margin-bottom:20px;
+}
 
-      gap: 10px;
+.overall-top{
+  display:flex;
+  justify-content:space-between;
 
-      margin-bottom: 10px;
-    }
+  margin-bottom:10px;
+}
 
-    .overall-progress-top strong {
-      font-size: 15px;
-    }
+.overall-percent{
+  color:var(--primary);
+  font-weight:850;
+}
 
-    .overall-percent {
-      font-weight: 850;
-      color: var(--primary);
-    }
+.progress-track{
+  width:100%;
+  height:10px;
 
-    .progress-track {
-      width: 100%;
-      height: 10px;
+  background:var(--border);
 
-      background: var(--border);
+  border-radius:999px;
+  overflow:hidden;
+}
 
-      border-radius: 999px;
+.progress-fill{
+  height:100%;
+  width:0;
 
-      overflow: hidden;
-    }
+  background:linear-gradient(
+    90deg,
+    var(--primary),
+    #7c3aed
+  );
 
-    .progress-fill {
-      height: 100%;
-      width: 0%;
+  border-radius:999px;
 
-      background:
-        linear-gradient(
-          90deg,
-          var(--primary),
-          #7c3aed
-        );
+  transition:width .3s ease;
+}
 
-      border-radius: inherit;
 
-      transition:
-        width 0.35s ease;
-    }
+/* ================= CONTINUE ================= */
 
-    /* =====================================================
-       CONTINUE CARD
-    ====================================================== */
+.continue-card{
+  background:
+    linear-gradient(
+      135deg,
+      var(--primary-soft),
+      var(--card)
+    );
 
-    .continue-card {
-      background:
-        linear-gradient(
-          135deg,
-          var(--primary-soft),
-          var(--card)
-        );
+  border:1px solid
+    color-mix(
+      in srgb,
+      var(--primary) 30%,
+      var(--border)
+    );
 
-      border:
-        1px solid
-        color-mix(
-          in srgb,
-          var(--primary) 30%,
-          var(--border)
-        );
+  border-radius:var(--radius);
 
-      border-radius: var(--radius);
+  padding:17px 18px;
 
-      padding: 17px 18px;
+  margin-bottom:20px;
 
-      margin-bottom: 20px;
+  display:none;
 
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+  justify-content:space-between;
+  align-items:center;
 
-      gap: 15px;
-    }
+  gap:15px;
+}
 
-    .continue-info {
-      min-width: 0;
-    }
+.continue-label{
+  color:var(--primary);
 
-    .continue-label {
-      color: var(--primary);
+  font-size:12px;
+  font-weight:850;
 
-      font-size: 12px;
-      font-weight: 800;
+  text-transform:uppercase;
+}
 
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+.continue-title{
+  margin-top:4px;
+  font-size:16px;
+  font-weight:850;
+}
 
-      margin-bottom: 4px;
-    }
+.continue-sub{
+  margin-top:3px;
+  color:var(--muted);
+  font-size:13px;
+}
 
-    .continue-title {
-      font-weight: 800;
-      font-size: 16px;
-    }
+.continue-btn{
+  border:0;
 
-    .continue-subtitle {
-      color: var(--muted);
-      font-size: 13px;
+  background:var(--primary);
+  color:white;
 
-      margin-top: 3px;
-    }
+  padding:10px 15px;
 
-    .continue-btn {
-      flex-shrink: 0;
+  border-radius:11px;
 
-      border: none;
+  font-weight:800;
+}
 
-      background: var(--primary);
-      color: white;
 
-      padding: 10px 15px;
+/* ================= TOOLBAR ================= */
 
-      border-radius: 11px;
+.toolbar{
+  background:var(--card);
 
-      font-weight: 800;
-    }
+  border:1px solid var(--border);
+  border-radius:var(--radius);
 
-    /* =====================================================
-       TOOLBAR
-    ====================================================== */
+  padding:15px;
 
-    .toolbar {
-      background: var(--card);
+  margin-bottom:20px;
 
-      border: 1px solid var(--border);
+  box-shadow:var(--shadow);
+}
 
-      border-radius: var(--radius);
+.toolbar-main{
+  display:grid;
+  grid-template-columns:1fr 220px;
+  gap:10px;
+}
 
-      padding: 15px;
+.search,
+.select{
+  width:100%;
 
-      margin-bottom: 20px;
+  border:1px solid var(--border);
 
-      box-shadow: var(--shadow);
-    }
+  background:var(--soft);
+  color:var(--text);
 
-    .toolbar-main {
-      display: grid;
+  border-radius:12px;
 
-      grid-template-columns:
-        1fr 220px;
+  padding:11px 13px;
 
-      gap: 10px;
-    }
+  outline:none;
+}
 
-    .search-box,
-    .subject-select {
-      width: 100%;
+.search:focus,
+.select:focus{
+  border-color:var(--primary);
+}
 
-      border: 1px solid var(--border);
+.filter-row{
+  display:flex;
+  flex-wrap:wrap;
 
-      background: var(--card-soft);
-      color: var(--text);
+  gap:8px;
 
-      border-radius: 12px;
+  margin-top:12px;
 
-      padding: 11px 13px;
+  align-items:center;
+}
 
-      outline: none;
+.filter-label{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+}
 
-      transition: 0.2s ease;
-    }
+.filter-btn,
+.action-small{
+  border:1px solid var(--border);
 
-    .search-box:focus,
-    .subject-select:focus {
-      border-color: var(--primary);
+  background:var(--soft);
+  color:var(--text);
 
-      box-shadow:
-        0 0 0 3px
-        color-mix(
-          in srgb,
-          var(--primary) 15%,
-          transparent
-        );
-    }
+  border-radius:10px;
 
-    .filter-row {
-      display: flex;
+  padding:8px 12px;
 
-      flex-wrap: wrap;
+  font-size:12px;
+  font-weight:800;
+}
 
-      gap: 8px;
+.filter-btn.active{
+  background:var(--primary);
+  color:#fff;
+  border-color:var(--primary);
+}
 
-      margin-top: 12px;
+.spacer{
+  flex:1;
+}
 
-      align-items: center;
-    }
 
-    .filter-label {
-      color: var(--muted);
+/* ================= SUBJECT ================= */
 
-      font-size: 12px;
-      font-weight: 800;
+#subjects{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
 
-      margin-right: 2px;
-    }
+.subject{
+  background:var(--card);
 
-    .filter-btn,
-    .collapse-btn {
-      border: 1px solid var(--border);
+  border:1px solid var(--border);
 
-      background: var(--card-soft);
-      color: var(--text);
+  border-radius:var(--radius);
 
-      border-radius: 10px;
+  box-shadow:var(--shadow);
 
-      padding: 8px 12px;
+  overflow:hidden;
+}
 
-      font-size: 12px;
-      font-weight: 800;
+.subject-header{
+  padding:17px 18px;
 
-      transition: 0.2s ease;
-    }
+  display:flex;
+  align-items:center;
 
-    .filter-btn:hover,
-    .collapse-btn:hover {
-      border-color: var(--primary);
-    }
+  gap:14px;
 
-    .filter-btn.active {
-      background: var(--primary);
+  border-bottom:1px solid var(--border);
 
-      color: white;
+  cursor:pointer;
 
-      border-color: var(--primary);
-    }
+  user-select:none;
+}
 
-    .toolbar-spacer {
-      flex: 1;
-    }
+.subject-icon{
+  width:42px;
+  height:42px;
 
-    /* =====================================================
-       SUBJECT CARDS
-    ====================================================== */
+  flex-shrink:0;
 
-    #subjectsContainer {
-      display: flex;
+  display:grid;
+  place-items:center;
 
-      flex-direction: column;
+  border-radius:13px;
 
-      gap: 16px;
-    }
+  background:var(--primary-soft);
+  color:var(--primary);
 
-    .subject-card {
-      background: var(--card);
+  font-size:19px;
+}
 
-      border: 1px solid var(--border);
+.subject-info{
+  flex:1;
+  min-width:0;
+}
 
-      border-radius: var(--radius);
+.subject-title{
+  margin:0;
+  font-size:17px;
+  font-weight:850;
+}
 
-      box-shadow: var(--shadow);
+.subject-meta{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:12px;
+}
 
-      overflow: hidden;
+.subject-progress{
+  width:180px;
+}
 
-      animation:
-        fadeUp 0.25s ease;
-    }
+.subject-progress-text{
+  display:flex;
+  justify-content:space-between;
 
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(5px);
-      }
+  margin-bottom:5px;
 
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+  color:var(--muted);
 
-    .subject-header {
-      padding: 17px 18px;
+  font-size:11px;
+  font-weight:700;
+}
 
-      display: flex;
-      align-items: center;
+.subject-track{
+  height:7px;
 
-      gap: 14px;
+  background:var(--border);
 
-      border-bottom: 1px solid var(--border);
+  border-radius:999px;
 
-      cursor: pointer;
+  overflow:hidden;
+}
 
-      user-select: none;
-    }
+.subject-fill{
+  height:100%;
 
-    .subject-icon {
-      width: 42px;
-      height: 42px;
+  background:var(--success);
 
-      border-radius: 13px;
+  border-radius:999px;
 
-      background: var(--primary-soft);
-      color: var(--primary);
+  transition:.3s ease;
+}
 
-      display: grid;
-      place-items: center;
+.chevron{
+  color:var(--muted);
+  font-size:18px;
+  transition:.25s ease;
+}
 
-      font-size: 19px;
+.subject.collapsed .chevron{
+  transform:rotate(-90deg);
+}
 
-      flex-shrink: 0;
-    }
+.subject.collapsed .subject-body{
+  display:none;
+}
 
-    .subject-info {
-      min-width: 0;
-      flex: 1;
-    }
+.subject-body{
+  padding:14px;
+}
 
-    .subject-title-row {
-      display: flex;
 
-      align-items: center;
+/* ================= CHAPTER ================= */
 
-      gap: 8px;
+.chapter-list{
+  display:grid;
+  gap:8px;
+}
 
-      flex-wrap: wrap;
-    }
+.chapter{
+  display:flex;
+  align-items:center;
 
-    .subject-title {
-      margin: 0;
+  gap:11px;
 
-      font-size: 17px;
-      font-weight: 850;
-    }
+  padding:11px 12px;
 
-    .subject-meta {
-      color: var(--muted);
+  border:1px solid var(--border);
 
-      font-size: 12px;
+  background:var(--soft);
 
-      margin-top: 4px;
-    }
+  border-radius:13px;
 
-    .subject-progress-area {
-      width: 180px;
+  transition:.2s ease;
+}
 
-      flex-shrink: 0;
-    }
+.chapter:hover{
+  border-color:var(--primary);
+  transform:translateY(-1px);
+}
 
-    .subject-progress-text {
-      display: flex;
+.chapter.in-progress{
+  background:var(--warning-soft);
 
-      justify-content: space-between;
+  border-color:
+    color-mix(
+      in srgb,
+      var(--warning) 30%,
+      var(--border)
+    );
+}
 
-      color: var(--muted);
+.chapter.complete{
+  background:var(--success-soft);
 
-      font-size: 11px;
-      font-weight: 700;
+  border-color:
+    color-mix(
+      in srgb,
+      var(--success) 30%,
+      var(--border)
+    );
+}
 
-      margin-bottom: 5px;
-    }
+.chapter-number{
+  width:34px;
+  height:34px;
 
-    .subject-progress-track {
-      height: 7px;
+  flex-shrink:0;
 
-      background: var(--border);
+  display:grid;
+  place-items:center;
 
-      border-radius: 999px;
+  border-radius:10px;
 
-      overflow: hidden;
-    }
+  background:var(--border);
 
-    .subject-progress-fill {
-      height: 100%;
+  color:var(--muted);
 
-      background: var(--success);
+  font-size:11px;
+  font-weight:850;
+}
 
-      border-radius: inherit;
+.chapter.in-progress .chapter-number{
+  background:var(--warning);
+  color:#fff;
+}
 
-      transition:
-        width 0.3s ease;
-    }
+.chapter.complete .chapter-number{
+  background:var(--success);
+  color:#fff;
+}
 
-    .chevron {
-      color: var(--muted);
+.chapter-content{
+  flex:1;
+  min-width:0;
+}
 
-      font-size: 18px;
+.chapter-name{
+  font-size:14px;
+  font-weight:750;
+  line-height:1.45;
+}
 
-      width: 25px;
+.chapter-status{
+  margin-top:3px;
 
-      text-align: center;
+  color:var(--muted);
 
-      transition:
-        transform 0.25s ease;
-    }
+  font-size:11px;
+}
 
-    .subject-card.collapsed
-    .chevron {
-      transform: rotate(-90deg);
-    }
+.chapter.in-progress .chapter-status{
+  color:var(--warning);
+  font-weight:750;
+}
 
-    .subject-body {
-      padding: 14px;
-    }
+.chapter.complete .chapter-status{
+  color:var(--success);
+  font-weight:750;
+}
 
-    .subject-card.collapsed
-    .subject-body {
-      display: none;
-    }
 
-    /* =====================================================
-       CHAPTER ROW
-    ====================================================== */
+/* ================= STATUS BUTTON ================= */
 
-    .chapter-list {
-      display: grid;
-      gap: 8px;
-    }
+.status-btn{
+  min-width:125px;
 
-    .chapter-row {
-      display: flex;
+  flex-shrink:0;
 
-      align-items: center;
+  border:1px solid var(--border);
 
-      gap: 11px;
+  background:var(--card);
 
-      padding: 11px 12px;
+  color:var(--text);
 
-      border: 1px solid var(--border);
+  border-radius:10px;
 
-      background: var(--card-soft);
+  padding:8px 10px;
 
-      border-radius: 13px;
+  font-size:12px;
+  font-weight:800;
+}
 
-      transition:
-        border-color 0.2s ease,
-        transform 0.2s ease,
-        background 0.2s ease;
-    }
+.status-btn.in-progress{
+  border-color:var(--warning);
+  background:var(--warning-soft);
+  color:var(--warning);
+}
 
-    .chapter-row:hover {
-      border-color:
-        color-mix(
-          in srgb,
-          var(--primary) 45%,
-          var(--border)
-        );
+.status-btn.complete{
+  border-color:var(--success);
+  background:var(--success);
+  color:#fff;
+}
 
-      transform: translateY(-1px);
-    }
 
-    .chapter-row.not-started {
-      background: var(--card-soft);
-    }
+/* ================= BOTTOM ================= */
 
-    .chapter-row.in-progress {
-      background: var(--warning-soft);
+.bottom-actions{
+  margin-top:25px;
 
-      border-color:
-        color-mix(
-          in srgb,
-          var(--warning) 30%,
-          var(--border)
-        );
-    }
+  padding:16px;
 
-    .chapter-row.completed {
-      background: var(--success-soft);
+  background:var(--card);
 
-      border-color:
-        color-mix(
-          in srgb,
-          var(--success) 30%,
-          var(--border)
-        );
-    }
+  border:1px solid var(--border);
 
-    .chapter-number {
-      width: 34px;
-      height: 34px;
+  border-radius:var(--radius);
 
-      border-radius: 10px;
+  box-shadow:var(--shadow);
 
-      background: var(--border);
+  display:flex;
 
-      color: var(--muted);
+  justify-content:center;
 
-      display: grid;
-      place-items: center;
+  gap:10px;
+}
 
-      font-size: 11px;
-      font-weight: 850;
+.save-btn{
+  border:0;
 
-      flex-shrink: 0;
-    }
+  background:var(--success);
+  color:#fff;
 
-    .chapter-row.in-progress
-    .chapter-number {
-      background: var(--warning);
-      color: white;
-    }
+  padding:11px 25px;
 
-    .chapter-row.completed
-    .chapter-number {
-      background: var(--success);
-      color: white;
-    }
+  border-radius:11px;
 
-    .chapter-content {
-      min-width: 0;
-      flex: 1;
-    }
+  font-weight:850;
 
-    .chapter-name {
-      font-size: 14px;
+  min-width:125px;
+}
 
-      font-weight: 750;
+.reset-btn{
+  border:1px solid var(--danger);
 
-      line-height: 1.45;
-    }
+  background:var(--danger-soft);
+  color:var(--danger);
 
-    .chapter-status-text {
-      margin-top: 3px;
+  padding:10px 18px;
 
-      font-size: 11px;
+  border-radius:11px;
 
-      color: var(--muted);
-    }
+  font-weight:800;
+}
 
-    .chapter-row.in-progress
-    .chapter-status-text {
-      color: var(--warning);
 
-      font-weight: 750;
-    }
+/* ================= EMPTY ================= */
 
-    .chapter-row.completed
-    .chapter-status-text {
-      color: var(--success);
+.empty{
+  background:var(--card);
 
-      font-weight: 750;
-    }
+  border:1px dashed var(--border);
 
-    /* =====================================================
-       STATUS BUTTON
-    ====================================================== */
+  border-radius:var(--radius);
 
-    .status-btn {
-      border: 1px solid var(--border);
+  padding:45px 20px;
 
-      background: var(--card);
+  text-align:center;
 
-      color: var(--text);
+  color:var(--muted);
+}
 
-      border-radius: 10px;
 
-      min-width: 125px;
+/* ================= TOAST ================= */
 
-      padding: 8px 10px;
+#toast{
+  position:fixed;
 
-      font-size: 12px;
-      font-weight: 800;
+  right:18px;
+  bottom:18px;
 
-      transition: 0.2s ease;
+  z-index:1500;
 
-      flex-shrink: 0;
-    }
+  background:var(--text);
+  color:var(--bg);
 
-    .status-btn.not-started:hover {
-      border-color: var(--primary);
+  padding:11px 15px;
 
-      color: var(--primary);
+  border-radius:11px;
 
-      background: var(--primary-soft);
-    }
+  font-size:13px;
+  font-weight:750;
 
-    .status-btn.in-progress {
-      border-color: var(--warning);
+  opacity:0;
 
-      background: var(--warning-soft);
+  pointer-events:none;
 
-      color: var(--warning);
-    }
+  transform:translateY(8px);
 
-    .status-btn.in-progress:hover {
-      filter: brightness(0.96);
-    }
+  transition:.25s ease;
+}
 
-    .status-btn.complete {
-      background: var(--success);
+#toast.show{
+  opacity:1;
+  transform:translateY(0);
+}
 
-      border-color: var(--success);
 
-      color: white;
-    }
+/* ================= RESET MODAL ================= */
 
-    .status-btn.complete:hover {
-      filter: brightness(0.95);
-    }
+.modal{
+  position:fixed;
 
-    .chapter-row.last-selected {
-      box-shadow:
-        0 0 0 2px
-        color-mix(
-          in srgb,
-          var(--primary) 20%,
-          transparent
-        );
-    }
+  inset:0;
 
-    /* =====================================================
-       EMPTY
-    ====================================================== */
+  z-index:2000;
 
-    .empty-state {
-      background: var(--card);
+  display:none;
 
-      border: 1px dashed var(--border);
+  align-items:center;
+  justify-content:center;
 
-      border-radius: var(--radius);
+  padding:20px;
 
-      padding: 45px 20px;
+  background:rgba(0,0,0,.60);
 
-      text-align: center;
+  backdrop-filter:blur(6px);
+}
 
-      color: var(--muted);
-    }
+.modal.show{
+  display:flex;
+}
 
-    .empty-icon {
-      font-size: 38px;
+.modal-box{
+  width:min(100%,380px);
 
-      margin-bottom: 8px;
-    }
+  background:var(--card);
 
-    .empty-state strong {
-      display: block;
+  color:var(--text);
 
-      color: var(--text);
+  border:1px solid var(--border);
 
-      margin-bottom: 5px;
-    }
+  border-radius:20px;
 
-    /* =====================================================
-       BOTTOM ACTIONS
-    ====================================================== */
+  padding:25px;
 
-    .bottom-actions {
-      margin-top: 25px;
+  box-shadow:
+    0 25px 70px
+    rgba(0,0,0,.3);
 
-      padding: 16px;
+  text-align:center;
 
-      background: var(--card);
+  animation:modalPop .2s ease;
+}
 
-      border: 1px solid var(--border);
+@keyframes modalPop{
+  from{
+    opacity:0;
+    transform:scale(.95) translateY(8px);
+  }
 
-      border-radius: var(--radius);
+  to{
+    opacity:1;
+    transform:scale(1) translateY(0);
+  }
+}
 
-      box-shadow: var(--shadow);
+.modal-box h2{
+  margin:0 0 22px;
 
-      display: flex;
+  font-size:20px;
+  font-weight:850;
+}
 
-      align-items: center;
+.modal-actions{
+  display:flex;
 
-      justify-content: center;
+  justify-content:center;
 
-      gap: 10px;
+  gap:10px;
+}
 
-      flex-wrap: wrap;
-    }
+.modal-cancel,
+.modal-ok{
+  min-width:105px;
 
-    /*
-      ONLY ONE SAVE BUTTON
-    */
+  padding:10px 18px;
 
-    .save-btn {
-      border: none;
+  border-radius:10px;
 
-      background: var(--success);
+  font-size:13px;
+  font-weight:850;
+}
 
-      color: white;
+.modal-cancel{
+  border:1px solid var(--border);
 
-      padding: 11px 24px;
+  background:var(--soft);
+  color:var(--text);
+}
 
-      border-radius: 11px;
+.modal-ok{
+  border:1px solid var(--danger);
 
-      font-weight: 850;
+  background:var(--danger);
+  color:#fff;
+}
 
-      min-width: 125px;
 
-      transition: 0.2s ease;
-    }
+/* ================= FOOTER ================= */
 
-    .save-btn:hover {
-      transform: translateY(-1px);
+footer{
+  text-align:center;
 
-      filter: brightness(0.96);
-    }
+  color:var(--muted);
 
-    .reset-btn {
-      border: 1px solid var(--border);
+  font-size:12px;
 
-      background: var(--card-soft);
+  padding:20px;
+}
 
-      color: var(--text);
 
-      padding: 10px 16px;
+/* ================= RESPONSIVE ================= */
 
-      border-radius: 11px;
+@media(max-width:900px){
 
-      font-weight: 800;
+  .dashboard{
+    grid-template-columns:repeat(2,1fr);
+  }
 
-      transition: 0.2s ease;
-    }
+}
 
-    .reset-btn:hover {
-      border-color: var(--danger);
+@media(max-width:700px){
 
-      color: var(--danger);
+  .toolbar-main{
+    grid-template-columns:1fr;
+  }
 
-      background: var(--danger-soft);
-    }
+  .subject-progress{
+    display:none;
+  }
 
-    /* =====================================================
-       TOAST
-    ====================================================== */
+}
 
-    #toastContainer {
-      position: fixed;
+@media(max-width:550px){
 
-      right: 18px;
-      bottom: 18px;
+  .container{
+    padding:20px 14px 35px;
+  }
 
-      z-index: 500;
+  .dashboard{
+    gap:9px;
+  }
 
-      display: flex;
+  .stat-card{
+    padding:14px;
+  }
 
-      flex-direction: column;
+  .stat-value{
+    font-size:23px;
+  }
 
-      gap: 8px;
+  .chapter{
+    align-items:flex-start;
+  }
 
-      pointer-events: none;
-    }
+  .chapter-name{
+    font-size:13px;
+  }
 
-    .toast {
-      background: var(--text);
+  .status-btn{
+    min-width:100px;
+    padding:7px 8px;
+    font-size:11px;
+  }
 
-      color: var(--bg);
+  .bottom-actions{
+    flex-direction:column;
+  }
 
-      padding: 11px 15px;
+  .save-btn,
+  .reset-btn{
+    width:100%;
+  }
 
-      border-radius: 11px;
+  .modal-box{
+    padding:22px 18px;
+  }
 
-      font-size: 13px;
-
-      font-weight: 750;
-
-      box-shadow: var(--shadow);
-
-      animation:
-        toastIn 0.25s ease;
-    }
-
-    @keyframes toastIn {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* =====================================================
-       FOOTER
-    ====================================================== */
-
-    footer {
-      text-align: center;
-
-      color: var(--muted);
-
-      font-size: 12px;
-
-      padding: 20px;
-    }
-
-    /* =====================================================
-       RESPONSIVE
-    ====================================================== */
-
-    @media (max-width: 900px) {
-
-      .dashboard {
-        grid-template-columns:
-          repeat(2, 1fr);
-      }
-
-      .subject-progress-area {
-        width: 150px;
-      }
-
-    }
-
-    @media (max-width: 700px) {
-
-      .topbar-inner {
-        padding: 13px 15px;
-      }
-
-      .brand h1 {
-        font-size: 20px;
-      }
-
-      .container {
-        padding:
-          20px 14px 35px;
-      }
-
-      .toolbar-main {
-        grid-template-columns: 1fr;
-      }
-
-      .subject-header {
-        align-items: flex-start;
-      }
-
-      .subject-progress-area {
-        display: none;
-      }
-
-      .subject-icon {
-        width: 38px;
-        height: 38px;
-      }
-
-      .chapter-row {
-        align-items: flex-start;
-      }
-
-      .status-btn {
-        min-width: 110px;
-      }
-
-    }
-
-    @media (max-width: 520px) {
-
-      .dashboard {
-        gap: 9px;
-      }
-
-      .stat-card {
-        padding: 14px;
-      }
-
-      .stat-value {
-        font-size: 23px;
-      }
-
-      .continue-card {
-        align-items: flex-start;
-
-        flex-direction: column;
-      }
-
-      .continue-btn {
-        width: 100%;
-      }
-
-      .chapter-row {
-        padding: 10px;
-      }
-
-      .chapter-number {
-        width: 30px;
-        height: 30px;
-      }
-
-      .chapter-name {
-        font-size: 13px;
-      }
-
-      .status-btn {
-        min-width: 96px;
-
-        padding: 7px 8px;
-
-        font-size: 11px;
-      }
-
-      .bottom-actions {
-        flex-direction: column;
-      }
-
-      .save-btn,
-      .reset-btn {
-        width: 100%;
-      }
-
-      #toastContainer {
-        left: 14px;
-        right: 14px;
-        bottom: 14px;
-      }
-
-      .toast {
-        text-align: center;
-      }
-
-    }
-  </style>
+}
+</style>
 </head>
 
 
 <body>
 
-  <!-- =====================================================
-       HEADER
-  ====================================================== -->
 
-  <header class="topbar">
+<!-- ================= HEADER ================= -->
 
-    <div class="topbar-inner">
+<header class="topbar">
 
-      <div class="brand">
+  <div class="topbar-inner">
 
-        <h1>📚 Syllabus Tracker</h1>
+    <div class="brand">
 
-        <p>
-          Track your syllabus progress easily
-        </p>
+      <h1>📚 Syllabus Tracker</h1>
 
-      </div>
+      <p>
+        Track your syllabus progress easily
+      </p>
+
+    </div>
+
+    <button
+      id="themeBtn"
+      class="theme-btn"
+      type="button"
+    >
+      🌙 Dark
+    </button>
+
+  </div>
+
+</header>
+
+
+<main class="container">
+
+
+<!-- ================= DASHBOARD ================= -->
+
+<section class="dashboard">
+
+  <div class="stat-card">
+
+    <div class="stat-label">
+      Total Chapters
+    </div>
+
+    <div
+      id="total"
+      class="stat-value"
+    >
+      0
+    </div>
+
+    <div class="stat-sub">
+      Across all subjects
+    </div>
+
+  </div>
+
+
+  <div class="stat-card">
+
+    <div class="stat-label">
+      Completed
+    </div>
+
+    <div
+      id="completed"
+      class="stat-value"
+    >
+      0
+    </div>
+
+    <div class="stat-sub">
+      Finished chapters
+    </div>
+
+  </div>
+
+
+  <div class="stat-card">
+
+    <div class="stat-label">
+      In Progress
+    </div>
+
+    <div
+      id="inProgress"
+      class="stat-value"
+    >
+      0
+    </div>
+
+    <div class="stat-sub">
+      Currently studying
+    </div>
+
+  </div>
+
+
+  <div class="stat-card">
+
+    <div class="stat-label">
+      Overall Progress
+    </div>
+
+    <div
+      id="percent"
+      class="stat-value"
+    >
+      0%
+    </div>
+
+    <div class="stat-sub">
+      Syllabus completion
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= OVERALL ================= -->
+
+<section class="overall-card">
+
+  <div class="overall-top">
+
+    <strong>
+      Overall Syllabus Progress
+    </strong>
+
+    <span
+      id="percentTop"
+      class="overall-percent"
+    >
+      0%
+    </span>
+
+  </div>
+
+  <div class="progress-track">
+
+    <div
+      id="overallFill"
+      class="progress-fill"
+    ></div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= CONTINUE ================= -->
+
+<section
+  id="continueCard"
+  class="continue-card"
+>
+
+  <div>
+
+    <div class="continue-label">
+      Continue Studying
+    </div>
+
+    <div
+      id="continueTitle"
+      class="continue-title"
+    ></div>
+
+    <div
+      id="continueSub"
+      class="continue-sub"
+    ></div>
+
+  </div>
+
+
+  <button
+    id="continueBtn"
+    class="continue-btn"
+    type="button"
+  >
+    Continue →
+  </button>
+
+</section>
+
+
+<!-- ================= TOOLBAR ================= -->
+
+<section class="toolbar">
+
+  <div class="toolbar-main">
+
+    <input
+      id="search"
+      class="search"
+      type="search"
+      placeholder="🔎 Search chapter or subject..."
+    >
+
+
+    <select
+      id="subjectFilter"
+      class="select"
+    >
+
+      <option value="all">
+        📚 All Subjects
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <div class="filter-row">
+
+    <span class="filter-label">
+      Status:
+    </span>
+
+
+    <button
+      class="filter-btn active"
+      data-status="all"
+      type="button"
+    >
+      All
+    </button>
+
+
+    <button
+      class="filter-btn"
+      data-status="not-started"
+      type="button"
+    >
+      ⚪ Not Started
+    </button>
+
+
+    <button
+      class="filter-btn"
+      data-status="in-progress"
+      type="button"
+    >
+      🟡 In Progress
+    </button>
+
+
+    <button
+      class="filter-btn"
+      data-status="complete"
+      type="button"
+    >
+      🟢 Complete
+    </button>
+
+
+    <span class="spacer"></span>
+
+
+    <button
+      id="expandBtn"
+      class="action-small"
+      type="button"
+    >
+      Expand All
+    </button>
+
+
+    <button
+      id="collapseBtn"
+      class="action-small"
+      type="button"
+    >
+      Collapse All
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- ================= SUBJECTS ================= -->
+
+<section id="subjects"></section>
+
+
+<!-- ================= BOTTOM ================= -->
+
+<section class="bottom-actions">
+
+  <button
+    id="saveBtn"
+    class="save-btn"
+    type="button"
+  >
+    💾 Save
+  </button>
+
+
+  <button
+    id="resetBtn"
+    class="reset-btn"
+    type="button"
+  >
+    🗑️ Reset All
+  </button>
+
+</section>
+
+
+</main>
+
+
+<footer>
+  ©turabi_alam
+</footer>
+
+
+<!-- ================= TOAST ================= -->
+
+<div id="toast"></div>
+
+
+<!-- ================= RESET MODAL ================= -->
+
+<div
+  id="resetModal"
+  class="modal"
+  aria-hidden="true"
+>
+
+  <div class="modal-box">
+
+    <h2>
+      Do you want to reset your progress?
+    </h2>
+
+    <div class="modal-actions">
+
+      <button
+        id="cancelReset"
+        class="modal-cancel"
+        type="button"
+      >
+        Cancel
+      </button>
 
 
       <button
-        class="theme-btn"
-        id="themeToggle"
+        id="confirmReset"
+        class="modal-ok"
         type="button"
       >
-        🌙 Dark
+        OK
       </button>
 
     </div>
 
-  </header>
-
-
-  <main class="container">
-
-    <!-- ===================================================
-         DASHBOARD
-    ==================================================== -->
-
-    <section class="dashboard">
-
-      <div class="stat-card">
-
-        <div class="stat-label">
-          Total Chapters
-        </div>
-
-        <div
-          class="stat-value"
-          id="totalChapters"
-        >
-          0
-        </div>
-
-        <div class="stat-sub">
-          Across all subjects
-        </div>
-
-      </div>
-
-
-      <div class="stat-card">
-
-        <div class="stat-label">
-          Completed
-        </div>
-
-        <div
-          class="stat-value"
-          id="completedChapters"
-        >
-          0
-        </div>
-
-        <div class="stat-sub">
-          Finished chapters
-        </div>
-
-      </div>
-
-
-      <div class="stat-card">
-
-        <div class="stat-label">
-          In Progress
-        </div>
-
-        <div
-          class="stat-value"
-          id="inProgressChapters"
-        >
-          0
-        </div>
-
-        <div class="stat-sub">
-          Currently studying
-        </div>
-
-      </div>
-
-
-      <div class="stat-card">
-
-        <div class="stat-label">
-          Overall Progress
-        </div>
-
-        <div
-          class="stat-value"
-          id="overallPercent"
-        >
-          0%
-        </div>
-
-        <div class="stat-sub">
-          Your syllabus completion
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- ===================================================
-         OVERALL PROGRESS
-    ==================================================== -->
-
-    <section class="overall-progress-card">
-
-      <div class="overall-progress-top">
-
-        <strong>
-          Overall Syllabus Progress
-        </strong>
-
-        <span
-          class="overall-percent"
-          id="overallPercentTop"
-        >
-          0%
-        </span>
-
-      </div>
-
-
-      <div class="progress-track">
-
-        <div
-          class="progress-fill"
-          id="overallProgressFill"
-        ></div>
-
-      </div>
-
-    </section>
-
-
-    <!-- ===================================================
-         CONTINUE
-    ==================================================== -->
-
-    <section
-      class="continue-card"
-      id="continueCard"
-      style="display:none;"
-    >
-
-      <div class="continue-info">
-
-        <div class="continue-label">
-          Continue Studying
-        </div>
-
-        <div
-          class="continue-title"
-          id="continueTitle"
-        ></div>
-
-        <div
-          class="continue-subtitle"
-          id="continueSubtitle"
-        ></div>
-
-      </div>
-
-
-      <button
-        class="continue-btn"
-        id="continueBtn"
-        type="button"
-      >
-        Continue →
-      </button>
-
-    </section>
-
-
-    <!-- ===================================================
-         SEARCH / FILTER
-    ==================================================== -->
-
-    <section class="toolbar">
-
-      <div class="toolbar-main">
-
-        <input
-          type="search"
-          id="chapterSearch"
-          class="search-box"
-          placeholder="🔎 Search chapter or subject..."
-          autocomplete="off"
-          aria-label="Search chapters"
-        />
-
-
-        <select
-          id="subjectFilter"
-          class="subject-select"
-          aria-label="Filter by subject"
-        >
-
-          <option value="all">
-            📚 All Subjects
-          </option>
-
-        </select>
-
-      </div>
-
-
-      <div class="filter-row">
-
-        <span class="filter-label">
-          Status:
-        </span>
-
-
-        <button
-          class="filter-btn active"
-          data-status="all"
-          type="button"
-        >
-          All
-        </button>
-
-
-        <button
-          class="filter-btn"
-          data-status="not-started"
-          type="button"
-        >
-          ⚪ Not Started
-        </button>
-
-
-        <button
-          class="filter-btn"
-          data-status="in-progress"
-          type="button"
-        >
-          🟡 In Progress
-        </button>
-
-
-        <button
-          class="filter-btn"
-          data-status="complete"
-          type="button"
-        >
-          🟢 Complete
-         </button>
-
-
-        <div class="toolbar-spacer"></div>
-
-
-        <button
-          class="collapse-btn"
-          id="expandAllBtn"
-          type="button"
-        >
-          Expand All
-        </button>
-
-
-        <button
-          class="collapse-btn"
-          id="collapseAllBtn"
-          type="button"
-        >
-          Collapse All
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- ===================================================
-         SUBJECTS
-    ==================================================== -->
-
-    <section id="subjectsContainer"></section>
-
-
-    <!-- ===================================================
-         BOTTOM ACTIONS
-         ONLY ONE SAVE BUTTON
-    ==================================================== -->
-
-    <section class="bottom-actions">
-
-      <button
-        class="save-btn"
-        id="saveBtn"
-        type="button"
-      >
-        💾 Save
-      </button>
-
-
-      <button
-        class="reset-btn"
-        id="resetBtn"
-        type="button"
-      >
-        🗑️ Reset All
-      </button>
-
-    </section>
-
-  </main>
-
-
-  <footer>
-    ©turabi_alam
-  </footer>
-
-
-  <div id="toastContainer"></div>
-
-
-  <script>
-
-    /* =====================================================
-       BOOKS
-    ====================================================== */
-
-    const books = {
-
-      "Physics 1st Paper": 10,
-
-      "Physics 2nd Paper": 11,
-
-      "Chemistry 1st Paper": 5,
-
-      "Chemistry 2nd Paper": 5,
-
-      "Higher Math 1st Paper": 10,
-
-      "Higher Math 2nd Paper": 10,
-
-      "Botany": 12,
-
-      "Zoology": 12
-
-    };
-
-
-    /* =====================================================
-       PERMANENT CHAPTER NAMES
-    ====================================================== */
-
-    const permanentChapterNames = {
-
-      "Physics 1st Paper": [
-        "ভৌত জগত ও পরিমাপ",
-        "ভেক্টর",
-        "গতিবিদ্যা",
-        "নিউটনিয়ান বলবিদ্যা",
-        "কাজ, শক্তি ও ক্ষমতা",
-        "মহাকর্ষ ও অভিকর্ষ",
-        "পদার্থের গাঠনিক ধর্ম",
-        "পর্যাবৃত্ত গতি",
-        "তরঙ্গ",
-        "আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব"
-      ],
-
-      "Physics 2nd Paper": [
-        "তাপগতিবিদ্যা",
-        "স্থির তড়িৎ",
-        "চল তড়িৎ",
-        "তড়িৎ প্রবাহের চৌম্বক ক্রিয়া",
-        "তড়িৎচৌম্বকীয় আবেশ ও পরিবর্তী প্রবাহ",
-        "জ্যামিতিক আলোকবিজ্ঞান",
-        "ভৌত আলোকবিজ্ঞান",
-        "আধুনিক পদার্থবিজ্ঞানের সূচনা",
-        "পরমাণু মডেল ও নিউক্লিয়ার পদার্থবিজ্ঞান",
-        "সেমিকন্ডাক্টর ও ইলেকট্রনিক্স",
-        "জ্যোতির্বিজ্ঞান"
-      ],
-
-      "Chemistry 1st Paper": [
-        "ল্যাবরেটরির নিরাপদ ব্যবহার",
-        "গুণগত রসায়ন",
-        "মৌলের পর্যায়বৃত্ত ধর্ম ও রাসায়নিক বন্ধন",
-        "রাসায়নিক পরিবর্তন",
-        "কর্মমুখী রসায়ন"
-      ],
-
-      "Chemistry 2nd Paper": [
-        "পরিবেশ রসায়ন",
-        "জৈব রসায়ন",
-        "পরিমাণগত রসায়ন",
-        "তড়িৎ রসায়ন",
-        "অর্থনৈতিক রসায়ন"
-      ],
-
-      "Higher Math 1st Paper": [
-        "ম্যাট্রিক্স ও নির্ণায়ক",
-        "ভেক্টর",
-        "সরলরেখা",
-        "বৃত্ত",
-        "বিন্যাস ও সমাবেশ",
-        "ত্রিকোণমিতিক অনুপাত",
-        "সংযুক্ত কোণের ত্রিকোণমিতিক অনুপাত",
-        "ফাংশন ও ফাংশনের লেখচিত্র",
-        "অন্তরীকরণ",
-        "যোগজীকরণ"
-      ],
-
-      "Higher Math 2nd Paper": [
-        "বাস্তব সংখ্যা ও অসমতা",
-        "যোগাশ্রয়ী প্রোগ্রাম",
-        "জটিল সংখ্যা",
-        "বহুপদী ও বহুপদী সমীকরণ",
-        "দ্বিপদী বিস্তৃতি",
-        "কণিক",
-        "বিপরীত ত্রিকোণমিতিক ফাংশন ও ত্রিকোণমিতিক সমীকরণ",
-        "স্থিতিবিদ্যা",
-        "সমতলে বস্তুকণার গতি",
-        "সম্ভাবনা"
-      ],
-
-      "Botany": [
-        "কোষ ও এর গঠন",
-        "কোষ বিভাজন",
-        "কোষ রসায়ন",
-        "অণুজীব",
-        "শৈবাল ও ছত্রাক",
-        "ব্রায়োফাইটা ও টেরিডোফাইটা",
-        "নগ্নবীজী ও আবৃতবীজী উদ্ভিদ",
-        "টিস্যু ও টিস্যুতন্ত্র",
-        "উদ্ভিদ শারীরতত্ত্ব",
-        "উদ্ভিদ প্রজনন",
-        "জীবপ্রযুক্তি",
-        "পরিবেশ ও সংরক্ষণ"
-      ],
-
-      "Zoology": [
-        "প্রাণীর বৈচিত্র্য ও শ্রেণিবিন্যাস",
-        "প্রাণীর পরিচিতি",
-        "পরিপাক ও শোষণ",
-        "রক্ত ও সঞ্চালন",
-        "শ্বাসক্রিয়া ও শ্বসন",
-        "বর্জ্য নিষ্কাশন",
-        "চলন ও অঙ্গচালনা",
-        "সমন্বয় ও নিয়ন্ত্রণ",
-        "মানব জীবনের প্রজনন",
-        "মানবদেহের প্রতিরক্ষা",
-        "জিনতত্ত্ব ও বিবর্তন",
-        "প্রাণীর আচরণ"
-      ]
-
-    };
-
-
-    /* =====================================================
-       STORAGE
-    ====================================================== */
-
-    const STORAGE_KEY =
-      "syllabusTracker";
-
-    const THEME_KEY =
-      "syllabusTheme";
-
-    const LAST_KEY =
-      "syllabusLastChapter";
-
-    const COLLAPSE_KEY =
-      "syllabusCollapsed";
-
-
-    function readJSON(
-      key,
-      fallback
-    ) {
-
-      try {
-
-        const value =
-          localStorage.getItem(key);
-
-        if (!value) {
-          return fallback;
-        }
-
-        return JSON.parse(value);
-
-      } catch (error) {
-
-        return fallback;
-
-      }
-
-    }
-
-
-    function writeJSON(
-      key,
-      value
-    ) {
-
-      try {
-
-        localStorage.setItem(
-          key,
-          JSON.stringify(value)
-        );
-
-        return true;
-
-      } catch (error) {
-
-        return false;
-
-      }
-
-    }
-
-
-    function removeStorage(key) {
-
-      try {
-
-        localStorage.removeItem(key);
-
-      } catch (error) {}
-
-    }
-
-
-    /* =====================================================
-       LOAD PROGRESS
-    ====================================================== */
-
-    const rawProgress =
-      readJSON(
-        STORAGE_KEY,
-        {}
-      );
-
-
-    const progress = {};
-
-
-    const validProgressKeys =
-      new Set();
-
-
-    Object.entries(books)
-      .forEach(
-        ([book, count]) => {
-
-          for (
-            let chapter = 1;
-            chapter <= count;
-            chapter++
-          ) {
-
-            validProgressKeys.add(
-              `${book}__${chapter}`
-            );
-
-          }
-
-        }
-      );
-
-
-    /*
-      New format:
-        not-started
-        in-progress
-        complete
-
-      Old format:
-        true = complete
-    */
-
-    Object.entries(
-      rawProgress || {}
-    ).forEach(
-      ([key, value]) => {
-
-        if (
-          !validProgressKeys.has(key)
-        ) {
-          return;
-        }
-
-
-        if (
-          value === "in-progress" ||
-          value === "complete"
-        ) {
-
-          progress[key] =
-            value;
-
-        }
-
-
-        /*
-          Old saved data compatibility
-        */
-
-        else if (
-          value === true
-        ) {
-
-          progress[key] =
-            "complete";
-
-        }
-
-      }
+  </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   BOOKS
+===================================================== */
+
+const books = {
+
+  "Physics 1st Paper":10,
+
+  "Physics 2nd Paper":11,
+
+  "Chemistry 1st Paper":5,
+
+  "Chemistry 2nd Paper":5,
+
+  "Higher Math 1st Paper":10,
+
+  "Higher Math 2nd Paper":10,
+
+  "Botany":12,
+
+  "Zoology":12
+
+};
+
+
+/* =====================================================
+   FIXED CHAPTER NAMES
+===================================================== */
+
+const chapterNames = {
+
+  "Physics 1st Paper":[
+    "ভৌত জগত ও পরিমাপ",
+    "ভেক্টর",
+    "গতিবিদ্যা",
+    "নিউটনিয়ান বলবিদ্যা",
+    "কাজ, শক্তি ও ক্ষমতা",
+    "মহাকর্ষ ও অভিকর্ষ",
+    "পদার্থের গাঠনিক ধর্ম",
+    "পর্যাবৃত্ত গতি",
+    "তরঙ্গ",
+    "আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব"
+  ],
+
+  "Physics 2nd Paper":[
+    "তাপগতিবিদ্যা",
+    "স্থির তড়িৎ",
+    "চল তড়িৎ",
+    "তড়িৎ প্রবাহের চৌম্বক ক্রিয়া",
+    "তড়িৎচৌম্বকীয় আবেশ ও পরিবর্তী প্রবাহ",
+    "জ্যামিতিক আলোকবিজ্ঞান",
+    "ভৌত আলোকবিজ্ঞান",
+    "আধুনিক পদার্থবিজ্ঞানের সূচনা",
+    "পরমাণু মডেল ও নিউক্লিয়ার পদার্থবিজ্ঞান",
+    "সেমিকন্ডাক্টর ও ইলেকট্রনিক্স",
+    "জ্যোতির্বিজ্ঞান"
+  ],
+
+  "Chemistry 1st Paper":[
+    "ল্যাবরেটরির নিরাপদ ব্যবহার",
+    "গুণগত রসায়ন",
+    "মৌলের পর্যায়বৃত্ত ধর্ম ও রাসায়নিক বন্ধন",
+    "রাসায়নিক পরিবর্তন",
+    "কর্মমুখী রসায়ন"
+  ],
+
+  "Chemistry 2nd Paper":[
+    "পরিবেশ রসায়ন",
+    "জৈব রসায়ন",
+    "পরিমাণগত রসায়ন",
+    "তড়িৎ রসায়ন",
+    "অর্থনৈতিক রসায়ন"
+  ],
+
+  "Higher Math 1st Paper":[
+    "ম্যাট্রিক্স ও নির্ণায়ক",
+    "ভেক্টর",
+    "সরলরেখা",
+    "বৃত্ত",
+    "বিন্যাস ও সমাবেশ",
+    "ত্রিকোণমিতিক অনুপাত",
+    "সংযুক্ত কোণের ত্রিকোণমিতিক অনুপাত",
+    "ফাংশন ও ফাংশনের লেখচিত্র",
+    "অন্তরীকরণ",
+    "যোগজীকরণ"
+  ],
+
+  "Higher Math 2nd Paper":[
+    "বাস্তব সংখ্যা ও অসমতা",
+    "যোগাশ্রয়ী প্রোগ্রাম",
+    "জটিল সংখ্যা",
+    "বহুপদী ও বহুপদী সমীকরণ",
+    "দ্বিপদী বিস্তৃতি",
+    "কণিক",
+    "বিপরীত ত্রিকোণমিতিক ফাংশন ও ত্রিকোণমিতিক সমীকরণ",
+    "স্থিতিবিদ্যা",
+    "সমতলে বস্তুকণার গতি",
+    "সম্ভাবনা"
+  ],
+
+  "Botany":[
+    "কোষ ও এর গঠন",
+    "কোষ বিভাজন",
+    "কোষ রসায়ন",
+    "অণুজীব",
+    "শৈবাল ও ছত্রাক",
+    "ব্রায়োফাইটা ও টেরিডোফাইটা",
+    "নগ্নবীজী ও আবৃতবীজী উদ্ভিদ",
+    "টিস্যু ও টিস্যুতন্ত্র",
+    "উদ্ভিদ শারীরতত্ত্ব",
+    "উদ্ভিদ প্রজনন",
+    "জীবপ্রযুক্তি",
+    "পরিবেশ ও সংরক্ষণ"
+  ],
+
+  "Zoology":[
+    "প্রাণীর বৈচিত্র্য ও শ্রেণিবিন্যাস",
+    "প্রাণীর পরিচিতি",
+    "পরিপাক ও শোষণ",
+    "রক্ত ও সঞ্চালন",
+    "শ্বাসক্রিয়া ও শ্বসন",
+    "বর্জ্য নিষ্কাশন",
+    "চলন ও অঙ্গচালনা",
+    "সমন্বয় ও নিয়ন্ত্রণ",
+    "মানব জীবনের প্রজনন",
+    "মানবদেহের প্রতিরক্ষা",
+    "জিনতত্ত্ব ও বিবর্তন",
+    "প্রাণীর আচরণ"
+  ]
+
+};
+
+
+/* =====================================================
+   STORAGE
+===================================================== */
+
+const STORAGE_KEY="syllabusTracker";
+const THEME_KEY="syllabusTheme";
+const LAST_KEY="syllabusLastChapter";
+
+
+let progress={};
+let lastChapter=null;
+let collapsed={};
+
+
+try{
+
+  const saved=
+    JSON.parse(
+      localStorage.getItem(
+        STORAGE_KEY
+      ) || "{}"
     );
 
 
-    let lastChapter =
-      readJSON(
-        LAST_KEY,
-        null
-      );
+  Object.entries(saved).forEach(
+    ([key,value])=>{
 
+      if(
+        value==="in-progress" ||
+        value==="complete"
+      ){
 
-    let collapsedSubjects =
-      readJSON(
-        COLLAPSE_KEY,
-        {}
-      );
+        progress[key]=value;
 
+      }
 
-    /* =====================================================
-       FILTER STATE
-    ====================================================== */
+      /* Old version support */
+      else if(value===true){
 
-    const state = {
+        progress[key]="complete";
 
-      search: "",
-
-      subject: "all",
-
-      status: "all"
-
-    };
-
-
-    /* =====================================================
-       STATUS
-    ====================================================== */
-
-    function progressKey(
-      book,
-      chapter
-    ) {
-
-      return `${book}__${chapter}`;
+      }
 
     }
+  );
+
+}catch(e){}
 
 
-    function getStatus(
+try{
+
+  lastChapter=
+    JSON.parse(
+      localStorage.getItem(
+        LAST_KEY
+      ) || "null"
+    );
+
+}catch(e){}
+
+
+try{
+
+  collapsed=
+    JSON.parse(
+      localStorage.getItem(
+        "syllabusCollapsed"
+      ) || "{}"
+    );
+
+}catch(e){}
+
+
+/* =====================================================
+   STATE
+===================================================== */
+
+const state={
+  search:"",
+  subject:"all",
+  status:"all"
+};
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+function key(book,chapter){
+
+  return `${book}__${chapter}`;
+
+}
+
+
+function getStatus(book,chapter){
+
+  return (
+    progress[
+      key(book,chapter)
+    ] || "not-started"
+  );
+
+}
+
+
+function setStatus(
+  book,
+  chapter,
+  status
+){
+
+  const k=
+    key(book,chapter);
+
+
+  if(
+    status==="not-started"
+  ){
+
+    delete progress[k];
+
+  }else{
+
+    progress[k]=status;
+
+  }
+
+}
+
+
+function saveData(){
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(progress)
+  );
+
+}
+
+
+function remember(
+  book,
+  chapter
+){
+
+  lastChapter={
+    book,
+    chapter
+  };
+
+
+  localStorage.setItem(
+    LAST_KEY,
+    JSON.stringify(
+      lastChapter
+    )
+  );
+
+}
+
+
+/* =====================================================
+   STATUS CLICK
+===================================================== */
+
+function handleStatus(
+  book,
+  chapter
+){
+
+  const current=
+    getStatus(
       book,
       chapter
-    ) {
-
-      return (
-        progress[
-          progressKey(
-            book,
-            chapter
-          )
-        ] || "not-started"
-      );
-
-    }
+    );
 
 
-    function setStatus(
+  /* Not Started → In Progress */
+
+  if(
+    current==="not-started"
+  ){
+
+    setStatus(
       book,
       chapter,
-      status
-    ) {
+      "in-progress"
+    );
 
-      const key =
-        progressKey(
-          book,
-          chapter
-        );
-
-
-      /*
-        Not Started is the default,
-        so don't needlessly store it.
-      */
-
-      if (
-        status === "not-started"
-      ) {
-
-        delete progress[key];
-
-      } else {
-
-        progress[key] =
-          status;
-
-      }
-
-    }
-
-
-    /* =====================================================
-       COUNTERS
-    ====================================================== */
-
-    function getBookCompleted(book) {
-
-      let count = 0;
-
-
-      for (
-        let chapter = 1;
-        chapter <= books[book];
-        chapter++
-      ) {
-
-        if (
-          getStatus(
-            book,
-            chapter
-          ) === "complete"
-        ) {
-
-          count++;
-
-        }
-
-      }
-
-
-      return count;
-
-    }
-
-
-    function getBookInProgress(book) {
-
-      let count = 0;
-
-
-      for (
-        let chapter = 1;
-        chapter <= books[book];
-        chapter++
-      ) {
-
-        if (
-          getStatus(
-            book,
-            chapter
-          ) === "in-progress"
-        ) {
-
-          count++;
-
-        }
-
-      }
-
-
-      return count;
-
-    }
-
-
-    function getBookPercent(book) {
-
-      const total =
-        books[book];
-
-
-      const completed =
-        getBookCompleted(book);
-
-
-      return total
-        ? Math.round(
-            (completed / total) * 100
-          )
-        : 0;
-
-    }
-
-
-    function getTotalChapters() {
-
-      return Object.values(books)
-        .reduce(
-          (sum, count) =>
-            sum + count,
-          0
-        );
-
-    }
-
-
-    function getTotalCompleted() {
-
-      let total = 0;
-
-
-      Object.keys(books)
-        .forEach(book => {
-
-          total +=
-            getBookCompleted(book);
-
-        });
-
-
-      return total;
-
-    }
-
-
-    function getTotalInProgress() {
-
-      let total = 0;
-
-
-      Object.keys(books)
-        .forEach(book => {
-
-          total +=
-            getBookInProgress(book);
-
-        });
-
-
-      return total;
-
-    }
-
-
-    /* =====================================================
-       TOAST
-    ====================================================== */
-
-    function showToast(message) {
-
-      const container =
-        document.getElementById(
-          "toastContainer"
-        );
-
-
-      const toast =
-        document.createElement(
-          "div"
-        );
-
-
-      toast.className =
-        "toast";
-
-
-      toast.textContent =
-        message;
-
-
-      container.appendChild(
-        toast
-      );
-
-
-      setTimeout(
-        () => {
-
-          toast.style.opacity =
-            "0";
-
-          toast.style.transform =
-            "translateY(8px)";
-
-
-          setTimeout(
-            () => {
-
-              toast.remove();
-
-            },
-            200
-          );
-
-        },
-        1800
-      );
-
-    }
-
-
-    /* =====================================================
-       SAVE
-    ====================================================== */
-
-    function saveProgress(
-      showMessage = true
-    ) {
-
-      const success =
-        writeJSON(
-          STORAGE_KEY,
-          progress
-        );
-
-
-      if (
-        success &&
-        showMessage
-      ) {
-
-        showToast(
-          "✅ Saved successfully"
-        );
-
-      }
-
-
-      return success;
-
-    }
-
-
-    /* =====================================================
-       LAST CHAPTER
-    ====================================================== */
-
-    function rememberChapter(
+    remember(
       book,
       chapter
-    ) {
+    );
 
-      lastChapter = {
+    saveData();
 
+    render();
+
+    showToast(
+      "🟡 In Progress"
+    );
+
+    return;
+  }
+
+
+  /* In Progress → Complete */
+
+  if(
+    current==="in-progress"
+  ){
+
+    setStatus(
+      book,
+      chapter,
+      "complete"
+    );
+
+    remember(
+      book,
+      chapter
+    );
+
+    saveData();
+
+    render();
+
+    showToast(
+      "🟢 Complete!"
+    );
+
+    return;
+  }
+
+
+  /* Complete → Not Started
+     NO CONFIRMATION */
+
+  if(
+    current==="complete"
+  ){
+
+    setStatus(
+      book,
+      chapter,
+      "not-started"
+    );
+
+    remember(
+      book,
+      chapter
+    );
+
+    saveData();
+
+    render();
+
+    showToast(
+      "⚪ Not Started"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   COUNTS
+===================================================== */
+
+function totalChapters(){
+
+  return Object.values(books)
+    .reduce(
+      (a,b)=>a+b,
+      0
+    );
+
+}
+
+
+function completedCount(){
+
+  let count=0;
+
+
+  Object.keys(books)
+    .forEach(book=>{
+
+      for(
+        let i=1;
+        i<=books[book];
+        i++
+      ){
+
+        if(
+          getStatus(
+            book,
+            i
+          )==="complete"
+        ){
+
+          count++;
+
+        }
+
+      }
+
+    });
+
+
+  return count;
+
+}
+
+
+function inProgressCount(){
+
+  let count=0;
+
+
+  Object.keys(books)
+    .forEach(book=>{
+
+      for(
+        let i=1;
+        i<=books[book];
+        i++
+      ){
+
+        if(
+          getStatus(
+            book,
+            i
+          )==="in-progress"
+        ){
+
+          count++;
+
+        }
+
+      }
+
+    });
+
+
+  return count;
+
+}
+
+
+function bookCompleted(book){
+
+  let count=0;
+
+
+  for(
+    let i=1;
+    i<=books[book];
+    i++
+  ){
+
+    if(
+      getStatus(
         book,
+        i
+      )==="complete"
+    ){
 
-        chapter,
-
-        time:
-          Date.now()
-
-      };
-
-
-      writeJSON(
-        LAST_KEY,
-        lastChapter
-      );
+      count++;
 
     }
 
-
-    /* =====================================================
-       THEME
-    ====================================================== */
-
-    function applyTheme(theme) {
-
-      document.body.classList.toggle(
-        "dark",
-        theme === "dark"
-      );
+  }
 
 
-      const button =
-        document.getElementById(
-          "themeToggle"
-        );
+  return count;
+
+}
 
 
-      button.textContent =
-        theme === "dark"
-          ? "☀️ Light"
-          : "🌙 Dark";
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+function updateDashboard(){
+
+  const total=
+    totalChapters();
+
+  const complete=
+    completedCount();
+
+  const active=
+    inProgressCount();
+
+  const percent=
+    total
+      ? Math.round(
+          complete/total*100
+        )
+      : 0;
 
 
-      try {
-
-        localStorage.setItem(
-          THEME_KEY,
-          theme
-        );
-
-      } catch (error) {}
-
-    }
+  document.getElementById(
+    "total"
+  ).textContent=total;
 
 
-    function loadTheme() {
-
-      let theme = "light";
-
-
-      try {
-
-        theme =
-          localStorage.getItem(
-            THEME_KEY
-          ) || "light";
-
-      } catch (error) {}
+  document.getElementById(
+    "completed"
+  ).textContent=complete;
 
 
-      applyTheme(theme);
+  document.getElementById(
+    "inProgress"
+  ).textContent=active;
 
-    }
+
+  document.getElementById(
+    "percent"
+  ).textContent=
+    `${percent}%`;
 
 
-    /* =====================================================
-       FILTER
-    ====================================================== */
+  document.getElementById(
+    "percentTop"
+  ).textContent=
+    `${percent}%`;
 
-    function chapterMatches(
+
+  document.getElementById(
+    "overallFill"
+  ).style.width=
+    `${percent}%`;
+
+}
+
+
+/* =====================================================
+   FILTER MATCH
+===================================================== */
+
+function matches(
+  book,
+  chapter
+){
+
+  const name=
+    chapterNames[
+      book
+    ][chapter-1];
+
+
+  const search=
+    state.search
+      .trim()
+      .toLowerCase();
+
+
+  if(
+    search &&
+    !book.toLowerCase()
+      .includes(search) &&
+    !name.toLowerCase()
+      .includes(search)
+  ){
+
+    return false;
+
+  }
+
+
+  if(
+    state.subject!=="all" &&
+    state.subject!==book
+  ){
+
+    return false;
+
+  }
+
+
+  const status=
+    getStatus(
       book,
       chapter
-    ) {
-
-      const name =
-        permanentChapterNames[
-          book
-        ]?.[chapter - 1]
-        || `Chapter ${chapter}`;
+    );
 
 
-      const search =
-        state.search
-          .trim()
-          .toLowerCase();
+  if(
+    state.status!=="all" &&
+    status!==state.status
+  ){
+
+    return false;
+
+  }
 
 
-      const matchesSearch =
-        !search ||
-        book
-          .toLowerCase()
-          .includes(search) ||
-        name
-          .toLowerCase()
-          .includes(search);
+  return true;
+
+}
 
 
-      if (!matchesSearch) {
-        return false;
-      }
+/* =====================================================
+   SUBJECT FILTER
+===================================================== */
+
+function buildSubjectFilter(){
+
+  const select=
+    document.getElementById(
+      "subjectFilter"
+    );
 
 
-      const status =
-        getStatus(
-          book,
-          chapter
-        );
+  select.innerHTML=
+    `<option value="all">
+      📚 All Subjects
+    </option>`;
 
 
-      if (
-        state.status !== "all" &&
-        status !== state.status
-      ) {
+  Object.keys(books)
+    .forEach(book=>{
 
-        return false;
-
-      }
-
-
-      return true;
-
-    }
-
-
-    function bookMatches(book) {
-
-      if (
-        state.subject !== "all" &&
-        state.subject !== book
-      ) {
-
-        return false;
-
-      }
-
-
-      for (
-        let chapter = 1;
-        chapter <= books[book];
-        chapter++
-      ) {
-
-        if (
-          chapterMatches(
-            book,
-            chapter
-          )
-        ) {
-
-          return true;
-
-        }
-
-      }
-
-
-      return false;
-
-    }
-
-
-    /* =====================================================
-       DASHBOARD
-    ====================================================== */
-
-    function updateDashboard() {
-
-      const total =
-        getTotalChapters();
-
-
-      const completed =
-        getTotalCompleted();
-
-
-      const inProgress =
-        getTotalInProgress();
-
-
-      const percent =
-        total
-          ? Math.round(
-              (completed / total) * 100
-            )
-          : 0;
-
-
-      document.getElementById(
-        "totalChapters"
-      ).textContent =
-        total;
-
-
-      document.getElementById(
-        "completedChapters"
-      ).textContent =
-        completed;
-
-
-      document.getElementById(
-        "inProgressChapters"
-      ).textContent =
-        inProgress;
-
-
-      document.getElementById(
-        "overallPercent"
-      ).textContent =
-        `${percent}%`;
-
-
-      document.getElementById(
-        "overallPercentTop"
-      ).textContent =
-        `${percent}%`;
-
-
-      document.getElementById(
-        "overallProgressFill"
-      ).style.width =
-        `${percent}%`;
-
-    }
-
-
-    /* =====================================================
-       SUBJECT FILTER
-    ====================================================== */
-
-    function buildSubjectFilter() {
-
-      const select =
-        document.getElementById(
-          "subjectFilter"
-        );
-
-
-      select.innerHTML =
-        "";
-
-
-      const allOption =
+      const option=
         document.createElement(
           "option"
         );
 
 
-      allOption.value =
-        "all";
-
-
-      allOption.textContent =
-        "📚 All Subjects";
+      option.value=book;
+      option.textContent=book;
 
 
       select.appendChild(
-        allOption
+        option
       );
 
+    });
 
-      Object.keys(books)
-        .forEach(book => {
 
-          const option =
-            document.createElement(
-              "option"
-            );
+  select.value=
+    state.subject;
 
+}
 
-          option.value =
-            book;
 
+/* =====================================================
+   CONTINUE
+===================================================== */
 
-          option.textContent =
-            book;
+function updateContinue(){
 
+  const card=
+    document.getElementById(
+      "continueCard"
+    );
 
-          select.appendChild(
-            option
-          );
 
-        });
+  if(
+    !lastChapter ||
+    !books[lastChapter.book]
+  ){
 
+    card.style.display="none";
 
-      select.value =
-        state.subject;
+    return;
 
-    }
+  }
 
 
-    /* =====================================================
-       CONTINUE CARD
-    ====================================================== */
+  const name=
+    chapterNames[
+      lastChapter.book
+    ][
+      lastChapter.chapter-1
+    ];
 
-    function updateContinueCard() {
 
-      const card =
-        document.getElementById(
-          "continueCard"
-        );
+  document.getElementById(
+    "continueTitle"
+  ).textContent=name;
 
 
-      if (
-        !lastChapter ||
-        !books[lastChapter.book] ||
-        lastChapter.chapter < 1 ||
-        lastChapter.chapter >
-          books[lastChapter.book]
-      ) {
+  document.getElementById(
+    "continueSub"
+  ).textContent=
+    `${lastChapter.book} • Chapter ${lastChapter.chapter}`;
 
-        card.style.display =
-          "none";
 
-        return;
+  card.style.display="flex";
 
-      }
+}
 
 
-      const book =
-        lastChapter.book;
+/* =====================================================
+   RENDER
+===================================================== */
 
+function render(){
 
-      const chapter =
-        lastChapter.chapter;
+  updateDashboard();
+  buildSubjectFilter();
+  updateContinue();
 
 
-      const name =
-        permanentChapterNames[
-          book
-        ]?.[chapter - 1]
-        || `Chapter ${chapter}`;
+  const container=
+    document.getElementById(
+      "subjects"
+    );
 
 
-      document.getElementById(
-        "continueTitle"
-      ).textContent =
-        name;
+  container.innerHTML="";
 
 
-      document.getElementById(
-        "continueSubtitle"
-      ).textContent =
-        `${book} • Chapter ${chapter}`;
+  let visibleSubjects=0;
 
 
-      card.style.display =
-        "flex";
+  Object.keys(books)
+    .forEach(
+      (book,index)=>{
 
-    }
+        const visible=[];
 
 
-    /* =====================================================
-       STATUS FLOW
-    ====================================================== */
+        for(
+          let chapter=1;
+          chapter<=books[book];
+          chapter++
+        ){
 
-    function handleStatusClick(
-      book,
-      chapter
-    ) {
-
-      const current =
-        getStatus(
-          book,
-          chapter
-        );
-
-
-      /*
-        NOT STARTED
-        ↓
-        IN PROGRESS
-      */
-
-      if (
-        current === "not-started"
-      ) {
-
-        setStatus(
-          book,
-          chapter,
-          "in-progress"
-        );
-
-
-        rememberChapter(
-          book,
-          chapter
-        );
-
-
-        saveProgress(false);
-
-        render();
-
-
-        showToast(
-          "🟡 In Progress"
-        );
-
-
-        return;
-
-      }
-
-
-      /*
-        IN PROGRESS
-        ↓
-        COMPLETE
-      */
-
-      if (
-        current === "in-progress"
-      ) {
-
-        setStatus(
-          book,
-          chapter,
-          "complete"
-        );
-
-
-        rememberChapter(
-          book,
-          chapter
-        );
-
-
-        saveProgress(false);
-
-        render();
-
-
-        showToast(
-          "🟢 Complete!"
-        );
-
-
-        return;
-
-      }
-
-
-      /*
-        COMPLETE
-        ↓
-        NOT STARTED
-
-        NO CONFIRMATION
-      */
-
-      if (
-        current === "complete"
-      ) {
-
-        setStatus(
-          book,
-          chapter,
-          "not-started"
-        );
-
-
-        rememberChapter(
-          book,
-          chapter
-        );
-
-
-        saveProgress(false);
-
-        render();
-
-
-        showToast(
-          "⚪ Not Started"
-        );
-
-      }
-
-    }
-
-
-    /* =====================================================
-       SUBJECT CARD
-    ====================================================== */
-
-    function createSubjectCard(
-      book,
-      bookIndex
-    ) {
-
-      const completed =
-        getBookCompleted(book);
-
-
-      const inProgress =
-        getBookInProgress(book);
-
-
-      const total =
-        books[book];
-
-
-      const percent =
-        getBookPercent(book);
-
-
-      const card =
-        document.createElement(
-          "article"
-        );
-
-
-      card.className =
-        "subject-card";
-
-
-      const isSearching =
-        state.search.trim() !== "" ||
-        state.status !== "all" ||
-        state.subject !== "all";
-
-
-      const isCollapsed =
-        !isSearching &&
-        collapsedSubjects[book] === true;
-
-
-      if (isCollapsed) {
-
-        card.classList.add(
-          "collapsed"
-        );
-
-      }
-
-
-      card.id =
-        `subject-${bookIndex}`;
-
-
-      /* ---------- HEADER ---------- */
-
-      const header =
-        document.createElement(
-          "div"
-        );
-
-
-      header.className =
-        "subject-header";
-
-
-      header.setAttribute(
-        "role",
-        "button"
-      );
-
-
-      header.setAttribute(
-        "tabindex",
-        "0"
-      );
-
-
-      const icon =
-        document.createElement(
-          "div"
-        );
-
-
-      icon.className =
-        "subject-icon";
-
-
-      const icons = [
-        "⚛️",
-        "🔬",
-        "🧪",
-        "🧫",
-        "📐",
-        "📊",
-        "🌱",
-        "🦎"
-      ];
-
-
-      icon.textContent =
-        icons[
-          bookIndex % icons.length
-        ];
-
-
-      const info =
-        document.createElement(
-          "div"
-        );
-
-
-      info.className =
-        "subject-info";
-
-
-      const titleRow =
-        document.createElement(
-          "div"
-        );
-
-
-      titleRow.className =
-        "subject-title-row";
-
-
-      const title =
-        document.createElement(
-          "h2"
-        );
-
-
-      title.className =
-        "subject-title";
-
-
-      title.textContent =
-        book;
-
-
-      titleRow.appendChild(
-        title
-      );
-
-
-      const meta =
-        document.createElement(
-          "div"
-        );
-
-
-      meta.className =
-        "subject-meta";
-
-
-      meta.textContent =
-        `${completed} complete • ${inProgress} in progress • ${total} total`;
-
-
-      info.appendChild(
-        titleRow
-      );
-
-
-      info.appendChild(
-        meta
-      );
-
-
-      const progressArea =
-        document.createElement(
-          "div"
-        );
-
-
-      progressArea.className =
-        "subject-progress-area";
-
-
-      const progressText =
-        document.createElement(
-          "div"
-        );
-
-
-      progressText.className =
-        "subject-progress-text";
-
-
-      const progressLeft =
-        document.createElement(
-          "span"
-        );
-
-
-      progressLeft.textContent =
-        `${completed}/${total}`;
-
-
-      const progressRight =
-        document.createElement(
-          "span"
-        );
-
-
-      progressRight.textContent =
-        `${percent}%`;
-
-
-      progressText.appendChild(
-        progressLeft
-      );
-
-
-      progressText.appendChild(
-        progressRight
-      );
-
-
-      const progressTrack =
-        document.createElement(
-          "div"
-        );
-
-
-      progressTrack.className =
-        "subject-progress-track";
-
-
-      const progressFill =
-        document.createElement(
-          "div"
-        );
-
-
-      progressFill.className =
-        "subject-progress-fill";
-
-
-      progressFill.style.width =
-        `${percent}%`;
-
-
-      progressTrack.appendChild(
-        progressFill
-      );
-
-
-      progressArea.appendChild(
-        progressText
-      );
-
-
-      progressArea.appendChild(
-        progressTrack
-      );
-
-
-      const chevron =
-        document.createElement(
-          "div"
-        );
-
-
-      chevron.className =
-        "chevron";
-
-
-      chevron.textContent =
-        "⌄";
-
-
-      header.appendChild(
-        icon
-      );
-
-
-      header.appendChild(
-        info
-      );
-
-
-      header.appendChild(
-        progressArea
-      );
-
-
-      header.appendChild(
-        chevron
-      );
-
-
-      function toggleSubject() {
-
-        const collapsed =
-          card.classList.toggle(
-            "collapsed"
-          );
-
-
-        collapsedSubjects[book] =
-          collapsed;
-
-
-        writeJSON(
-          COLLAPSE_KEY,
-          collapsedSubjects
-        );
-
-      }
-
-
-      header.addEventListener(
-        "click",
-        toggleSubject
-      );
-
-
-      header.addEventListener(
-        "keydown",
-        event => {
-
-          if (
-            event.key === "Enter" ||
-            event.key === " "
-          ) {
-
-            event.preventDefault();
-
-            toggleSubject();
-
-          }
-
-        }
-      );
-
-
-      /* ---------- BODY ---------- */
-
-      const body =
-        document.createElement(
-          "div"
-        );
-
-
-      body.className =
-        "subject-body";
-
-
-      const chapterList =
-        document.createElement(
-          "div"
-        );
-
-
-      chapterList.className =
-        "chapter-list";
-
-
-      for (
-        let chapter = 1;
-        chapter <= total;
-        chapter++
-      ) {
-
-        if (
-          !chapterMatches(
-            book,
-            chapter
-          )
-        ) {
-
-          continue;
-
-        }
-
-
-        const status =
-          getStatus(
-            book,
-            chapter
-          );
-
-
-        const row =
-          document.createElement(
-            "div"
-          );
-
-
-        row.className =
-          "chapter-row";
-
-
-        if (
-          status === "not-started"
-        ) {
-
-          row.classList.add(
-            "not-started"
-          );
-
-        }
-
-
-        if (
-          status === "in-progress"
-        ) {
-
-          row.classList.add(
-            "in-progress"
-          );
-
-        }
-
-
-        if (
-          status === "complete"
-        ) {
-
-          row.classList.add(
-            "completed"
-          );
-
-        }
-
-
-        if (
-          lastChapter &&
-          lastChapter.book === book &&
-          lastChapter.chapter === chapter
-        ) {
-
-          row.classList.add(
-            "last-selected"
-          );
-
-        }
-
-
-        row.id =
-          `chapter-${bookIndex}-${chapter}`;
-
-
-        /* ---------- NUMBER ---------- */
-
-        const number =
-          document.createElement(
-            "div"
-          );
-
-
-        number.className =
-          "chapter-number";
-
-
-        number.textContent =
-          String(
-            chapter
-          ).padStart(
-            2,
-            "0"
-          );
-
-
-        /* ---------- CONTENT ---------- */
-
-        const content =
-          document.createElement(
-            "div"
-          );
-
-
-        content.className =
-          "chapter-content";
-
-
-        const name =
-          document.createElement(
-            "div"
-          );
-
-
-        name.className =
-          "chapter-name";
-
-
-        /*
-          FIXED CHAPTER NAME.
-          NO INPUT.
-          NO EDITING.
-        */
-
-        name.textContent =
-          permanentChapterNames[
-            book
-          ]?.[chapter - 1]
-          || `Chapter ${chapter}`;
-
-
-        const statusText =
-          document.createElement(
-            "div"
-          );
-
-
-        statusText.className =
-          "chapter-status-text";
-
-
-        if (
-          status === "not-started"
-        ) {
-
-          statusText.textContent =
-            "Not Started";
-
-        }
-
-
-        if (
-          status === "in-progress"
-        ) {
-
-          statusText.textContent =
-            "In Progress";
-
-        }
-
-
-        if (
-          status === "complete"
-        ) {
-
-          statusText.textContent =
-            "✓ Complete";
-
-        }
-
-
-        content.appendChild(
-          name
-        );
-
-
-        content.appendChild(
-          statusText
-        );
-
-
-        /* ---------- BUTTON ---------- */
-
-        const statusBtn =
-          document.createElement(
-            "button"
-          );
-
-
-        statusBtn.type =
-          "button";
-
-
-        statusBtn.className =
-          "status-btn";
-
-
-        if (
-          status === "not-started"
-        ) {
-
-          statusBtn.classList.add(
-            "not-started"
-          );
-
-
-          statusBtn.textContent =
-            "⚪ Not Started";
-
-        }
-
-
-        if (
-          status === "in-progress"
-        ) {
-
-          statusBtn.classList.add(
-            "in-progress"
-          );
-
-
-          statusBtn.textContent =
-            "🟡 In Progress";
-
-        }
-
-
-        if (
-          status === "complete"
-        ) {
-
-          statusBtn.classList.add(
-            "complete"
-          );
-
-
-          statusBtn.textContent =
-            "✓ Complete";
-
-        }
-
-
-        statusBtn.addEventListener(
-          "click",
-          event => {
-
-            event.stopPropagation();
-
-
-            handleStatusClick(
+          if(
+            matches(
               book,
+              chapter
+            )
+          ){
+
+            visible.push(
               chapter
             );
 
           }
+
+        }
+
+
+        if(
+          visible.length===0
+        ){
+
+          return;
+
+        }
+
+
+        visibleSubjects++;
+
+
+        const card=
+          document.createElement(
+            "article"
+          );
+
+
+        card.className="subject";
+
+
+        if(
+          collapsed[book] &&
+          !state.search &&
+          state.status==="all"
+        ){
+
+          card.classList.add(
+            "collapsed"
+          );
+
+        }
+
+
+        /* HEADER */
+
+        const header=
+          document.createElement(
+            "div"
+          );
+
+
+        header.className=
+          "subject-header";
+
+
+        const icons=[
+          "⚛️",
+          "🔬",
+          "🧪",
+          "🧫",
+          "📐",
+          "📊",
+          "🌱",
+          "🦎"
+        ];
+
+
+        const icon=
+          document.createElement(
+            "div"
+          );
+
+
+        icon.className=
+          "subject-icon";
+
+
+        icon.textContent=
+          icons[
+            index % icons.length
+          ];
+
+
+        const info=
+          document.createElement(
+            "div"
+          );
+
+
+        info.className=
+          "subject-info";
+
+
+        const title=
+          document.createElement(
+            "h2"
+          );
+
+
+        title.className=
+          "subject-title";
+
+
+        title.textContent=book;
+
+
+        const meta=
+          document.createElement(
+            "div"
+          );
+
+
+        meta.className=
+          "subject-meta";
+
+
+        const complete=
+          bookCompleted(book);
+
+
+        const active=
+          [...Array(books[book])]
+            .filter(
+              (_,i)=>
+                getStatus(
+                  book,
+                  i+1
+                )==="in-progress"
+            )
+            .length;
+
+
+        meta.textContent=
+          `${complete} complete • ${active} in progress • ${books[book]} total`;
+
+
+        info.appendChild(title);
+        info.appendChild(meta);
+
+
+        const progressBox=
+          document.createElement(
+            "div"
+          );
+
+
+        progressBox.className=
+          "subject-progress";
+
+
+        const progressText=
+          document.createElement(
+            "div"
+          );
+
+
+        progressText.className=
+          "subject-progress-text";
+
+
+        const percent=
+          Math.round(
+            complete/
+            books[book]*
+            100
+          );
+
+
+        progressText.innerHTML=
+          `<span>${complete}/${books[book]}</span>
+           <span>${percent}%</span>`;
+
+
+        const track=
+          document.createElement(
+            "div"
+          );
+
+
+        track.className=
+          "subject-track";
+
+
+        const fill=
+          document.createElement(
+            "div"
+          );
+
+
+        fill.className=
+          "subject-fill";
+
+
+        fill.style.width=
+          `${percent}%`;
+
+
+        track.appendChild(fill);
+
+        progressBox.appendChild(
+          progressText
+        );
+
+        progressBox.appendChild(
+          track
         );
 
 
-        row.appendChild(
-          number
+        const chevron=
+          document.createElement(
+            "div"
+          );
+
+
+        chevron.className=
+          "chevron";
+
+
+        chevron.textContent="⌄";
+
+
+        header.appendChild(icon);
+        header.appendChild(info);
+        header.appendChild(progressBox);
+        header.appendChild(chevron);
+
+
+        header.addEventListener(
+          "click",
+          ()=>{
+
+            const isCollapsed=
+              card.classList.toggle(
+                "collapsed"
+              );
+
+
+            collapsed[book]=
+              isCollapsed;
+
+
+            localStorage.setItem(
+              "syllabusCollapsed",
+              JSON.stringify(
+                collapsed
+              )
+            );
+
+          }
         );
 
 
-        row.appendChild(
-          content
-        );
+        /* BODY */
+
+        const body=
+          document.createElement(
+            "div"
+          );
 
 
-        row.appendChild(
-          statusBtn
-        );
+        body.className=
+          "subject-body";
 
 
-        chapterList.appendChild(
-          row
-        );
-
-      }
-
-
-      body.appendChild(
-        chapterList
-      );
+        const list=
+          document.createElement(
+            "div"
+          );
 
 
-      card.appendChild(
-        header
-      );
+        list.className=
+          "chapter-list";
 
 
-      card.appendChild(
-        body
-      );
+        visible.forEach(
+          chapter=>{
 
-
-      return card;
-
-    }
-
-
-    /* =====================================================
-       RENDER
-    ====================================================== */
-
-    function render() {
-
-      updateDashboard();
-
-      buildSubjectFilter();
-
-      updateContinueCard();
-
-
-      const container =
-        document.getElementById(
-          "subjectsContainer"
-        );
-
-
-      container.innerHTML =
-        "";
-
-
-      let visibleBooks = 0;
-
-
-      Object.keys(books)
-        .forEach(
-          (book, index) => {
-
-            if (
-              !bookMatches(book)
-            ) {
-
-              return;
-
-            }
-
-
-            const card =
-              createSubjectCard(
+            const status=
+              getStatus(
                 book,
-                index
+                chapter
               );
 
 
-            container.appendChild(
-              card
-            );
-
-
-            visibleBooks++;
-
-          }
-        );
-
-
-      if (
-        visibleBooks === 0
-      ) {
-
-        const empty =
-          document.createElement(
-            "div"
-          );
-
-
-        empty.className =
-          "empty-state";
-
-
-        const icon =
-          document.createElement(
-            "div"
-          );
-
-
-        icon.className =
-          "empty-icon";
-
-
-        icon.textContent =
-          "🔎";
-
-
-        const strong =
-          document.createElement(
-            "strong"
-          );
-
-
-        strong.textContent =
-          "No chapters found";
-
-
-        const text =
-          document.createElement(
-            "span"
-          );
-
-
-        text.textContent =
-          "Try another search or filter.";
-
-
-        empty.appendChild(
-          icon
-        );
-
-
-        empty.appendChild(
-          strong
-        );
-
-
-        empty.appendChild(
-          text
-        );
-
-
-        container.appendChild(
-          empty
-        );
-
-      }
-
-
-      updateFilterButtons();
-
-    }
-
-
-    /* =====================================================
-       FILTER BUTTONS
-    ====================================================== */
-
-    function updateFilterButtons() {
-
-      document
-        .querySelectorAll(
-          ".filter-btn"
-        )
-        .forEach(
-          button => {
-
-            button.classList.toggle(
-              "active",
-              button.dataset.status ===
-                state.status
-            );
-
-          }
-        );
-
-    }
-
-
-    /* =====================================================
-       EXPAND / COLLAPSE
-    ====================================================== */
-
-    function expandAll() {
-
-      Object.keys(books)
-        .forEach(
-          book => {
-
-            collapsedSubjects[
-              book
-            ] = false;
-
-          }
-        );
-
-
-      writeJSON(
-        COLLAPSE_KEY,
-        collapsedSubjects
-      );
-
-
-      render();
-
-
-      showToast(
-        "📖 All subjects expanded"
-      );
-
-    }
-
-
-    function collapseAll() {
-
-      Object.keys(books)
-        .forEach(
-          book => {
-
-            collapsedSubjects[
-              book
-            ] = true;
-
-          }
-        );
-
-
-      writeJSON(
-        COLLAPSE_KEY,
-        collapsedSubjects
-      );
-
-
-      render();
-
-
-      showToast(
-        "📕 All subjects collapsed"
-      );
-
-    }
-
-
-    /* =====================================================
-       RESET ALL
-    ====================================================== */
-
-    function resetAll() {
-
-      const confirmed =
-        confirm(
-          "সব chapter-এর progress reset হবে।\n\n" +
-          "সবগুলো chapter আবার Not Started হবে।\n\n" +
-          "Chapter names পরিবর্তন হবে না।\n\n" +
-          "আপনি কি নিশ্চিত?"
-        );
-
-
-      if (!confirmed) {
-        return;
-      }
-
-
-      Object.keys(
-        progress
-      ).forEach(
-        key => {
-
-          delete progress[key];
-
-        }
-      );
-
-
-      lastChapter =
-        null;
-
-
-      removeStorage(
-        LAST_KEY
-      );
-
-
-      saveProgress(
-        false
-      );
-
-
-      render();
-
-
-      showToast(
-        "🗑️ All chapters are now Not Started"
-      );
-
-    }
-
-
-    /* =====================================================
-       EVENT LISTENERS
-    ====================================================== */
-
-    document
-      .getElementById(
-        "themeToggle"
-      )
-      .addEventListener(
-        "click",
-        () => {
-
-          const isDark =
-            document.body
-              .classList
-              .contains(
-                "dark"
+            const row=
+              document.createElement(
+                "div"
               );
 
 
-          applyTheme(
-            isDark
-              ? "light"
-              : "dark"
-          );
-
-        }
-      );
+            row.className=
+              "chapter";
 
 
-    document
-      .getElementById(
-        "chapterSearch"
-      )
-      .addEventListener(
-        "input",
-        event => {
+            if(
+              status==="in-progress"
+            ){
 
-          state.search =
-            event.target.value;
-
-
-          render();
-
-
-          const search =
-            document.getElementById(
-              "chapterSearch"
-            );
-
-
-          search.focus();
-
-
-          search.setSelectionRange(
-            state.search.length,
-            state.search.length
-          );
-
-        }
-      );
-
-
-    document
-      .getElementById(
-        "subjectFilter"
-      )
-      .addEventListener(
-        "change",
-        event => {
-
-          state.subject =
-            event.target.value;
-
-
-          render();
-
-
-          if (
-            state.subject !==
-            "all"
-          ) {
-
-            const index =
-              Object.keys(
-                books
-              ).indexOf(
-                state.subject
-              );
-
-
-            if (
-              index >= 0
-            ) {
-
-              requestAnimationFrame(
-                () => {
-
-                  document
-                    .getElementById(
-                      `subject-${index}`
-                    )
-                    ?.scrollIntoView({
-                      behavior:
-                        "smooth",
-
-                      block:
-                        "start"
-                    });
-
-                }
+              row.classList.add(
+                "in-progress"
               );
 
             }
 
-          }
 
-        }
-      );
+            if(
+              status==="complete"
+            ){
 
-
-    document
-      .querySelectorAll(
-        ".filter-btn"
-      )
-      .forEach(
-        button => {
-
-          button.addEventListener(
-            "click",
-            () => {
-
-              state.status =
-                button.dataset.status;
-
-
-              render();
+              row.classList.add(
+                "complete"
+              );
 
             }
-          );
-
-        }
-      );
 
 
-    document
-      .getElementById(
-        "expandAllBtn"
-      )
-      .addEventListener(
-        "click",
-        expandAll
-      );
-
-
-    document
-      .getElementById(
-        "collapseAllBtn"
-      )
-      .addEventListener(
-        "click",
-        collapseAll
-      );
-
-
-    /* =====================================================
-       SAVE BUTTON
-       ONLY ONE SAVE BUTTON IN THE APP
-    ====================================================== */
-
-    document
-      .getElementById(
-        "saveBtn"
-      )
-      .addEventListener(
-        "click",
-        () => {
-
-          if (
-            saveProgress(true)
-          ) {
-
-            const button =
-              document.getElementById(
-                "saveBtn"
+            const number=
+              document.createElement(
+                "div"
               );
 
 
-            const oldText =
-              button.textContent;
+            number.className=
+              "chapter-number";
 
 
-            button.textContent =
-              "✅ Saved";
+            number.textContent=
+              String(chapter)
+                .padStart(2,"0");
 
 
-            setTimeout(
-              () => {
+            const content=
+              document.createElement(
+                "div"
+              );
 
-                button.textContent =
-                  oldText;
 
-              },
-              1600
+            content.className=
+              "chapter-content";
+
+
+            const name=
+              document.createElement(
+                "div"
+              );
+
+
+            name.className=
+              "chapter-name";
+
+
+            /*
+              FIXED NAME:
+              No input.
+              No editing.
+            */
+
+            name.textContent=
+              chapterNames[
+                book
+              ][chapter-1];
+
+
+            const statusText=
+              document.createElement(
+                "div"
+              );
+
+
+            statusText.className=
+              "chapter-status";
+
+
+            if(
+              status==="not-started"
+            ){
+
+              statusText.textContent=
+                "Not Started";
+
+            }
+
+            else if(
+              status==="in-progress"
+            ){
+
+              statusText.textContent=
+                "In Progress";
+
+            }
+
+            else{
+
+              statusText.textContent=
+                "✓ Complete";
+
+            }
+
+
+            content.appendChild(name);
+            content.appendChild(
+              statusText
             );
 
-          }
 
-        }
-      );
-
-
-    /* =====================================================
-       RESET BUTTON
-    ====================================================== */
-
-    document
-      .getElementById(
-        "resetBtn"
-      )
-      .addEventListener(
-        "click",
-        resetAll
-      );
+            const button=
+              document.createElement(
+                "button"
+              );
 
 
-    /* =====================================================
-       CONTINUE BUTTON
-    ====================================================== */
+            button.type="button";
 
-    document
-      .getElementById(
-        "continueBtn"
-      )
-      .addEventListener(
-        "click",
-        () => {
-
-          if (!lastChapter) {
-            return;
-          }
+            button.className=
+              "status-btn";
 
 
-          const index =
-            Object.keys(
-              books
-            ).indexOf(
-              lastChapter.book
-            );
+            if(
+              status==="not-started"
+            ){
+
+              button.textContent=
+                "⚪ Not Started";
+
+            }
+
+            else if(
+              status==="in-progress"
+            ){
+
+              button.textContent=
+                "🟡 In Progress";
+
+              button.classList.add(
+                "in-progress"
+              );
+
+            }
+
+            else{
+
+              button.textContent=
+                "✓ Complete";
+
+              button.classList.add(
+                "complete"
+              );
+
+            }
 
 
-          if (
-            index < 0
-          ) {
+            button.addEventListener(
+              "click",
+              event=>{
 
-            return;
-
-          }
+                event.stopPropagation();
 
 
-          state.search =
-            "";
-
-          state.subject =
-            "all";
-
-          state.status =
-            "all";
-
-
-          render();
-
-
-          requestAnimationFrame(
-            () => {
-
-              const target =
-                document.getElementById(
-                  `chapter-${index}-${lastChapter.chapter}`
-                );
-
-
-              if (target) {
-
-                target.scrollIntoView({
-                  behavior:
-                    "smooth",
-
-                  block:
-                    "center"
-                });
-
-
-                target.animate(
-                  [
-                    {
-                      transform:
-                        "scale(1)"
-                    },
-
-                    {
-                      transform:
-                        "scale(1.02)"
-                    },
-
-                    {
-                      transform:
-                        "scale(1)"
-                    }
-
-                  ],
-                  {
-                    duration:
-                      450
-                  }
+                handleStatus(
+                  book,
+                  chapter
                 );
 
               }
-
-            }
-          );
-
-        }
-      );
+            );
 
 
-    /* =====================================================
-       SAFETY AUTO-SAVE
-    ====================================================== */
+            row.appendChild(number);
+            row.appendChild(content);
+            row.appendChild(button);
 
-    window.addEventListener(
-      "beforeunload",
-      () => {
 
-        /*
-          This is only a safety net.
-          The visible Save button remains
-          the main manual save control.
-        */
+            list.appendChild(row);
 
-        saveProgress(false);
+          }
+        );
+
+
+        body.appendChild(list);
+
+
+        card.appendChild(header);
+        card.appendChild(body);
+
+
+        container.appendChild(card);
 
       }
     );
 
 
-    /* =====================================================
-       START APP
-    ====================================================== */
+  if(
+    visibleSubjects===0
+  ){
 
-    loadTheme();
+    container.innerHTML=
+      `<div class="empty">
+        🔎<br><br>
+        <strong>No chapters found</strong><br>
+        Try another search or filter.
+      </div>`;
 
-    render();
-
-  </script>
+  }
 
 
-  <!-- =====================================================
-       SERVICE WORKER
-  ====================================================== -->
+  updateFilterButtons();
 
-  <script>
+}
 
-    if (
-      "serviceWorker" in
-      navigator
-    ) {
 
-      window.addEventListener(
-        "load",
-        () => {
+/* =====================================================
+   FILTER BUTTONS
+===================================================== */
 
-          navigator.serviceWorker
-            .register("./sw.js")
-            .catch(
-              () => {}
-            );
+function updateFilterButtons(){
+
+  document
+    .querySelectorAll(
+      ".filter-btn"
+    )
+    .forEach(btn=>{
+
+      btn.classList.toggle(
+        "active",
+        btn.dataset.status===
+          state.status
+      );
+
+    });
+
+}
+
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+let toastTimer;
+
+
+function showToast(message){
+
+  const toast=
+    document.getElementById(
+      "toast"
+    );
+
+
+  toast.textContent=message;
+
+  toast.classList.add("show");
+
+
+  clearTimeout(
+    toastTimer
+  );
+
+
+  toastTimer=
+    setTimeout(
+      ()=>{
+        toast.classList.remove(
+          "show"
+        );
+      },
+      1800
+    );
+
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+document
+  .getElementById("search")
+  .addEventListener(
+    "input",
+    event=>{
+
+      state.search=
+        event.target.value;
+
+      render();
+
+    }
+  );
+
+
+/* =====================================================
+   SUBJECT FILTER
+===================================================== */
+
+document
+  .getElementById(
+    "subjectFilter"
+  )
+  .addEventListener(
+    "change",
+    event=>{
+
+      state.subject=
+        event.target.value;
+
+      render();
+
+    }
+  );
+
+
+/* =====================================================
+   STATUS FILTER
+===================================================== */
+
+document
+  .querySelectorAll(
+    ".filter-btn"
+  )
+  .forEach(
+    button=>{
+
+      button.addEventListener(
+        "click",
+        ()=>{
+
+          state.status=
+            button.dataset.status;
+
+          render();
 
         }
       );
 
     }
+  );
 
-  </script>
+
+/* =====================================================
+   SAVE
+===================================================== */
+
+document
+  .getElementById("saveBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      saveData();
+
+
+      const button=
+        document.getElementById(
+          "saveBtn"
+        );
+
+
+      button.textContent=
+        "✅ Saved";
+
+
+      showToast(
+        "✅ Progress saved"
+      );
+
+
+      setTimeout(
+        ()=>{
+          button.textContent=
+            "💾 Save";
+        },
+        1500
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   RESET MODAL
+===================================================== */
+
+const resetModal=
+  document.getElementById(
+    "resetModal"
+  );
+
+
+/*
+  Reset All button:
+  NO browser confirm().
+*/
+
+document
+  .getElementById("resetBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      resetModal.classList.add(
+        "show"
+      );
+
+      resetModal.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+    }
+  );
+
+
+/* Cancel */
+
+document
+  .getElementById(
+    "cancelReset"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
+
+      resetModal.classList.remove(
+        "show"
+      );
+
+      resetModal.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+    }
+  );
+
+
+/* OK */
+
+document
+  .getElementById(
+    "confirmReset"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
+
+      progress={};
+
+      lastChapter=null;
+
+
+      localStorage.removeItem(
+        STORAGE_KEY
+      );
+
+      localStorage.removeItem(
+        LAST_KEY
+      );
+
+
+      resetModal.classList.remove(
+        "show"
+      );
+
+      resetModal.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+
+      render();
+
+
+      showToast(
+        "✅ Progress reset"
+      );
+
+    }
+  );
+
+
+/* Click outside modal */
+
+resetModal.addEventListener(
+  "click",
+  event=>{
+
+    if(
+      event.target===
+      resetModal
+    ){
+
+      resetModal.classList.remove(
+        "show"
+      );
+
+      resetModal.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+    }
+
+  }
+);
+
+
+/* ESC */
+
+document.addEventListener(
+  "keydown",
+  event=>{
+
+    if(
+      event.key==="Escape"
+    ){
+
+      resetModal.classList.remove(
+        "show"
+      );
+
+      resetModal.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   EXPAND ALL
+===================================================== */
+
+document
+  .getElementById(
+    "expandBtn"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
+
+      Object.keys(books)
+        .forEach(
+          book=>{
+            collapsed[book]=false;
+          }
+        );
+
+
+      localStorage.setItem(
+        "syllabusCollapsed",
+        JSON.stringify(
+          collapsed
+        )
+      );
+
+
+      render();
+
+    }
+  );
+
+
+/* =====================================================
+   COLLAPSE ALL
+===================================================== */
+
+document
+  .getElementById(
+    "collapseBtn"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
+
+      Object.keys(books)
+        .forEach(
+          book=>{
+            collapsed[book]=true;
+          }
+        );
+
+
+      localStorage.setItem(
+        "syllabusCollapsed",
+        JSON.stringify(
+          collapsed
+        )
+      );
+
+
+      render();
+
+    }
+  );
+
+
+/* =====================================================
+   CONTINUE
+===================================================== */
+
+document
+  .getElementById(
+    "continueBtn"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
+
+      if(!lastChapter){
+        return;
+      }
+
+
+      state.search="";
+      state.subject="all";
+      state.status="all";
+
+
+      document.getElementById(
+        "search"
+      ).value="";
+
+
+      render();
+
+
+      setTimeout(
+        ()=>{
+
+          const subjectIndex=
+            Object.keys(books)
+              .indexOf(
+                lastChapter.book
+              );
+
+
+          const subjects=
+            document.querySelectorAll(
+              ".subject"
+            );
+
+
+          const target=
+            subjects[
+              subjectIndex
+            ];
+
+
+          if(target){
+
+            target.scrollIntoView({
+              behavior:"smooth",
+              block:"center"
+            });
+
+          }
+
+        },
+        50
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   THEME
+===================================================== */
+
+function setTheme(theme){
+
+  document.body.classList.toggle(
+    "dark",
+    theme==="dark"
+  );
+
+
+  document.getElementById(
+    "themeBtn"
+  ).textContent=
+    theme==="dark"
+      ? "☀️ Light"
+      : "🌙 Dark";
+
+
+  localStorage.setItem(
+    THEME_KEY,
+    theme
+  );
+
+}
+
+
+document
+  .getElementById(
+    "themeBtn"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
+
+      const dark=
+        document.body.classList.contains(
+          "dark"
+        );
+
+
+      setTheme(
+        dark
+          ? "light"
+          : "dark"
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   LOAD THEME
+===================================================== */
+
+try{
+
+  setTheme(
+    localStorage.getItem(
+      THEME_KEY
+    ) || "light"
+  );
+
+}catch(e){
+
+  setTheme("light");
+
+}
+
+
+/* =====================================================
+   AUTO SAVE SAFETY
+===================================================== */
+
+window.addEventListener(
+  "beforeunload",
+  ()=>{
+    saveData();
+  }
+);
+
+
+/* =====================================================
+   START
+===================================================== */
+
+render();
+
+
+/* Optional PWA service worker */
+
+if(
+  "serviceWorker" in navigator
+){
+
+  window.addEventListener(
+    "load",
+    ()=>{
+      navigator.serviceWorker
+        .register("./sw.js")
+        .catch(
+          ()=>{}
+        );
+    }
+  );
+
+}
+
+</script>
 
 </body>
 </html>
