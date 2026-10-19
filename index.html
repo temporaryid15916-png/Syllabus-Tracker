@@ -3196,6 +3196,1312 @@ if(
 
 <!-- POMODORO CODE HERE -->
 
+<!-- =========================================================
+     POMODORO TIMER — SINGLE FILE
+     Paste this BEFORE </body>
+========================================================= -->
 
+<style>
+
+/* ================= POMODORO BUTTON ================= */
+
+.pomodoro-open-btn{
+  border:1px solid var(--border);
+  background:var(--soft);
+  color:var(--text);
+
+  border-radius:10px;
+  padding:8px 12px;
+
+  font-size:12px;
+  font-weight:800;
+
+  cursor:pointer;
+  transition:.2s ease;
+}
+
+.pomodoro-open-btn:hover{
+  border-color:var(--primary);
+  color:var(--primary);
+  transform:translateY(-1px);
+}
+
+
+/* ================= POMODORO PAGE ================= */
+
+#pomodoroPage{
+  position:fixed;
+  inset:0;
+  z-index:5000;
+
+  display:none;
+
+  overflow-y:auto;
+
+  background:var(--bg);
+
+  padding:25px 18px 40px;
+}
+
+#pomodoroPage.show{
+  display:block;
+}
+
+.pomodoro-container{
+  width:100%;
+  max-width:650px;
+  margin:0 auto;
+}
+
+
+/* ================= TOP ================= */
+
+.pomodoro-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  gap:12px;
+  margin-bottom:22px;
+}
+
+.pomodoro-heading{
+  font-size:24px;
+  font-weight:850;
+}
+
+.pomodoro-back{
+  border:1px solid var(--border);
+
+  background:var(--card);
+  color:var(--text);
+
+  padding:9px 14px;
+
+  border-radius:11px;
+
+  font-weight:800;
+
+  cursor:pointer;
+}
+
+
+/* ================= TIMER CARD ================= */
+
+.pomodoro-card{
+  background:var(--card);
+
+  border:1px solid var(--border);
+
+  border-radius:24px;
+
+  box-shadow:var(--shadow);
+
+  padding:30px 22px;
+
+  text-align:center;
+}
+
+.pomodoro-mode{
+  color:var(--primary);
+
+  font-size:14px;
+
+  font-weight:850;
+
+  text-transform:uppercase;
+
+  letter-spacing:.06em;
+}
+
+.pomodoro-time{
+  margin:18px 0 25px;
+
+  font-size:82px;
+
+  line-height:1;
+
+  font-weight:900;
+
+  letter-spacing:-5px;
+
+  font-variant-numeric:tabular-nums;
+}
+
+
+/* ================= CONTROLS ================= */
+
+.pomodoro-controls{
+  display:flex;
+
+  justify-content:center;
+
+  flex-wrap:wrap;
+
+  gap:9px;
+}
+
+.pomo-btn{
+  border:1px solid var(--border);
+
+  background:var(--soft);
+
+  color:var(--text);
+
+  padding:10px 16px;
+
+  border-radius:11px;
+
+  font-size:13px;
+
+  font-weight:850;
+
+  cursor:pointer;
+}
+
+.pomo-btn:hover{
+  border-color:var(--primary);
+}
+
+.pomo-start{
+  border-color:var(--primary);
+
+  background:var(--primary);
+
+  color:#fff;
+}
+
+
+/* ================= LAST CHAPTER ================= */
+
+.pomo-last{
+  margin-top:20px;
+
+  padding:17px;
+
+  border-radius:15px;
+
+  border:1px solid var(--border);
+
+  background:var(--soft);
+
+  text-align:left;
+}
+
+.pomo-last-label{
+  color:var(--muted);
+
+  font-size:11px;
+
+  font-weight:850;
+
+  text-transform:uppercase;
+
+  letter-spacing:.08em;
+}
+
+.pomo-last-title{
+  margin-top:6px;
+
+  font-size:15px;
+
+  font-weight:850;
+}
+
+.pomo-last-sub{
+  margin-top:4px;
+
+  color:var(--muted);
+
+  font-size:12px;
+}
+
+
+/* ================= SETTINGS ================= */
+
+.pomo-settings{
+  margin-top:20px;
+
+  padding-top:22px;
+
+  border-top:1px solid var(--border);
+
+  text-align:left;
+}
+
+.pomo-settings-title{
+  font-size:15px;
+
+  font-weight:850;
+
+  margin-bottom:13px;
+}
+
+.pomo-setting-grid{
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:10px;
+}
+
+.pomo-setting label{
+  display:block;
+
+  color:var(--muted);
+
+  font-size:12px;
+
+  font-weight:700;
+}
+
+.pomo-setting input{
+  width:100%;
+
+  margin-top:6px;
+
+  padding:10px 11px;
+
+  border:1px solid var(--border);
+
+  background:var(--soft);
+
+  color:var(--text);
+
+  border-radius:10px;
+
+  outline:none;
+
+  box-sizing:border-box;
+}
+
+.pomo-setting input:focus{
+  border-color:var(--primary);
+}
+
+.pomo-apply{
+  width:100%;
+
+  margin-top:10px;
+
+  border:0;
+
+  background:var(--primary);
+
+  color:#fff;
+
+  padding:11px;
+
+  border-radius:10px;
+
+  font-size:13px;
+
+  font-weight:850;
+
+  cursor:pointer;
+}
+
+
+/* ================= MOBILE ================= */
+
+@media(max-width:550px){
+
+  #pomodoroPage{
+    padding:18px 13px 30px;
+  }
+
+  .pomodoro-card{
+    padding:25px 16px;
+  }
+
+  .pomodoro-heading{
+    font-size:20px;
+  }
+
+  .pomodoro-time{
+    font-size:62px;
+
+    letter-spacing:-3px;
+  }
+
+  .pomo-setting-grid{
+    grid-template-columns:1fr;
+  }
+
+}
+
+</style>
+
+
+<!-- =========================================================
+     POMODORO PAGE
+========================================================= -->
+
+<section id="pomodoroPage">
+
+  <div class="pomodoro-container">
+
+    <div class="pomodoro-top">
+
+      <div class="pomodoro-heading">
+        🍅 Pomodoro Timer
+      </div>
+
+      <button
+        id="pomodoroBackBtn"
+        class="pomodoro-back"
+        type="button"
+      >
+        ← Tracker
+      </button>
+
+    </div>
+
+
+    <div class="pomodoro-card">
+
+      <div
+        id="pomoMode"
+        class="pomodoro-mode"
+      >
+        Focus Time
+      </div>
+
+
+      <div
+        id="pomoTime"
+        class="pomodoro-time"
+      >
+        25:00
+      </div>
+
+
+      <div class="pomodoro-controls">
+
+        <button
+          id="pomoStart"
+          class="pomo-btn pomo-start"
+          type="button"
+        >
+          ▶ Start
+        </button>
+
+        <button
+          id="pomoPause"
+          class="pomo-btn"
+          type="button"
+        >
+          ⏸ Pause
+        </button>
+
+        <button
+          id="pomoReset"
+          class="pomo-btn"
+          type="button"
+        >
+          ↻ Reset
+        </button>
+
+        <button
+          id="pomoSkip"
+          class="pomo-btn"
+          type="button"
+        >
+          ⏭ Skip
+        </button>
+
+      </div>
+
+
+      <!-- LAST STUDIED CHAPTER -->
+
+      <div class="pomo-last">
+
+        <div class="pomo-last-label">
+          Last Studied Chapter
+        </div>
+
+        <div
+          id="pomoLastTitle"
+          class="pomo-last-title"
+        >
+          No chapter selected
+        </div>
+
+        <div
+          id="pomoLastSub"
+          class="pomo-last-sub"
+        >
+          Study a chapter from the tracker first.
+        </div>
+
+      </div>
+
+
+      <!-- SETTINGS -->
+
+      <div class="pomo-settings">
+
+        <div class="pomo-settings-title">
+          ⚙️ Timer Settings
+        </div>
+
+
+        <div class="pomo-setting-grid">
+
+          <div class="pomo-setting">
+
+            <label for="pomoFocusInput">
+              Focus minutes
+            </label>
+
+            <input
+              id="pomoFocusInput"
+              type="number"
+              min="1"
+              max="180"
+              value="25"
+            >
+
+          </div>
+
+
+          <div class="pomo-setting">
+
+            <label for="pomoBreakInput">
+              Break minutes
+            </label>
+
+            <input
+              id="pomoBreakInput"
+              type="number"
+              min="1"
+              max="60"
+              value="5"
+            >
+
+          </div>
+
+        </div>
+
+
+        <button
+          id="pomoApply"
+          class="pomo-apply"
+          type="button"
+        >
+          Apply Settings
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<script>
+
+/* =========================================================
+   POMODORO ENGINE
+========================================================= */
+
+(function(){
+
+  const POMO_FOCUS_KEY =
+    "pomodoroFocus";
+
+  const POMO_BREAK_KEY =
+    "pomodoroBreak";
+
+  const LAST_KEY =
+    "syllabusLastChapter";
+
+
+  let focusMinutes = 25;
+
+  let breakMinutes = 5;
+
+  let pomoMode = "focus";
+
+  let pomoRemaining =
+    focusMinutes * 60;
+
+  let pomoInterval = null;
+
+
+  /* =======================================================
+     ELEMENTS
+  ======================================================= */
+
+  const page =
+    document.getElementById(
+      "pomodoroPage"
+    );
+
+  const timeEl =
+    document.getElementById(
+      "pomoTime"
+    );
+
+  const modeEl =
+    document.getElementById(
+      "pomoMode"
+    );
+
+  const startBtn =
+    document.getElementById(
+      "pomoStart"
+    );
+
+  const pauseBtn =
+    document.getElementById(
+      "pomoPause"
+    );
+
+  const resetBtn =
+    document.getElementById(
+      "pomoReset"
+    );
+
+  const skipBtn =
+    document.getElementById(
+      "pomoSkip"
+    );
+
+  const backBtn =
+    document.getElementById(
+      "pomodoroBackBtn"
+    );
+
+  const focusInput =
+    document.getElementById(
+      "pomoFocusInput"
+    );
+
+  const breakInput =
+    document.getElementById(
+      "pomoBreakInput"
+    );
+
+  const applyBtn =
+    document.getElementById(
+      "pomoApply"
+    );
+
+
+  /* =======================================================
+     DISPLAY
+  ======================================================= */
+
+  function updateDisplay(){
+
+    const minutes =
+      Math.floor(
+        pomoRemaining / 60
+      );
+
+    const seconds =
+      pomoRemaining % 60;
+
+
+    timeEl.textContent =
+      String(minutes)
+        .padStart(2,"0")
+      +
+      ":"
+      +
+      String(seconds)
+        .padStart(2,"0");
+
+
+    modeEl.textContent =
+      pomoMode === "focus"
+        ? "Focus Time"
+        : "Break Time";
+
+
+    startBtn.textContent =
+      pomoInterval
+        ? "▶ Running"
+        : "▶ Start";
+
+  }
+
+
+  /* =======================================================
+     OPEN
+  ======================================================= */
+
+  function openPomodoro(){
+
+    page.classList.add(
+      "show"
+    );
+
+    document.body.style.overflow =
+      "hidden";
+
+    loadLastChapter();
+
+    updateDisplay();
+
+  }
+
+
+  /* =======================================================
+     CLOSE
+  ======================================================= */
+
+  function closePomodoro(){
+
+    page.classList.remove(
+      "show"
+    );
+
+    document.body.style.overflow =
+      "";
+
+  }
+
+
+  backBtn.addEventListener(
+    "click",
+    closePomodoro
+  );
+
+
+  /* =======================================================
+     SOUND
+  ======================================================= */
+
+  function playEndSound(){
+
+    try{
+
+      const AudioContext =
+        window.AudioContext ||
+        window.webkitAudioContext;
+
+
+      if(!AudioContext){
+        return;
+      }
+
+
+      const audio =
+        new AudioContext();
+
+
+      const oscillator =
+        audio.createOscillator();
+
+
+      const gain =
+        audio.createGain();
+
+
+      oscillator.type =
+        "sine";
+
+
+      oscillator.frequency.setValueAtTime(
+        880,
+        audio.currentTime
+      );
+
+
+      oscillator.frequency.setValueAtTime(
+        660,
+        audio.currentTime + .22
+      );
+
+
+      oscillator.frequency.setValueAtTime(
+        880,
+        audio.currentTime + .44
+      );
+
+
+      gain.gain.setValueAtTime(
+        .001,
+        audio.currentTime
+      );
+
+
+      gain.gain.exponentialRampToValueAtTime(
+        .25,
+        audio.currentTime + .03
+      );
+
+
+      gain.gain.exponentialRampToValueAtTime(
+        .001,
+        audio.currentTime + .75
+      );
+
+
+      oscillator.connect(gain);
+
+      gain.connect(
+        audio.destination
+      );
+
+
+      oscillator.start();
+
+      oscillator.stop(
+        audio.currentTime + .75
+      );
+
+
+    }catch(error){
+
+      console.log(
+        "Pomodoro sound unavailable"
+      );
+
+    }
+
+  }
+
+
+  /* =======================================================
+     START
+  ======================================================= */
+
+  function startTimer(){
+
+    if(pomoInterval){
+      return;
+    }
+
+
+    pomoInterval =
+      setInterval(
+        tick,
+        1000
+      );
+
+
+    updateDisplay();
+
+  }
+
+
+  startBtn.addEventListener(
+    "click",
+    startTimer
+  );
+
+
+  /* =======================================================
+     PAUSE
+  ======================================================= */
+
+  function pauseTimer(){
+
+    clearInterval(
+      pomoInterval
+    );
+
+    pomoInterval = null;
+
+    updateDisplay();
+
+  }
+
+
+  pauseBtn.addEventListener(
+    "click",
+    pauseTimer
+  );
+
+
+  /* =======================================================
+     TIMER TICK
+  ======================================================= */
+
+  function tick(){
+
+    if(pomoRemaining > 0){
+
+      pomoRemaining--;
+
+      updateDisplay();
+
+    }
+
+
+    if(pomoRemaining <= 0){
+
+      playEndSound();
+
+      switchMode();
+
+    }
+
+  }
+
+
+  /* =======================================================
+     SWITCH FOCUS / BREAK
+  ======================================================= */
+
+  function switchMode(){
+
+    pauseTimer();
+
+
+    if(
+      pomoMode === "focus"
+    ){
+
+      pomoMode = "break";
+
+      pomoRemaining =
+        breakMinutes * 60;
+
+    }else{
+
+      pomoMode = "focus";
+
+      pomoRemaining =
+        focusMinutes * 60;
+
+    }
+
+
+    updateDisplay();
+
+
+    /* Automatically start next phase */
+
+    startTimer();
+
+  }
+
+
+  /* =======================================================
+     RESET
+  ======================================================= */
+
+  function resetTimer(){
+
+    pauseTimer();
+
+
+    pomoRemaining =
+      pomoMode === "focus"
+        ? focusMinutes * 60
+        : breakMinutes * 60;
+
+
+    updateDisplay();
+
+  }
+
+
+  resetBtn.addEventListener(
+    "click",
+    resetTimer
+  );
+
+
+  /* =======================================================
+     SKIP
+  ======================================================= */
+
+  skipBtn.addEventListener(
+    "click",
+    function(){
+
+      switchMode();
+
+    }
+  );
+
+
+  /* =======================================================
+     APPLY SETTINGS
+  ======================================================= */
+
+  applyBtn.addEventListener(
+    "click",
+    function(){
+
+      const focus =
+        parseInt(
+          focusInput.value,
+          10
+        );
+
+
+      const breakTime =
+        parseInt(
+          breakInput.value,
+          10
+        );
+
+
+      if(
+        !Number.isFinite(focus) ||
+        focus < 1
+      ){
+
+        alert(
+          "Focus time must be at least 1 minute."
+        );
+
+        return;
+
+      }
+
+
+      if(
+        !Number.isFinite(breakTime) ||
+        breakTime < 1
+      ){
+
+        alert(
+          "Break time must be at least 1 minute."
+        );
+
+        return;
+
+      }
+
+
+      focusMinutes =
+        focus;
+
+      breakMinutes =
+        breakTime;
+
+
+      localStorage.setItem(
+        POMO_FOCUS_KEY,
+        String(
+          focusMinutes
+        )
+      );
+
+
+      localStorage.setItem(
+        POMO_BREAK_KEY,
+        String(
+          breakMinutes
+        )
+      );
+
+
+      pauseTimer();
+
+
+      pomoMode =
+        "focus";
+
+
+      pomoRemaining =
+        focusMinutes * 60;
+
+
+      updateDisplay();
+
+
+      if(
+        typeof showToast ===
+        "function"
+      ){
+
+        showToast(
+          "🍅 Pomodoro settings updated"
+        );
+
+      }
+
+    }
+  );
+
+
+  /* =======================================================
+     LOAD SETTINGS
+  ======================================================= */
+
+  function loadSettings(){
+
+    const savedFocus =
+      parseInt(
+        localStorage.getItem(
+          POMO_FOCUS_KEY
+        ),
+        10
+      );
+
+
+    const savedBreak =
+      parseInt(
+        localStorage.getItem(
+          POMO_BREAK_KEY
+        ),
+        10
+      );
+
+
+    if(
+      Number.isFinite(
+        savedFocus
+      ) &&
+      savedFocus > 0
+    ){
+
+      focusMinutes =
+        savedFocus;
+
+      focusInput.value =
+        savedFocus;
+
+    }
+
+
+    if(
+      Number.isFinite(
+        savedBreak
+      ) &&
+      savedBreak > 0
+    ){
+
+      breakMinutes =
+        savedBreak;
+
+      breakInput.value =
+        savedBreak;
+
+    }
+
+
+    pomoRemaining =
+      focusMinutes * 60;
+
+  }
+
+
+  /* =======================================================
+     LAST STUDIED CHAPTER
+  ======================================================= */
+
+  function loadLastChapter(){
+
+    const title =
+      document.getElementById(
+        "pomoLastTitle"
+      );
+
+    const sub =
+      document.getElementById(
+        "pomoLastSub"
+      );
+
+
+    if(
+      !title ||
+      !sub
+    ){
+
+      return;
+
+    }
+
+
+    const raw =
+      localStorage.getItem(
+        LAST_KEY
+      );
+
+
+    if(!raw){
+
+      title.textContent =
+        "No chapter selected";
+
+      sub.textContent =
+        "Study a chapter from the tracker first.";
+
+      return;
+
+    }
+
+
+    try{
+
+      const data =
+        JSON.parse(raw);
+
+
+      if(
+        !data ||
+        !data.book ||
+        !data.chapter
+      ){
+
+        throw new Error(
+          "Invalid last chapter"
+        );
+
+      }
+
+
+      let chapterName =
+        "Chapter " +
+        data.chapter;
+
+
+      /*
+        Your main tracker already has
+        chapterNames, so use it.
+      */
+
+      if(
+        typeof chapterNames !==
+        "undefined" &&
+
+        chapterNames[data.book] &&
+
+        chapterNames[data.book][
+          data.chapter - 1
+        ]
+      ){
+
+        chapterName =
+          chapterNames[data.book][
+            data.chapter - 1
+          ];
+
+      }
+
+
+      title.textContent =
+        chapterName;
+
+
+      sub.textContent =
+        data.book +
+        " • Chapter " +
+        data.chapter;
+
+
+    }catch(error){
+
+      title.textContent =
+        "No chapter selected";
+
+      sub.textContent =
+        "Study a chapter from the tracker first.";
+
+    }
+
+  }
+
+
+  /* =======================================================
+     CREATE POMODORO BUTTON
+     AUTOMATICALLY
+  ======================================================= */
+
+  const toolbar =
+    document.querySelector(
+      ".filter-row"
+    );
+
+
+  if(toolbar){
+
+    const pomodoroButton =
+      document.createElement(
+        "button"
+      );
+
+
+    pomodoroButton.type =
+      "button";
+
+
+    pomodoroButton.className =
+      "pomodoro-open-btn";
+
+
+    pomodoroButton.textContent =
+      "🍅 Pomodoro";
+
+
+    const spacer =
+      toolbar.querySelector(
+        ".spacer"
+      );
+
+
+    if(spacer){
+
+      toolbar.insertBefore(
+        pomodoroButton,
+        spacer
+      );
+
+    }else{
+
+      toolbar.appendChild(
+        pomodoroButton
+      );
+
+    }
+
+
+    pomodoroButton.addEventListener(
+      "click",
+      openPomodoro
+    );
+
+  }
+
+
+  /* =======================================================
+     ESCAPE KEY
+  ======================================================= */
+
+  document.addEventListener(
+    "keydown",
+    function(event){
+
+      if(
+        event.key === "Escape" &&
+        page.classList.contains(
+          "show"
+        )
+      ){
+
+        closePomodoro();
+
+      }
+
+    }
+  );
+
+
+  /* =======================================================
+     INITIALIZE
+  ======================================================= */
+
+  loadSettings();
+
+  updateDisplay();
+
+  loadLastChapter();
+
+
+})();
+
+</script>
 </body>
 </html>
