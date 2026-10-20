@@ -7222,6 +7222,9 @@ document
 
   }
 
+  // Expose for exam planner + Insights "Study" buttons (outside this IIFE)
+  window.openPomodoroFor = openPomodoroFor;
+
 
   function closePomodoro(){
 
@@ -7605,7 +7608,14 @@ function selectTab(tab){document.querySelectorAll('.main-tab').forEach(x=>x.clas
 function addBackupTools(){
  const a=document.querySelector('.bottom-actions');if(!a||document.getElementById('backupBtn'))return;
  const w=document.createElement('div');w.className='enhance-tools';w.innerHTML=`<button id="backupBtn" class="enhance-btn" type="button">⬇️ Backup</button><button id="restoreBtn" class="enhance-btn" type="button">⬆️ Restore</button><button id="smartBtn" class="enhance-btn" type="button">🧠 Today's Focus</button><input id="backupInput" class="backup-input" type="file" accept="application/json,.json">`;a.appendChild(w);
- backupBtn.onclick=backup;restoreBtn.onclick=()=>backupInput.click();backupInput.onchange=restore;smartBtn.onclick=()=>{selectTab('insights');setTimeout(()=>smartTodayMount?.scrollIntoView({behavior:'smooth'}),50)};
+ const backupBtnEl=document.getElementById('backupBtn');
+ const restoreBtnEl=document.getElementById('restoreBtn');
+ const smartBtnEl=document.getElementById('smartBtn');
+ const backupInputEl=document.getElementById('backupInput');
+ if(backupBtnEl) backupBtnEl.onclick=backup;
+ if(restoreBtnEl) restoreBtnEl.onclick=()=>backupInputEl && backupInputEl.click();
+ if(backupInputEl) backupInputEl.onchange=restore;
+ if(smartBtnEl) smartBtnEl.onclick=()=>{selectTab('insights');setTimeout(()=>document.getElementById('smartTodayMount')?.scrollIntoView({behavior:'smooth'}),50)};
 }
 function backup(){const data={version:2,app:'Syllabus-Tracker',exportedAt:new Date().toISOString(),data:{}};allKeys.forEach(k=>{const v=localStorage.getItem(k);if(v!==null)data.data[k]=v});data.data[STORAGE_KEY]=JSON.stringify(progress);data.data[EXAMS_KEY]=JSON.stringify(exams);const u=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=u;a.download='syllabus-tracker-backup-'+todayKey()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);showToast('💾 Backup downloaded');}
 async function restore(e){
