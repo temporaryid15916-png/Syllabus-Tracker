@@ -111,10 +111,10 @@ body.dark{
   --primary-soft:#172554;
 
   --success:#4ade80;
-  --success-soft:#052e16;
+  --success-soft:#0f2f1c;
 
   --warning:#fbbf24;
-  --warning-soft:#422006;
+  --warning-soft:#3a2a0a;
 
   --danger:#f87171;
   --danger-soft:#450a0a;
@@ -123,6 +123,25 @@ body.dark{
   --purple-soft:#2e1065;
 
   --shadow:0 8px 30px rgba(0,0,0,.25);
+}
+
+body.dark .chapter.in-progress{
+  background:color-mix(in srgb,var(--warning-soft) 85%,var(--soft));
+  border-color:color-mix(in srgb,var(--warning) 40%,var(--border));
+}
+
+body.dark .chapter.complete{
+  background:color-mix(in srgb,var(--success-soft) 80%,var(--soft));
+  border-color:color-mix(in srgb,var(--success) 35%,var(--border));
+}
+
+body.dark .status-btn.in-progress{
+  background:color-mix(in srgb,var(--warning-soft) 90%,var(--card));
+}
+
+body.dark .empty{
+  background:var(--soft);
+  border-color:color-mix(in srgb,var(--border) 80%,transparent);
 }
 
 *{
@@ -356,7 +375,19 @@ button:disabled{
 .continue-sub{
   margin-top:3px;
   color:var(--muted);
-  font-size:13px;
+  font-size:12px;
+  line-height:1.4;
+}
+
+.continue-reason{
+  display:inline-block;
+  margin-top:5px;
+  padding:3px 9px;
+  border-radius:999px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:10px;
+  font-weight:800;
 }
 
 .continue-btn{
@@ -562,9 +593,23 @@ button:disabled{
 }
 
 .chevron{
+  width:28px;
+  height:28px;
+  display:grid;
+  place-items:center;
+  flex-shrink:0;
   color:var(--muted);
-  font-size:18px;
-  transition:.25s ease;
+  font-size:16px;
+  border-radius:8px;
+  background:var(--soft);
+  border:1px solid var(--border);
+  transition:transform .25s ease,color .2s ease,background .2s ease,border-color .2s ease;
+}
+
+.subject-header:hover .chevron{
+  color:var(--primary);
+  border-color:color-mix(in srgb,var(--primary) 30%,var(--border));
+  background:var(--primary-soft);
 }
 
 .subject.collapsed .chevron{
@@ -757,9 +802,25 @@ button:disabled{
   background:var(--card);
   border:1px dashed var(--border);
   border-radius:var(--radius);
-  padding:45px 20px;
+  padding:42px 22px;
   text-align:center;
   color:var(--muted);
+  line-height:1.55;
+}
+
+.empty strong{
+  display:block;
+  margin:8px 0 6px;
+  color:var(--text);
+  font-size:15px;
+  font-weight:850;
+}
+
+.empty .empty-hint{
+  display:block;
+  margin-top:8px;
+  font-size:12px;
+  opacity:.9;
 }
 
 /* ================= GENERIC CARD ================= */
@@ -1420,8 +1481,17 @@ button:disabled{
 }
 
 .pomo-picker-field select:disabled{
-  opacity:.65;
+  opacity:.72;
   cursor:not-allowed;
+  border-style:dashed;
+}
+
+.pomo-picker.locked .pomo-section-label::after{
+  content:" · Running";
+  color:var(--warning);
+  font-weight:850;
+  text-transform:none;
+  letter-spacing:0;
 }
 
 .pomo-session{
@@ -1429,6 +1499,10 @@ button:disabled{
   color:var(--muted);
   font-size:12px;
   font-weight:750;
+}
+
+.pomo-session.locked{
+  color:var(--warning);
 }
 
 .pomodoro-progress{
@@ -3574,7 +3648,7 @@ function findContinueTarget(){
     return {
       book:lastChapter.book,
       chapter:lastChapter.chapter,
-      reason:"In progress • last studied"
+      reason:"Last studied"
     };
   }
 
@@ -3614,7 +3688,7 @@ function findContinueTarget(){
       return {
         book:item.book,
         chapter:item.chapter,
-        reason:`Exam: ${exam.name} • ${(item.priority||"medium")} priority`
+        reason:`Exam · ${(item.priority||"medium")}`
       };
     }
   }
@@ -3675,8 +3749,9 @@ function updateContinue(){
 
   document.getElementById(
     "continueSub"
-  ).textContent=
-    `${continueTarget.book} • Chapter ${continueTarget.chapter} • ${continueTarget.reason}`;
+  ).innerHTML=
+    `${escapeHtml(continueTarget.book)} · Ch ${continueTarget.chapter}`+
+    `<span class="continue-reason">${escapeHtml(continueTarget.reason)}</span>`;
 
   card.style.display="flex";
 
@@ -4103,8 +4178,8 @@ function render(){
     container.innerHTML=
       `<div class="empty">
         🔎<br><br>
-        <strong>No chapters found</strong><br>
-        Try another search or filter.
+        <strong>No chapters found</strong>
+        Try another search or status filter.
       </div>`;
 
   }
@@ -4295,7 +4370,7 @@ document
         "✅ Saved";
 
       showToast(
-        "✅ Progress saved"
+        "✅ Saved (also auto-saves on exit)"
       );
 
       setTimeout(
@@ -4875,8 +4950,9 @@ function renderExams(){
     list.innerHTML=
       `<div class="empty">
         🎯<br><br>
-        <strong>No exams planned yet</strong><br>
-        Create an exam and select its chapters.
+        <strong>No exams planned yet</strong>
+        Pick the chapters that will come in your next exam.
+        <span class="empty-hint">Tap ＋ New Exam to start</span>
       </div>`;
 
     return;
@@ -6070,8 +6146,9 @@ function renderHistoryList(){
 
     container.innerHTML=
       `<div class="empty">
-        📊<br><br>
-        No study history yet.
+        📊
+        <strong>No study history yet</strong>
+        Complete a Pomodoro focus session to record time here.
       </div>`;
 
     return;
@@ -6635,12 +6712,10 @@ document
     if(!days.length){
 
       historyList.innerHTML=
-        `<div style="
-          color:var(--muted);
-          font-size:13px;
-          padding:8px 0;
-        ">
-          No study time recorded yet.
+        `<div class="empty" style="padding:28px 16px;box-shadow:none;">
+          🍅
+          <strong>No study time yet</strong>
+          Start a focus session to track your time.
         </div>`;
 
       return;
@@ -6877,6 +6952,23 @@ document
 
     chapterSelect.disabled=
       locked;
+
+    const picker=document.querySelector(".pomo-picker");
+    if(picker){
+      picker.classList.toggle("locked",!!locked);
+    }
+
+    if(locked && selectedBook && selectedChapter){
+      const name=
+        chapterNames[selectedBook]?.[Number(selectedChapter)-1] || "";
+      selectedChapterEl.textContent=
+        `🔒 Running · ${selectedBook} · Ch ${selectedChapter}`+
+        (name?` — ${name}`:"");
+      selectedChapterEl.classList.add("locked");
+    }else{
+      selectedChapterEl.classList.remove("locked");
+      updateSelectedChapterText();
+    }
 
   }
 
