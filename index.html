@@ -7640,15 +7640,74 @@ function renderSubjects(){const e=document.getElementById('subjectAnalytics');if
 function renderFocus(){const e=document.getElementById('focusAnalytics');if(!e)return;const h=loadHistory(),days=Object.keys(h).filter(d=>Number(h[d]?.totalSeconds||0)>0),tt=totalTime(),avg=days.length?tt/days.length:0,top=Object.keys(books).map(b=>[b,bookTime(b)]).sort((a,b)=>b[1]-a[1]).slice(0,4);e.innerHTML=`<div class="metric-row"><span class="metric-name">Total focus time</span><span class="metric-value">${formatDuration(tt)}</span></div><div class="metric-row"><span class="metric-name">Study days</span><span class="metric-value">${days.length}</span></div><div class="metric-row"><span class="metric-name">Average / study day</span><span class="metric-value">${formatDuration(avg)}</span></div>`+top.map(x=>`<div class="metric-row"><span class="metric-name">${esc(x[0])}</span><span class="metric-value">${formatDuration(x[1])}</span></div>`).join('')}
 function smart(){const a=[];Object.keys(books).forEach(b=>{for(let c=1;c<=books[b];c++)if(getStatus(b,c)==='in-progress')a.push({b,c})});if(a.length<5)Object.keys(books).forEach(b=>{for(let c=1;c<=books[b];c++)if(getStatus(b,c)==='not-started'&&a.length<5)a.push({b,c})});return a}
 function renderSmart(){const e=document.getElementById('smartTodayMount');if(!e)return;const goal=Math.min(100,Math.round(todayStudySeconds()/(dailyGoal*60)*100)),a=smart();e.innerHTML=`<div class="smart-today"><div class="smart-head"><div><div class="smart-title">🧠 Today's Focus Plan</div><div class="smart-sub">In-progress chapters first, then unfinished chapters.</div></div><div class="metric-value">${goal}% of goal</div></div><div class="mini-track" style="margin-top:12px"><div class="mini-fill" style="width:${goal}%"></div></div><div class="smart-list">${a.length?a.map(x=>`<div class="smart-item"><div class="chapter-number">${String(x.c).padStart(2,'0')}</div><div class="smart-item-main"><div class="smart-item-title">${esc(chapterTitle(x.b,x.c))}</div><div class="smart-item-sub">${esc(x.b)} • ${getStatus(x.b,x.c)==='in-progress'?'In Progress':'Not Started'}</div></div><button type="button" data-b="${esc(x.b)}" data-c="${x.c}">Study</button></div>`).join(''):`<div class="smart-item"><div class="smart-item-main"><div class="smart-item-title">🎉 Syllabus complete!</div><div class="smart-item-sub">Use Exam Planner or revise.</div></div></div>`}</div></div>`;e.querySelectorAll('[data-b]').forEach(x=>x.onclick=()=>openPomodoroFor(x.dataset.b,Number(x.dataset.c)))}
-function renderReminder(){const i=document.getElementById('reminderTime'),s=document.getElementById('reminderStatus');if(!i||!s)return;const r=J(REMINDER_KEY,{enabled:false,time:'20:00',last:''});i.value=r.time||'20:00';s.textContent=r.enabled?`Enabled for ${r.time}. Permission: ${('Notification' in window)?Notification.permission:'unsupported'}`:'Reminder is off.'}
-async function enableReminder(){if(!('Notification' in window)){await appAlert('এই browser notification support করে না।',{title:'Notification Unsupported',icon:'🔔'});return}const p=Notification.permission==='granted'?'granted':await Notification.requestPermission();if(p!=='granted'){await appAlert('Notification permission allow করুন।',{title:'Permission Needed',icon:'🔔'});return}W(REMINDER_KEY,{enabled:true,time:reminderTime.value||'20:00',last:''});renderReminder();showToast('🔔 Reminder enabled');checkReminder()}
-function disableReminder(){const r=J(REMINDER_KEY,{});r.enabled=false;W(REMINDER_KEY,r);renderReminder();showToast('🔕 Reminder disabled')}
-function checkReminder(){const r=J(REMINDER_KEY,{});if(!r.enabled||!r.time||!('Notification' in window)||Notification.permission!=='granted')return;const n=new Date(),tm=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'),d=todayKey();if(tm!==r.time||r.last===d||todayStudySeconds()>=dailyGoal*60)return;new Notification('Syllabus Tracker',{body:'📚 আজকের study goal এখনও বাকি। একটু focus time দাও!'});r.last=d;W(REMINDER_KEY,r)}
+function renderReminder(){const i=document.getElementById('reminderTime'),s=document.getElementById('reminderStatus');if(!i||!s)return;const r=J(REMINDER_KEY,{enabled:false,time:'20:00',last:''});i.value=/^\d{2}:\d{2}$/.test(r.time||'')?r.time:'20:00';s.textContent=r.enabled?`Enabled for ${i.value}. Permission: ${('Notification' in window)?Notification.permission:'unsupported'}`:'Reminder is off.'}
+async function enableReminder(){
+  const input=document.getElementById('reminderTime');
+  const time=input?.value||'20:00';
+  if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(time)){
+    await appAlert('একটি valid reminder time select করুন।',{title:'Invalid Time',icon:'⏰'});
+    return;
+  }
+  if(!('Notification' in window)){
+    await appAlert('এই browser notification support করে না।',{title:'Notification Unsupported',icon:'🔔'});
+    return;
+  }
+  let permission=Notification.permission;
+  try{
+    if(permission==='default') permission=await Notification.requestPermission();
+  }catch(e){
+    permission='denied';
+  }
+  if(permission!=='granted'){
+    await appAlert('Browser notification permission allow করুন। Browser settings থেকে permission block থাকলে আগে সেটি unblock করুন।',{title:'Permission Needed',icon:'🔔'});
+    return;
+  }
+  const r=J(REMINDER_KEY,{enabled:false,time:'20:00',last:''});
+  r.enabled=true;
+  r.time=time;
+  r.last='';
+  W(REMINDER_KEY,r);
+  renderReminder();
+  showToast('🔔 Reminder enabled');
+  checkReminder();
+}
+function disableReminder(){const r=J(REMINDER_KEY,{enabled:false,time:'20:00',last:''});r.enabled=false;W(REMINDER_KEY,r);renderReminder();showToast('🔕 Reminder disabled')}
+function checkReminder(){
+  const r=J(REMINDER_KEY,{enabled:false,time:'20:00',last:''});
+  if(!r.enabled||!r.time||!('Notification' in window)||Notification.permission!=='granted')return;
+  const n=new Date();
+  const currentMinutes=n.getHours()*60+n.getMinutes();
+  const match=String(r.time).match(/^(\d{2}):(\d{2})$/);
+  if(!match)return;
+  const targetMinutes=Number(match[1])*60+Number(match[2]);
+  const d=todayKey();
+  if(r.last===d||currentMinutes<targetMinutes||todayStudySeconds()>=dailyGoal*60)return;
+  try{
+    new Notification('Syllabus Tracker',{body:'📚 আজকের study goal এখনও বাকি। একটু focus time দাও!',tag:'syllabus-tracker-reminder'});
+    r.last=d;
+    W(REMINDER_KEY,r);
+  }catch(e){
+    // Notification can fail if browser revokes permission between checks.
+  }
+}
 function renderInsights(){renderSmart();renderSubjects();renderFocus();renderAchievements();renderReminder()}
 
 function notesButtons(){const s=document.getElementById('subjects');if(!s)return;s.querySelectorAll('.chapter').forEach(r=>{if(r.querySelector('.note-btn'))return;const b=r.closest('.subject')?.dataset.book,c=Number(r.dataset.chapter);if(!b||!c)return;const w=document.createElement('div');w.className='chapter-tools';const n=notes(),btn=document.createElement('button');btn.type='button';btn.className='note-btn';btn.textContent=n[noteKey(b,c)]?'📝 Note':'＋ Note';if(n[noteKey(b,c)])btn.classList.add('has-note');btn.onclick=e=>{e.stopPropagation();editNote(b,c)};w.appendChild(btn);r.appendChild(w)})}
 async function editNote(b,c){const n=notes(),k=noteKey(b,c),old=n[k]||'',v=await appPrompt('Write or edit your note for '+chapterTitle(b,c)+':',old,{title:'Chapter Note',icon:'📝',okText:'Save'});if(v===null||v===false)return;if(v.trim())n[k]=v.trim();else delete n[k];W(NOTES_KEY,n);render();setTimeout(notesButtons,0);showToast(v.trim()?'📝 Note saved':'🗑️ Note removed')}
-function boot(){addInsights();addBackupTools();notesButtons();document.getElementById('enableReminderBtn').onclick=enableReminder;document.getElementById('disableReminderBtn').onclick=disableReminder;document.getElementById('smartBtn').onclick=()=>{selectTab('insights');setTimeout(()=>document.getElementById('smartTodayMount')?.scrollIntoView({behavior:'smooth'}),50)};new MutationObserver(()=>notesButtons()).observe(document.getElementById('subjects'),{childList:true,subtree:true});checkReminder();setInterval(checkReminder,60000);renderInsights()}
+function boot(){
+  addInsights();
+  addBackupTools();
+  notesButtons();
+  const enableBtn=document.getElementById('enableReminderBtn');
+  const disableBtn=document.getElementById('disableReminderBtn');
+  if(enableBtn) enableBtn.addEventListener('click',enableReminder);
+  if(disableBtn) disableBtn.addEventListener('click',disableReminder);
+  const subjects=document.getElementById('subjects');
+  if(subjects) new MutationObserver(()=>notesButtons()).observe(subjects,{childList:true,subtree:true});
+  checkReminder();
+  setInterval(checkReminder,30000);
+  renderInsights();
+}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
 </script>
