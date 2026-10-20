@@ -1017,6 +1017,7 @@ button:disabled{
 .exam-priority.high{
   color:var(--danger);
   border-color:var(--danger);
+  background:var(--danger-soft);
 }
 
 .exam-priority.medium{
@@ -1027,6 +1028,20 @@ button:disabled{
 .exam-priority.low{
   color:var(--success);
   border-color:var(--success);
+}
+
+.exam-chapter.priority-high{
+  border-color:color-mix(in srgb,var(--danger) 45%,var(--border));
+  background:color-mix(in srgb,var(--danger-soft) 70%,var(--soft));
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--danger) 12%,transparent);
+}
+
+.exam-chapter.priority-medium{
+  border-color:color-mix(in srgb,var(--warning) 30%,var(--border));
+}
+
+.exam-chapter.priority-low{
+  opacity:.92;
 }
 
 .exam-actions-bottom{
@@ -1802,7 +1817,7 @@ footer{
   }
 }
 
-.enhance-tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}.enhance-btn{border:1px solid var(--border);background:var(--soft);color:var(--text);padding:9px 12px;border-radius:10px;font-size:12px;font-weight:800}.enhance-btn:hover{border-color:var(--primary);color:var(--primary)}.note-btn{border:1px solid var(--border);background:var(--card);color:var(--muted);padding:8px 10px;border-radius:9px;font-size:11px;font-weight:800;flex-shrink:0}.note-btn.has-note{color:var(--primary);border-color:color-mix(in srgb,var(--primary) 35%,var(--border));background:var(--primary-soft)}.chapter-tools{display:flex;gap:7px;align-items:center;flex-shrink:0}.insight-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.insight-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:17px;box-shadow:var(--shadow)}.insight-card h3{margin:0;font-size:15px;font-weight:850}.insight-card p{margin:5px 0 0;color:var(--muted);font-size:11px}.metric-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px}.metric-row:last-child{border-bottom:0}.metric-name{font-weight:750;min-width:0}.metric-value{font-weight:850;color:var(--primary);white-space:nowrap}.bar-row{margin-top:12px}.bar-head{display:flex;justify-content:space-between;gap:8px;font-size:11px;font-weight:800;margin-bottom:5px}.mini-track{height:7px;background:var(--border);border-radius:999px;overflow:hidden}.mini-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--purple));border-radius:999px}.badge-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}.badge{padding:11px;border:1px solid var(--border);background:var(--soft);border-radius:12px}.badge.locked{opacity:.42;filter:grayscale(1)}.badge-icon{font-size:21px}.badge-title{margin-top:4px;font-size:11px;font-weight:850}.badge-sub{margin-top:2px;color:var(--muted);font-size:10px;line-height:1.4}.smart-today{margin-bottom:18px;background:linear-gradient(135deg,var(--primary-soft),var(--card));border:1px solid color-mix(in srgb,var(--primary) 30%,var(--border));border-radius:var(--radius);padding:17px;box-shadow:var(--shadow)}.smart-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.smart-title{font-size:17px;font-weight:900}.smart-sub{margin-top:4px;color:var(--muted);font-size:11px}.smart-list{display:grid;gap:8px;margin-top:12px}.smart-item{display:flex;align-items:center;gap:9px;padding:10px;border:1px solid var(--border);background:var(--card);border-radius:11px}.smart-item-main{flex:1;min-width:0}.smart-item-title{font-size:12px;font-weight:800}.smart-item-sub{margin-top:2px;color:var(--muted);font-size:10px}.smart-item button{border:0;background:var(--primary);color:#fff;padding:7px 9px;border-radius:8px;font-size:10px;font-weight:850}.reminder-box{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}.reminder-box input{border:1px solid var(--border);background:var(--soft);color:var(--text);border-radius:9px;padding:8px 10px}.reminder-status{color:var(--muted);font-size:10px}.backup-input{display:none}@media(max-width:760px){.insight-grid{grid-template-columns:1fr}.badge-grid{grid-template-columns:1fr 1fr}.chapter-tools{flex-wrap:wrap;justify-content:flex-end}.status-btn{min-width:105px}.note-btn{padding:7px 8px}.smart-head{flex-direction:column}}@media(max-width:480px){.chapter{align-items:flex-start}.chapter-content{min-width:120px}.chapter-tools{width:100%;justify-content:flex-end}.status-btn{min-width:0}.enhance-btn{flex:1}.badge-grid{grid-template-columns:1fr}}
+.enhance-tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}.enhance-btn{border:1px solid var(--border);background:var(--soft);color:var(--text);padding:9px 12px;border-radius:10px;font-size:12px;font-weight:800}.enhance-btn:hover{border-color:var(--primary);color:var(--primary)}.note-btn{border:1px solid var(--border);background:var(--card);color:var(--muted);padding:8px 10px;border-radius:9px;font-size:11px;font-weight:800;flex-shrink:0}.note-btn.has-note{color:var(--primary);border-color:color-mix(in srgb,var(--primary) 35%,var(--border));background:var(--primary-soft)}.chapter-tools{display:flex;gap:7px;align-items:center;flex-shrink:0}.insight-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.insight-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:17px;box-shadow:var(--shadow)}.insight-card h3{margin:0;font-size:15px;font-weight:850}.insight-card p{margin:5px 0 0;color:var(--muted);font-size:11px}.metric-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px}.metric-row:last-child{border-bottom:0}.metric-name{font-weight:750;min-width:0}.metric-value{font-weight:850;color:var(--primary);white-space:nowrap}.bar-row{margin-top:12px}.bar-head{display:flex;justify-content:space-between;gap:8px;font-size:11px;font-weight:800;margin-bottom:5px}.mini-track{height:7px;background:var(--border);border-radius:999px;overflow:hidden}.mini-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--purple));border-radius:999px}.badge-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}.badge{padding:11px;border:1px solid var(--border);background:var(--soft);border-radius:12px}.badge.locked{opacity:.42;filter:grayscale(1)}.badge-icon{font-size:21px}.badge-title{margin-top:4px;font-size:11px;font-weight:850}.badge-sub{margin-top:2px;color:var(--muted);font-size:10px;line-height:1.4}.smart-today{margin-bottom:18px;background:linear-gradient(135deg,var(--primary-soft),var(--card));border:1px solid color-mix(in srgb,var(--primary) 30%,var(--border));border-radius:var(--radius);padding:17px;box-shadow:var(--shadow)}.smart-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.smart-title{font-size:17px;font-weight:900}.smart-sub{margin-top:4px;color:var(--muted);font-size:11px}.smart-list{display:grid;gap:8px;margin-top:12px}.smart-item{display:flex;align-items:center;gap:9px;padding:10px;border:1px solid var(--border);background:var(--card);border-radius:11px}.smart-item-main{flex:1;min-width:0}.smart-item-title{font-size:12px;font-weight:800}.smart-item-sub{margin-top:2px;color:var(--muted);font-size:10px}.smart-item button{border:0;background:var(--primary);color:#fff;padding:7px 9px;border-radius:8px;font-size:10px;font-weight:850}.reminder-box{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}.reminder-box input{border:1px solid var(--border);background:var(--soft);color:var(--text);border-radius:9px;padding:8px 10px}.reminder-status{color:var(--muted);font-size:10px}.backup-input{display:none}@media(max-width:760px){.insight-grid{grid-template-columns:1fr}.badge-grid{grid-template-columns:1fr 1fr}.chapter-tools{flex-wrap:nowrap;justify-content:flex-end;gap:6px}.status-btn{min-width:100px}.note-btn{padding:7px 8px;min-width:36px}.smart-head{flex-direction:column}}@media(max-width:480px){.chapter{align-items:flex-start}.chapter-content{min-width:100px;flex:1}.chapter-tools{width:auto;flex-shrink:0;justify-content:flex-end}.status-btn{min-width:0;padding:7px 8px;font-size:11px}.note-btn{padding:7px;min-width:34px;font-size:13px;line-height:1}.note-btn .note-label{display:none}.enhance-btn{flex:1}.badge-grid{grid-template-columns:1fr}.chapter-number{width:30px;height:30px;font-size:10px}}
 </style>
 </head>
 
@@ -2363,10 +2378,11 @@ footer{
 
     <h2>Do you want to reset your progress?</h2>
 
-    <p style="
+    <p id="resetModalMessage" style="
       color:var(--muted);
       font-size:12px;
       line-height:1.6;
+      white-space:pre-line;
     ">
       Your syllabus progress and last studied chapter will be reset.
       Exam plans and study history will remain safe.
@@ -2821,6 +2837,22 @@ const BREAK_KEY="pomodoroBreak";
 
 const EXAMS_KEY="studentExamPlanner";
 const GOAL_KEY="dailyStudyGoal";
+const LAST_BACKUP_KEY="syllabusLastBackupAt";
+
+function getLastBackupLabel(){
+  try{
+    const raw=localStorage.getItem(LAST_BACKUP_KEY);
+    if(!raw) return "No backup yet — download one from the Backup button first.";
+    const d=new Date(raw);
+    if(Number.isNaN(d.getTime())) return "No backup yet — download one from the Backup button first.";
+    return "Last backup: "+d.toLocaleString(undefined,{
+      day:"numeric",month:"short",year:"numeric",
+      hour:"2-digit",minute:"2-digit"
+    });
+  }catch(e){
+    return "No backup yet — download one from the Backup button first.";
+  }
+}
 
 
 /* =====================================================
@@ -3511,6 +3543,98 @@ function buildSubjectFilter(){
    CONTINUE
 ===================================================== */
 
+let continueTarget=null;
+
+function priorityRank(p){
+  if(p==="high") return 0;
+  if(p==="medium") return 1;
+  return 2;
+}
+
+function findContinueTarget(){
+  // 1) Last chapter if still in-progress
+  if(
+    lastChapter &&
+    books[lastChapter.book] &&
+    getStatus(lastChapter.book,lastChapter.chapter)==="in-progress"
+  ){
+    return {
+      book:lastChapter.book,
+      chapter:lastChapter.chapter,
+      reason:"In progress • last studied"
+    };
+  }
+
+  // 2) Any in-progress chapter (prefer last studied book)
+  const inProgress=[];
+  Object.keys(books).forEach(book=>{
+    for(let c=1;c<=books[book];c++){
+      if(getStatus(book,c)==="in-progress"){
+        inProgress.push({book,chapter:c});
+      }
+    }
+  });
+  if(inProgress.length){
+    const preferred=
+      lastChapter
+        ? inProgress.find(x=>x.book===lastChapter.book) || inProgress[0]
+        : inProgress[0];
+    return {
+      ...preferred,
+      reason:"In progress"
+    };
+  }
+
+  // 3) Upcoming exam remaining chapters — high priority first, soonest exam
+  const upcoming=
+    exams
+      .filter(ex=>daysUntilExam(ex.date)>=0)
+      .sort((a,b)=>String(a.date||"9999").localeCompare(String(b.date||"9999")));
+
+  for(const exam of upcoming){
+    const remaining=
+      examSelectedChapters(exam)
+        .filter(item=>getStatus(item.book,item.chapter)!=="complete")
+        .sort((a,b)=>priorityRank(a.priority||"medium")-priorityRank(b.priority||"medium"));
+    if(remaining.length){
+      const item=remaining[0];
+      return {
+        book:item.book,
+        chapter:item.chapter,
+        reason:`Exam: ${exam.name} • ${(item.priority||"medium")} priority`
+      };
+    }
+  }
+
+  // 4) Next not-started chapter (prefer last book, else first book)
+  const bookOrder=Object.keys(books);
+  if(lastChapter && books[lastChapter.book]){
+    const start=lastChapter.chapter;
+    for(let c=start;c<=books[lastChapter.book];c++){
+      if(getStatus(lastChapter.book,c)==="not-started"){
+        return {
+          book:lastChapter.book,
+          chapter:c,
+          reason:"Next unfinished"
+        };
+      }
+    }
+  }
+  for(const book of bookOrder){
+    for(let c=1;c<=books[book];c++){
+      if(getStatus(book,c)==="not-started"){
+        return {
+          book,
+          chapter:c,
+          reason:"Next unfinished"
+        };
+      }
+    }
+  }
+
+  return null;
+}
+
 function updateContinue(){
 
   const card=
@@ -3518,21 +3642,18 @@ function updateContinue(){
       "continueCard"
     );
 
-  if(
-    !lastChapter ||
-    !books[lastChapter.book]
-  ){
+  continueTarget=findContinueTarget();
 
+  if(!continueTarget || !books[continueTarget.book]){
     card.style.display="none";
     return;
-
   }
 
   const name=
     chapterNames[
-      lastChapter.book
+      continueTarget.book
     ][
-      lastChapter.chapter-1
+      continueTarget.chapter-1
     ];
 
   document.getElementById(
@@ -3542,7 +3663,7 @@ function updateContinue(){
   document.getElementById(
     "continueSub"
   ).textContent=
-    `${lastChapter.book} • Chapter ${lastChapter.chapter}`;
+    `${continueTarget.book} • Chapter ${continueTarget.chapter} • ${continueTarget.reason}`;
 
   card.style.display="flex";
 
@@ -4292,6 +4413,15 @@ document
     "click",
     ()=>{
 
+      const msg=document.getElementById("resetModalMessage");
+      if(msg){
+        msg.textContent=
+          "Your syllabus progress and last studied chapter will be reset.\n"+
+          "Exam plans and study history will remain safe.\n\n"+
+          "⚠️ This cannot be undone from inside the app.\n"+
+          getLastBackupLabel();
+      }
+
       resetModal.classList.add(
         "show"
       );
@@ -4434,9 +4564,12 @@ document
     "click",
     ()=>{
 
-      if(!lastChapter){
+      if(!continueTarget){
         return;
       }
+
+      const jumpBook=continueTarget.book;
+      const jumpChapter=continueTarget.chapter;
 
       state.search="";
       state.subject="all";
@@ -4446,6 +4579,13 @@ document
         "search"
       ).value="";
 
+      // Expand that subject
+      collapsed[jumpBook]=false;
+      localStorage.setItem(
+        COLLAPSED_KEY,
+        JSON.stringify(collapsed)
+      );
+
       render();
 
       setTimeout(
@@ -4453,7 +4593,7 @@ document
 
           const target=
             document.querySelector(
-              `.subject[data-book="${CSS.escape(lastChapter.book)}"]`
+              `.subject[data-book="${CSS.escape(jumpBook)}"]`
             );
 
           if(target){
@@ -4465,7 +4605,7 @@ document
 
             const chapterRow=
               target.querySelector(
-                `.chapter[data-chapter="${lastChapter.chapter}"]`
+                `.chapter[data-chapter="${jumpChapter}"]`
               );
 
             if(chapterRow){
@@ -5036,8 +5176,19 @@ function renderExamDetail(){
       "examChapterList"
     );
 
+  // Keep original order indices for status/priority handlers, but display sorted
   const chapters=
-    examSelectedChapters(exam);
+    examSelectedChapters(exam)
+      .map((item,originalIndex)=>({...item,originalIndex}))
+      .sort((a,b)=>{
+        const pa=priorityRank(a.priority||"medium");
+        const pb=priorityRank(b.priority||"medium");
+        if(pa!==pb) return pa-pb;
+        // incomplete first
+        const sa=getStatus(a.book,a.chapter)==="complete"?1:0;
+        const sb=getStatus(b.book,b.chapter)==="complete"?1:0;
+        return sa-sb;
+      });
 
 
   if(!chapters.length){
@@ -5054,7 +5205,9 @@ function renderExamDetail(){
 
   list.innerHTML=
     chapters.map(
-      (item,index)=>{
+      (item)=>{
+
+        const index=item.originalIndex;
 
         const status=
           getStatus(
@@ -5074,7 +5227,7 @@ function renderExamDetail(){
           item.priority || "medium";
 
         return `
-          <div class="exam-chapter ${status==="complete" ? "complete" : ""}">
+          <div class="exam-chapter ${status==="complete" ? "complete" : ""} priority-${priority}">
 
             <div class="exam-chapter-main">
 
@@ -6124,7 +6277,11 @@ document
       if(
         !(await appConfirm({
           title:"Clear Study History?",
-          message:"All Pomodoro study history will be permanently removed. This action cannot be undone.",
+          message:
+            "All Pomodoro study history will be permanently removed.\n"+
+            "Syllabus progress and exams stay safe.\n\n"+
+            "⚠️ This cannot be undone from inside the app.\n"+
+            getLastBackupLabel(),
           icon:"🧹",
           okText:"Clear History"
         }))
@@ -7001,6 +7158,32 @@ document
               renderAllHistory();
               updateDashboard();
 
+              // Session summary after a completed focus block
+              try{
+                const chapName=
+                  chapterNames[selectedBook]?.[Number(selectedChapter)-1] ||
+                  `Chapter ${selectedChapter}`;
+                const studied=focusMinutes*60;
+                const todaySec=todayStudySeconds();
+                const goalPct=dailyGoal
+                  ? Math.min(100,Math.round(todaySec/(dailyGoal*60)*100))
+                  : 0;
+                setTimeout(()=>{
+                  appAlert(
+                    `Focus complete!\n\n`+
+                    `📚 ${selectedBook}\n`+
+                    `📖 ${chapName}\n`+
+                    `⏱️ ${formatDuration(studied)}\n`+
+                    `🎯 Today: ${formatDuration(todaySec)} (${goalPct}% of goal)`,
+                    {
+                      title:"Session Summary",
+                      icon:"🍅",
+                      okText:"Nice!"
+                    }
+                  );
+                },350);
+              }catch(e){}
+
             }
 
 
@@ -7456,18 +7639,57 @@ document
 
 
 /* =====================================================
-   KEYBOARD ESC
+   KEYBOARD SHORTCUTS
 ===================================================== */
+
+function isTypingTarget(el){
+  if(!el) return false;
+  const tag=(el.tagName||"").toLowerCase();
+  return (
+    tag==="input" ||
+    tag==="textarea" ||
+    tag==="select" ||
+    el.isContentEditable
+  );
+}
 
 document.addEventListener(
   "keydown",
   event=>{
 
     if(event.key==="Escape"){
-
       closeResetModal();
       closeExamModal();
+      return;
+    }
 
+    // Ignore when typing in fields or when a modal is open
+    if(isTypingTarget(event.target)) return;
+    if(document.querySelector(".modal.show")) return;
+    if(document.getElementById("pomodoroPage")?.classList.contains("show")){
+      // Allow Escape only (already handled); skip other shortcuts inside pomodoro
+      return;
+    }
+
+    // "/" → focus search
+    if(event.key==="/" && !event.ctrlKey && !event.metaKey && !event.altKey){
+      event.preventDefault();
+      const search=document.getElementById("search");
+      if(search){
+        // Ensure syllabus tab is visible
+        document.querySelector('.main-tab[data-tab="syllabus"]')?.click();
+        setTimeout(()=>{
+          search.focus();
+          search.select();
+        },30);
+      }
+      return;
+    }
+
+    // "P" / "p" → open Pomodoro
+    if((event.key==="p" || event.key==="P") && !event.ctrlKey && !event.metaKey && !event.altKey){
+      event.preventDefault();
+      document.getElementById("pomodoroOpenBtn")?.click();
     }
 
   }
@@ -7583,7 +7805,7 @@ if(
 <script>
 (function(){
 const NOTES_KEY='syllabusChapterNotes',REMINDER_KEY='syllabusReminder',ACHIEVEMENT_KEY='syllabusAchievementsSeen';
-const allKeys=[STORAGE_KEY,THEME_KEY,LAST_KEY,COLLAPSED_KEY,HISTORY_KEY,FOCUS_KEY,BREAK_KEY,EXAMS_KEY,GOAL_KEY,NOTES_KEY,REMINDER_KEY,ACHIEVEMENT_KEY];
+const allKeys=[STORAGE_KEY,THEME_KEY,LAST_KEY,COLLAPSED_KEY,HISTORY_KEY,FOCUS_KEY,BREAK_KEY,EXAMS_KEY,GOAL_KEY,NOTES_KEY,REMINDER_KEY,ACHIEVEMENT_KEY,LAST_BACKUP_KEY];
 const J=(k,f)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(f))}catch(e){return f}};
 const W=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
 const esc=v=>String(v??'').replace(/[&<>'"]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[s]));
@@ -7617,7 +7839,21 @@ function addBackupTools(){
  if(backupInputEl) backupInputEl.onchange=restore;
  if(smartBtnEl) smartBtnEl.onclick=()=>{selectTab('insights');setTimeout(()=>document.getElementById('smartTodayMount')?.scrollIntoView({behavior:'smooth'}),50)};
 }
-function backup(){const data={version:2,app:'Syllabus-Tracker',exportedAt:new Date().toISOString(),data:{}};allKeys.forEach(k=>{const v=localStorage.getItem(k);if(v!==null)data.data[k]=v});data.data[STORAGE_KEY]=JSON.stringify(progress);data.data[EXAMS_KEY]=JSON.stringify(exams);const u=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=u;a.download='syllabus-tracker-backup-'+todayKey()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);showToast('💾 Backup downloaded');}
+function backup(){
+  const exportedAt=new Date().toISOString();
+  const data={version:2,app:'Syllabus-Tracker',exportedAt,data:{}};
+  allKeys.forEach(k=>{const v=localStorage.getItem(k);if(v!==null)data.data[k]=v});
+  data.data[STORAGE_KEY]=JSON.stringify(progress);
+  data.data[EXAMS_KEY]=JSON.stringify(exams);
+  localStorage.setItem(LAST_BACKUP_KEY,exportedAt);
+  const u=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+  const a=document.createElement('a');
+  a.href=u;
+  a.download='syllabus-tracker-backup-'+todayKey()+'.json';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(u),1000);
+  showToast('💾 Backup downloaded');
+}
 async function restore(e){
  const f=e.target.files?.[0];
  e.target.value='';
@@ -7627,7 +7863,11 @@ async function restore(e){
   if(!d[STORAGE_KEY]&&!d[HISTORY_KEY]&&!d[EXAMS_KEY])throw 0;
   const ok=await appConfirm({
    title:'Restore Backup?',
-   message:'Backup restore করলে বর্তমান saved data replace হবে। Continue?',
+   message:
+     'Backup restore করলে বর্তমান saved data replace হবে।\n'+
+     'Progress, exams, history, notes — সব overwrite হবে।\n\n'+
+     '⚠️ Make sure this is the correct file.\n'+
+     getLastBackupLabel(),
    icon:'⬆️',
    okText:'Restore'
   });
@@ -7702,7 +7942,7 @@ function checkReminder(){
 }
 function renderInsights(){renderSmart();renderSubjects();renderFocus();renderAchievements();renderReminder()}
 
-function notesButtons(){const s=document.getElementById('subjects');if(!s)return;s.querySelectorAll('.chapter').forEach(r=>{if(r.querySelector('.note-btn'))return;const b=r.closest('.subject')?.dataset.book,c=Number(r.dataset.chapter);if(!b||!c)return;const w=document.createElement('div');w.className='chapter-tools';const n=notes(),btn=document.createElement('button');btn.type='button';btn.className='note-btn';btn.textContent=n[noteKey(b,c)]?'📝 Note':'＋ Note';if(n[noteKey(b,c)])btn.classList.add('has-note');btn.onclick=e=>{e.stopPropagation();editNote(b,c)};w.appendChild(btn);r.appendChild(w)})}
+function notesButtons(){const s=document.getElementById('subjects');if(!s)return;s.querySelectorAll('.chapter').forEach(r=>{if(r.querySelector('.note-btn'))return;const b=r.closest('.subject')?.dataset.book,c=Number(r.dataset.chapter);if(!b||!c)return;const w=document.createElement('div');w.className='chapter-tools';const n=notes(),has=!!n[noteKey(b,c)],btn=document.createElement('button');btn.type='button';btn.className='note-btn'+(has?' has-note':'');btn.title=has?'Edit note':'Add note';btn.innerHTML=has?'📝 <span class="note-label">Note</span>':'＋ <span class="note-label">Note</span>';btn.onclick=e=>{e.stopPropagation();editNote(b,c)};w.appendChild(btn);r.appendChild(w)})}
 async function editNote(b,c){const n=notes(),k=noteKey(b,c),old=n[k]||'',v=await appPrompt('Write or edit your note for '+chapterTitle(b,c)+':',old,{title:'Chapter Note',icon:'📝',okText:'Save'});if(v===null||v===false)return;if(v.trim())n[k]=v.trim();else delete n[k];W(NOTES_KEY,n);render();setTimeout(notesButtons,0);showToast(v.trim()?'📝 Note saved':'🗑️ Note removed')}
 function boot(){
   addInsights();
