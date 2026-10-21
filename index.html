@@ -2146,10 +2146,6 @@ footer{
 
     <section class="bottom-actions">
 
-      <button id="saveBtn" class="save-btn" type="button">
-        💾 Save
-      </button>
-
       <button id="resetBtn" class="reset-btn" type="button">
         🗑️ Reset All
       </button>
@@ -2924,22 +2920,6 @@ const BREAK_KEY="pomodoroBreak";
 
 const EXAMS_KEY="studentExamPlanner";
 const GOAL_KEY="dailyStudyGoal";
-const LAST_BACKUP_KEY="syllabusLastBackupAt";
-
-function getLastBackupLabel(){
-  try{
-    const raw=localStorage.getItem(LAST_BACKUP_KEY);
-    if(!raw) return "No backup yet — download one from the Backup button first.";
-    const d=new Date(raw);
-    if(Number.isNaN(d.getTime())) return "No backup yet — download one from the Backup button first.";
-    return "Last backup: "+d.toLocaleString(undefined,{
-      day:"numeric",month:"short",year:"numeric",
-      hour:"2-digit",minute:"2-digit"
-    });
-  }catch(e){
-    return "No backup yet — download one from the Backup button first.";
-  }
-}
 
 
 /* =====================================================
@@ -4350,42 +4330,6 @@ document
 
 
 /* =====================================================
-   SAVE
-===================================================== */
-
-document
-  .getElementById("saveBtn")
-  .addEventListener(
-    "click",
-    ()=>{
-
-      saveData();
-
-      const button=
-        document.getElementById(
-          "saveBtn"
-        );
-
-      button.textContent=
-        "✅ Saved";
-
-      showToast(
-        "✅ Saved (also auto-saves on exit)"
-      );
-
-      setTimeout(
-        ()=>{
-          button.textContent=
-            "💾 Save";
-        },
-        1500
-      );
-
-    }
-  );
-
-
-/* =====================================================
    UNIVERSAL APP DIALOG
    Replaces browser confirm / alert / prompt popups.
 ===================================================== */
@@ -4506,8 +4450,7 @@ document
         msg.textContent=
           "Your syllabus progress and last studied chapter will be reset.\n"+
           "Exam plans and study history will remain safe.\n\n"+
-          "⚠️ This cannot be undone from inside the app.\n"+
-          getLastBackupLabel();
+          "⚠️ This cannot be undone.";
       }
 
       resetModal.classList.add(
@@ -6370,8 +6313,7 @@ document
           message:
             "All Pomodoro study history will be permanently removed.\n"+
             "Syllabus progress and exams stay safe.\n\n"+
-            "⚠️ This cannot be undone from inside the app.\n"+
-            getLastBackupLabel(),
+            "⚠️ This cannot be undone.",
           icon:"🧹",
           okText:"Clear History"
         }))
@@ -7841,17 +7783,25 @@ setInterval(
 
 /* =====================================================
    AUTO SAVE
+   Progress / exams / history save automatically.
+   No manual Save / Backup / Restore.
 ===================================================== */
 
-window.addEventListener(
-  "beforeunload",
-  ()=>{
+function autoSaveAll(){
+  try{ saveData(); }catch(e){}
+  try{ saveExams(); }catch(e){}
+}
 
-    saveData();
-    saveExams();
+window.addEventListener("beforeunload", autoSaveAll);
 
+document.addEventListener("visibilitychange", ()=>{
+  if(document.visibilityState==="hidden"){
+    autoSaveAll();
   }
-);
+});
+
+// Safety net: periodic auto-save while the app is open
+setInterval(autoSaveAll, 15000);
 
 
 /* =====================================================
@@ -7910,7 +7860,7 @@ if(
 <script>
 (function(){
 const NOTES_KEY='syllabusChapterNotes',REMINDER_KEY='syllabusReminder',ACHIEVEMENT_KEY='syllabusAchievementsSeen';
-const allKeys=[STORAGE_KEY,THEME_KEY,LAST_KEY,COLLAPSED_KEY,HISTORY_KEY,FOCUS_KEY,BREAK_KEY,EXAMS_KEY,GOAL_KEY,NOTES_KEY,REMINDER_KEY,ACHIEVEMENT_KEY,LAST_BACKUP_KEY];
+const allKeys=[STORAGE_KEY,THEME_KEY,LAST_KEY,COLLAPSED_KEY,HISTORY_KEY,FOCUS_KEY,BREAK_KEY,EXAMS_KEY,GOAL_KEY,NOTES_KEY,REMINDER_KEY,ACHIEVEMENT_KEY];
 const J=(k,f)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(f))}catch(e){return f}};
 const W=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
 const esc=v=>String(v??'').replace(/[&<>'"]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[s]));
@@ -7932,56 +7882,19 @@ function addInsights(){
 }
 function selectTab(tab){document.querySelectorAll('.main-tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));document.querySelectorAll('.app-panel').forEach(x=>x.classList.remove('active'));document.getElementById(tab+'Panel')?.classList.add('active');if(tab==='insights')renderInsights();}
 
-function addBackupTools(){
- const a=document.querySelector('.bottom-actions');if(!a||document.getElementById('backupBtn'))return;
- const w=document.createElement('div');w.className='enhance-tools';w.innerHTML=`<button id="backupBtn" class="enhance-btn" type="button">⬇️ Backup</button><button id="restoreBtn" class="enhance-btn" type="button">⬆️ Restore</button><button id="smartBtn" class="enhance-btn" type="button">🧠 Today's Focus</button><input id="backupInput" class="backup-input" type="file" accept="application/json,.json">`;a.appendChild(w);
- const backupBtnEl=document.getElementById('backupBtn');
- const restoreBtnEl=document.getElementById('restoreBtn');
+function addExtraTools(){
+ const a=document.querySelector('.bottom-actions');
+ if(!a||document.getElementById('smartBtn'))return;
+ const w=document.createElement('div');
+ w.className='enhance-tools';
+ w.innerHTML=`<button id="smartBtn" class="enhance-btn" type="button">🧠 Today's Focus</button>`;
+ a.appendChild(w);
  const smartBtnEl=document.getElementById('smartBtn');
- const backupInputEl=document.getElementById('backupInput');
- if(backupBtnEl) backupBtnEl.onclick=backup;
- if(restoreBtnEl) restoreBtnEl.onclick=()=>backupInputEl && backupInputEl.click();
- if(backupInputEl) backupInputEl.onchange=restore;
- if(smartBtnEl) smartBtnEl.onclick=()=>{selectTab('insights');setTimeout(()=>document.getElementById('smartTodayMount')?.scrollIntoView({behavior:'smooth'}),50)};
-}
-function backup(){
-  const exportedAt=new Date().toISOString();
-  const data={version:2,app:'Syllabus-Tracker',exportedAt,data:{}};
-  allKeys.forEach(k=>{const v=localStorage.getItem(k);if(v!==null)data.data[k]=v});
-  data.data[STORAGE_KEY]=JSON.stringify(progress);
-  data.data[EXAMS_KEY]=JSON.stringify(exams);
-  localStorage.setItem(LAST_BACKUP_KEY,exportedAt);
-  const u=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
-  const a=document.createElement('a');
-  a.href=u;
-  a.download='syllabus-tracker-backup-'+todayKey()+'.json';
-  a.click();
-  setTimeout(()=>URL.revokeObjectURL(u),1000);
-  showToast('💾 Backup downloaded');
-}
-async function restore(e){
- const f=e.target.files?.[0];
- e.target.value='';
- if(!f)return;
- try{
-  const x=JSON.parse(await f.text()),d=x.data&&typeof x.data==='object'?x.data:x;
-  if(!d[STORAGE_KEY]&&!d[HISTORY_KEY]&&!d[EXAMS_KEY])throw 0;
-  const ok=await appConfirm({
-   title:'Restore Backup?',
-   message:
-     'Backup restore করলে বর্তমান saved data replace হবে।\n'+
-     'Progress, exams, history, notes — সব overwrite হবে।\n\n'+
-     '⚠️ Make sure this is the correct file.\n'+
-     getLastBackupLabel(),
-   icon:'⬆️',
-   okText:'Restore'
-  });
-  if(!ok)return;
-  allKeys.forEach(k=>{if(k in d)localStorage.setItem(k,d[k])});
-  await appAlert('Restore complete. App will reload now.',{title:'Restore Complete',icon:'✅'});
-  location.reload();
- }catch(err){
-  await appAlert('Backup file ঠিক নয় বা corrupt.',{title:'Invalid Backup',icon:'⚠️'});
+ if(smartBtnEl){
+  smartBtnEl.onclick=()=>{
+   selectTab('insights');
+   setTimeout(()=>document.getElementById('smartTodayMount')?.scrollIntoView({behavior:'smooth'}),50);
+  };
  }
 }
 
@@ -8052,7 +7965,7 @@ function notesButtons(){ /* disabled */ }
 function editNote(){ /* disabled */ }
 function boot(){
   addInsights();
-  addBackupTools();
+  addExtraTools();
   const enableBtn=document.getElementById('enableReminderBtn');
   const disableBtn=document.getElementById('disableReminderBtn');
   if(enableBtn) enableBtn.addEventListener('click',enableReminder);
