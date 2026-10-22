@@ -4364,72 +4364,83 @@ if(mainTabsNav){
   });
 }
 
-if(!history.state?.appRoot){
-  history.replaceState({appRoot:true,appView:"syllabus"},"",location.href);
-}
+// Keep a dedicated guard entry immediately before the current app page.
+// This gives normal in-app Back navigation a clean history chain:
+// guard -> current page -> next page -> ...
+(function ensureAppHistory(){
+  const current=history.state;
+  const currentView=(
+    current?.appView &&
+    !current?.appExitGuard &&
+    current?.appView!=="pomodoro"
+  ) ? current.appView : "syllabus";
+
+  history.replaceState(
+    {appExitGuard:true,appRoot:true,appView:"syllabus"},
+    "",
+    location.href
+  );
+
+  history.pushState(
+    {appRoot:true,appView:currentView},
+    "",
+    location.href
+  );
+
+  applyAppView(currentView);
+})();
 
 let appExitArmed=false;
-let appExitGuardInstalled=false;
-let appExitInProgress=false;
-
-function installExitGuard(){
-  if(appExitGuardInstalled) return;
-  appExitGuardInstalled=true;
-  history.pushState({appExitGuard:true,appRoot:true,appView:"syllabus"},"",location.href);
-}
-
-installExitGuard();
 
 window.addEventListener("popstate",event=>{
   const state=event.state;
 
-  if(appExitInProgress) return;
+  // If Pomodoro is open, ANY Back action first closes Pomodoro.
+  // Do this before app-page handling so the modal never falls through
+  // to the app exit guard or changes the underlying page unexpectedly.
+  if(window.__pomodoroVisible){
+    if(typeof window.__closePomodoroFromHistory==="function"){
+      window.__closePomodoroFromHistory();
+    }
+    return;
+  }
 
   if(state?.appView && !state?.appExitGuard){
-    appExitArmed=false;
     applyAppView(state.appView);
     return;
   }
 
+  // Reaching the guard means the user is already at the first app page.
+  // First Back = confirmation. The next Back is allowed to leave normally.
   if(state?.appExitGuard){
-    if(appExitArmed){
-      appExitArmed=false;
-      appExitInProgress=true;
-      history.go(-2);
-      return;
+    applyAppView("syllabus");
+
+    if(!appExitArmed){
+      appExitArmed=true;
+
+      if(typeof appConfirm==="function") appConfirm({
+        message:"App থেকে বের হতে আবার mobile Back button চাপুন।",
+        title:"Exit Syllabus Tracker",
+        icon:"↩️",
+        okText:"OK"
+      });
     }
-
-    applyAppView("syllabus");
-    appExitArmed=true;
-    if(typeof appConfirm==="function") appConfirm({
-      message:"App থেকে বের হতে আবার mobile Back button চাপুন।",
-      title:"Exit Syllabus Tracker",
-      icon:"↩️",
-      okText:"OK"
-    });
-    setTimeout(()=>{
-      if(appExitArmed && !appExitInProgress){
-        history.pushState({appExitGuard:true,appRoot:true,appView:"syllabus"},"",location.href);
-      }
-    },50);
     return;
   }
 
+  // Forward navigation into a Pomodoro history entry.
   if(state?.pomodoro){
-    if(typeof window.__openPomodoroFromHistory==="function") window.__openPomodoroFromHistory();
+    if(typeof window.__openPomodoroFromHistory==="function"){
+      window.__openPomodoroFromHistory();
+    }
     return;
   }
 
-  if(window.__pomodoroVisible){
-    if(typeof window.__closePomodoroFromHistory==="function") window.__closePomodoroFromHistory();
-    return;
-  }
-
-  if(state?.appRoot || !state){
-    appExitArmed=false;
-    applyAppView("syllabus");
-  }
+  // If the browser reaches the real page outside the app history,
+  // allow it to leave instead of forcing another history jump.
+  appExitArmed=false;
 });
+
 
 /* =====================================================
    SEARCH
