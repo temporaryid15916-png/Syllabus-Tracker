@@ -37,41 +37,6 @@
   display:block;
 }
 
-#appSplash .splash-title{
-  margin-top:22px;
-  font-size:26px;
-  font-weight:800;
-  letter-spacing:.3px;
-}
-
-#appSplash .splash-tagline{
-  margin-top:7px;
-  font-size:13px;
-  opacity:.78;
-  letter-spacing:.4px;
-}
-
-#appSplash .splash-created{
-  position:absolute;
-  bottom:22px;
-  left:0;
-  right:0;
-  text-align:center;
-  font-size:10px;
-  opacity:.48;
-  letter-spacing:.25px;
-}
-
-@keyframes splashLogoIn{
-  from{
-    opacity:0;
-    transform:scale(.82);
-  }
-  to{
-    opacity:1;
-    transform:scale(1);
-  }
-}
 :root{
   --bg:#f4f7fb;
   --card:#fff;
@@ -777,15 +742,6 @@ button:disabled{
   gap:10px;
 }
 
-.save-btn{
-  border:0;
-  background:var(--success);
-  color:#fff;
-  padding:11px 25px;
-  border-radius:11px;
-  font-weight:850;
-  min-width:125px;
-}
 
 .reset-btn{
   border:1px solid var(--danger);
@@ -1904,7 +1860,6 @@ footer{
     flex-direction:column;
   }
 
-  .save-btn,
   .reset-btn{
     width:100%;
   }
@@ -4302,48 +4257,49 @@ function showToast(message){
    TABS
 ===================================================== */
 
-document
-  .querySelectorAll(".main-tab")
-  .forEach(button=>{
+const mainTabsNav=document.querySelector(".main-tabs");
 
-    button.addEventListener(
-      "click",
-      ()=>{
+if(mainTabsNav){
+  mainTabsNav.addEventListener(
+    "click",
+    event=>{
+      const button=event.target.closest(".main-tab");
+      if(!button || !mainTabsNav.contains(button)) return;
 
-        const tab=
-          button.dataset.tab;
+      const tab=button.dataset.tab;
 
-        document
-          .querySelectorAll(".main-tab")
-          .forEach(btn=>{
-            btn.classList.toggle(
-              "active",
-              btn===button
-            );
-          });
+      document
+        .querySelectorAll(".main-tab")
+        .forEach(btn=>{
+          btn.classList.toggle(
+            "active",
+            btn===button
+          );
+        });
 
-        document
-          .querySelectorAll(".app-panel")
-          .forEach(panel=>{
-            panel.classList.toggle(
-              "active",
-              panel.id===
-                `${tab}Panel`
-            );
-          });
+      document
+        .querySelectorAll(".app-panel")
+        .forEach(panel=>{
+          panel.classList.toggle(
+            "active",
+            panel.id===`${tab}Panel`
+          );
+        });
 
-        if(tab==="exams"){
-          renderExams();
-        }
-
-        if(tab==="history"){
-          renderAllHistory();
-        }
-
+      if(tab==="exams"){
+        renderExams();
       }
-    );
 
-  });
+      if(tab==="history"){
+        renderAllHistory();
+      }
+
+      if(tab==="insights" && typeof renderInsights==="function"){
+        renderInsights();
+      }
+    }
+  );
+}
 
 
 /* =====================================================
@@ -4478,17 +4434,6 @@ function appAlert(message,options={}){
   });
 }
 
-function appPrompt(message,defaultValue="",options={}){
-  return openAppDialog({
-    title:options.title||"Add Note",
-    message,
-    icon:options.icon||"📝",
-    okText:options.okText||"Save",
-    cancelText:options.cancelText||"Cancel",
-    type:"prompt",
-    defaultValue
-  });
-}
 
 appDialogCancel.addEventListener("click",()=>closeAppDialog(false));
 appDialogOk.addEventListener("click",()=>{
@@ -7704,13 +7649,10 @@ document
 
   function closePomodoro(){
 
-    if(
-      mode==="focus" &&
-      timer
-    ){
-
-      persistCurrentFocus();
-
+    // Closing the panel must not leave the timer running invisibly.
+    // Pause first so the remaining time and study-time accounting stay intact.
+    if(timer){
+      pauseTimer();
     }
 
     page.classList.remove(
@@ -8034,8 +7976,12 @@ setInterval(
 ===================================================== */
 
 function autoSaveAll(){
-  try{ saveData(); }catch(e){}
-  try{ saveExams(); }catch(e){}
+  try{
+    saveData();
+    saveExams();
+  }catch(error){
+    console.warn("Syllabus Tracker auto-save failed:", error);
+  }
 }
 
 window.addEventListener("beforeunload", autoSaveAll);
@@ -8045,9 +7991,6 @@ document.addEventListener("visibilitychange", ()=>{
     autoSaveAll();
   }
 });
-
-// Safety net: periodic auto-save while the app is open
-setInterval(autoSaveAll, 15000);
 
 
 /* =====================================================
@@ -8076,7 +8019,7 @@ if(
       navigator.serviceWorker
         .register("./sw.js")
         .catch(
-          ()=>{}
+          error=>console.warn("Syllabus Tracker service worker registration failed:", error)
         );
 
     }
@@ -8105,12 +8048,10 @@ if(
 </script>
 <script>
 (function(){
-const NOTES_KEY='syllabusChapterNotes',REMINDER_KEY='syllabusReminder',ACHIEVEMENT_KEY='syllabusAchievementsSeen';
-const allKeys=[STORAGE_KEY,THEME_KEY,LAST_KEY,COLLAPSED_KEY,HISTORY_KEY,FOCUS_KEY,BREAK_KEY,EXAMS_KEY,GOAL_KEY,NOTES_KEY,REMINDER_KEY,ACHIEVEMENT_KEY];
+const REMINDER_KEY='syllabusReminder';
 const J=(k,f)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(f))}catch(e){return f}};
 const W=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
 const esc=v=>String(v??'').replace(/[&<>'"]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[s]));
-const noteKey=(b,c)=>key(b,c),notes=()=>J(NOTES_KEY,{});
 const chapterTitle=(b,c)=>(chapterNames[b]?.[c-1]||('Chapter '+c));
 
 function addInsights(){
@@ -8124,9 +8065,17 @@ function addInsights(){
  <div class="insight-card"><h3>🔔 Study Reminder</h3><p>Browser reminders work after permission is granted. The app checks the reminder while open.</p><div class="reminder-box"><input id="reminderTime" type="time"><button id="enableReminderBtn" class="enhance-btn" type="button">Enable Reminder</button><button id="disableReminderBtn" class="enhance-btn" type="button">Disable</button></div><div id="reminderStatus" class="reminder-status"></div></div>
  </div>`;
  document.getElementById('historyPanel').after(p);
- nav.addEventListener('click',e=>{const x=e.target.closest('.main-tab');if(x)selectTab(x.dataset.tab)});
 }
-function selectTab(tab){document.querySelectorAll('.main-tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));document.querySelectorAll('.app-panel').forEach(x=>x.classList.remove('active'));document.getElementById(tab+'Panel')?.classList.add('active');if(tab==='insights')renderInsights();}
+function selectTab(tab){
+ const button=document.querySelector(`.main-tab[data-tab="${CSS.escape(tab)}"]`);
+ document.querySelectorAll('.main-tab').forEach(x=>x.classList.toggle('active',x===button));
+ document.querySelectorAll('.app-panel').forEach(x=>x.classList.remove('active'));
+ document.getElementById(tab+'Panel')?.classList.add('active');
+
+ if(tab==='exams') renderExams();
+ if(tab==='history') renderAllHistory();
+ if(tab==='insights') renderInsights();
+}
 
 function addExtraTools(){
  const a=document.querySelector('.bottom-actions');
@@ -8206,9 +8155,6 @@ function checkReminder(){
 }
 function renderInsights(){renderSmart();renderSubjects();renderFocus();renderAchievements();renderReminder()}
 
-// Notes feature removed from UI (storage key kept for backup compatibility)
-function notesButtons(){ /* disabled */ }
-function editNote(){ /* disabled */ }
 function boot(){
   addInsights();
   addExtraTools();
