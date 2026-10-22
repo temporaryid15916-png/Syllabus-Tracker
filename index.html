@@ -4370,6 +4370,7 @@ if(!history.state?.appRoot){
 
 let appExitArmed=false;
 let appExitGuardInstalled=false;
+let appExitInProgress=false;
 
 function installExitGuard(){
   if(appExitGuardInstalled) return;
@@ -4382,13 +4383,35 @@ installExitGuard();
 window.addEventListener("popstate",event=>{
   const state=event.state;
 
+  if(appExitInProgress) return;
+
   if(state?.appView && !state?.appExitGuard){
+    appExitArmed=false;
     applyAppView(state.appView);
     return;
   }
 
   if(state?.appExitGuard){
+    if(appExitArmed){
+      appExitArmed=false;
+      appExitInProgress=true;
+      history.go(-2);
+      return;
+    }
+
     applyAppView("syllabus");
+    appExitArmed=true;
+    if(typeof appConfirm==="function") appConfirm({
+      message:"App থেকে বের হতে আবার mobile Back button চাপুন।",
+      title:"Exit Syllabus Tracker",
+      icon:"↩️",
+      okText:"OK"
+    });
+    setTimeout(()=>{
+      if(appExitArmed && !appExitInProgress){
+        history.pushState({appExitGuard:true,appRoot:true,appView:"syllabus"},"",location.href);
+      }
+    },50);
     return;
   }
 
@@ -4403,25 +4426,8 @@ window.addEventListener("popstate",event=>{
   }
 
   if(state?.appRoot || !state){
-    if(appExitArmed){
-      appExitArmed=false;
-      history.go(-1);
-      return;
-    }
-
-    appExitArmed=true;
-    if(typeof appConfirm==="function") appConfirm({
-      message:"App থেকে বের হতে আবার mobile Back button চাপুন।",
-      title:"Exit Syllabus Tracker",
-      icon:"↩️",
-      okText:"OK"
-    });
-    setTimeout(()=>{
-      if(appExitArmed){
-        appExitArmed=false;
-        history.pushState({appExitGuard:true,appRoot:true,appView:"syllabus"},"",location.href);
-      }
-    },50);
+    appExitArmed=false;
+    applyAppView("syllabus");
   }
 });
 
