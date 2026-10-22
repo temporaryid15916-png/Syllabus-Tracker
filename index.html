@@ -4345,6 +4345,7 @@ function applyAppView(tab){
 }
 
 function navigateAppView(tab){
+  appExitArmed=false;
   const current=history.state?.appView || "syllabus";
   if(current===tab){
     applyAppView(tab);
@@ -4399,13 +4400,26 @@ window.addEventListener("popstate",event=>{
   // Do this before app-page handling so the modal never falls through
   // to the app exit guard or changes the underlying page unexpectedly.
   if(window.__pomodoroVisible){
+    const returnView=
+      state?.appView ||
+      window.__pomodoroReturnView ||
+      "syllabus";
+
+    window.__pomodoroReturnView=returnView;
+
     if(typeof window.__closePomodoroFromHistory==="function"){
       window.__closePomodoroFromHistory();
+    }else{
+      window.__pomodoroVisible=false;
     }
+
+    appExitArmed=false;
+    applyAppView(returnView);
     return;
   }
 
   if(state?.appView && !state?.appExitGuard){
+    appExitArmed=false;
     applyAppView(state.appView);
     return;
   }
@@ -4430,6 +4444,11 @@ window.addEventListener("popstate",event=>{
 
   // Forward navigation into a Pomodoro history entry.
   if(state?.pomodoro){
+    window.__pomodoroReturnView=
+      state.appView ||
+      window.__pomodoroReturnView ||
+      "syllabus";
+
     if(typeof window.__openPomodoroFromHistory==="function"){
       window.__openPomodoroFromHistory();
     }
@@ -6710,6 +6729,8 @@ document
    POMODORO
 ===================================================== */
 
+const POMODORO_STATE_KEY='syllabusPomodoroState';
+
 (function(){
 
   const page=
@@ -7862,8 +7883,19 @@ function showAudioError(error){
 
   function openPomodoro(fromHistory=false){
 
+    const returnView=
+      history.state?.appView ||
+      window.__pomodoroReturnView ||
+      "syllabus";
+
+    window.__pomodoroReturnView=returnView;
+
     if(!fromHistory){
-      history.pushState({pomodoro:true,appView:history.state?.appView || "syllabus"},"",location.href);
+      history.pushState(
+        {pomodoro:true,appView:returnView},
+        "",
+        location.href
+      );
     }
 
     window.__pomodoroVisible=true;
@@ -7934,6 +7966,7 @@ function showAudioError(error){
     }
 
     window.__pomodoroVisible=false;
+    appExitArmed=false;
 
     // Closing the panel must not leave the timer running invisibly.
     // Pause first so the remaining time and study-time accounting stay intact.
@@ -8343,7 +8376,6 @@ if(
 <script>
 (function(){
 const REMINDER_KEY='syllabusReminder';
-const POMODORO_STATE_KEY='syllabusPomodoroState';
 const J=(k,f)=>safeStorageGet(k,f); const W=(k,v)=>safeStorageSet(k,v);
 const esc=v=>String(v??'').replace(/[&<>'"]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[s]));
 const chapterTitle=(b,c)=>(chapterNames[b]?.[c-1]||('Chapter '+c));
