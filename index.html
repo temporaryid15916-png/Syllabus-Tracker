@@ -2308,11 +2308,12 @@ footer{
             <h3 class="section-title">📈 Study Time Graph</h3>
 
             <p class="section-sub">
-              Last 7 days of recorded Focus time.
+              Unlimited study history — daily graph with weekly, monthly and all-time totals.
             </p>
 
-            <div class="history-chart-wrap">
-              <div id="historyChart" class="history-chart"></div>
+            <div id="historyPeriods" class="summary-list" style="margin-bottom:14px;"></div>
+            <div class="history-chart-wrap" style="overflow-x:auto;">
+              <div id="historyChart" class="history-chart" style="min-width:max-content;"></div>
             </div>
 
           </div>
@@ -6238,111 +6239,84 @@ function renderWeeklySummary(){
 
 function renderHistoryGraph(){
 
-  const container=
-    document.getElementById(
-      "historyChart"
-    );
+  const container=document.getElementById("historyChart");
+  if(!container) return;
 
-  if(!container){
+  const history=loadHistory();
+  const days=Object.keys(history)
+    .filter(day=>Number(history[day]?.totalSeconds || 0)>0)
+    .sort((a,b)=>a.localeCompare(b));
+
+  if(!days.length){
+    container.innerHTML=`<div style="color:var(--muted);font-size:13px;padding:18px 0;text-align:center;">No study time recorded yet.</div>`;
     return;
   }
 
-  const history=
-    loadHistory();
+  const rows=days.map(day=>({
+    day,
+    seconds:Number(history[day]?.totalSeconds || 0)
+  }));
 
-  const rows=[];
+  const max=Math.max(1,...rows.map(row=>row.seconds));
 
-  for(
-    let i=6;
-    i>=0;
-    i--
-  ){
+  container.innerHTML=rows.map(row=>{
+    const height=Math.max(4,Math.round(row.seconds/max*100));
+    const dateParts=row.day.split("-").map(Number);
+    const date=new Date(dateParts[0],dateParts[1]-1,dateParts[2]);
+    const label=date.toLocaleDateString(undefined,{day:"numeric",month:"short"});
 
-    const date=
-      new Date(
-        Date.now()-
-        i*86400000
-      );
-
-    const day=
-      todayKey(date);
-
-    rows.push({
-      day,
-      seconds:Number(
-        history[day]?.totalSeconds || 0
-      )
-    });
-
-  }
-
-  const max=
-    Math.max(
-      1,
-      ...rows.map(
-        row=>row.seconds
-      )
-    );
-
-  container.innerHTML=
-    rows.map(row=>{
-
-      const height=
-        row.seconds
-          ? Math.max(
-              4,
-              Math.round(
-                row.seconds/max*100
-              )
-            )
-          : 3;
-
-      const dateParts=
-        row.day.split("-").map(Number);
-
-      const date=
-        new Date(
-          dateParts[0],
-          dateParts[1]-1,
-          dateParts[2]
-        );
-
-      const label=
-        date.toLocaleDateString(
-          undefined,
-          {
-            weekday:"short"
-          }
-        );
-
-      return `
-        <div class="history-chart-item">
-
-          <div class="history-chart-value">
-            ${formatDuration(row.seconds)}
-          </div>
-
-          <div class="history-chart-bar-area">
-
-            <div
-              class="history-chart-bar"
-              style="height:${height}%"
-              title="${prettyDate(row.day)} • ${formatDuration(row.seconds)}"
-            ></div>
-
-          </div>
-
-          <div class="history-chart-label">
-            ${label}
-          </div>
-
+    return `
+      <div class="history-chart-item">
+        <div class="history-chart-value">${formatDuration(row.seconds)}</div>
+        <div class="history-chart-bar-area">
+          <div class="history-chart-bar" style="height:${height}%" title="${prettyDate(row.day)} • ${formatDuration(row.seconds)}"></div>
         </div>
-      `;
-
-    }).join("");
-
+        <div class="history-chart-label">${label}</div>
+      </div>
+    `;
+  }).join("");
 }
 
+function getHistoryRangeTotal(startDate,endDate){
+  const history=loadHistory();
+  let total=0;
+  Object.keys(history).forEach(day=>{
+    if(day>=startDate && day<=endDate){
+      total+=Number(history[day]?.totalSeconds || 0);
+    }
+  });
+  return total;
+}
+
+function renderHistoryPeriods(){
+  const el=document.getElementById("historyPeriods");
+  if(!el) return;
+
+  const now=new Date();
+  const today=todayKey(now);
+  const weekStart=new Date(now);
+  weekStart.setDate(now.getDate()-6);
+  const monthStart=new Date(now.getFullYear(),now.getMonth(),1);
+
+  const weekTotal=getHistoryRangeTotal(todayKey(weekStart),today);
+  const monthTotal=getHistoryRangeTotal(todayKey(monthStart),today);
+  const allTime=Object.values(loadHistory()).reduce((sum,day)=>sum+Number(day?.totalSeconds || 0),0);
+
+  el.innerHTML=`
+    <div class="summary-row">
+      <div class="summary-row-name">📅 This Week</div>
+      <div class="summary-row-time">${formatDuration(weekTotal)}</div>
+    </div>
+    <div class="summary-row">
+      <div class="summary-row-name">🗓️ This Month</div>
+      <div class="summary-row-time">${formatDuration(monthTotal)}</div>
+    </div>
+    <div class="summary-row" style="background:var(--primary-soft);border-color:color-mix(in srgb,var(--primary) 25%,var(--border));">
+      <div class="summary-row-name">♾️ All Time</div>
+      <div class="summary-row-time">${formatDuration(allTime)}</div>
+    </div>
+  `;
+}
 
 function renderBookStats(){
 
@@ -8998,4 +8972,4 @@ if(
 </script>
 
 </body>
-</html>
+<html>
