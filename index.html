@@ -7820,9 +7820,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script>
 (function(){
   function refreshInitialUI(){
-    render();
-    renderAllHistory();
-    renderExams();
+    // Initial UI is refreshed by the dedicated startup refresh block below.
     if(typeof renderInsights === "function") renderInsights();
   }
 
