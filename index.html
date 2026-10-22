@@ -2970,6 +2970,58 @@ let editingExamId=null;
 let dailyGoal=120;
 
 
+
+function safeStorageGet(key,fallback=null){
+  try{
+    const raw=localStorage.getItem(key);
+    return raw===null ? fallback : JSON.parse(raw);
+  }catch(error){
+    console.warn(`Syllabus Tracker: failed to read localStorage key "${key}".`,error);
+    return fallback;
+  }
+}
+
+function safeStorageGetRaw(key,fallback=null){
+  try{
+    const raw=localStorage.getItem(key);
+    return raw===null ? fallback : raw;
+  }catch(error){
+    console.warn(`Syllabus Tracker: failed to read localStorage key "${key}".`,error);
+    return fallback;
+  }
+}
+
+function safeStorageSet(key,value){
+  try{
+    safeStorageSet(key,value);
+    return true;
+  }catch(error){
+    console.error(`Syllabus Tracker: failed to save localStorage key "${key}".`,error);
+    return false;
+  }
+}
+
+function safeStorageSetRaw(key,value){
+  try{
+    safeStorageSetRaw(key,value);
+    return true;
+  }catch(error){
+    console.error(`Syllabus Tracker: failed to save localStorage key "${key}".`,error);
+    return false;
+  }
+}
+
+function safeStorageRemove(key){
+  try{
+    safeStorageRemove(key);
+    return true;
+  }catch(error){
+    console.error(`Syllabus Tracker: failed to remove localStorage key "${key}".`,error);
+    return false;
+  }
+}
+
+
 /* =====================================================
    LOAD STORAGE
 ===================================================== */
@@ -2977,9 +3029,7 @@ let dailyGoal=120;
 try{
 
   const saved=
-    JSON.parse(
-      localStorage.getItem(STORAGE_KEY) || "{}"
-    );
+    safeStorageGet(STORAGE_KEY,{});
 
   Object.entries(saved).forEach(([key,value])=>{
 
@@ -3004,9 +3054,7 @@ try{
 try{
 
   lastChapter=
-    JSON.parse(
-      localStorage.getItem(LAST_KEY) || "null"
-    );
+    safeStorageGet(LAST_KEY,null);
 
 }catch(e){
   lastChapter=null;
@@ -3016,9 +3064,7 @@ try{
 try{
 
   collapsed=
-    JSON.parse(
-      localStorage.getItem(COLLAPSED_KEY) || "{}"
-    );
+    safeStorageGet(COLLAPSED_KEY,{});
 
 }catch(e){
   collapsed={};
@@ -3028,9 +3074,7 @@ try{
 try{
 
   const savedExams=
-    JSON.parse(
-      localStorage.getItem(EXAMS_KEY) || "[]"
-    );
+    safeStorageGet(EXAMS_KEY,[]);
 
   if(Array.isArray(savedExams)){
     exams=savedExams;
@@ -3047,7 +3091,7 @@ dailyGoal=
     Math.max(
       1,
       Number(
-        localStorage.getItem(GOAL_KEY)
+        safeStorageGetRaw(GOAL_KEY)
       ) || 120
     )
   );
@@ -3099,10 +3143,7 @@ function setStatus(book,chapter,status){
 
 function saveData(){
 
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(progress)
-  );
+  safeStorageSet(STORAGE_KEY,progress);
 
 }
 
@@ -3114,10 +3155,7 @@ function remember(book,chapter){
     chapter
   };
 
-  localStorage.setItem(
-    LAST_KEY,
-    JSON.stringify(lastChapter)
-  );
+  safeStorageSet(LAST_KEY,lastChapter);
 
 }
 
@@ -3388,10 +3426,7 @@ function loadHistory(){
 
 function saveHistory(history){
 
-  localStorage.setItem(
-    HISTORY_KEY,
-    JSON.stringify(history)
-  );
+  safeStorageSet(HISTORY_KEY,history);
 
 }
 
@@ -3994,10 +4029,7 @@ function render(){
           collapsed[book]=
             isCollapsed;
 
-          localStorage.setItem(
-            COLLAPSED_KEY,
-            JSON.stringify(collapsed)
-          );
+          safeStorageSet(COLLAPSED_KEY,collapsed);
 
         }
       );
@@ -4520,18 +4552,15 @@ document
       progress={};
       lastChapter=null;
 
-      localStorage.removeItem(
-        STORAGE_KEY
+      safeStorageRemove(STORAGE_KEY
       );
 
-      localStorage.removeItem(
-        LAST_KEY
+      safeStorageRemove(LAST_KEY
       );
 
       collapsed={};
 
-      localStorage.removeItem(
-        COLLAPSED_KEY
+      safeStorageRemove(COLLAPSED_KEY
       );
 
       closeResetModal();
@@ -4575,10 +4604,7 @@ document
           collapsed[book]=false;
         });
 
-      localStorage.setItem(
-        COLLAPSED_KEY,
-        JSON.stringify(collapsed)
-      );
+      safeStorageSet(COLLAPSED_KEY,collapsed);
 
       render();
 
@@ -4597,10 +4623,7 @@ document
           collapsed[book]=true;
         });
 
-      localStorage.setItem(
-        COLLAPSED_KEY,
-        JSON.stringify(collapsed)
-      );
+      safeStorageSet(COLLAPSED_KEY,collapsed);
 
       render();
 
@@ -4635,10 +4658,7 @@ document
 
       // Expand that subject
       collapsed[jumpBook]=false;
-      localStorage.setItem(
-        COLLAPSED_KEY,
-        JSON.stringify(collapsed)
-      );
+      safeStorageSet(COLLAPSED_KEY,collapsed);
 
       render();
 
@@ -4712,10 +4732,7 @@ function setTheme(theme){
       ? "☀️ Light"
       : "🌙 Dark";
 
-  localStorage.setItem(
-    THEME_KEY,
-    theme
-  );
+  safeStorageSetRaw(THEME_KEY,theme);
 
 }
 
@@ -4886,10 +4903,7 @@ function examProgress(exam){
 
 function saveExams(){
 
-  localStorage.setItem(
-    EXAMS_KEY,
-    JSON.stringify(exams)
-  );
+  safeStorageSet(EXAMS_KEY,exams);
 
 }
 
@@ -6034,10 +6048,7 @@ document
           )
         );
 
-      localStorage.setItem(
-        GOAL_KEY,
-        String(dailyGoal)
-      );
+      safeStorageSetRaw(GOAL_KEY,dailyGoal);
 
       renderGoal();
       updateDashboard();
@@ -6512,8 +6523,7 @@ document
         return;
       }
 
-      localStorage.removeItem(
-        HISTORY_KEY
+      safeStorageRemove(HISTORY_KEY
       );
 
       renderAllHistory();
@@ -6688,6 +6698,89 @@ document
 
   }
 
+
+
+  function savePomodoroState(){
+    safeStorageSet(POMODORO_STATE_KEY,{
+      version:1,
+      mode,
+      remaining,
+      lastAccountedRemaining,
+      selectedBook,
+      selectedChapter,
+      endTime,
+      sessionNumber,
+      sessionStarted,
+      wasRunning:!!timer,
+      savedAt:Date.now()
+    });
+  }
+
+  function clearPomodoroState(){
+    safeStorageRemove(POMODORO_STATE_KEY);
+  }
+
+  function restorePomodoroState(){
+    const state=safeStorageGet(POMODORO_STATE_KEY,null);
+    if(!state || state.version!==1) return;
+
+    if(state.mode!=="focus" && state.mode!=="break"){
+      clearPomodoroState();
+      return;
+    }
+
+    mode=state.mode;
+    selectedBook=String(state.selectedBook || "");
+    selectedChapter=String(state.selectedChapter || "");
+    sessionNumber=Math.max(1,Number(state.sessionNumber)||1);
+    sessionStarted=!!state.sessionStarted;
+
+    const savedRemaining=Math.max(0,Math.floor(Number(state.remaining)||0));
+    const savedAccounted=Math.max(
+      savedRemaining,
+      Math.floor(Number(state.lastAccountedRemaining)||savedRemaining)
+    );
+
+    remaining=savedRemaining;
+    lastAccountedRemaining=savedAccounted;
+
+    const wasRunning=!!state.wasRunning;
+    const savedEnd=Number(state.endTime)||0;
+
+    if(wasRunning && savedEnd>0){
+      const restoredRemaining=Math.max(
+        0,
+        Math.ceil((savedEnd-Date.now())/1000)
+      );
+      const elapsed=Math.max(0,savedRemaining-restoredRemaining);
+
+      if(mode==="focus" && selectedBook && selectedChapter && elapsed>0){
+        addStudySeconds(elapsed);
+      }
+
+      remaining=restoredRemaining;
+      lastAccountedRemaining=Math.max(0,savedAccounted-elapsed);
+    }
+
+    if(remaining<=0){
+      clearPomodoroState();
+      mode="focus";
+      remaining=focusMinutes*60;
+      lastAccountedRemaining=remaining;
+      endTime=null;
+      sessionStarted=false;
+      return;
+    }
+
+    updateDisplay();
+
+    if(wasRunning){
+      lockPicker(true);
+      endTime=Date.now()+remaining*1000;
+      timer=setInterval(pomodoroTick,250);
+      updateDisplay();
+    }
+  }
 
   function addStudySeconds(seconds){
 
@@ -7184,6 +7277,31 @@ document
   }
 
 
+
+function showAudioError(error){
+  const message=error?.message || String(error || "Unknown audio error");
+  console.error("Syllabus Tracker audio error:",error);
+
+  let box=document.getElementById("audioErrorNotice");
+  if(!box){
+    box=document.createElement("div");
+    box.id="audioErrorNotice";
+    box.setAttribute("role","alert");
+    box.style.cssText=[
+      "position:fixed","left:50%","bottom:18px","transform:translateX(-50%)",
+      "z-index:99999","max-width:min(560px,calc(100vw - 32px))",
+      "padding:12px 16px","border-radius:10px","background:#7f1d1d",
+      "color:#fff","font:600 13px/1.45 system-ui,sans-serif",
+      "box-shadow:0 8px 30px rgba(0,0,0,.25)"
+    ].join(";");
+    document.body.appendChild(box);
+  }
+  box.textContent=`Audio error: ${message}`;
+  box.hidden=false;
+  clearTimeout(showAudioError._hideTimer);
+  showAudioError._hideTimer=setTimeout(()=>{box.hidden=true;},7000);
+}
+
   function playEndSound(){
 
     try{
@@ -7249,74 +7367,15 @@ document
           }
         );
 
-    }catch(e){}
+    }catch(error){
+      showAudioError(error);
+    }
 
   }
 
 
-  function startTimer(){
+  function pomodoroTick(){
 
-    if(
-      timer ||
-      !selectedBook ||
-      !selectedChapter
-    ){
-
-      if(
-        !selectedBook ||
-        !selectedChapter
-      ){
-
-        showToast(
-          "📚 First select Book and Chapter"
-        );
-
-      }
-
-      return;
-
-    }
-
-
-    sessionStarted=true;
-
-    lockPicker(true);
-
-    lastAccountedRemaining=
-      remaining;
-
-
-    endTime=
-      Date.now()+
-      remaining*1000;
-
-
-    try{
-
-      audioContext=
-        audioContext ||
-        new(
-          window.AudioContext ||
-          window.webkitAudioContext
-        )();
-
-
-      if(
-        audioContext.state==="suspended"
-      ){
-
-        audioContext
-          .resume()
-          .catch(()=>{});
-
-      }
-
-    }catch(e){}
-
-
-    timer=
-      setInterval(
-        ()=>{
 
           const now=
             Date.now();
@@ -7364,6 +7423,7 @@ document
             next;
 
           updateDisplay();
+          savePomodoroState();
 
 
           if(
@@ -7427,17 +7487,57 @@ document
 
             playEndSound();
 
+            clearPomodoroState();
             switchMode(true);
 
           }
+  }
 
-        },
-        250
-      );
+  function startTimer(){
 
+    if(
+      timer ||
+      !selectedBook ||
+      !selectedChapter
+    ){
+
+      if(!selectedBook || !selectedChapter){
+        showToast("📚 First select Book and Chapter");
+      }
+
+      return;
+    }
+
+    sessionStarted=true;
+    lockPicker(true);
+    lastAccountedRemaining=remaining;
+    endTime=Date.now()+remaining*1000;
+
+    try{
+      audioContext=
+        audioContext ||
+        new(
+          window.AudioContext ||
+          window.webkitAudioContext
+        )();
+
+      if(audioContext.state==="suspended"){
+        audioContext
+          .resume()
+          .catch(error=>showAudioError(error));
+      }
+    }catch(error){
+      showAudioError(error);
+    }
+
+    savePomodoroState();
+
+    timer=setInterval(
+      pomodoroTick,
+      250
+    );
 
     updateDisplay();
-
   }
 
 
@@ -7496,6 +7596,7 @@ document
     stopInterval();
 
     endTime=null;
+    savePomodoroState();
 
     updateDisplay();
 
@@ -7537,6 +7638,7 @@ document
     renderPomoHistory();
 
     renderAllHistory();
+    clearPomodoroState();
 
   }
 
@@ -7582,6 +7684,8 @@ document
 
       startTimer();
 
+    }else{
+      savePomodoroState();
     }
 
   }
@@ -7710,19 +7814,13 @@ document
       newBreak;
 
 
-    localStorage.setItem(
-      FOCUS_KEY,
-      String(
+    safeStorageSetRaw(FOCUS_KEY,
         focusMinutes
-      )
-    );
+      );
 
-    localStorage.setItem(
-      BREAK_KEY,
-      String(
+    safeStorageSetRaw(BREAK_KEY,
         breakMinutes
-      )
-    );
+      );
 
 
     focusInput.value=
@@ -7870,6 +7968,8 @@ document
   renderPomoHistory();
   updateDisplay();
 
+  restorePomodoroState();
+
 })();
 
 
@@ -7978,9 +8078,14 @@ setInterval(
 function autoSaveAll(){
   try{
     saveData();
+  }catch(error){
+    console.warn("Syllabus Tracker progress auto-save failed:",error);
+  }
+
+  try{
     saveExams();
   }catch(error){
-    console.warn("Syllabus Tracker auto-save failed:", error);
+    console.warn("Syllabus Tracker exam auto-save failed:",error);
   }
 }
 
@@ -8049,8 +8154,8 @@ if(
 <script>
 (function(){
 const REMINDER_KEY='syllabusReminder';
-const J=(k,f)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(f))}catch(e){return f}};
-const W=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const POMODORO_STATE_KEY='syllabusPomodoroState';
+const J=(k,f)=>safeStorageGet(k,f); const W=(k,v)=>safeStorageSet(k,v);
 const esc=v=>String(v??'').replace(/[&<>'"]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[s]));
 const chapterTitle=(b,c)=>(chapterNames[b]?.[c-1]||('Chapter '+c));
 
