@@ -6268,6 +6268,103 @@ document
 
 
 /* =====================================================
+   DEVICE NOTIFICATIONS
+===================================================== */
+
+async function requestNotificationPermission(){
+
+  if(!("Notification" in window)){
+    return "unsupported";
+  }
+
+  if(Notification.permission==="granted"){
+    return "granted";
+  }
+
+  if(Notification.permission==="denied"){
+    return "denied";
+  }
+
+  try{
+    return await Notification.requestPermission();
+  }catch(e){
+    return "denied";
+  }
+
+}
+
+
+async function showDeviceNotification(title,options={}){
+
+  if(!("Notification" in window) ||
+     Notification.permission!=="granted"){
+    return false;
+  }
+
+  const finalOptions={
+    icon:"./icon-192.png",
+    badge:"./icon-192.png",
+    renotify:false,
+    ...options
+  };
+
+  try{
+
+    if("serviceWorker" in navigator){
+
+      const registration=
+        await navigator.serviceWorker.ready;
+
+      if(registration?.showNotification){
+        await registration.showNotification(
+          title,
+          finalOptions
+        );
+        return true;
+      }
+
+    }
+
+  }catch(e){}
+
+  try{
+
+    new Notification(
+      title,
+      finalOptions
+    );
+
+    return true;
+
+  }catch(e){
+    return false;
+  }
+
+}
+
+
+async function closeDeviceNotification(tag){
+
+  try{
+
+    if(!("serviceWorker" in navigator)){
+      return;
+    }
+
+    const registration=
+      await navigator.serviceWorker.ready;
+
+    const notifications=
+      await registration.getNotifications({tag});
+
+    notifications.forEach(notification=>notification.close());
+
+  }catch(e){}
+
+}
+
+
+/* =====================================================
    POMODORO
 ===================================================== */
 
@@ -6396,6 +6493,9 @@ document
   let selectedBook="";
 
   let selectedChapter="";
+
+  let lastPomoNotificationSecond=-1;
+  const POMO_NOTIFICATION_TAG="syllabus-pomodoro";
 
 
   focusInput.value=
@@ -6920,62 +7020,92 @@ document
           window.webkitAudioContext
         )();
 
+      if(audioContext.state==="suspended"){
+        audioContext.resume().catch(()=>{});
+      }
 
-      const now=
-        audioContext.currentTime;
+      const now=audioContext.currentTime;
 
+      [
+        {offset:0,freq:523.25},
+        {offset:0.16,freq:659.25},
+        {offset:0.32,freq:783.99},
+        {offset:0.48,freq:1046.50}
+      ].forEach(note=>{
 
-      [0,0.18,0.36]
-        .forEach(
-          (offset,i)=>{
+        const osc=audioContext.createOscillator();
+        const gain=audioContext.createGain();
 
-            const osc=
-              audioContext.createOscillator();
+        osc.type="sine";
+        osc.frequency.setValueAtTime(note.freq,now+note.offset);
 
-            const gain=
-              audioContext.createGain();
-
-            osc.type="sine";
-
-            osc.frequency.value=
-              [660,880,1047][i];
-
-
-            gain.gain.setValueAtTime(
-              0.0001,
-              now+offset
-            );
-
-            gain.gain.exponentialRampToValueAtTime(
-              0.22,
-              now+offset+0.02
-            );
-
-            gain.gain.exponentialRampToValueAtTime(
-              0.0001,
-              now+offset+0.16
-            );
-
-
-            osc.connect(gain);
-            gain.connect(
-              audioContext.destination
-            );
-
-
-            osc.start(
-              now+offset
-            );
-
-            osc.stop(
-              now+offset+0.18
-            );
-
-          }
+        gain.gain.setValueAtTime(0.0001,now+note.offset);
+        gain.gain.exponentialRampToValueAtTime(
+          0.48,
+          now+note.offset+0.035
         );
+        gain.gain.exponentialRampToValueAtTime(
+          0.0001,
+          now+note.offset+0.34
+        );
+
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+
+        osc.start(now+note.offset);
+        osc.stop(now+note.offset+0.36);
+
+      });
+
+      // A soft finishing chime layered underneath.
+      const low=audioContext.createOscillator();
+      const lowGain=audioContext.createGain();
+
+      low.type="triangle";
+      low.frequency.value=261.63;
+
+      lowGain.gain.setValueAtTime(0.0001,now);
+      lowGain.gain.exponentialRampToValueAtTime(0.22,now+0.04);
+      lowGain.gain.exponentialRampToValueAtTime(0.0001,now+0.85);
+
+      low.connect(lowGain);
+      lowGain.connect(audioContext.destination);
+
+      low.start(now);
+      low.stop(now+0.9);
 
     }catch(e){}
 
+  }
+
+  function updatePomoNotification(){
+
+    if(
+      !("Notification" in window) ||
+      Notification.permission!=="granted"
+    ){
+      return;
+    }
+
+    const label=
+      mode==="focus"
+        ? `🍅 Focus • Session ${sessionNumber}`
+        : `☕ Break • Session ${sessionNumber}`;
+
+    showDeviceNotification(
+      label,
+      {
+        body:`${formatTime(remaining)} remaining`,
+        tag:POMO_NOTIFICATION_TAG,
+        silent:true
+      }
+    );
+
+  }
+
+
+  function clearPomoNotification(){
+    closeDeviceNotification(POMO_NOTIFICATION_TAG);
   }
 
 
@@ -7003,9 +7133,24 @@ document
     }
 
 
+    if(
+      "Notification" in window &&
+      Notification.permission==="default"
+    ){
+      requestNotificationPermission().then(permission=>{
+        if(permission==="granted"){
+          updatePomoNotification();
+        }
+      });
+    }else{
+      updatePomoNotification();
+    }
+
     sessionStarted=true;
 
     lockPicker(true);
+
+    lastPomoNotificationSecond=-1;
 
     lastAccountedRemaining=
       remaining;
@@ -7090,6 +7235,15 @@ document
 
           updateDisplay();
 
+          if(
+            remaining>0 &&
+            remaining%30===0 &&
+            remaining!==lastPomoNotificationSecond
+          ){
+            lastPomoNotificationSecond=remaining;
+            updatePomoNotification();
+          }
+
 
           if(
             remaining<=0
@@ -7151,6 +7305,26 @@ document
 
 
             playEndSound();
+
+            if(
+              "Notification" in window &&
+              Notification.permission==="granted"
+            ){
+              showDeviceNotification(
+                mode==="focus"
+                  ? "🎉 Focus session complete!"
+                  : "☕ Break complete!",
+                {
+                  body:
+                    mode==="focus"
+                      ? "Great work! Time for a short break."
+                      : "Break is over. Ready for the next focus session?",
+                  tag:POMO_NOTIFICATION_TAG,
+                  renotify:true,
+                  silent:false
+                }
+              );
+            }
 
             switchMode(true);
 
@@ -7223,6 +7397,7 @@ document
     endTime=null;
 
     updateDisplay();
+    clearPomoNotification();
 
   }
 
@@ -7256,6 +7431,7 @@ document
       remaining;
 
     lockPicker(false);
+    clearPomoNotification();
 
     updateDisplay();
 
@@ -7716,11 +7892,7 @@ window.addEventListener(
    START
 ===================================================== */
 
-render();
-
-renderAllHistory();
-
-renderExams();
+/* Initial UI is refreshed by the dedicated startup refresh block below. */
 
 
 /* =====================================================
@@ -7766,61 +7938,866 @@ if(
 })();
 </script>
 <script>
+
 (function(){
-const NOTES_KEY='syllabusChapterNotes',REMINDER_KEY='syllabusReminder',ACHIEVEMENT_KEY='syllabusAchievementsSeen';
-const allKeys=[STORAGE_KEY,THEME_KEY,LAST_KEY,COLLAPSED_KEY,HISTORY_KEY,FOCUS_KEY,BREAK_KEY,EXAMS_KEY,GOAL_KEY,NOTES_KEY,REMINDER_KEY,ACHIEVEMENT_KEY];
-const J=(k,f)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(f))}catch(e){return f}};
-const W=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
-const esc=v=>String(v??'').replace(/[&<>'"]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[s]));
-const noteKey=(b,c)=>key(b,c),notes=()=>J(NOTES_KEY,{});
-const chapterTitle=(b,c)=>(chapterNames[b]?.[c-1]||('Chapter '+c));
+
+const NOTES_KEY='syllabusChapterNotes';
+const REMINDER_KEY='syllabusReminder';
+const ACHIEVEMENT_KEY='syllabusAchievementsSeen';
+
+const allKeys=[
+  STORAGE_KEY,
+  THEME_KEY,
+  LAST_KEY,
+  COLLAPSED_KEY,
+  HISTORY_KEY,
+  FOCUS_KEY,
+  BREAK_KEY,
+  EXAMS_KEY,
+  GOAL_KEY,
+  NOTES_KEY,
+  REMINDER_KEY,
+  ACHIEVEMENT_KEY
+];
+
+const J=(k,f)=>{
+  try{
+    return JSON.parse(
+      localStorage.getItem(k) || JSON.stringify(f)
+    );
+  }catch(e){
+    return f;
+  }
+};
+
+const W=(k,v)=>{
+  localStorage.setItem(k,JSON.stringify(v));
+};
+
+const esc=v=>String(v??'').replace(
+  /[&<>'"]/g,
+  s=>({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    "'":'&#39;',
+    '"':'&quot;'
+  }[s])
+);
+
+const chapterTitle=(b,c)=>
+  chapterNames[b]?.[Number(c)-1] ||
+  ('Chapter '+c);
+
 
 function addInsights(){
- const nav=document.querySelector('.main-tabs');if(!nav||document.getElementById('insightsTab'))return;
- const b=document.createElement('button');b.id='insightsTab';b.className='main-tab';b.dataset.tab='insights';b.type='button';b.textContent='💡 Insights';nav.appendChild(b);
- const p=document.createElement('section');p.id='insightsPanel';p.className='app-panel';p.innerHTML=`
- <div id="smartTodayMount"></div><div class="insight-grid">
- <div class="insight-card"><h3>📚 Subject Analytics</h3><p>Progress + actual study time by subject.</p><div id="subjectAnalytics" style="margin-top:10px"></div></div>
- <div class="insight-card"><h3>🏆 Achievements</h3><p>Milestones to keep your momentum alive.</p><div id="achievementGrid" class="badge-grid"></div></div>
- <div class="insight-card"><h3>🧠 Focus Analytics</h3><p>Where your Pomodoro time is going.</p><div id="focusAnalytics" style="margin-top:10px"></div></div>
- <div class="insight-card"><h3>🔔 Study Reminder</h3><p>Browser reminders work after permission is granted. The app checks the reminder while open.</p><div class="reminder-box"><input id="reminderTime" type="time"><button id="enableReminderBtn" class="enhance-btn" type="button">Enable Reminder</button><button id="disableReminderBtn" class="enhance-btn" type="button">Disable</button></div><div id="reminderStatus" class="reminder-status"></div></div>
- </div>`;
- document.getElementById('historyPanel').after(p);
- nav.addEventListener('click',e=>{const x=e.target.closest('.main-tab');if(x)selectTab(x.dataset.tab)});
+
+  const nav=document.querySelector('.main-tabs');
+
+  if(!nav || document.getElementById('insightsTab')){
+    return;
+  }
+
+  const b=document.createElement('button');
+
+  b.id='insightsTab';
+  b.className='main-tab';
+  b.dataset.tab='insights';
+  b.type='button';
+  b.textContent='💡 Insights';
+
+  nav.appendChild(b);
+
+  const p=document.createElement('section');
+
+  p.id='insightsPanel';
+  p.className='app-panel';
+
+  p.innerHTML=`
+    <div id="smartTodayMount"></div>
+
+    <div class="insight-grid">
+
+      <div class="insight-card">
+        <h3>📚 Subject Analytics</h3>
+        <p>Progress + actual study time by subject.</p>
+        <div id="subjectAnalytics" style="margin-top:10px"></div>
+      </div>
+
+      <div class="insight-card">
+        <h3>🏆 Achievements</h3>
+        <p>Milestones to keep your momentum alive.</p>
+        <div id="achievementGrid" class="badge-grid"></div>
+      </div>
+
+      <div class="insight-card">
+        <h3>🧠 Focus Analytics</h3>
+        <p>Where your Pomodoro time is going.</p>
+        <div id="focusAnalytics" style="margin-top:10px"></div>
+      </div>
+
+      <div class="insight-card">
+        <h3>🔔 Study Reminder</h3>
+        <p>Daily device reminders work after notification permission is granted. The app also checks the reminder when opened.</p>
+
+        <div class="reminder-box">
+          <input id="reminderTime" type="time" value="20:00">
+
+          <button
+            id="enableReminderBtn"
+            class="enhance-btn"
+            type="button"
+          >
+            Enable Reminder
+          </button>
+
+          <button
+            id="disableReminderBtn"
+            class="enhance-btn"
+            type="button"
+          >
+            Disable
+          </button>
+        </div>
+
+        <div id="reminderStatus" class="reminder-status"></div>
+
+      </div>
+
+    </div>
+  `;
+
+  const historyPanel=
+    document.getElementById('historyPanel');
+
+  if(historyPanel){
+    historyPanel.after(p);
+  }
+
+  nav.addEventListener(
+    'click',
+    e=>{
+      const x=e.target.closest('.main-tab');
+      if(x){
+        selectTab(x.dataset.tab);
+      }
+    }
+  );
+
 }
-function selectTab(tab){document.querySelectorAll('.main-tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));document.querySelectorAll('.app-panel').forEach(x=>x.classList.remove('active'));document.getElementById(tab+'Panel')?.classList.add('active');if(tab==='insights')renderInsights();}
+
+
+function selectTab(tab){
+
+  document
+    .querySelectorAll('.main-tab')
+    .forEach(x=>
+      x.classList.toggle(
+        'active',
+        x.dataset.tab===tab
+      )
+    );
+
+  document
+    .querySelectorAll('.app-panel')
+    .forEach(x=>
+      x.classList.remove('active')
+    );
+
+  document
+    .getElementById(tab+'Panel')
+    ?.classList.add('active');
+
+  if(tab==='insights'){
+    renderInsights();
+  }
+
+}
+
 
 function addBackupTools(){
- const a=document.querySelector('.bottom-actions');if(!a||document.getElementById('smartBtn'))return;
- const w=document.createElement('div');w.className='enhance-tools';w.innerHTML=`<button id="smartBtn" class="enhance-btn" type="button">🧠 Today's Focus</button>`;a.appendChild(w);
- const smartBtnEl=document.getElementById('smartBtn');
- if(smartBtnEl) smartBtnEl.onclick=()=>{selectTab('insights');setTimeout(()=>document.getElementById('smartTodayMount')?.scrollIntoView({behavior:'smooth'}),50)};
+
+  const a=
+    document.querySelector('.bottom-actions');
+
+  if(
+    !a ||
+    document.getElementById('smartBtn')
+  ){
+    return;
+  }
+
+  const w=document.createElement('div');
+
+  w.className='enhance-tools';
+
+  w.innerHTML=`
+    <button
+      id="smartBtn"
+      class="enhance-btn"
+      type="button"
+    >
+      🧠 Today's Focus
+    </button>
+  `;
+
+  a.appendChild(w);
+
+  const smartBtnEl=
+    document.getElementById('smartBtn');
+
+  if(smartBtnEl){
+
+    smartBtnEl.onclick=()=>{
+      selectTab('insights');
+
+      setTimeout(()=>{
+        document
+          .getElementById('smartTodayMount')
+          ?.scrollIntoView({
+            behavior:'smooth'
+          });
+      },50);
+
+    };
+
+  }
+
 }
-function renderInsights(){renderSmart();renderSubjects();renderFocus();renderAchievements();renderReminder()}
+
+
+function renderSmart(){
+
+  const mount=
+    document.getElementById('smartTodayMount');
+
+  if(!mount){
+    return;
+  }
+
+  const total=totalChapters();
+  const complete=completedCount();
+  const remainingChapters=[];
+
+  Object.keys(books).forEach(book=>{
+
+    for(
+      let chapter=1;
+      chapter<=books[book];
+      chapter++
+    ){
+
+      if(
+        getStatus(book,chapter)!=='complete'
+      ){
+
+        remainingChapters.push({
+          book,
+          chapter,
+          status:getStatus(book,chapter)
+        });
+
+      }
+
+    }
+
+  });
+
+  const priority={
+    'in-progress':0,
+    'not-started':1,
+    'complete':2
+  };
+
+  remainingChapters.sort(
+    (a,b)=>
+      priority[a.status]-priority[b.status]
+  );
+
+  const focusList=
+    remainingChapters.slice(0,3);
+
+  if(!total){
+    return;
+  }
+
+  if(complete===total){
+
+    mount.innerHTML=`
+      <div class="smart-today">
+        <div class="smart-title">🎉 Syllabus Complete!</div>
+        <div class="smart-sub">
+          সব chapter complete. এখন revision + exam practice-এ focus করো।
+        </div>
+      </div>
+    `;
+
+    return;
+  }
+
+  mount.innerHTML=`
+    <div class="smart-today">
+
+      <div class="smart-head">
+        <div>
+          <div class="smart-title">🧠 Today's Focus</div>
+          <div class="smart-sub">
+            ${complete}/${total} chapters complete •
+            ${remainingChapters.length} remaining
+          </div>
+        </div>
+      </div>
+
+      <div class="smart-list">
+
+        ${
+          focusList.map(item=>`
+            <div class="smart-item">
+
+              <div class="smart-item-main">
+
+                <div class="smart-item-title">
+                  ${esc(item.book)}
+                </div>
+
+                <div class="smart-item-sub">
+                  Chapter ${item.chapter} •
+                  ${esc(chapterTitle(item.book,item.chapter))}
+                </div>
+
+              </div>
+
+              <button
+                type="button"
+                data-smart-book="${esc(item.book)}"
+                data-smart-chapter="${item.chapter}"
+              >
+                🍅 Study
+              </button>
+
+            </div>
+          `).join('')
+        }
+
+      </div>
+
+    </div>
+  `;
+
+  mount
+    .querySelectorAll('[data-smart-book]')
+    .forEach(btn=>{
+
+      btn.addEventListener(
+        'click',
+        ()=>{
+          const book=btn.dataset.smartBook;
+          const chapter=btn.dataset.smartChapter;
+
+          if(typeof window.openPomodoroFor==='function'){
+            window.openPomodoroFor(book,chapter);
+          }
+
+        }
+      );
+
+    });
+
+}
+
+
+function renderSubjects(){
+
+  const el=document.getElementById('subjectAnalytics');
+
+  if(!el){
+    return;
+  }
+
+  const history=loadHistory();
+
+  const byBook={};
+
+  Object.values(history).forEach(day=>{
+
+    Object.entries(day?.byBook || {}).forEach(
+      ([book,seconds])=>{
+        byBook[book]=
+          (byBook[book] || 0)+Number(seconds || 0);
+      }
+    );
+
+  });
+
+  el.innerHTML=
+    Object.keys(books).map(book=>{
+
+      const total=books[book];
+      const complete=bookCompleted(book);
+      const percent=Math.round(
+        complete/total*100
+      );
+
+      return`
+        <div class="bar-row">
+
+          <div class="bar-head">
+            <span>${esc(book)}</span>
+            <span>${complete}/${total} • ${percent}%</span>
+          </div>
+
+          <div class="mini-track">
+            <div
+              class="mini-fill"
+              style="width:${percent}%"
+            ></div>
+          </div>
+
+          <div
+            style="
+              margin-top:4px;
+              color:var(--muted);
+              font-size:10px;
+            "
+          >
+            Study time: ${formatDuration(byBook[book] || 0)}
+          </div>
+
+        </div>
+      `;
+
+    }).join('');
+
+}
+
+
+function renderFocus(){
+
+  const el=document.getElementById('focusAnalytics');
+
+  if(!el){
+    return;
+  }
+
+  const history=loadHistory();
+
+  let weekSeconds=0;
+  let weekSessions=0;
+
+  for(let i=0;i<7;i++){
+
+    const date=
+      new Date(
+        Date.now()-i*86400000
+      );
+
+    const day=todayKey(date);
+    const data=history[day];
+
+    weekSeconds+=
+      Number(data?.totalSeconds || 0);
+
+    weekSessions+=
+      Number(data?.sessions || 0);
+
+  }
+
+  const today=todayStudySeconds();
+
+  const goalPercent=
+    dailyGoal
+      ? Math.min(
+          100,
+          Math.round(
+            today/(dailyGoal*60)*100
+          )
+        )
+      : 0;
+
+  el.innerHTML=`
+    <div class="metric-row">
+      <span class="metric-name">Today</span>
+      <span class="metric-value">${formatDuration(today)}</span>
+    </div>
+
+    <div class="metric-row">
+      <span class="metric-name">7 Day Total</span>
+      <span class="metric-value">${formatDuration(weekSeconds)}</span>
+    </div>
+
+    <div class="metric-row">
+      <span class="metric-name">7 Day Sessions</span>
+      <span class="metric-value">${weekSessions}</span>
+    </div>
+
+    <div class="metric-row">
+      <span class="metric-name">Daily Goal</span>
+      <span class="metric-value">${goalPercent}%</span>
+    </div>
+  `;
+
+}
+
+
+function renderAchievements(){
+
+  const el=document.getElementById('achievementGrid');
+
+  if(!el){
+    return;
+  }
+
+  const total=totalChapters();
+  const complete=completedCount();
+  const today=todayStudySeconds();
+  const streak=calculateStreak();
+
+  const achievements=[
+    {
+      icon:'🌱',
+      title:'First Step',
+      sub:'Complete 1 chapter',
+      unlocked:complete>=1
+    },
+    {
+      icon:'📚',
+      title:'10 Chapters',
+      sub:'Complete 10 chapters',
+      unlocked:complete>=10
+    },
+    {
+      icon:'🔥',
+      title:'3 Day Streak',
+      sub:'Study 3 days in a row',
+      unlocked:streak>=3
+    },
+    {
+      icon:'🍅',
+      title:'60 Min Focus',
+      sub:'Study 60 minutes today',
+      unlocked:today>=3600
+    },
+    {
+      icon:'🏆',
+      title:'Halfway',
+      sub:'Complete 50% of syllabus',
+      unlocked:total>0 && complete>=Math.ceil(total/2)
+    },
+    {
+      icon:'🎓',
+      title:'Syllabus Complete',
+      sub:'Complete every chapter',
+      unlocked:total>0 && complete===total
+    }
+  ];
+
+  el.innerHTML=
+    achievements.map(item=>`
+      <div class="badge ${item.unlocked ? '' : 'locked'}">
+        <div class="badge-icon">${item.icon}</div>
+        <div class="badge-title">${item.title}</div>
+        <div class="badge-sub">${item.sub}</div>
+      </div>
+    `).join('');
+
+}
+
+
+function getReminderConfig(){
+
+  const saved=J(
+    REMINDER_KEY,
+    {
+      enabled:false,
+      time:'20:00',
+      lastNotified:''
+    }
+  );
+
+  return{
+    enabled:!!saved.enabled,
+    time:saved.time || '20:00',
+    lastNotified:saved.lastNotified || ''
+  };
+
+}
+
+
+function renderReminder(){
+
+  const input=document.getElementById('reminderTime');
+  const status=document.getElementById('reminderStatus');
+
+  if(!input || !status){
+    return;
+  }
+
+  const config=getReminderConfig();
+
+  input.value=config.time;
+
+  if(!('Notification' in window)){
+
+    status.textContent=
+      'এই browser notification support করে না।';
+
+    return;
+
+  }
+
+  if(Notification.permission==='denied'){
+
+    status.textContent=
+      '🔕 Notification blocked. Browser settings থেকে permission Allow করতে হবে।';
+
+    return;
+
+  }
+
+  if(config.enabled){
+
+    status.textContent=
+      `🔔 Daily reminder ON • ${config.time}`;
+
+  }else{
+
+    status.textContent=
+      'Daily reminder OFF';
+
+  }
+
+}
+
+
+async function enableReminder(){
+
+  const input=document.getElementById('reminderTime');
+
+  const time=
+    input?.value || '20:00';
+
+  if(!('Notification' in window)){
+
+    showToast(
+      '❌ This browser does not support notifications'
+    );
+
+    return;
+
+  }
+
+  const permission=
+    await requestNotificationPermission();
+
+  if(permission!=='granted'){
+
+    renderReminder();
+
+    showToast(
+      '🔕 Notification permission is required'
+    );
+
+    return;
+
+  }
+
+  W(
+    REMINDER_KEY,
+    {
+      enabled:true,
+      time,
+      lastNotified:''
+    }
+  );
+
+  renderReminder();
+
+  showToast(
+    `🔔 Daily reminder set for ${time}`
+  );
+
+  checkReminder(true);
+
+}
+
+
+function disableReminder(){
+
+  const config=getReminderConfig();
+
+  config.enabled=false;
+
+  W(
+    REMINDER_KEY,
+    config
+  );
+
+  renderReminder();
+
+  showToast(
+    '🔕 Daily reminder disabled'
+  );
+
+}
+
+
+async function checkReminder(forceTest=false){
+
+  const config=getReminderConfig();
+
+  if(!config.enabled){
+    return;
+  }
+
+  if(
+    !('Notification' in window) ||
+    Notification.permission!=='granted'
+  ){
+    renderReminder();
+    return;
+  }
+
+  const now=new Date();
+
+  const current=
+    `${String(now.getHours()).padStart(2,'0')}:`+
+    `${String(now.getMinutes()).padStart(2,'0')}`;
+
+  const today=todayKey();
+
+  if(
+    !forceTest &&
+    current < config.time
+  ){
+    return;
+  }
+
+  if(
+    !forceTest &&
+    config.lastNotified===today
+  ){
+    return;
+  }
+
+  const complete=completedCount();
+  const total=totalChapters();
+
+  if(
+    total>0 &&
+    complete>=total
+  ){
+
+    config.lastNotified=today;
+    W(REMINDER_KEY,config);
+    renderReminder();
+    return;
+
+  }
+
+  await showDeviceNotification(
+    '📚 Syllabus-Tracker Reminder',
+    {
+      body:
+        forceTest
+          ? 'Reminder is enabled. Time to finish today’s syllabus! 💪'
+          : 'আজকের syllabus শেষ করার সময় হয়েছে। একটু focus করো! 💪',
+      tag:'syllabus-daily-reminder',
+      renotify:true,
+      silent:false
+    }
+  );
+
+  if(!forceTest){
+
+    config.lastNotified=today;
+
+    W(
+      REMINDER_KEY,
+      config
+    );
+
+  }
+
+  renderReminder();
+
+}
+
+
+function renderInsights(){
+
+  renderSmart();
+  renderSubjects();
+  renderFocus();
+  renderAchievements();
+  renderReminder();
+
+}
+
 
 // Notes feature removed from UI (storage key kept for backup compatibility)
 function notesButtons(){ /* disabled */ }
 function editNote(){ /* disabled */ }
+
+
 function boot(){
+
   addInsights();
   addBackupTools();
-  const enableBtn=document.getElementById('enableReminderBtn');
-  const disableBtn=document.getElementById('disableReminderBtn');
-  if(enableBtn) enableBtn.addEventListener('click',enableReminder);
-  if(disableBtn) disableBtn.addEventListener('click',disableReminder);
+
+  const enableBtn=
+    document.getElementById('enableReminderBtn');
+
+  const disableBtn=
+    document.getElementById('disableReminderBtn');
+
+  if(enableBtn){
+    enableBtn.addEventListener(
+      'click',
+      enableReminder
+    );
+  }
+
+  if(disableBtn){
+    disableBtn.addEventListener(
+      'click',
+      disableReminder
+    );
+  }
+
   checkReminder();
-  setInterval(checkReminder,30000);
+
+  setInterval(
+    checkReminder,
+    30000
+  );
+
   renderInsights();
+
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+
+
+if(
+  document.readyState==='loading'
+){
+  document.addEventListener(
+    'DOMContentLoaded',
+    boot
+  );
+}else{
+  boot();
+}
+
 })();
+
 </script>
 
 <!-- ===== INITIAL UI REFRESH FIX ===== -->
 <script>
 (function(){
   function refreshInitialUI(){
-    // Initial UI is refreshed by the dedicated startup refresh block below.
+    render();
+    renderAllHistory();
+    renderExams();
     if(typeof renderInsights === "function") renderInsights();
   }
 
