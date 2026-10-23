@@ -4,17 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
 <meta name="theme-color" content="#0f172a">
-<title>Syllabus Tracker — HSC Science</title>
+<title>Syllabus Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-
-/* ============================================================
-   GLOBAL DESIGN SYSTEM
-   Colors, spacing, borders and reusable visual variables.
-   Change these variables to customize the whole app theme.
-   ============================================================ */
 :root {
     --bg:#f6f8fc;
     --card:#fff;
@@ -29,10 +23,9 @@
     --warning:#f59e0b;
     --warning-soft:#fffbeb;
     --danger:#dc2626;
-    --danger-soft:#fef2f2;
     --purple:#7c3aed;
     --shadow:0 10px 30px rgba(15,23,42,.06);
-    --radius:18px;
+    --radius:16px;
 }
 html.dark,body.dark {
     --bg:#090f1d;
@@ -48,37 +41,33 @@ html.dark,body.dark {
     --warning:#fbbf24;
     --warning-soft:#422006;
     --danger:#f87171;
-    --danger-soft:#450a0a;
     --purple:#a78bfa;
-    --shadow:0 15px 35px rgba(0,0,0,.3)
+    --shadow:0 15px 35px rgba(0,0,0,.3);
 }
 * {
     box-sizing:border-box;
     margin:0;
-    padding:0
+    padding:0;
 }
 html,body {
     width:100%;
+    max-width:100%;
     min-height:100%;
     overflow-x:hidden;
-    scroll-behavior:smooth
+    scroll-behavior:smooth;
 }
 body {
     font-family:"Plus Jakarta Sans","Hind Siliguri",system-ui,sans-serif;
     background:var(--bg);
     color:var(--text);
-    transition:.2s
+    transition:background .2s,color .2s;
 }
 button,input,select {
-    font:inherit
+    font:inherit;
 }
 button {
     cursor:pointer;
-    border:0
-}
-button:disabled {
-    opacity:.5;
-    cursor:not-allowed
+    border:0;
 }
 .topbar {
     position:sticky;
@@ -86,25 +75,25 @@ button:disabled {
     z-index:100;
     background:color-mix(in srgb,var(--bg) 92%,transparent);
     backdrop-filter:blur(16px);
-    border-bottom:1px solid var(--border)
+    border-bottom:1px solid var(--border);
 }
 .topbar-inner,.container {
     max-width:1180px;
     width:100%;
-    margin:auto
+    margin:auto;
 }
 .topbar-inner {
     padding:11px 16px;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    gap:10px
+    gap:10px;
 }
 .brand {
     display:flex;
     align-items:center;
     gap:10px;
-    cursor:pointer
+    cursor:pointer;
 }
 .brand-icon {
     width:38px;
@@ -114,105 +103,108 @@ button:disabled {
     place-items:center;
     color:#fff;
     background:linear-gradient(135deg,var(--primary),var(--purple));
-    font-size:20px
+    font-size:21px;
 }
 .brand h1 {
-    font-size:17px;
-    font-weight:800
+    font-size:18px;
+    font-weight:800;
 }
 .header-actions {
     display:flex;
-    gap:7px
+    gap:7px;
+    align-items:center;
 }
 .btn {
     border:1px solid var(--border);
     background:var(--card);
     color:var(--text);
-    padding:8px 11px;
+    padding:8px 12px;
     border-radius:10px;
-    font-size:11.5px;
-    font-weight:800
+    font-size:12.5px;
+    font-weight:800;
+    transition:.15s;
 }
 .btn:hover {
     border-color:var(--primary);
-    color:var(--primary)
+    color:var(--primary);
 }
 .btn.primary {
     background:var(--primary);
     border-color:var(--primary);
-    color:#fff
+    color:#fff;
 }
 .btn.danger {
     background:var(--danger);
     border-color:var(--danger);
-    color:#fff
+    color:#fff;
 }
 .container {
-    padding:16px 14px 36px
+    padding:16px 14px 36px;
+    max-width:1180px;
 }
 .grid4 {
     display:grid;
     grid-template-columns:repeat(4,1fr);
-    gap:10px
+    gap:10px;
 }
 .stat,.card {
     background:var(--card);
     border:1px solid var(--border);
     border-radius:var(--radius);
-    box-shadow:var(--shadow)
+    box-shadow:var(--shadow);
 }
 .stat {
-    padding:14px 15px
+    padding:14px 15px;
 }
 .label {
-    font-size:10.5px;
+    font-size:11.5px;
     color:var(--muted);
-    font-weight:750
+    font-weight:750;
 }
 .value {
-    font-size:24px;
+    font-size:25px;
     font-weight:900;
-    margin-top:3px
+    margin-top:3px;
 }
 .sub {
-    font-size:10.5px;
+    font-size:11.5px;
     color:var(--muted);
-    margin-top:3px
+    margin-top:3px;
 }
 .overall {
     padding:14px 16px;
-    margin:12px 0
+    margin:12px 0;
 }
 .row {
     display:flex;
     justify-content:space-between;
     align-items:center;
-    gap:8px
+    gap:8px;
 }
 .progress {
     height:9px;
     background:var(--soft);
     border-radius:99px;
-    overflow:hidden
+    overflow:hidden;
 }
 .fill {
     height:100%;
     width:0;
     background:linear-gradient(90deg,var(--primary),var(--purple));
     border-radius:99px;
-    transition:.35s
+    transition:.35s;
 }
 .quick {
     margin:12px 0;
     display:grid;
     grid-template-columns:repeat(4,1fr);
-    gap:10px
+    gap:10px;
 }
 .quick .card {
     padding:11px 13px;
     display:flex;
     gap:9px;
-    align-items:center
+    align-items:center;
 }
 .qicon {
     width:34px;
@@ -221,11 +213,11 @@ button:disabled {
     place-items:center;
     border-radius:10px;
     background:var(--soft);
-    font-size:17px
+    font-size:18px;
 }
 .qval {
-    font-size:15px;
-    font-weight:900
+    font-size:16px;
+    font-weight:900;
 }
 .continue {
     display:flex;
@@ -236,23 +228,23 @@ button:disabled {
     padding:14px 16px;
     margin-bottom:14px;
     background:linear-gradient(135deg,var(--primary-soft),var(--card));
-    border-color:color-mix(in srgb,var(--primary) 30%,var(--border))
+    border-color:color-mix(in srgb,var(--primary) 30%,var(--border));
 }
 .kicker {
-    font-size:10px;
+    font-size:11px;
     font-weight:900;
     color:var(--primary);
     text-transform:uppercase;
-    letter-spacing:.05em
+    letter-spacing:.05em;
 }
 .continue h2 {
-    font-size:15px;
-    margin-top:3px
+    font-size:16px;
+    margin-top:3px;
 }
 .continue p {
-    font-size:10.5px;
+    font-size:11.5px;
     color:var(--muted);
-    margin-top:2px
+    margin-top:2px;
 }
 .tabs {
     display:flex;
@@ -262,35 +254,35 @@ button:disabled {
     background:var(--card);
     border:1px solid var(--border);
     border-radius:13px;
-    overflow:auto
+    overflow-x:auto;
 }
 .tab {
     white-space:nowrap;
-    padding:8px 13px;
+    padding:8px 14px;
     border-radius:9px;
     background:transparent;
     color:var(--muted);
-    font-size:11.5px;
-    font-weight:850
+    font-size:12.5px;
+    font-weight:850;
 }
 .tab.active {
     background:var(--primary);
-    color:#fff
+    color:#fff;
 }
 .panel {
-    display:none
+    display:none;
 }
 .panel.active {
-    display:block
+    display:block;
 }
 .toolbar {
     padding:13px;
-    margin-bottom:14px
+    margin-bottom:14px;
 }
 .toolbar-top {
     display:grid;
     grid-template-columns:1fr 220px;
-    gap:8px
+    gap:8px;
 }
 .input,.select {
     width:100%;
@@ -299,18 +291,18 @@ button:disabled {
     color:var(--text);
     border-radius:10px;
     padding:9px 11px;
-    font-size:11.5px;
-    outline:0
+    font-size:12.5px;
+    outline:0;
 }
 .input:focus,.select:focus {
-    border-color:var(--primary)
+    border-color:var(--primary);
 }
 .filters {
     display:flex;
     flex-wrap:wrap;
     align-items:center;
     gap:6px;
-    margin-top:9px
+    margin-top:9px;
 }
 .filter {
     padding:6px 9px;
@@ -318,23 +310,23 @@ button:disabled {
     background:var(--soft);
     color:var(--text);
     border-radius:8px;
-    font-size:10.5px;
-    font-weight:850
+    font-size:11.5px;
+    font-weight:850;
 }
 .filter.active {
     background:var(--primary);
     border-color:var(--primary);
-    color:#fff
+    color:#fff;
 }
 .spacer {
-    flex:1
+    flex:1;
 }
 .subjects {
     display:grid;
-    gap:11px
+    gap:11px;
 }
 .subject {
-    overflow:hidden
+    overflow:hidden;
 }
 .subject-head {
     display:flex;
@@ -342,7 +334,7 @@ button:disabled {
     gap:11px;
     padding:13px 14px;
     border-bottom:1px solid var(--border);
-    cursor:pointer
+    cursor:pointer;
 }
 .subject-icon {
     width:36px;
@@ -351,47 +343,57 @@ button:disabled {
     background:var(--primary-soft);
     display:grid;
     place-items:center;
-    font-size:18px;
-    flex:none
+    font-size:19px;
+    flex:none;
 }
 .subject-info {
     min-width:0;
-    flex:1
+    flex:1;
 }
 .subject-title {
-    font-size:14px;
+    font-size:15px;
     font-weight:850;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-wrap:wrap;
+}
+.badge-pct {
+    font-size:11px;
+    font-weight:900;
+    background:var(--success-soft);
+    color:var(--success);
+    border:1px solid color-mix(in srgb,var(--success) 30%,transparent);
+    padding:2px 7px;
+    border-radius:99px;
 }
 .subject-meta {
-    font-size:10.5px;
+    font-size:11.5px;
     color:var(--muted);
-    margin-top:2px
+    margin-top:2px;
 }
 .subject-progress {
     width:145px;
-    flex:none
+    flex:none;
 }
 .subject-progress .smallrow {
-    font-size:10px;
+    font-size:11px;
     color:var(--muted);
     display:flex;
     justify-content:space-between;
-    margin-bottom:3px
+    margin-bottom:3px;
 }
 .smallbar {
     height:6px;
     background:var(--soft);
     border-radius:99px;
-    overflow:hidden
+    overflow:hidden;
 }
 .smallbar i {
     display:block;
     height:100%;
     background:var(--success);
-    border-radius:99px
+    border-radius:99px;
 }
 .chev {
     width:24px;
@@ -401,22 +403,22 @@ button:disabled {
     display:grid;
     place-items:center;
     color:var(--muted);
-    font-size:11px;
-    transition:.2s
+    font-size:12px;
+    transition:.2s;
 }
 .subject.collapsed .chev {
-    transform:rotate(-90deg)
+    transform:rotate(-90deg);
 }
 .subject.collapsed .subject-body {
-    display:none
+    display:none;
 }
 .subject-body {
     padding:9px;
-    background:var(--soft)
+    background:var(--soft);
 }
 .chapters {
     display:grid;
-    gap:6px
+    gap:6px;
 }
 .chapter {
     display:flex;
@@ -425,15 +427,15 @@ button:disabled {
     padding:9px 10px;
     background:var(--card);
     border:1px solid var(--border);
-    border-radius:10px
+    border-radius:10px;
 }
 .chapter.in-progress {
     background:var(--warning-soft);
-    border-color:color-mix(in srgb,var(--warning) 35%,var(--border))
+    border-color:color-mix(in srgb,var(--warning) 35%,var(--border));
 }
 .chapter.complete {
     background:var(--success-soft);
-    border-color:color-mix(in srgb,var(--success) 35%,var(--border))
+    border-color:color-mix(in srgb,var(--success) 35%,var(--border));
 }
 .num {
     width:28px;
@@ -442,109 +444,109 @@ button:disabled {
     place-items:center;
     border-radius:8px;
     background:var(--soft);
-    font-size:10px;
+    font-size:11px;
     font-weight:850;
     color:var(--muted);
-    flex:none
+    flex:none;
 }
 .chapter.in-progress .num {
     background:var(--warning);
-    color:#fff
+    color:#fff;
 }
 .chapter.complete .num {
     background:var(--success);
-    color:#fff
+    color:#fff;
 }
 .chapter-main {
     min-width:0;
-    flex:1
+    flex:1;
 }
 .chapter-name {
-    font-size:12px;
+    font-size:13px;
     font-weight:750;
     line-height:1.4;
-    word-break:break-word
+    word-break:break-word;
 }
 .chapter-status {
-    font-size:10px;
+    font-size:11px;
     color:var(--muted);
-    margin-top:2px
+    margin-top:2px;
 }
 .chapter.in-progress .chapter-status {
     color:var(--warning);
-    font-weight:800
+    font-weight:800;
 }
 .chapter.complete .chapter-status {
     color:var(--success);
-    font-weight:800
+    font-weight:800;
 }
 .tools {
     display:flex;
     gap:5px;
-    flex:none
+    flex:none;
 }
 .mini {
-    padding:6px 8px;
+    padding:6px 9px;
     border-radius:8px;
     background:var(--soft);
     color:var(--text);
     border:1px solid var(--border);
-    font-size:10px;
+    font-size:11px;
     font-weight:800;
-    white-space:nowrap
+    white-space:nowrap;
 }
 .mini:hover {
     border-color:var(--primary);
-    color:var(--primary)
+    color:var(--primary);
 }
 .status {
-    min-width:108px
+    min-width:105px;
 }
 .status.in-progress {
     background:var(--warning);
     border-color:var(--warning);
-    color:#fff
+    color:#fff;
 }
 .status.complete {
     background:var(--success);
     border-color:var(--success);
-    color:#fff
+    color:#fff;
 }
 .section {
     padding:16px;
-    margin-bottom:12px
+    margin-bottom:12px;
 }
 .section h2 {
-    font-size:16px
+    font-size:17px;
 }
 .section p {
-    font-size:10.5px;
+    font-size:11.5px;
     color:var(--muted);
-    margin-top:3px
+    margin-top:3px;
 }
 .exam-grid {
     display:grid;
     grid-template-columns:repeat(2,1fr);
-    gap:10px
+    gap:10px;
 }
 .exam {
-    padding:14px
+    padding:14px;
 }
 .exam h3 {
-    font-size:14px
+    font-size:15px;
 }
 .exam .date {
-    font-size:10.5px;
+    font-size:11.5px;
     color:var(--muted);
-    margin-top:2px
+    margin-top:2px;
 }
 .exam-actions {
     display:flex;
     gap:6px;
-    margin-top:11px
+    margin-top:11px;
 }
 .exam-actions .btn {
-    flex:1
+    flex:1;
 }
 .modal {
     position:fixed;
@@ -554,27 +556,27 @@ button:disabled {
     align-items:center;
     justify-content:center;
     padding:15px;
-    background:rgba(2,6,23,.68);
-    backdrop-filter:blur(7px)
+    background:rgba(2,6,23,.75);
+    backdrop-filter:blur(7px);
 }
 .modal.show {
-    display:flex
+    display:flex;
 }
 .modalbox {
     width:100%;
-    max-width:560px;
+    max-width:540px;
     max-height:90vh;
     overflow:auto;
-    padding:19px
+    padding:20px;
 }
 .modalbox h3 {
-    font-size:16px
+    font-size:17px;
 }
 .modal-actions {
     display:flex;
     justify-content:flex-end;
     gap:7px;
-    margin-top:14px
+    margin-top:14px;
 }
 .pomo {
     position:fixed;
@@ -585,51 +587,52 @@ button:disabled {
     justify-content:center;
     padding:15px;
     background:rgba(2,6,23,.88);
-    backdrop-filter:blur(10px)
+    backdrop-filter:blur(10px);
 }
 .pomo.show {
-    display:flex
+    display:flex;
 }
 .pomo-box {
     width:100%;
     max-width:520px;
     text-align:center;
-    padding:20px
+    padding:22px;
+    position:relative;
 }
 .pomo-clock {
-    font-size:clamp(55px,15vw,86px);
+    font-size:clamp(48px,14vw,84px);
     font-family:ui-monospace,monospace;
     font-weight:900;
     letter-spacing:-.04em;
-    margin:10px 0
+    margin:8px 0;
 }
 .pomo-controls {
     display:flex;
     justify-content:center;
     gap:7px;
     flex-wrap:wrap;
-    margin-top:13px
+    margin-top:12px;
 }
 .history-grid {
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:12px
+    gap:12px;
 }
 .canvaswrap {
     height:250px;
     background:var(--soft);
     border-radius:12px;
-    overflow:hidden
+    overflow:hidden;
 }
 .canvaswrap canvas {
     width:100%;
     height:100%;
-    display:block
+    display:block;
 }
 .list {
     display:grid;
     gap:5px;
-    margin-top:9px
+    margin-top:9px;
 }
 .listrow {
     display:flex;
@@ -637,43 +640,43 @@ button:disabled {
     gap:8px;
     padding:6px 0;
     border-bottom:1px solid var(--border);
-    font-size:10.5px
+    font-size:11.5px;
 }
 .listrow strong {
-    color:var(--primary)
+    color:var(--primary);
 }
 .insights-grid {
     display:grid;
     grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
     gap:7px;
-    margin-top:11px
+    margin-top:11px;
 }
 .queue,.badge {
     padding:11px;
     border:1px solid var(--border);
     border-radius:11px;
-    background:var(--card)
+    background:var(--card);
 }
 .queue .tag {
-    font-size:9px;
+    font-size:10px;
     color:var(--primary);
-    font-weight:900
+    font-weight:900;
 }
 .queue h4 {
-    font-size:11.5px;
-    margin-top:3px
+    font-size:12.5px;
+    margin-top:3px;
 }
 .queue p {
-    font-size:9.5px
+    font-size:10.5px;
 }
 .badge {
-    text-align:center
+    text-align:center;
 }
 .badge .icon {
-    font-size:25px
+    font-size:26px;
 }
 .badge.locked {
-    opacity:.4
+    opacity:.4;
 }
 .toast {
     position:fixed;
@@ -684,90 +687,85 @@ button:disabled {
     border-radius:10px;
     background:var(--text);
     color:var(--bg);
-    font-size:11px;
+    font-size:12px;
     font-weight:800;
     opacity:0;
     transform:translateY(10px);
     pointer-events:none;
-    transition:.2s
+    transition:.2s;
 }
 .toast.show {
     opacity:1;
-    transform:none
+    transform:none;
 }
 footer {
     text-align:center;
     color:var(--muted);
-    font-size:10.5px;
-    padding:18px;
-    border-top:1px solid var(--border)
+    font-size:11.5px;
+    padding:20px;
+    border-top:1px solid var(--border);
 }
 @media(max-width:850px) {
     .grid4,.quick {
-        grid-template-columns:repeat(2,1fr)
+        grid-template-columns:repeat(2,1fr);
     }
     .toolbar-top {
-        grid-template-columns:1fr
+        grid-template-columns:1fr;
     }
     .exam-grid,.history-grid {
-        grid-template-columns:1fr
+        grid-template-columns:1fr;
     }
 }
 @media(max-width:560px) {
     .grid4,.quick {
-        grid-template-columns:1fr
+        grid-template-columns:1fr;
     }
     .subject-progress {
-        display:none
+        display:none;
     }
     .chapter {
         align-items:stretch;
-        flex-wrap:wrap
+        flex-wrap:wrap;
     }
     .tools {
-        width:100%
+        width:100%;
+        justify-content:flex-end;
     }
     .tools .status {
-        flex:1
+        flex:1;
     }
     .exam-grid {
-        grid-template-columns:1fr
-    }
-    .header-actions .btn:first-child {
-        display:none
+        grid-template-columns:1fr;
     }
     .brand h1 {
-        font-size:15px
+        font-size:16px;
     }
 }
 </style>
-</head>
+<script src="/_aistudio-iframe.js?v=6634132a"></script></head>
 <body>
-<!-- ============================================================
-     HEADER / TOP NAVIGATION
-     ============================================================ -->
 <header class="topbar"><div class="topbar-inner">
   <div class="brand" onclick="switchTab('syllabus')"><div class="brand-icon">📚</div><h1>Syllabus Tracker</h1></div>
-  <div class="header-actions"><button class="btn danger" onclick="openPomodoro()">🍅 Pomodoro</button><button id="themeBtn" class="btn" onclick="toggleTheme()">🌙 Dark</button></div>
+  <div class="header-actions">
+    <button class="btn danger" onclick="openPomodoro()">🍅 Pomodoro</button>
+    <button id="themeBtn" class="btn" onclick="toggleTheme()">🌙 Dark</button>
+  </div>
 </div></header>
 
-<!-- ============================================================
-     MAIN APP CONTENT
-     ============================================================ -->
 <main class="container">
-<!-- Dashboard summary cards -->
+<!-- Dashboard summary cards with 0.00% precision -->
 <section class="grid4">
   <div class="stat"><div class="label">Total Chapters</div><div id="statTotal" class="value">75</div><div class="sub">8 subjects</div></div>
   <div class="stat"><div class="label">Completed</div><div id="statCompleted" class="value" style="color:var(--success)">0</div><div class="sub">Finished chapters</div></div>
   <div class="stat"><div class="label">In Progress</div><div id="statInProgress" class="value" style="color:var(--warning)">0</div><div class="sub">Currently studying</div></div>
-  <div class="stat"><div class="label">Overall Progress</div><div id="statPercent" class="value" style="color:var(--primary)">0%</div><div class="sub">Syllabus completion</div></div>
+  <div class="stat"><div class="label">Overall Progress</div><div id="statPercent" class="value" style="color:var(--primary)">0.00%</div><div class="sub">Syllabus completion</div></div>
 </section>
-<section class="card overall"><div class="row" style="font-size:11px;font-weight:850;margin-bottom:6px"><span>Overall Syllabus Progress</span><strong id="overallPercentText" style="color:var(--primary)">0%</strong></div><div class="progress"><div id="overallFill" class="fill"></div></div></section>
+<section class="card overall"><div class="row" style="font-size:12px;font-weight:850;margin-bottom:6px"><span>Overall Syllabus Progress</span><strong id="overallPercentText" style="color:var(--primary)">0.00%</strong></div><div class="progress"><div id="overallFill" class="fill"></div></div></section>
 
 <section class="quick">
   <div class="card"><div class="qicon">🍅</div><div><div class="label">Today's Focus</div><div id="quickTodayStudy" class="qval">0m</div></div></div>
   <div class="card"><div class="qicon">🔥</div><div><div class="label">Study Streak</div><div id="quickStreak" class="qval">0 days</div></div></div>
-  <div class="card"><div class="qicon">🎯</div><div><div class="label">Daily Goal</div><div id="quickGoal" class="qval">0%</div></div></div>
+  <div class="card"><div class="qicon">🎯</div><div><div class="label">Daily Goal</div><div id="quickGoal" class="qval">0.00%</div></div></div>
   <div class="card"><div class="qicon">📝</div><div><div class="label">Upcoming Exams</div><div id="quickExams" class="qval">0</div></div></div>
 </section>
 
@@ -776,7 +774,6 @@ footer {
   <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn primary" onclick="jumpToContinueTarget()">View in Syllabus →</button><button class="btn danger" onclick="startPomodoroForContinueTarget()">🍅 Study</button></div>
 </section>
 
-<!-- Main navigation tabs -->
 <nav class="tabs">
   <button class="tab active" data-tab="syllabus" onclick="switchTab('syllabus')">📚 Syllabus</button>
   <button class="tab" data-tab="exams" onclick="switchTab('exams')">🎯 Exam Planner</button>
@@ -784,7 +781,7 @@ footer {
   <button class="tab" data-tab="insights" onclick="switchTab('insights')">💡 Insights</button>
 </nav>
 
-<!-- Syllabus tab -->
+<!-- Syllabus Tab -->
 <section id="syllabusPanel" class="panel active">
   <div class="card toolbar">
     <div class="toolbar-top"><input id="searchInput" class="input" placeholder="🔎 Search chapter or subject..." oninput="handleSearch(this.value)"><select id="bookSelectFilter" class="select" onchange="handleBookFilter(this.value)"></select></div>
@@ -794,43 +791,84 @@ footer {
   <div style="text-align:center;margin-top:18px"><button class="filter" style="color:var(--danger)" onclick="openResetModal()">🗑️ Reset Syllabus Progress</button></div>
 </section>
 
-<!-- Exam Planner tab -->
+<!-- Exam Planner Tab -->
 <section id="examsPanel" class="panel">
-  <div id="examListView"><div class="row" style="margin-bottom:13px"><div><h2 style="font-size:16px">🎯 Custom Exam Planner</h2><p class="sub">Pick chapters included in an upcoming exam.</p></div><button class="btn primary" onclick="openExamModal()">＋ New Exam</button></div><div id="examList" class="exam-grid"></div></div>
+  <div id="examListView"><div class="row" style="margin-bottom:13px"><div><h2 style="font-size:17px">🎯 Custom Exam Planner</h2><p class="sub">Pick chapters included in an upcoming exam.</p></div><button class="btn primary" onclick="openExamModal()">＋ New Exam</button></div><div id="examList" class="exam-grid"></div></div>
   <div id="examDetailView" style="display:none"></div>
 </section>
 
-<!-- Study History tab -->
+<!-- Study History Tab -->
 <section id="historyPanel" class="panel">
   <div class="card section"><div class="row" style="margin-bottom:10px"><div><h2>📊 Study Time Graph</h2><p>Focus time grouped by day, week, or month.</p></div><div><button id="btnGraphDaily" class="filter active" onclick="setGraphPeriod('daily')">Daily</button><button id="btnGraphWeekly" class="filter" onclick="setGraphPeriod('weekly')">Weekly</button><button id="btnGraphMonthly" class="filter" onclick="setGraphPeriod('monthly')">Monthly</button></div></div><div class="canvaswrap"><canvas id="historyCanvas" width="1000" height="250"></canvas></div></div>
   <div class="history-grid"><div class="card section"><h2>📅 Recent History</h2><div id="weeklyHistoryList" class="list"></div></div><div class="card section"><h2>📚 Book-wise Study Time</h2><div id="bookStudyList" class="list"></div></div></div>
-  <div class="card section"><div class="row"><div><b style="font-size:11px">🎯 Daily Target</b><span class="sub"> minutes/day</span></div><div style="display:flex;gap:6px"><input id="dailyGoalInput" class="input" style="width:80px" type="number" min="10" max="1440"><button class="filter" onclick="saveDailyGoal()">Save</button><button class="filter" style="color:var(--danger)" onclick="clearStudyHistory()">Clear History</button></div></div></div>
+  <div class="card section"><div class="row" style="flex-wrap:wrap;gap:8px"><div><b style="font-size:12px">🎯 Daily Target</b><span class="sub"> minutes/day</span></div><div style="display:flex;gap:6px;align-items:center"><input id="dailyGoalInput" class="input" style="width:80px" type="number" min="10" max="1440"><button class="filter" onclick="saveDailyGoal()">Save</button><button class="filter" onclick="resetDailyGoalDefault()">Reset</button><button class="filter" style="color:var(--danger)" onclick="openClearHistoryModal()">Clear History</button></div></div></div>
 </section>
 
-<!-- Insights tab -->
+<!-- Insights Tab -->
 <section id="insightsPanel" class="panel">
   <div class="card section" style="background:linear-gradient(135deg,var(--primary-soft),var(--card))"><h2>🧠 Today's Focus Queue</h2><p>In-progress chapters first, then the next unfinished chapters.</p><div id="smartQueueList" class="insights-grid"></div></div>
   <div class="card section"><h2>🏆 Milestones & Achievements</h2><p>Unlock badges as you complete chapters.</p><div id="badgeGrid" class="insights-grid"></div></div>
 </section>
 </main>
 
-<!-- Pomodoro overlay -->
+<!-- Pomodoro Overlay with Custom Time Setter -->
 <div id="pomodoroOverlay" class="pomo"><div class="card pomo-box">
-  <div class="row"><b id="pomoSessionTag" style="font-size:11px;color:var(--primary)">🍅 Focus · Session 1</b><button class="filter" onclick="closePomodoro()">✕ Close</button></div>
+  <div class="row"><b id="pomoSessionTag" style="font-size:12px;color:var(--primary)">🍅 Focus · Session 1</b><button class="filter" onclick="closePomodoro()">✕ Close</button></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px;text-align:left"><div><label class="label">Book</label><select id="pomoBookSelect" class="select" onchange="handlePomoBookChange(this.value)"></select></div><div><label class="label">Chapter</label><select id="pomoChapterSelect" class="select" onchange="handlePomoChapterChange(this.value)"></select></div></div>
-  <div id="pomoCurrentTopic" style="font-size:12px;font-weight:850;color:var(--primary);margin-top:10px;min-height:18px"></div>
-  <div id="pomoClock" class="pomo-clock">25:00</div><div class="progress" style="max-width:350px;margin:auto"><div id="pomoProgressFill" class="fill"></div></div>
-  <div class="pomo-controls"><button id="pomoStartBtn" class="btn danger" onclick="togglePomodoroPlay()">▶ Start</button><button class="btn" onclick="resetPomodoro()">↺ Reset</button><button class="btn" onclick="skipPomodoro()">⏭ Skip</button></div>
+  <div id="pomoCurrentTopic" style="font-size:13px;font-weight:850;color:var(--primary);margin-top:10px;min-height:18px"></div>
+  <div id="pomoClock" class="pomo-clock">25:00</div>
+  <div class="progress" style="max-width:350px;margin:auto"><div id="pomoProgressFill" class="fill"></div></div>
+  
+  <div class="pomo-controls">
+    <button id="pomoStartBtn" class="btn danger" onclick="togglePomodoroPlay()">▶ Start</button>
+    <button class="btn" onclick="resetPomodoro()">↺ Reset</button>
+    <button class="btn" onclick="skipPomodoro()">⏭ Skip</button>
+  </div>
+
+  <!-- Custom Time Setup -->
+  <div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--border)">
+    <div style="font-size:11.5px;font-weight:750;color:var(--muted);margin-bottom:6px">Custom Session Duration</div>
+    <div style="display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap">
+      <span class="label">Focus:</span>
+      <input id="pomoCustomFocus" class="input" style="width:65px;padding:5px;text-align:center" type="number" min="1" max="240" value="25">
+      <span class="label">min | Break:</span>
+      <input id="pomoCustomBreak" class="input" style="width:60px;padding:5px;text-align:center" type="number" min="1" max="60" value="5">
+      <span class="label">min</span>
+      <button class="btn primary" style="padding:6px 10px;font-size:11.5px" onclick="applyCustomPomoTime()">Apply</button>
+    </div>
+  </div>
 </div></div>
 
-<!-- Reset confirmation modal -->
-<div id="resetModal" class="modal"><div class="card modalbox" style="text-align:center"><div style="font-size:32px">⚠️</div><h3>Reset Syllabus Progress?</h3><p class="sub" style="margin:8px 0 14px">Chapter statuses will return to Not Started. Exam plans and study history stay safe.</p><div class="modal-actions" style="justify-content:center"><button class="btn" onclick="closeResetModal()">Cancel</button><button class="btn danger" onclick="confirmResetProgress()">Yes, Reset</button></div></div></div>
+<!-- In-App Pomodoro Completion Alert Modal -->
+<div id="pomoAlertModal" class="modal"><div class="card modalbox" style="text-align:center;max-width:400px">
+  <div id="pomoAlertIcon" style="font-size:42px">🍅</div>
+  <h3 id="pomoAlertTitle" style="margin-top:4px">Focus Complete!</h3>
+  <p id="pomoAlertMsg" class="sub" style="margin:8px 0 16px"></p>
+  <div class="modal-actions" style="justify-content:center;flex-direction:column;gap:8px">
+    <button id="pomoAlertActionBtn" class="btn primary" onclick="handlePomoAlertAction()">Start Break</button>
+    <button class="btn" onclick="closePomoAlert()">Dismiss</button>
+  </div>
+</div></div>
 
-<!-- Exam create/edit modal -->
+<!-- In-App Clear History Confirmation Modal -->
+<div id="clearHistoryModal" class="modal"><div class="card modalbox" style="text-align:center;max-width:420px"><div style="font-size:33px">⚠️</div><h3>Clear Study History?</h3><p class="sub" style="margin:8px 0 14px">Are you sure you want to clear all logged study focus sessions? Your syllabus progress and exam plans remain safe.</p><div class="modal-actions" style="justify-content:center"><button class="btn" onclick="closeClearHistoryModal()">Cancel</button><button class="btn danger" onclick="confirmClearStudyHistory()">Yes, Clear</button></div></div></div>
+
+<!-- In-App Delete Exam Confirmation Modal -->
+<div id="deleteExamModal" class="modal"><div class="card modalbox" style="text-align:center;max-width:420px"><div style="font-size:33px">⚠️</div><h3>Delete Exam Plan?</h3><p id="deleteExamModalMsg" class="sub" style="margin:8px 0 14px">Are you sure you want to delete this exam plan?</p><div class="modal-actions" style="justify-content:center"><button class="btn" onclick="closeDeleteExamModal()">Cancel</button><button class="btn danger" onclick="confirmDeleteExam()">Yes, Delete</button></div></div></div>
+
+<!-- Reset Progress Modal -->
+<div id="resetModal" class="modal"><div class="card modalbox" style="text-align:center"><div style="font-size:33px">⚠️</div><h3>Reset Syllabus Progress?</h3><p class="sub" style="margin:8px 0 14px">Chapter statuses will return to Not Started. Exam plans and study history stay safe.</p><div class="modal-actions" style="justify-content:center"><button class="btn" onclick="closeResetModal()">Cancel</button><button class="btn danger" onclick="confirmResetProgress()">Yes, Reset</button></div></div></div>
+
+<!-- Exam Create/Edit Modal -->
 <div id="examModal" class="modal"><div class="card modalbox"><h3 id="examModalTitle">Create Exam Plan</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px"><input id="inputExamName" class="input" placeholder="Exam name"><input id="inputExamDate" class="input" type="date"></div><div style="margin-top:10px"><label class="label">Select chapters</label><div id="examPickerList" style="max-height:270px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:7px;background:var(--soft);margin-top:4px"></div></div><div class="modal-actions"><button class="btn" onclick="closeExamModal()">Cancel</button><button class="btn primary" onclick="saveExamFromModal()">Save Exam</button></div></div></div>
-<!-- Toast notification -->
+
 <div id="toast" class="toast"></div>
-<footer><div>©turabi_alam</div><div style="margin-top:3px">Study • Track • Complete</div><div style="margin-top:3px">Made with ❤️ for HSC Students</div></footer>
+
+<footer>
+  <div>©turabi_alam</div>
+  <div style="margin-top:3px">Study • Track • Complete</div>
+  <div style="margin-top:3px">Made with ❤️ for HSC Students</div>
+</footer>
 
 <script>
 const BOOKS= {
@@ -842,343 +880,252 @@ const BOOKS= {
     "Higher Math 2nd Paper":["বাস্তব সংখ্যা ও অসমতা","যোগাশ্রয়ী প্রোগ্রাম","জটিল সংখ্যা","বহুপদী ও বহুপদী সমীকরণ","দ্বিপদী বিস্তৃতি","কণিক","বিপরীত ত্রিকোণমিতিক ফাংশন ও ত্রিকোণমিতিক সমীকরণ","স্থিতিবিদ্যা","সমতলে বস্তুকণার গতি","সম্ভাবনা"],
     "Botany":["কোষ ও এর গঠন","কোষ বিভাজন","কোষ রসায়ন","অণুজীব","শৈবাল ও ছত্রাক","ব্রায়োফাইটা ও টেরিডোফাইটা","নগ্নবীজী ও আবৃতবীজী উদ্ভিদ","টিস্যু ও টিস্যুতন্ত্র","উদ্ভিদ শারীরতত্ত্ব","উদ্ভিদ প্রজনন","জীবপ্রযুক্তি","পরিবেশ ও সংরক্ষণ"],
     "Zoology":["প্রাণীর বৈচিত্র্য ও শ্রেণিবিন্যাস","প্রাণীর পরিচিতি","পরিপাক ও শোষণ","রক্ত ও সঞ্চালন","শ্বাসক্রিয়া ও শ্বসন","বর্জ্য নিষ্কাশন","চলন ও অঙ্গচালনা","সমন্বয় ও নিয়ন্ত্রণ","মানব জীবনের ধারাবাহিকতা","মানবদেহের প্রতিরক্ষা","জিনতত্ত্ব ও বিবর্তন","প্রাণীর আচরণ"]
-}
-;
-// Subject icons used in the syllabus cards.
+};
+
 const ICONS= {
     "Physics 1st Paper":"⚛️","Physics 2nd Paper":"🔬","Chemistry 1st Paper":"🧪","Chemistry 2nd Paper":"🧫","Higher Math 1st Paper":"📐","Higher Math 2nd Paper":"📊","Botany":"🌱","Zoology":"🦎"
-}
-;
-// LocalStorage keys. Keeping these names unchanged preserves saved user data.
+};
+
 const KEY= {
     progress:"syllabusTracker",theme:"syllabusTheme",last:"syllabusLastChapter",collapsed:"syllabusCollapsed",history:"pomodoroDailyHistory",exams:"studentExamPlanner",goal:"dailyStudyGoal"
-}
-;
-// Small LocalStorage helper functions.
-const load=(k,d)=> {
-    try {
-        return JSON.parse(localStorage.getItem(k))??d
-    } catch {
-        return d
-    }
-}
-,save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
-// ============================================================
-// 2. APP STATE
-// These variables hold the current UI/data state while the app is open.
-// ============================================================
-let progress=load(KEY.progress, {
-}
-),last=load(KEY.last,null),collapsed=load(KEY.collapsed, {
-}
-),history=load(KEY.history, {
-}
-),exams=load(KEY.exams,[]),goal=Number(localStorage.getItem(KEY.goal))||120;
-let currentTab="syllabus",search="",bookFilter="all",statusFilter="all",selectedExam=null,editingExam=null,graphPeriod="daily";
-const chKey=(b,c)=>b+"__"+c, today=()=> {
-    const d=new Date();
-    return d.toISOString().slice(0,10)
-}
-;
-const fmt=s=> {
+};
+
+const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+
+let progress=load(KEY.progress,{}),last=load(KEY.last,null),collapsed=load(KEY.collapsed,{}),history=load(KEY.history,{}),exams=load(KEY.exams,[]),goal=Number(localStorage.getItem(KEY.goal))||120;
+let currentTab="syllabus",search="",bookFilter="all",statusFilter="all",selectedExam=null,editingExam=null,graphPeriod="daily",pendingExamDeleteId=null;
+
+const chKey=(b,c)=>b+"__"+c;
+const today=()=>{const d=new Date();return d.toISOString().slice(0,10)};
+const fmtPct=(val)=>(Number(val||0)).toFixed(2)+"%";
+
+const fmt=s=>{
     s=Math.max(0,Math.round(s));
     let h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;
-    return h?`${h}h ${m}m`:m?`${m}m${x?" "+x+"s":""}`:`${x}s`
-}
-;
-// Show a short notification at the bottom-right of the screen.
-function toast(t) {
+    return h?`${h}h ${m}m`:m?`${m}m${x?" "+x+"s":""}`:`${x}s`;
+};
+
+function toast(t){
     const e=document.getElementById("toast");
     e.textContent=t;
     e.classList.add("show");
     clearTimeout(window.__toast);
-    window.__toast=setTimeout(()=>e.classList.remove("show"),2200)
+    window.__toast=setTimeout(()=>e.classList.remove("show"),2200);
 }
-// Apply and save Dark/Light mode.
-function applyTheme(d) {
+
+function applyTheme(d){
     document.documentElement.classList.toggle("dark",d);
     document.body.classList.toggle("dark",d);
     document.getElementById("themeBtn").textContent=d?"☀️ Light":"🌙 Dark";
     localStorage.setItem(KEY.theme,d?"dark":"light");
-    if(currentTab==="history")drawGraph()
+    if(currentTab==="history")drawGraph();
 }
-function toggleTheme() {
+
+function toggleTheme(){
     applyTheme(!document.documentElement.classList.contains("dark"));
-    toast(document.documentElement.classList.contains("dark")?"🌙 Dark Mode":"☀️ Light Mode")
 }
-// Switch between Syllabus, Exam Planner, History and Insights.
-function switchTab(t) {
+
+function switchTab(t){
     currentTab=t;
     document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===t));
     document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===t+"Panel"));
     if(t==="exams")renderExams();
     if(t==="history")renderHistory();
-    if(t==="insights")renderInsights()
+    if(t==="insights")renderInsights();
 }
-// ============================================================
-// 3. DASHBOARD / PROGRESS SUMMARY
-// Recalculates the numbers shown at the top of the app.
-// ============================================================
-function updateDashboard() {
+
+function updateDashboard(){
     let total=0,done=0,inp=0;
-    Object.entries(BOOKS).forEach(([b,arr])=> {
+    Object.entries(BOOKS).forEach(([b,arr])=>{
         total+=arr.length;
-        arr.forEach((_,i)=> {
+        arr.forEach((_,i)=>{
             const s=progress[chKey(b,i+1)];
             if(s==="complete")done++;
-            if(s==="in-progress")inp++
-        }
-        )
-    }
-    );
-    const pct=Math.round(done/total*100),sec=Number(history[today()]?.totalSeconds||0);
+            if(s==="in-progress")inp++;
+        });
+    });
+    const pctVal=total>0?(done/total*100):0;
+    const pctStr=fmtPct(pctVal);
+    const sec=Number(history[today()]?.totalSeconds||0);
+    const goalVal=Math.min(100,(sec/(goal*60)*100));
+
     document.getElementById("statTotal").textContent=total;
     document.getElementById("statCompleted").textContent=done;
     document.getElementById("statInProgress").textContent=inp;
-    document.getElementById("statPercent").textContent=pct+"%";
-    document.getElementById("overallPercentText").textContent=pct+"%";
-    document.getElementById("overallFill").style.width=pct+"%";
+    document.getElementById("statPercent").textContent=pctStr;
+    document.getElementById("overallPercentText").textContent=pctStr;
+    document.getElementById("overallFill").style.width=pctVal+"%";
     document.getElementById("quickTodayStudy").textContent=fmt(sec);
+
     let cur=new Date(),streak=0;
     if(sec<=0)cur.setDate(cur.getDate()-1);
-    while(history[cur.toISOString().slice(0,10)]?.totalSeconds>0) {
+    while(history[cur.toISOString().slice(0,10)]?.totalSeconds>0){
         streak++;
         cur.setDate(cur.getDate()-1);
-        if(streak>366)break
+        if(streak>366)break;
     }
     document.getElementById("quickStreak").textContent=streak+" days";
-    document.getElementById("quickGoal").textContent=Math.min(100,Math.round(sec/(goal*60)*100))+"%";
+    document.getElementById("quickGoal").textContent=fmtPct(goalVal);
     document.getElementById("quickExams").textContent=exams.filter(e=>e.date>=today()).length;
     updateContinue();
 }
-// Decide which chapter should appear in "Continue Studying".
-function findContinue() {
-    if(last&&BOOKS[last.book]&&progress[chKey(last.book,last.chapter)]==="in-progress")return {
-        ...last,reason:"Last Studied"
-    }
-    ;
-    for(const b of Object.keys(BOOKS))for(let c=1;
-    c<=BOOKS[b].length;
-    c++)if(progress[chKey(b,c)]==="in-progress")return {
-        book:b,chapter:c,reason:"In Progress"
-    }
-    ;
-    for(const b of Object.keys(BOOKS))for(let c=1;
-    c<=BOOKS[b].length;
-    c++)if(!progress[chKey(b,c)])return {
-        book:b,chapter:c,reason:"Next Uncompleted"
-    }
-    ;
-    return null
+
+function findContinue(){
+    if(last&&BOOKS[last.book]&&progress[chKey(last.book,last.chapter)]==="in-progress")return {...last,reason:"Last Studied"};
+    for(const b of Object.keys(BOOKS))for(let c=1;c<=BOOKS[b].length;c++)if(progress[chKey(b,c)]==="in-progress")return {book:b,chapter:c,reason:"In Progress"};
+    for(const b of Object.keys(BOOKS))for(let c=1;c<=BOOKS[b].length;c++)if(!progress[chKey(b,c)])return {book:b,chapter:c,reason:"Next Uncompleted"};
+    return null;
 }
+
 let continueTarget=null;
-function updateContinue() {
+function updateContinue(){
     continueTarget=findContinue();
     const e=document.getElementById("continueCard");
-    if(!continueTarget) {
-        e.style.display="none";
-        return
-    }
+    if(!continueTarget){e.style.display="none";return;}
     e.style.display="flex";
     document.getElementById("continueReason").textContent=continueTarget.reason;
     document.getElementById("continueTitle").textContent=BOOKS[continueTarget.book][continueTarget.chapter-1];
-    document.getElementById("continueSub").textContent=`${continueTarget.book} · Chapter ${continueTarget.chapter}`
+    document.getElementById("continueSub").textContent=`${continueTarget.book} · Chapter ${continueTarget.chapter}`;
 }
-function jumpToContinueTarget() {
+
+function jumpToContinueTarget(){
     if(!continueTarget)return;
     switchTab("syllabus");
     collapsed[continueTarget.book]=false;
     save(KEY.collapsed,collapsed);
     renderSyllabus();
-    setTimeout(()=>document.getElementById(`ch_${slug(continueTarget.book)}_${continueTarget.chapter}`)?.scrollIntoView( {
-        behavior:"smooth",block:"center"
-    }
-    ),80)
+    setTimeout(()=>document.getElementById(`ch_${slug(continueTarget.book)}_${continueTarget.chapter}`)?.scrollIntoView({behavior:"smooth",block:"center"}),80);
 }
-function startPomodoroForContinueTarget() {
-    if(continueTarget)openPomodoroFor(continueTarget.book,continueTarget.chapter)
+
+function startPomodoroForContinueTarget(){
+    if(continueTarget)openPomodoroFor(continueTarget.book,continueTarget.chapter);
 }
-function slug(s) {
-    return s.replace(/[^a-zA-Z0-9]/g,"_")
-}
-// ============================================================
-// 4. SYLLABUS RENDERING + FILTERS
-// Builds all subject/chapter cards from BOOKS + progress state.
-// ============================================================
-function renderSyllabus() {
+
+function slug(s){return s.replace(/[^a-zA-Z0-9]/g,"_");}
+
+function renderSyllabus(){
     const box=document.getElementById("subjects");
     box.innerHTML="";
     const q=search.toLowerCase().trim();
-    Object.entries(BOOKS).forEach(([b,arr])=> {
+    Object.entries(BOOKS).forEach(([b,arr])=>{
         if(bookFilter!=="all"&&bookFilter!==b)return;
         let done=0,inp=0,visible=[];
-        arr.forEach((name,i)=> {
+        arr.forEach((name,i)=>{
             let c=i+1,s=progress[chKey(b,c)]||"not-started";
             if(s==="complete")done++;
             if(s==="in-progress")inp++;
-            if((statusFilter==="all"||statusFilter===s)&&(!q||b.toLowerCase().includes(q)||name.toLowerCase().includes(q)||String(c)===q))visible.push(c)
-        }
-        );
+            if((statusFilter==="all"||statusFilter===s)&&(!q||b.toLowerCase().includes(q)||name.toLowerCase().includes(q)||String(c)===q))visible.push(c);
+        });
         if(!visible.length)return;
-        let pct=Math.round(done/arr.length*100),col=!!collapsed[b]&&!q&&statusFilter==="all";
+        let rawPct=arr.length>0?(done/arr.length*100):0;
+        let pct=fmtPct(rawPct);
+        let col=!!collapsed[b]&&!q&&statusFilter==="all";
         const card=document.createElement("div");
         card.className="card subject"+(col?" collapsed":"");
-        card.innerHTML=`<div class="subject-head" onclick="toggleBookCollapse(${JSON.stringify(b)})"><div class="subject-icon">${ICONS[b]}</div><div class="subject-info"><div class="subject-title">${b}</div><div class="subject-meta">${done} complete · ${inp} in progress · ${arr.length} total</div></div><div class="subject-progress"><div class="smallrow"><span>${done}/${arr.length}</span><span>${pct}%</span></div><div class="smallbar"><i style="width:${pct}%"></i></div></div><div class="chev">▼</div></div><div class="subject-body"><div class="chapters">${visible.map(c=>chapterHTML(b,c,arr[c-1])).join("")}</div></div>`;
+        card.innerHTML=`<div class="subject-head" onclick="toggleBookCollapse(${JSON.stringify(b)})"><div class="subject-icon">${ICONS[b]}</div><div class="subject-info"><div class="subject-title"><span>${b}</span><span class="badge-pct">${pct}</span></div><div class="subject-meta">${done} complete · ${inp} in progress · ${arr.length} total</div></div><div class="subject-progress"><div class="smallrow"><span>${done}/${arr.length}</span><span>${pct}</span></div><div class="smallbar"><i style="width:${rawPct}%"></i></div></div><div class="chev">▼</div></div><div class="subject-body"><div class="chapters">${visible.map(c=>chapterHTML(b,c,arr[c-1])).join("")}</div></div>`;
         box.appendChild(card);
-    }
-    );
+    });
 }
-// Create the HTML for one chapter row.
-function chapterHTML(b,c,name) {
+
+function chapterHTML(b,c,name){
     const s=progress[chKey(b,c)]||"not-started",cls=s==="complete"?"complete":s==="in-progress"?"in-progress":"",text=s==="complete"?"✓ Complete":s==="in-progress"?"🟡 In Progress":"⚪ Not Started";
-    return `<div id="ch_${slug(b)}_${c}" class="chapter ${cls}"><div class="num">${String(c).padStart(2,"0")}</div><div class="chapter-main"><div class="chapter-name">${name}</div><div class="chapter-status">${text}</div></div><div class="tools"><button class="mini" onclick='openPomodoroFor(${JSON.stringify(b)},${c})'>🍅 Focus</button><button class="mini status ${cls}" onclick='toggleChapterStatus(${JSON.stringify(b)},${c})'>${text}</button></div></div>`
+    return `<div id="ch_${slug(b)}_${c}" class="chapter ${cls}"><div class="num">${String(c).padStart(2,"0")}</div><div class="chapter-main"><div class="chapter-name">${name}</div><div class="chapter-status">${text}</div></div><div class="tools"><button class="mini" onclick='openPomodoroFor(${JSON.stringify(b)},${c})'>🍅 Focus</button><button class="mini status ${cls}" onclick='toggleChapterStatus(${JSON.stringify(b)},${c})'>${text}</button></div></div>`;
 }
-// Cycle: Not Started -> In Progress -> Complete -> Not Started.
-function toggleChapterStatus(b,c) {
+
+function toggleChapterStatus(b,c){
     const k=chKey(b,c),s=progress[k]||"not-started";
-    if(s==="not-started") {
-        progress[k]="in-progress";
-        toast("🟡 In Progress")
-    } else if(s==="in-progress") {
-        progress[k]="complete";
-        toast("🟢 Complete!")
-    } else {
-        delete progress[k];
-        toast("⚪ Not Started")
-    }
-    last= {
-        book:b,chapter:c
-    }
-    ;
+    if(s==="not-started"){progress[k]="in-progress";toast("🟡 In Progress");}
+    else if(s==="in-progress"){progress[k]="complete";toast("🟢 Complete!");}
+    else {delete progress[k];toast("⚪ Not Started");}
+    last={book:b,chapter:c};
     save(KEY.progress,progress);
     save(KEY.last,last);
     updateDashboard();
     renderSyllabus();
-    if(currentTab==="insights")renderInsights()
+    if(currentTab==="insights")renderInsights();
 }
-function toggleBookCollapse(b) {
-    collapsed[b]=!collapsed[b];
-    save(KEY.collapsed,collapsed);
-    renderSyllabus()
-}
-function setAllCollapse(v) {
-    Object.keys(BOOKS).forEach(b=>collapsed[b]=v);
-    save(KEY.collapsed,collapsed);
-    renderSyllabus()
-}
-function handleSearch(v) {
-    search=v;
-    renderSyllabus()
-}
-function handleBookFilter(v) {
-    bookFilter=v;
-    renderSyllabus()
-}
-function handleStatusFilter(v) {
+
+function toggleBookCollapse(b){collapsed[b]=!collapsed[b];save(KEY.collapsed,collapsed);renderSyllabus();}
+function setAllCollapse(v){Object.keys(BOOKS).forEach(b=>collapsed[b]=v);save(KEY.collapsed,collapsed);renderSyllabus();}
+function handleSearch(v){search=v;renderSyllabus();}
+function handleBookFilter(v){bookFilter=v;renderSyllabus();}
+function handleStatusFilter(v){
     statusFilter=v;
     document.querySelectorAll(".filter[data-status]").forEach(x=>x.classList.toggle("active",x.dataset.status===v));
-    renderSyllabus()
+    renderSyllabus();
 }
-// ============================================================
-// 5. EXAM PLANNER
-// Create, edit, delete and view custom exam plans.
-// ============================================================
-function renderExams() {
-    if(selectedExam) {
-        renderExamDetail();
-        return
-    }
+
+// Custom Exam Planner
+function renderExams(){
+    if(selectedExam){renderExamDetail();return;}
     document.getElementById("examListView").style.display="block";
     document.getElementById("examDetailView").style.display="none";
     const box=document.getElementById("examList");
     box.innerHTML="";
-    if(!exams.length) {
+    if(!exams.length){
         box.innerHTML=`<div class="card section" style="grid-column:1/-1;text-align:center"><p>No exams planned yet. Create your first exam plan.</p></div>`;
-        return
+        return;
     }
-    exams.forEach(e=> {
-        let done=(e.chapters||[]).filter(c=>progress[chKey(c.book,c.chapter)]==="complete").length,p=e.chapters?.length?Math.round(done/e.chapters.length*100):0;
+    exams.forEach(e=>{
+        let done=(e.chapters||[]).filter(c=>progress[chKey(c.book,c.chapter)]==="complete").length;
+        let raw=e.chapters?.length?(done/e.chapters.length*100):0;
+        let p=fmtPct(raw);
         const d=document.createElement("div");
         d.className="card exam";
-        d.innerHTML=`<div class="row"><div><h3>${esc(e.name)}</h3><div class="date">📅 ${e.date}</div></div><span class="filter">${e.chapters.length} chapters</span></div><div style="margin:10px 0 4px;font-size:10px;font-weight:800;display:flex;justify-content:space-between"><span>Preparation</span><strong style="color:var(--primary)">${done}/${e.chapters.length} (${p}%)</strong></div><div class="progress"><div class="fill" style="width:${p}%"></div></div><div class="exam-actions"><button class="btn primary" onclick='openExamDetail(${JSON.stringify(e.id)})'>View Chapters</button><button class="btn" onclick='editExam(${JSON.stringify(e.id)})'>Edit</button><button class="btn" style="color:var(--danger)" onclick='deleteExam(${JSON.stringify(e.id)})'>Delete</button></div>`;
-        box.appendChild(d)
-    }
-    )
+        d.innerHTML=`<div class="row"><div><h3>${esc(e.name)}</h3><div class="date">📅 ${e.date}</div></div><span class="filter">${e.chapters.length} chapters</span></div><div style="margin:10px 0 4px;font-size:11px;font-weight:800;display:flex;justify-content:space-between"><span>Preparation</span><strong style="color:var(--primary)">${done}/${e.chapters.length} (${p})</strong></div><div class="progress"><div class="fill" style="width:${raw}%"></div></div><div class="exam-actions"><button class="btn primary" onclick='openExamDetail(${JSON.stringify(e.id)})'>View Chapters</button><button class="btn" onclick='editExam(${JSON.stringify(e.id)})'>Edit</button><button class="btn" style="color:var(--danger)" onclick='openDeleteExamModal(${JSON.stringify(e.id)})'>Delete</button></div>`;
+        box.appendChild(d);
+    });
 }
-function openExamDetail(id) {
-    selectedExam=id;
-    renderExamDetail()
-}
-function closeExamDetail() {
-    selectedExam=null;
-    renderExams()
-}
-// Show all chapters selected for the current exam.
-function renderExamDetail() {
+
+function openExamDetail(id){selectedExam=id;renderExamDetail();}
+function closeExamDetail(){selectedExam=null;renderExams();}
+
+function renderExamDetail(){
     const e=exams.find(x=>x.id===selectedExam);
-    if(!e) {
-        selectedExam=null;
-        return renderExams()
-    }
-    const done=e.chapters.filter(c=>progress[chKey(c.book,c.chapter)]==="complete").length,p=e.chapters.length?Math.round(done/e.chapters.length*100):0;
+    if(!e){selectedExam=null;return renderExams();}
+    const done=e.chapters.filter(c=>progress[chKey(c.book,c.chapter)]==="complete").length;
+    const raw=e.chapters.length?(done/e.chapters.length*100):0;
+    const p=fmtPct(raw);
     document.getElementById("examListView").style.display="none";
     const v=document.getElementById("examDetailView");
     v.style.display="block";
-    v.innerHTML=`<div class="card section"><button class="filter" onclick="closeExamDetail()">← Back</button><div class="row" style="margin-top:10px"><div><h2>${esc(e.name)}</h2><p>📅 ${e.date}</p></div><div style="text-align:right"><b style="font-size:25px;color:var(--primary)">${p}%</b><p>${done} / ${e.chapters.length} completed</p></div></div><div class="progress" style="margin:12px 0"><div class="fill" style="width:${p}%"></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn primary" onclick="startPomodoroForExam()">🍅 Study Next Chapter</button><button class="btn" onclick='editExam(${JSON.stringify(e.id)})'>✏️ Edit</button><button class="btn" style="color:var(--danger)" onclick='deleteExam(${JSON.stringify(e.id)})'>🗑️ Delete</button></div></div><div class="card section"><h2>Exam Chapters</h2><p>Synced with your main syllabus.</p><div class="list">${e.chapters.map(c=>{let d=progress[chKey(c.book,c.chapter)]==="complete",n=BOOKS[c.book][c.chapter-1];return `<div class="chapter ${d?"complete":""}"><button class="mini ${d?"status complete":""}" onclick='toggleExamChapterDone(${JSON.stringify(c.book)},${c.chapter})'>$ {
-        d?"✓":"○"
-    }
-    </button><div class="chapter-main"><div class="chapter-name">$ {
-        n
-    }
-    </div><div class="chapter-status">$ {
-        c.book
-    }
-    · Chapter $ {
-        c.chapter
-    }
-    </div></div><button class="mini" onclick='openPomodoroFor(${JSON.stringify(c.book)},${c.chapter})'>🍅 Study</button></div>`}).join("")}</div></div>`
+    v.innerHTML=`<div class="card section"><button class="filter" onclick="closeExamDetail()">← Back</button><div class="row" style="margin-top:10px"><div><h2>${esc(e.name)}</h2><p>📅 ${e.date}</p></div><div style="text-align:right"><b style="font-size:26px;color:var(--primary)">${p}</b><p>${done} / ${e.chapters.length} completed</p></div></div><div class="progress" style="margin:12px 0"><div class="fill" style="width:${raw}%"></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn primary" onclick="startPomodoroForExam()">🍅 Study Next Chapter</button><button class="btn" onclick='editExam(${JSON.stringify(e.id)})'>✏️ Edit</button><button class="btn" style="color:var(--danger)" onclick='openDeleteExamModal(${JSON.stringify(e.id)})'>🗑️ Delete</button></div></div><div class="card section"><h2>Exam Chapters</h2><p>Synced with your main syllabus.</p><div class="list">${e.chapters.map(c=>{let d=progress[chKey(c.book,c.chapter)]==="complete",n=BOOKS[c.book][c.chapter-1];return `<div class="chapter ${d?"complete":""}"><button class="mini ${d?"status complete":""}" onclick='toggleExamChapterDone(${JSON.stringify(c.book)},${c.chapter})'>${d?"✓":"○"}</button><div class="chapter-main"><div class="chapter-name">${n}</div><div class="chapter-status">${c.book} · Chapter ${c.chapter}</div></div><button class="mini" onclick='openPomodoroFor(${JSON.stringify(c.book)},${c.chapter})'>🍅 Study</button></div>`}).join("")}</div></div>`;
 }
-// Open the create-exam form.
-function openExamModal() {
+
+function openExamModal(){
     editingExam=null;
     document.getElementById("examModalTitle").textContent="Create Exam Plan";
     document.getElementById("inputExamName").value="";
     document.getElementById("inputExamDate").value="";
     populateExamPicker([]);
-    document.getElementById("examModal").classList.add("show")
+    document.getElementById("examModal").classList.add("show");
 }
-function closeExamModal() {
-    document.getElementById("examModal").classList.remove("show")
-}
-function populateExamPicker(selected=[]) {
+function closeExamModal(){document.getElementById("examModal").classList.remove("show");}
+
+function populateExamPicker(selected=[]){
     const set=new Set(selected.map(x=>chKey(x.book,x.chapter))),box=document.getElementById("examPickerList");
-    box.innerHTML=Object.entries(BOOKS).map(([b,a])=>`<div style="font-size:10px;font-weight:900;color:var(--primary);margin:6px 0">${b}</div>`+a.map((n,i)=>`<label style="display:flex;gap:6px;align-items:center;font-size:10.5px;padding:3px 0"><input type="checkbox" data-book="${esc(b)}" data-ch="${i+1}" ${set.has(chKey(b,i+1))?"checked":""}><span>${i+1}. ${n}</span></label>`).join("")).join("")
+    box.innerHTML=Object.entries(BOOKS).map(([b,a])=>`<div style="font-size:11px;font-weight:900;color:var(--primary);margin:6px 0">${b}</div>`+a.map((n,i)=>`<label style="display:flex;gap:6px;align-items:center;font-size:11.5px;padding:3px 0"><input type="checkbox" data-book="${esc(b)}" data-ch="${i+1}" ${set.has(chKey(b,i+1))?"checked":""}><span>${i+1}. ${n}</span></label>`).join("")).join("");
 }
-// Save a new exam or update an existing exam.
-function saveExamFromModal() {
+
+function saveExamFromModal(){
     const name=document.getElementById("inputExamName").value.trim(),date=document.getElementById("inputExamDate").value;
     if(!name||!date)return toast("Please enter exam name and date.");
-    const checked=[...document.querySelectorAll("#examPickerList input:checked")].map(x=>( {
-        book:x.dataset.book,chapter:Number(x.dataset.ch)
-    }
-    ));
+    const checked=[...document.querySelectorAll("#examPickerList input:checked")].map(x=>({book:x.dataset.book,chapter:Number(x.dataset.ch)}));
     if(!checked.length)return toast("Select at least one chapter.");
-    if(editingExam) {
+    if(editingExam){
         const e=exams.find(x=>x.id===editingExam);
-        e.name=name;
-        e.date=date;
-        e.chapters=checked
-    } else exams.push( {
-        id:Date.now().toString(),name,date,chapters:checked
+        e.name=name;e.date=date;e.chapters=checked;
+    } else {
+        exams.push({id:Date.now().toString(),name,date,chapters:checked});
     }
-    );
     save(KEY.exams,exams);
     closeExamModal();
     updateDashboard();
     renderExams();
-    toast(editingExam?"✏️ Exam updated":"🎯 Exam plan created")
+    toast(editingExam?"✏️ Exam updated":"🎯 Exam plan created");
 }
-function editExam(id) {
+
+function editExam(id){
     const e=exams.find(x=>x.id===id);
     if(!e)return;
     editingExam=id;
@@ -1186,315 +1133,361 @@ function editExam(id) {
     document.getElementById("inputExamName").value=e.name;
     document.getElementById("inputExamDate").value=e.date;
     populateExamPicker(e.chapters);
-    document.getElementById("examModal").classList.add("show")
+    document.getElementById("examModal").classList.add("show");
 }
-function deleteExam(id) {
-    if(!confirm("Delete this exam plan?"))return;
-    exams=exams.filter(e=>e.id!==id);
+
+function openDeleteExamModal(id){
+    pendingExamDeleteId=id;
+    const e=exams.find(x=>x.id===id);
+    document.getElementById("deleteExamModalMsg").textContent=`Delete exam plan "${e?e.name:''}"? This cannot be undone.`;
+    document.getElementById("deleteExamModal").classList.add("show");
+}
+
+function closeDeleteExamModal(){
+    pendingExamDeleteId=null;
+    document.getElementById("deleteExamModal").classList.remove("show");
+}
+
+function confirmDeleteExam(){
+    if(!pendingExamDeleteId)return;
+    exams=exams.filter(e=>e.id!==pendingExamDeleteId);
     save(KEY.exams,exams);
-    selectedExam=null;
+    if(selectedExam===pendingExamDeleteId)selectedExam=null;
+    closeDeleteExamModal();
     updateDashboard();
     renderExams();
-    toast("🗑️ Exam deleted")
+    toast("🗑️ Exam deleted");
 }
-function toggleExamChapterDone(b,c) {
+
+function toggleExamChapterDone(b,c){
     const k=chKey(b,c);
     if(progress[k]==="complete")delete progress[k];
     else progress[k]="complete";
     save(KEY.progress,progress);
     updateDashboard();
     renderExamDetail();
-    renderSyllabus()
+    renderSyllabus();
 }
-function startPomodoroForExam() {
+
+function startPomodoroForExam(){
     const e=exams.find(x=>x.id===selectedExam);
     if(!e)return;
     const c=e.chapters.find(x=>progress[chKey(x.book,x.chapter)]!=="complete");
-    c?openPomodoroFor(c.book,c.chapter):toast("🎉 All exam chapters are complete!")
+    c?openPomodoroFor(c.book,c.chapter):toast("🎉 All exam chapters are complete!");
 }
-// ============================================================
-// 6. POMODORO TIMER
-// Focus sessions record study time in LocalStorage.
-// ============================================================
-let pomo= {
+
+// Pomodoro Timer with Custom Settings & Accurate Background Delta
+let pomo={
     running:false,mode:"focus",focus:25,break:5,remaining:1500,end:0,book:"Physics 1st Paper",chapter:1,session:1,timer:null
-}
-;
-// Open Pomodoro with a specific book/chapter selected.
-function openPomodoroFor(b,c) {
-    pomo.book=b;
-    pomo.chapter=c;
-    openPomodoro()
-}
-function openPomodoro() {
+};
+
+function openPomodoroFor(b,c){pomo.book=b;pomo.chapter=c;openPomodoro();}
+function openPomodoro(){
     document.getElementById("pomodoroOverlay").classList.add("show");
     populatePomoPickers();
-    updatePomoDisplay()
+    updatePomoDisplay();
 }
-function closePomodoro() {
-    document.getElementById("pomodoroOverlay").classList.remove("show")
-}
-function populatePomoPickers() {
+function closePomodoro(){document.getElementById("pomodoroOverlay").classList.remove("show");}
+
+function populatePomoPickers(){
     const b=document.getElementById("pomoBookSelect");
     b.innerHTML=Object.keys(BOOKS).map(x=>`<option ${x===pomo.book?"selected":""}>${x}</option>`).join("");
-    handlePomoBookChange(pomo.book)
+    handlePomoBookChange(pomo.book);
 }
-function handlePomoBookChange(b) {
+function handlePomoBookChange(b){
     pomo.book=b;
     const s=document.getElementById("pomoChapterSelect");
     s.innerHTML=BOOKS[b].map((n,i)=>`<option value="${i+1}" ${i+1===pomo.chapter?"selected":""}>${i+1}. ${n}</option>`).join("");
-    handlePomoChapterChange(s.value)
+    handlePomoChapterChange(s.value);
 }
-function handlePomoChapterChange(c) {
+function handlePomoChapterChange(c){
     pomo.chapter=Number(c);
-    document.getElementById("pomoCurrentTopic").textContent=`${pomo.book} · ${BOOKS[pomo.book][pomo.chapter-1]}`
+    document.getElementById("pomoCurrentTopic").textContent=`${pomo.book} · ${BOOKS[pomo.book][pomo.chapter-1]}`;
 }
-function updatePomoDisplay() {
+
+function applyCustomPomoTime(){
+    const f=Math.max(1,Math.min(240,Number(document.getElementById("pomoCustomFocus").value)||25));
+    const b=Math.max(1,Math.min(60,Number(document.getElementById("pomoCustomBreak").value)||5));
+    pomo.focus=f;
+    pomo.break=b;
+    if(!pomo.running){
+        pomo.remaining=(pomo.mode==="focus"?pomo.focus:pomo.break)*60;
+    }
+    updatePomoDisplay();
+    toast(`⏱ Custom duration applied: ${f}m focus / ${b}m break`);
+}
+
+function updatePomoDisplay(){
     let m=Math.floor(pomo.remaining/60),s=pomo.remaining%60;
-    document.getElementById("pomoClock").textContent=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+    let timeStr=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+    document.getElementById("pomoClock").textContent=timeStr;
     let total=(pomo.mode==="focus"?pomo.focus:pomo.break)*60;
     document.getElementById("pomoProgressFill").style.width=((total-pomo.remaining)/total*100)+"%";
     document.getElementById("pomoSessionTag").textContent=`🍅 ${pomo.mode==="focus"?"Focus":"Break"} · Session ${pomo.session}`;
-    document.getElementById("pomoStartBtn").textContent=pomo.running?"⏸ Pause":"▶ Start"
+    document.getElementById("pomoStartBtn").textContent=pomo.running?"⏸ Pause":"▶ Start";
+    if(pomo.running){
+        document.title=`(${timeStr}) ${pomo.mode==="focus"?"🍅 Focus":"☕ Break"} • Syllabus Tracker`;
+    } else {
+        document.title="Syllabus Tracker";
+    }
 }
-// Start or pause the countdown.
-function togglePomodoroPlay() {
-    if(pomo.running) {
+
+function togglePomodoroPlay(){
+    if(pomo.running){
         clearInterval(pomo.timer);
-        pomo.running=false
+        pomo.running=false;
     } else {
         pomo.running=true;
         pomo.end=Date.now()+pomo.remaining*1000;
-        pomo.timer=setInterval(pomoTick,500)
+        pomo.timer=setInterval(pomoTick,500);
     }
-    updatePomoDisplay()
-}
-// Timer heartbeat: update clock and record focus time.
-function pomoTick() {
-    pomo.remaining=Math.max(0,Math.ceil((pomo.end-Date.now())/1000));
-    if(pomo.mode==="focus"&&pomo.remaining%1===0)addStudySeconds(pomo.book,pomo.chapter,.5);
     updatePomoDisplay();
-    if(pomo.remaining<=0) {
+}
+
+function pomoTick(){
+    const now=Date.now();
+    pomo.remaining=Math.max(0,Math.ceil((pomo.end-now)/1000));
+    if(pomo.mode==="focus")addStudySeconds(pomo.book,pomo.chapter,0.5);
+    updatePomoDisplay();
+    if(pomo.remaining<=0){
         clearInterval(pomo.timer);
         pomo.running=false;
-        if(pomo.mode==="focus") {
-            pomo.mode="break";
-            pomo.remaining=pomo.break*60;
-            toast("🎉 Focus complete! Take a short break.")
-        } else {
-            pomo.mode="focus";
-            pomo.session++;
-            pomo.remaining=pomo.focus*60;
-            toast("⏰ Break finished! Ready for the next focus.")
-        }
-        updatePomoDisplay()
+        handlePomoFinish();
     }
 }
-function resetPomodoro() {
+
+function handlePomoFinish(){
+    playAlertSound();
+    if(pomo.mode==="focus"){
+        pomo.mode="break";
+        pomo.remaining=pomo.break*60;
+        openPomoAlert("focus-complete");
+    } else {
+        pomo.mode="focus";
+        pomo.session++;
+        pomo.remaining=pomo.focus*60;
+        openPomoAlert("break-complete");
+    }
+    updatePomoDisplay();
+}
+
+function openPomoAlert(type){
+    const modal=document.getElementById("pomoAlertModal");
+    const icon=document.getElementById("pomoAlertIcon");
+    const title=document.getElementById("pomoAlertTitle");
+    const msg=document.getElementById("pomoAlertMsg");
+    const btn=document.getElementById("pomoAlertActionBtn");
+
+    if(type==="focus-complete"){
+        icon.textContent="🍅";
+        title.textContent="Focus Session Complete!";
+        msg.textContent=`Awesome job! You finished studying ${pomo.book} · Chapter ${pomo.chapter}. Ready for a 5-minute break?`;
+        btn.textContent="☕ Start Break Now";
+        btn.onclick=()=>{closePomoAlert();togglePomodoroPlay();};
+    } else {
+        icon.textContent="⏰";
+        title.textContent="Break Finished!";
+        msg.textContent="Your break is complete. Ready to begin your next focus session?";
+        btn.textContent="▶ Start Next Focus Session";
+        btn.onclick=()=>{closePomoAlert();togglePomodoroPlay();};
+    }
+    modal.classList.add("show");
+}
+
+function closePomoAlert(){document.getElementById("pomoAlertModal").classList.remove("show");}
+
+function playAlertSound(){
+    try {
+        const AudioCtx=window.AudioContext||window.webkitAudioContext;
+        if(!AudioCtx)return;
+        const ctx=new AudioCtx();
+        [880, 1318].forEach((freq,i)=>{
+            const osc=ctx.createOscillator(),gain=ctx.createGain();
+            osc.frequency.setValueAtTime(freq,ctx.currentTime+i*0.2);
+            gain.gain.setValueAtTime(0,ctx.currentTime+i*0.2);
+            gain.gain.linearRampToValueAtTime(0.3,ctx.currentTime+i*0.2+0.03);
+            gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+i*0.2+0.8);
+            osc.connect(gain);gain.connect(ctx.destination);
+            osc.start(ctx.currentTime+i*0.2);
+            osc.stop(ctx.currentTime+i*0.2+0.9);
+        });
+    } catch(err){}
+}
+
+function resetPomodoro(){
     clearInterval(pomo.timer);
     pomo.running=false;
     pomo.mode="focus";
     pomo.session=1;
     pomo.remaining=pomo.focus*60;
-    updatePomoDisplay()
+    updatePomoDisplay();
 }
-function skipPomodoro() {
+
+function skipPomodoro(){
     clearInterval(pomo.timer);
     pomo.running=false;
-    if(pomo.mode==="focus") {
+    if(pomo.mode==="focus"){
         pomo.mode="break";
-        pomo.remaining=pomo.break*60
+        pomo.remaining=pomo.break*60;
     } else {
         pomo.mode="focus";
         pomo.session++;
-        pomo.remaining=pomo.focus*60
+        pomo.remaining=pomo.focus*60;
     }
-    updatePomoDisplay()
+    updatePomoDisplay();
 }
-// Add focus time to today's history by book and chapter.
-function addStudySeconds(b,c,sec) {
+
+function addStudySeconds(b,c,sec){
     const d=today();
-    history[d]??= {
-        totalSeconds:0,sessions:0,byBook: {
-        }
-        ,byChapter: {
-        }
-    }
-    ;
+    history[d]??={totalSeconds:0,sessions:0,byBook:{},byChapter:{}};
     history[d].totalSeconds+=sec;
     history[d].byBook[b]=(history[d].byBook[b]||0)+sec;
     history[d].byChapter[chKey(b,c)]=(history[d].byChapter[chKey(b,c)]||0)+sec;
     save(KEY.history,history);
-    updateDashboard()
+    updateDashboard();
 }
-// ============================================================
-// 7. STUDY HISTORY
-// Graph and recent/book-wise study-time summaries.
-// ============================================================
-function setGraphPeriod(p) {
+
+// Background sync on tab focus
+document.addEventListener("visibilitychange",()=>{
+    if(pomo.running&&document.visibilityState==="visible"){
+        pomoTick();
+    }
+});
+
+// Study History
+function setGraphPeriod(p){
     graphPeriod=p;
     document.querySelectorAll("#btnGraphDaily,#btnGraphWeekly,#btnGraphMonthly").forEach(x=>x.classList.remove("active"));
     document.getElementById("btnGraph"+p[0].toUpperCase()+p.slice(1)).classList.add("active");
-    drawGraph()
+    drawGraph();
 }
-function groupedHistory() {
-    const out= {
-    }
-    ;
-    Object.entries(history).forEach(([d,v])=> {
+
+function groupedHistory(){
+    const out={};
+    Object.entries(history).forEach(([d,v])=>{
         let key=d;
-        if(graphPeriod==="weekly") {
+        if(graphPeriod==="weekly"){
             let x=new Date(d);
             x.setDate(x.getDate()-x.getDay());
-            key=x.toISOString().slice(0,10)
+            key=x.toISOString().slice(0,10);
         }
         if(graphPeriod==="monthly")key=d.slice(0,7);
-        out[key]=(out[key]||0)+(v.totalSeconds||0)
-    }
-    );
-    return Object.entries(out).sort((a,b)=>a[0].localeCompare(b[0])).slice(-14)
+        out[key]=(out[key]||0)+(v.totalSeconds||0);
+    });
+    return Object.entries(out).sort((a,b)=>a[0].localeCompare(b[0])).slice(-14);
 }
-// Draw the history graph on the canvas.
-function drawGraph() {
+
+function drawGraph(){
     const c=document.getElementById("historyCanvas"),ctx=c.getContext("2d"),r=c.getBoundingClientRect(),dpr=devicePixelRatio||1;
-    c.width=r.width*dpr;
-    c.height=r.height*dpr;
+    c.width=r.width*dpr;c.height=r.height*dpr;
     ctx.scale(dpr,dpr);
     const w=r.width,h=r.height;
     ctx.clearRect(0,0,w,h);
     const data=groupedHistory();
-    if(!data.length) {
+    if(!data.length){
         ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--muted");
         ctx.font="12px sans-serif";
         ctx.textAlign="center";
         ctx.fillText("No focus sessions yet. Start Pomodoro to build your graph.",w/2,h/2);
-        return
+        return;
     }
-    const max=Math.max(...data.map(x=>x[1]),1800),pad= {
-        l:42,r:18,t:18,b:32
-    }
-    ,pw=w-pad.l-pad.r,ph=h-pad.t-pad.b;
+    const max=Math.max(...data.map(x=>x[1]),1800),pad={l:42,r:18,t:18,b:32},pw=w-pad.l-pad.r,ph=h-pad.t-pad.b;
     ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue("--border");
-    for(let i=0;
-    i<=4;
-    i++) {
+    for(let i=0;i<=4;i++){
         let y=pad.t+ph*i/4;
-        ctx.beginPath();
-        ctx.moveTo(pad.l,y);
-        ctx.lineTo(w-pad.r,y);
-        ctx.stroke()
+        ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();
     }
     ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue("--primary");
     ctx.lineWidth=3;
     ctx.beginPath();
-    data.forEach(([k,v],i)=> {
+    data.forEach(([k,v],i)=>{
         let x=pad.l+(data.length===1?pw/2:i*pw/(data.length-1)),y=pad.t+ph-(v/max)*ph;
-        i?ctx.lineTo(x,y):ctx.moveTo(x,y)
-    }
-    );
+        i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+    });
     ctx.stroke();
     ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--primary");
-    data.forEach(([k,v],i)=> {
+    data.forEach(([k,v],i)=>{
         let x=pad.l+(data.length===1?pw/2:i*pw/(data.length-1)),y=pad.t+ph-(v/max)*ph;
-        ctx.beginPath();
-        ctx.arc(x,y,4,0,Math.PI*2);
-        ctx.fill();
-        ctx.font="9px sans-serif";
-        ctx.textAlign="center";
-        ctx.fillText(k.slice(5),x,h-10)
-    }
-    )
+        ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();
+        ctx.font="9px sans-serif";ctx.textAlign="center";
+        ctx.fillText(k.slice(5),x,h-10);
+    });
 }
-// Render recent history and book-wise totals.
-function renderHistory() {
+
+function renderHistory(){
     document.getElementById("dailyGoalInput").value=goal;
     drawGraph();
     const recent=[];
-    for(let i=0;
-    i<7;
-    i++) {
-        let d=new Date();
-        d.setDate(d.getDate()-i);
+    for(let i=0;i<7;i++){
+        let d=new Date();d.setDate(d.getDate()-i);
         let k=d.toISOString().slice(0,10);
-        recent.push(`<div class="listrow"><span>${i===0?"Today":i===1?"Yesterday":k}</span><strong>${fmt(history[k]?.totalSeconds||0)}</strong></div>`)
+        recent.push(`<div class="listrow"><span>${i===0?"Today":i===1?"Yesterday":k}</span><strong>${fmt(history[k]?.totalSeconds||0)}</strong></div>`);
     }
     document.getElementById("weeklyHistoryList").innerHTML=recent.join("");
-    const totals= {
-    }
-    ;
-    Object.values(history).forEach(v=>Object.entries(v.byBook|| {
-    }
-    ).forEach(([b,s])=>totals[b]=(totals[b]||0)+s));
-    document.getElementById("bookStudyList").innerHTML=Object.keys(BOOKS).map(b=>`<div class="listrow"><span>${b}</span><strong>${fmt(totals[b]||0)}</strong></div>`).join("")
+    const totals={};
+    Object.values(history).forEach(v=>Object.entries(v.byBook||{}).forEach(([b,s])=>totals[b]=(totals[b]||0)+s));
+    document.getElementById("bookStudyList").innerHTML=Object.keys(BOOKS).map(b=>`<div class="listrow"><span>${b}</span><strong>${fmt(totals[b]||0)}</strong></div>`).join("");
 }
-function saveDailyGoal() {
+
+function saveDailyGoal(){
     goal=Number(document.getElementById("dailyGoalInput").value)||120;
     localStorage.setItem(KEY.goal,goal);
     updateDashboard();
-    toast("🎯 Daily target updated")
+    toast("🎯 Daily target updated");
 }
-function clearStudyHistory() {
-    if(!confirm("Clear all study history?"))return;
-    history= {
-    }
-    ;
+
+function resetDailyGoalDefault(){
+    goal=120;
+    document.getElementById("dailyGoalInput").value=120;
+    localStorage.setItem(KEY.goal,goal);
+    updateDashboard();
+    toast("↺ Daily target reset to 120m");
+}
+
+function openClearHistoryModal(){document.getElementById("clearHistoryModal").classList.add("show");}
+function closeClearHistoryModal(){document.getElementById("clearHistoryModal").classList.remove("show");}
+function confirmClearStudyHistory(){
+    history={};
     save(KEY.history,history);
+    closeClearHistoryModal();
     updateDashboard();
     renderHistory();
-    toast("🧹 Study history cleared")
+    toast("🧹 Study history cleared");
 }
-// ============================================================
-// 8. INSIGHTS + ACHIEVEMENTS
-// Builds the smart study queue and milestone badges.
-// ============================================================
-function renderInsights() {
+
+// Insights
+function renderInsights(){
     const q=[];
-    for(const b of Object.keys(BOOKS))for(let c=1;
-    c<=BOOKS[b].length;
-    c++)if(progress[chKey(b,c)]==="in-progress"&&q.length<6)q.push( {
-        book:b,chapter:c,tag:"In Progress"
-    }
-    );
-    if(q.length<6)for(const b of Object.keys(BOOKS))for(let c=1;
-    c<=BOOKS[b].length;
-    c++)if(!progress[chKey(b,c)]&&q.length<6)q.push( {
-        book:b,chapter:c,tag:"Up Next"
-    }
-    );
+    for(const b of Object.keys(BOOKS))for(let c=1;c<=BOOKS[b].length;c++)if(progress[chKey(b,c)]==="in-progress"&&q.length<6)q.push({book:b,chapter:c,tag:"In Progress"});
+    if(q.length<6)for(const b of Object.keys(BOOKS))for(let c=1;c<=BOOKS[b].length;c++)if(!progress[chKey(b,c)]&&q.length<6)q.push({book:b,chapter:c,tag:"Up Next"});
     document.getElementById("smartQueueList").innerHTML=q.map(x=>`<div class="queue"><div class="tag">${x.tag}</div><h4>${BOOKS[x.book][x.chapter-1]}</h4><p>${x.book} · Ch ${x.chapter}</p><button class="mini" style="margin-top:7px" onclick='openPomodoroFor(${JSON.stringify(x.book)},${x.chapter})'>🍅 Study</button></div>`).join("")||`<div class="queue">🎉 Everything is complete!</div>`;
     let done=Object.values(progress).filter(x=>x==="complete").length;
     const badges=[["🌱","First Step","Complete 1 chapter",done>=1],["📚","Bookworm","Complete 10 chapters",done>=10],["🚀","Halfway","Complete 38 chapters",done>=38],["🏆","Master","Complete 75 chapters",done>=75]];
-    document.getElementById("badgeGrid").innerHTML=badges.map(b=>`<div class="badge ${b[3]?"":"locked"}"><div class="icon">${b[0]}</div><b>${b[1]}</b><p>${b[2]}</p></div>`).join("")
+    document.getElementById("badgeGrid").innerHTML=badges.map(b=>`<div class="badge ${b[3]?"":"locked"}"><div class="icon">${b[0]}</div><b>${b[1]}</b><p>${b[2]}</p></div>`).join("");
 }
-// ============================================================
-// 9. RESET + UTILITY FUNCTIONS
-// Reset affects syllabus progress only; history/exams remain safe.
-// ============================================================
-function openResetModal() {
-    document.getElementById("resetModal").classList.add("show")
-}
-function closeResetModal() {
-    document.getElementById("resetModal").classList.remove("show")
-}
-function confirmResetProgress() {
-    progress= {
-    }
-    ;
-    last=null;
+
+function openResetModal(){document.getElementById("resetModal").classList.add("show");}
+function closeResetModal(){document.getElementById("resetModal").classList.remove("show");}
+function confirmResetProgress(){
+    progress={};last=null;
     save(KEY.progress,progress);
     localStorage.removeItem(KEY.last);
     closeResetModal();
     updateDashboard();
     renderSyllabus();
-    toast("✅ Syllabus progress reset")
+    toast("✅ Syllabus progress reset");
 }
-function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-// ============================================================
-// 10. APP STARTUP
-// Load saved settings/data and render the initial screen.
-// ============================================================
-function init(){const sel=document.getElementById("bookSelectFilter");sel.innerHTML=`<option value="all">📚 All Subjects</option>`+Object.keys(BOOKS).map(b=>`<option>${b}</option>`).join("");applyTheme((localStorage.getItem(KEY.theme)||"light")==="dark");updateDashboard();renderSyllabus();window.addEventListener("resize",()=>{if(currentTab==="history")drawGraph()})}
-// Start the app after the HTML has loaded.
+
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+
+function init(){
+    const sel=document.getElementById("bookSelectFilter");
+    sel.innerHTML=`<option value="all">📚 All Subjects</option>`+Object.keys(BOOKS).map(b=>`<option>${b}</option>`).join("");
+    applyTheme((localStorage.getItem(KEY.theme)||"light")==="dark");
+    updateDashboard();
+    renderSyllabus();
+    window.addEventListener("resize",()=>{if(currentTab==="history")drawGraph();});
+}
 document.addEventListener("DOMContentLoaded",init);
 </script>
 </body>
