@@ -800,13 +800,59 @@ footer {
         font-size:16px;
     }
 }
+    .pomo-floating {
+    position:fixed;
+    right:18px;
+    bottom:18px;
+    z-index:850;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:10px 16px;
+    border-radius:999px;
+    background:var(--card);
+    border:1px solid var(--border);
+    box-shadow:0 10px 30px rgba(0,0,0,.22);
+    color:var(--text);
+    font-size:13px;
+    font-weight:900;
+    cursor:pointer;
+    user-select:none;
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+}
+
+.pomo-floating.show {
+    display:flex;
+}
+
+.pomo-floating.running {
+    border-color:var(--warning);
+}
+
+.pomo-floating.break {
+    border-color:var(--primary);
+}
+
+.pomo-floating.paused {
+    opacity:.85;
+}
+
+@media(max-width:600px) {
+    .pomo-floating {
+        right:12px;
+        bottom:12px;
+        padding:9px 13px;
+        font-size:12px;
+    }
+}
 </style>
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner">
   <div class="brand" onclick="switchTab('syllabus')"><div class="brand-icon">📚</div><h1>Syllabus Tracker</h1></div>
   <div class="header-actions">
-    <button class="btn danger" onclick="openPomodoro()">🍅 Pomodoro</button>
+    <button id="pomoHeaderBtn" class="btn danger" onclick="openPomodoro()">🍅 Pomodoro</button>
     <button id="themeBtn" class="btn" onclick="toggleTheme()">🌙 Dark</button>
   </div>
 </div></header>
@@ -872,7 +918,10 @@ footer {
   <div class="card section"><h2>🏆 Milestones & Achievements</h2><p>Unlock badges as you complete chapters.</p><div id="badgeGrid" class="insights-grid"></div></div>
 </section>
 </main>
-
+<div id="pomoFloatingTimer"
+     class="pomo-floating"
+     onclick="openPomodoro()">
+</div>
 <!-- Pomodoro Overlay with Custom Time Setter and Enable Alert -->
 <div id="pomodoroOverlay" class="pomo"><div class="card pomo-box">
   <div class="row" style="align-items:center">
@@ -1474,6 +1523,8 @@ function applyCustomPomoTime(){
 }
 
 function updatePomoDisplay(){
+    ...
+}
     let m=Math.floor(pomo.remaining/60),s=pomo.remaining%60;
     let timeStr=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
     document.getElementById("pomoClock").textContent=timeStr;
