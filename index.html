@@ -1599,32 +1599,37 @@ function restorePomoState(){
     try{
         const st=JSON.parse(localStorage.getItem("syllabusPomoState")||"null");
         if(!st)return;
+
         if(BOOKS[st.book])pomo.book=st.book;
         if(BOOKS[pomo.book]?.[Number(st.chapter)-1])pomo.chapter=Number(st.chapter);
         if(Number.isFinite(st.focus))pomo.focus=Math.max(1,Math.min(240,Number(st.focus)));
         if(Number.isFinite(st.break))pomo.break=Math.max(1,Math.min(60,Number(st.break)));
         if(Number.isFinite(st.session))pomo.session=Math.max(1,Number(st.session));
+
         pomo.mode=st.mode==="break"?"break":"focus";
         pomo.remaining=Math.max(0,Number(st.remaining)||0);
         pomo.end=Number(st.end)||0;
-if(st.running && pomo.end>0){
-    const now=Date.now();
-    pomo.remaining=Math.max(0,Math.ceil((pomo.end-now)/1000));
 
-    if(pomo.remaining>0){
-        pomo.running=true;
-        lastTick=now;
-        pomo.timer=setInterval(pomoTick,500);
-    }else{
-        pomo.running=false;
-        pomo.timer=null;
-        handlePomoFinish();
-    }
+        if(st.running && pomo.end>0){
+            const now=Date.now();
+            pomo.remaining=Math.max(0,Math.ceil((pomo.end-now)/1000));
 
-}else{
-    pomo.running=false;
-    pomo.timer=null;
-}
+            if(pomo.remaining>0){
+                pomo.running=true;
+                lastTick=now;
+                pomo.timer=setInterval(pomoTick,500);
+
+                document.getElementById("pomoBookSelect").disabled=true;
+                document.getElementById("pomoChapterSelect").disabled=true;
+            }else{
+                pomo.running=false;
+                pomo.timer=null;
+                handlePomoFinish();
+            }
+        }else{
+            pomo.running=false;
+            pomo.timer=null;
+        }
     }catch(e){}
 }
 
