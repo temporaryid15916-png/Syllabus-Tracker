@@ -717,33 +717,63 @@ footer {
     }
 }
 @media(max-width:560px) {
+    .container {
+        padding:8px 10px 24px !important;
+    }
     .grid4,.quick {
         grid-template-columns:repeat(2,1fr) !important;
-        gap:8px !important;
+        gap:6px !important;
+        margin:0 0 6px 0 !important;
     }
     .stat {
-        padding:10px 11px !important;
+        padding:7px 9px !important;
+        border-radius:11px !important;
     }
     .stat .value {
-        font-size:20px !important;
+        font-size:18px !important;
+        margin-top:1px !important;
     }
     .stat .label {
-        font-size:11px !important;
-    }
-    .stat .sub {
         font-size:10px !important;
     }
+    .stat .sub {
+        font-size:9px !important;
+        margin-top:1px !important;
+    }
+    .quick {
+        margin:0 0 8px 0 !important;
+    }
     .quick .card {
-        padding:9px 10px !important;
-        gap:8px !important;
+        padding:6px 8px !important;
+        gap:6px !important;
+        border-radius:11px !important;
     }
     .quick .qicon {
-        width:28px !important;
-        height:28px !important;
-        font-size:14px !important;
+        width:24px !important;
+        height:24px !important;
+        font-size:12px !important;
+        border-radius:6px !important;
+    }
+    .quick .label {
+        font-size:9.5px !important;
     }
     .quick .qval {
-        font-size:14px !important;
+        font-size:12px !important;
+    }
+    #continueCard {
+        display:none !important;
+    }
+    .tabs {
+        margin-bottom:8px !important;
+        padding:3px !important;
+    }
+    .tab {
+        padding:6px 9px !important;
+        font-size:11px !important;
+    }
+    .toolbar {
+        padding:8px !important;
+        margin-bottom:8px !important;
     }
     .subject-progress {
         display:none;
@@ -778,7 +808,7 @@ footer {
 </div></header>
 
 <main class="container">
-<!-- Dashboard summary cards: 2 per line on mobile, 0.00% precision -->
+<!-- Line 1 & Line 2: 2 cards per line on mobile -->
 <section class="grid4">
   <div class="stat"><div class="label">Total Chapters</div><div id="statTotal" class="value">75</div><div class="sub">8 subjects</div></div>
   <div class="stat"><div class="label">Completed</div><div id="statCompleted" class="value" style="color:var(--success)">0</div><div class="sub">Finished chapters</div></div>
@@ -786,16 +816,10 @@ footer {
   <div class="stat"><div class="label">Overall Progress</div><div id="statPercent" class="value" style="color:var(--primary)">0.00%</div><div class="sub">Syllabus completion</div></div>
 </section>
 
-<!-- Line 3: Minimal Overall Progress Bar without bulky heading text -->
-<section class="card overall" style="padding:10px 14px;margin:8px 0">
-  <div class="row" style="font-size:11px;font-weight:800;margin-bottom:5px">
-    <span id="overallCountSub" style="color:var(--muted)">0 / 75 chapters</span>
-    <strong id="overallPercentText" style="color:var(--primary);font-size:13px">0.00%</strong>
-  </div>
-  <div class="progress" style="height:8px"><div id="overallFill" class="fill"></div></div>
-</section>
+<!-- Line 3: Minimal Pure Progress Bar (NO text, NO card wrapper) -->
+<div class="progress" style="height:8px;margin:6px 0 10px;background:var(--soft)"><div id="overallFill" class="fill"></div></div>
 
-<!-- Line 4 & 5: Quick focus & streak cards (2 per line on mobile) -->
+<!-- Line 4 & Line 5: Quick focus & streak cards (2 cards per line on mobile) -->
 <section class="quick">
   <div class="card"><div class="qicon">🍅</div><div><div class="label">Today's Focus</div><div id="quickTodayStudy" class="qval">0m</div></div></div>
   <div class="card"><div class="qicon">🔥</div><div><div class="label">Study Streak</div><div id="quickStreak" class="qval">0 days</div></div></div>
@@ -835,7 +859,7 @@ footer {
 <section id="historyPanel" class="panel">
   <div class="card section"><div class="row" style="margin-bottom:10px"><div><h2>📊 Study Time Graph</h2><p>Focus time grouped by day, week, or month.</p></div><div><button id="btnGraphDaily" class="filter active" onclick="setGraphPeriod('daily')">Daily</button><button id="btnGraphWeekly" class="filter" onclick="setGraphPeriod('weekly')">Weekly</button><button id="btnGraphMonthly" class="filter" onclick="setGraphPeriod('monthly')">Monthly</button></div></div><div class="canvaswrap"><canvas id="historyCanvas" width="1000" height="250"></canvas></div></div>
   <div class="history-grid"><div class="card section"><h2>📅 Recent History</h2><div id="weeklyHistoryList" class="list"></div></div><div class="card section"><h2>📚 Book-wise Study Time</h2><div id="bookStudyList" class="list"></div></div></div>
-  <div class="card section"><div class="row" style="flex-wrap:wrap;gap:8px"><div><b style="font-size:12px">🎯 Daily Target</b><span class="sub"> minutes/day</span></div><div style="display:flex;gap:6px;align-items:center"><input id="dailyGoalInput" class="input" style="width:80px" type="number" min="10" max="1440"><button class="filter" onclick="saveDailyGoal()">Save</button><button class="filter" onclick="resetDailyGoalDefault()">Reset</button><button class="filter" style="color:var(--danger)" onclick="openClearHistoryModal()">Clear History</button></div></div></div>
+  <div class="card section"><div class="row" style="flex-wrap:wrap;gap:8px"><div><b style="font-size:12px">🎯 Daily Target</b><span class="sub"> minutes/day</span></div><div style="display:flex;gap:6px;align-items:center"><input id="dailyGoalInput" class="input" style="width:80px" type="number" min="10" max="1440"><button class="filter" onclick="saveDailyGoal()">Save</button><button class="filter" onclick="openResetDailyGoalModal()">Reset</button><button class="filter" style="color:var(--danger)" onclick="openClearHistoryModal()">Clear History</button></div></div></div>
 </section>
 
 <!-- Insights Tab -->
@@ -901,6 +925,12 @@ footer {
 
 <!-- In-App Clear History Confirmation Modal -->
 <div id="clearHistoryModal" class="modal"><div class="card modalbox" style="text-align:center;max-width:420px"><div style="font-size:33px">⚠️</div><h3>Clear Study History?</h3><p class="sub" style="margin:8px 0 14px">Are you sure you want to clear all logged study focus sessions? Your syllabus progress and exam plans remain safe.</p><div class="modal-actions" style="justify-content:center"><button class="btn" onclick="closeClearHistoryModal()">Cancel</button><button class="btn danger" onclick="confirmClearStudyHistory()">Yes, Clear</button></div></div></div>
+
+<!-- In-App Reset Daily Target Confirmation Modal -->
+<div id="resetDailyGoalModal" class="modal"><div class="card modalbox" style="text-align:center;max-width:400px"><div style="font-size:33px">🎯</div><h3>Reset Daily Study Target?</h3><p class="sub" style="margin:8px 0 14px">Reset your daily study goal back to the default 120 minutes (2 hours)?</p><div class="modal-actions" style="justify-content:center"><button class="btn" onclick="closeResetDailyGoalModal()">Cancel</button><button class="btn primary" onclick="confirmResetDailyGoal()">Yes, Reset</button></div></div></div>
+
+<!-- In-App Alert Enabled Confirmation Modal -->
+<div id="alertEnabledModal" class="modal"><div class="card modalbox" style="text-align:center;max-width:410px"><div style="font-size:38px">🔔</div><h3 id="alertEnabledTitle" style="margin-top:6px">Pomodoro Alert Enabled</h3><p id="alertEnabledDesc" class="sub" style="margin:8px 0 16px"></p><div class="modal-actions" style="justify-content:center"><button class="btn primary" onclick="closeAlertEnabledModal()">Got it</button></div></div></div>
 
 <!-- In-App Delete Exam Confirmation Modal -->
 <div id="deleteExamModal" class="modal"><div class="card modalbox" style="text-align:center;max-width:420px"><div style="font-size:33px">⚠️</div><h3>Delete Exam Plan?</h3><p id="deleteExamModalMsg" class="sub" style="margin:8px 0 14px">Are you sure you want to delete this exam plan?</p><div class="modal-actions" style="justify-content:center"><button class="btn" onclick="closeDeleteExamModal()">Cancel</button><button class="btn danger" onclick="confirmDeleteExam()">Yes, Delete</button></div></div></div>
@@ -1231,9 +1261,39 @@ function startPomodoroForExam(){
 let pomo={
     running:false,mode:"focus",focus:25,break:5,remaining:1500,end:0,book:"Physics 1st Paper",chapter:1,session:1,timer:null
 };
+let lastTick=Date.now();
+
+// Global AudioContext with mobile gesture unlock
+let audioCtx=null;
+function getAudioContext(){
+    try {
+        if(!audioCtx){
+            const AC=window.AudioContext||window.webkitAudioContext;
+            if(AC)audioCtx=new AC();
+        }
+        if(audioCtx&&audioCtx.state==='suspended'){
+            audioCtx.resume();
+        }
+    }catch(e){}
+    return audioCtx;
+}
+
+// Inline Service Worker for mobile notifications on Android Chrome
+let swReg=null;
+if('serviceWorker' in navigator){
+    try {
+        const swBlob=new Blob([
+            "self.addEventListener('notificationclick',function(e){e.notification.close();e.waitUntil(clients.matchAll({type:'window'}).then(function(cl){for(var i=0;i<cl.length;i++){if(cl[i].url&&'focus' in cl[i])return cl[i].focus();}if(clients.openWindow)return clients.openWindow('/');}));});"
+        ],{type:'application/javascript'});
+        navigator.serviceWorker.register(URL.createObjectURL(swBlob))
+            .then(reg=>{swReg=reg;})
+            .catch(()=>{});
+    }catch(e){}
+}
 
 function openPomodoroFor(b,c){pomo.book=b;pomo.chapter=c;openPomodoro();}
 function openPomodoro(){
+    getAudioContext();
     document.getElementById("pomodoroOverlay").classList.add("show");
     populatePomoPickers();
     updatePomoDisplay();
@@ -1246,9 +1306,9 @@ function updateAlertUI(){
     const testBtn=document.getElementById("pomoTestAlertBtn");
     const bannerText=document.getElementById("pomoAlertBannerText");
     if(!("Notification" in window)){
-        if(btn)btn.textContent="🔔 In-App Alert";
+        if(btn)btn.textContent="🔔 In-App Alert Active";
         if(testBtn)testBtn.textContent="Test Sound";
-        if(bannerText)bannerText.textContent="Audio chime & in-app alert active.";
+        if(bannerText)bannerText.textContent="Loud audio chime & visual alert will ring when session finishes.";
         return;
     }
     if(Notification.permission==="granted"){
@@ -1274,55 +1334,109 @@ function updateAlertUI(){
             testBtn.textContent="Enable Alert";
             testBtn.className="btn primary";
         }
-        if(bannerText)bannerText.textContent="Click to enable system notifications for alerts in the background.";
+        if(bannerText)bannerText.textContent="Click to enable device alerts and audio notifications in the background.";
     }
 }
 
+function openAlertEnabledModal(title,msg){
+    document.getElementById("alertEnabledTitle").textContent=title;
+    document.getElementById("alertEnabledDesc").textContent=msg;
+    document.getElementById("alertEnabledModal").classList.add("show");
+}
+function closeAlertEnabledModal(){
+    document.getElementById("alertEnabledModal").classList.remove("show");
+}
+
 async function togglePomodoroAlert(){
-    if(!("Notification" in window)){
-        playAlertSound();
-        toast("🔔 Alert sound chime tested! (System notifications not supported in this frame/browser)");
-        return;
+    getAudioContext();
+    playAlertSound();
+    if(navigator.vibrate){
+        try{navigator.vibrate([200,100,200]);}catch(e){}
     }
-    if(Notification.permission==="granted"){
-        playAlertSound();
-        sendSysNotification("🔔 Pomodoro Alert Test","Your alerts will notify you in background!");
-        toast("🔔 Test alert chime and notification sent!");
+
+    if(!("Notification" in window)){
+        toast("🔔 Alert Enabled! (Audio chime & popup active)");
+        openAlertEnabledModal("In-App Audio Alert Active","When your Pomodoro session finishes, the alarm bell will ring and the completion dialog will pop up on your screen.");
         updateAlertUI();
         return;
     }
+
+    if(Notification.permission==="granted"){
+        sendSysNotification("🔔 Pomodoro Alert Active","Your alerts will notify you in background!");
+        toast("🔔 Alert is already active! Test chime played.");
+        openAlertEnabledModal("Background Alert Active","System notifications and audio chime are enabled. You will be alerted even if you switch apps or lock your phone.");
+        updateAlertUI();
+        return;
+    }
+
     try {
         const perm=await Notification.requestPermission();
         if(perm==="granted"){
-            playAlertSound();
             sendSysNotification("🔔 Syllabus Tracker Alert Enabled","Pomodoro alerts will now notify you even in background!");
-            toast("🔔 Alert enabled! Test notification sent.");
+            toast("🔔 Device alert enabled! Test notification sent.");
+            openAlertEnabledModal("Device Notifications Enabled","You will now receive alerts in your notification shade and hear a bell when your session ends.");
         } else {
-            toast("⚠️ Notification permission: "+perm);
+            toast("🔔 Audio & In-App Alert Active (Browser notification: "+perm+")");
+            openAlertEnabledModal("Audio & In-App Alert Active","Audio alarm and completion popup will ring when your timer finishes.");
         }
-    } catch(e){
+    }catch(e){
         try {
             Notification.requestPermission((p)=>{
                 if(p==="granted"){
-                    playAlertSound();
                     sendSysNotification("🔔 Syllabus Tracker Alert Enabled","Pomodoro alerts will now notify you even in background!");
-                    toast("🔔 Alert enabled! Test notification sent.");
+                    toast("🔔 Device alert enabled! Test notification sent.");
                 }
                 updateAlertUI();
             });
-        } catch(err){}
+        }catch(err){}
     }
     updateAlertUI();
 }
 
 function sendSysNotification(title,body){
-    if("Notification" in window && Notification.permission==="granted"){
-        try {
-            new Notification(title,{
-                body,
-                icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🍅</text></svg>'
+    if(!("Notification" in window)||Notification.permission!=="granted")return;
+    if(swReg&&swReg.showNotification){
+        swReg.showNotification(title,{
+            body:body,
+            icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🍅</text></svg>',
+            vibrate:[300,150,300]
+        }).catch(()=>tryDirectNotif(title,body));
+        return;
+    }
+    tryDirectNotif(title,body);
+}
+
+function tryDirectNotif(title,body){
+    try {
+        new Notification(title,{
+            body:body,
+            icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🍅</text></svg>'
+        });
+    }catch(e){}
+}
+
+function playAlertSound(){
+    try {
+        const ctx=getAudioContext();
+        if(ctx){
+            const now=ctx.currentTime;
+            [523.25, 659.25, 783.99, 1046.5].forEach((freq,i)=>{
+                const osc=ctx.createOscillator();
+                const gain=ctx.createGain();
+                osc.type="sine";
+                osc.frequency.setValueAtTime(freq,now+i*0.15);
+                gain.gain.setValueAtTime(0,now+i*0.15);
+                gain.gain.linearRampToValueAtTime(0.4,now+i*0.15+0.03);
+                gain.gain.exponentialRampToValueAtTime(0.001,now+i*0.15+0.8);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now+i*0.15);
+                osc.stop(now+i*0.15+0.85);
             });
-        } catch(err){}
+        }
+    }catch(e){}
+    if(navigator.vibrate){
+        try{navigator.vibrate([400,200,400]);}catch(e){}
     }
 }
 
@@ -1370,11 +1484,13 @@ function updatePomoDisplay(){
 }
 
 function togglePomodoroPlay(){
+    getAudioContext();
     if(pomo.running){
         clearInterval(pomo.timer);
         pomo.running=false;
     } else {
         pomo.running=true;
+        lastTick=Date.now();
         pomo.end=Date.now()+pomo.remaining*1000;
         pomo.timer=setInterval(pomoTick,500);
     }
@@ -1383,8 +1499,10 @@ function togglePomodoroPlay(){
 
 function pomoTick(){
     const now=Date.now();
+    const elapsedSeconds=Math.max(0,Math.min(60,(now-lastTick)/1000));
+    lastTick=now;
     pomo.remaining=Math.max(0,Math.ceil((pomo.end-now)/1000));
-    if(pomo.mode==="focus")addStudySeconds(pomo.book,pomo.chapter,0.5);
+    if(pomo.mode==="focus"&&elapsedSeconds>0)addStudySeconds(pomo.book,pomo.chapter,elapsedSeconds);
     updatePomoDisplay();
     if(pomo.remaining<=0){
         clearInterval(pomo.timer);
@@ -1435,24 +1553,6 @@ function openPomoAlert(type){
 }
 
 function closePomoAlert(){document.getElementById("pomoAlertModal").classList.remove("show");}
-
-function playAlertSound(){
-    try {
-        const AudioCtx=window.AudioContext||window.webkitAudioContext;
-        if(!AudioCtx)return;
-        const ctx=new AudioCtx();
-        [880, 1318].forEach((freq,i)=>{
-            const osc=ctx.createOscillator(),gain=ctx.createGain();
-            osc.frequency.setValueAtTime(freq,ctx.currentTime+i*0.2);
-            gain.gain.setValueAtTime(0,ctx.currentTime+i*0.2);
-            gain.gain.linearRampToValueAtTime(0.3,ctx.currentTime+i*0.2+0.03);
-            gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+i*0.2+0.8);
-            osc.connect(gain);gain.connect(ctx.destination);
-            osc.start(ctx.currentTime+i*0.2);
-            osc.stop(ctx.currentTime+i*0.2+0.9);
-        });
-    } catch(err){}
-}
 
 function resetPomodoro(){
     clearInterval(pomo.timer);
@@ -1576,10 +1676,17 @@ function saveDailyGoal(){
     toast("🎯 Daily target updated");
 }
 
-function resetDailyGoalDefault(){
+function openResetDailyGoalModal(){
+    document.getElementById("resetDailyGoalModal").classList.add("show");
+}
+function closeResetDailyGoalModal(){
+    document.getElementById("resetDailyGoalModal").classList.remove("show");
+}
+function confirmResetDailyGoal(){
     goal=120;
     document.getElementById("dailyGoalInput").value=120;
     localStorage.setItem(KEY.goal,goal);
+    closeResetDailyGoalModal();
     updateDashboard();
     toast("↺ Daily target reset to 120m");
 }
