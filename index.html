@@ -1630,17 +1630,23 @@ if(st.running && pomo.end>0){
 
 function togglePomodoroPlay(){
     getAudioContext();
+
     if(pomo.running){
         clearInterval(pomo.timer);
+        pomo.timer=null;
         pomo.running=false;
+        pomo.end=0;
         clearBackgroundPomodoroNotification();
-    } else {
+
+    }else{
         pomo.running=true;
         lastTick=Date.now();
         pomo.end=Date.now()+pomo.remaining*1000;
         pomo.timer=setInterval(pomoTick,500);
         updateBackgroundPomodoroNotification(true);
     }
+
+    savePomoState();
     updatePomoDisplay();
 }
 
