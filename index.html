@@ -1,2565 +1,1501 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="bn">
 <head>
-<!-- =========================================================================
-     ১. মেটা ট্যাগ এবং বাংলা ফন্ট লিংক
-     ========================================================================= -->
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
 <meta name="theme-color" content="#0f172a">
-<title>Syllabus Tracker - HSC Science</title>
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" type="image/svg+xml" href="./icon.svg">
-<link rel="apple-touch-icon" href="./icon-192.png">
-
-<!-- গুগল ফন্ট: বাংলা লেখার জন্য Hind Siliguri এবং আধুনিক লুকের জন্য Plus Jakarta Sans -->
+<title>Syllabus Tracker — HSC Science</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
 <style>
-/* =========================================================================
-   ২. সিএসএস ভ্যারিয়েবল (লাইট মোড এবং ডার্ক মোড থিম)
-   ========================================================================= */
+
+/* ============================================================
+   GLOBAL DESIGN SYSTEM
+   Colors, spacing, borders and reusable visual variables.
+   Change these variables to customize the whole app theme.
+   ============================================================ */
 :root {
-  /* লাইট মোডের কালার প্যালেট */
-  --bg: #f8fafc;
-  --card: #ffffff;
-  --soft: #f1f5f9;
-  --text: #0f172a;
-  --muted: #64748b;
-  --border: #e2e8f0;
-
-  --primary: #2563eb;
-  --primary-soft: #eff6ff;
-
-  --success: #16a34a;
-  --success-soft: #ecfdf3;
-
-  --warning: #f59e0b;
-  --warning-soft: #fffbeb;
-
-  --danger: #dc2626;
-  --danger-soft: #fef2f2;
-
-  --purple: #7c3aed;
-  --purple-soft: #f5f3ff;
-
-  --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.03);
-  --radius: 18px;
+    --bg:#f6f8fc;
+    --card:#fff;
+    --soft:#eef2f7;
+    --text:#0f172a;
+    --muted:#64748b;
+    --border:#dfe5ee;
+    --primary:#2563eb;
+    --primary-soft:#eff6ff;
+    --success:#16a34a;
+    --success-soft:#ecfdf3;
+    --warning:#f59e0b;
+    --warning-soft:#fffbeb;
+    --danger:#dc2626;
+    --danger-soft:#fef2f2;
+    --purple:#7c3aed;
+    --shadow:0 10px 30px rgba(15,23,42,.06);
+    --radius:18px;
 }
-
-/* ডার্ক মোডের কালার প্যালেট */
-html.dark, body.dark {
-  --bg: #0b1120;
-  --card: #111827;
-  --soft: #1e293b;
-  --text: #f8fafc;
-  --muted: #94a3b8;
-  --border: #1e293b;
-
-  --primary: #3b82f6;
-  --primary-soft: #172554;
-
-  --success: #22c55e;
-  --success-soft: #052e16;
-
-  --warning: #f59e0b;
-  --warning-soft: #451a03;
-
-  --danger: #ef4444;
-  --danger-soft: #450a0a;
-
-  --purple: #a855f7;
-  --purple-soft: #2e1065;
-
-  --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+html.dark,body.dark {
+    --bg:#090f1d;
+    --card:#111827;
+    --soft:#1b2638;
+    --text:#f8fafc;
+    --muted:#94a3b8;
+    --border:#263247;
+    --primary:#60a5fa;
+    --primary-soft:#172554;
+    --success:#4ade80;
+    --success-soft:#052e16;
+    --warning:#fbbf24;
+    --warning-soft:#422006;
+    --danger:#f87171;
+    --danger-soft:#450a0a;
+    --purple:#a78bfa;
+    --shadow:0 15px 35px rgba(0,0,0,.3)
 }
-
-/* =========================================================================
-   ৩. বেসিক রিসেট এবং মোবাইল ওভারফ্লো ফিক্স (Mobile Responsive Fixes)
-   মোবাইলে যেন কোনো অংশ স্ক্রিনের বাইরে না যায় সেজন্য overflow-x ও max-width সেট করা হয়েছে।
-   ========================================================================= */
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    box-sizing:border-box;
+    margin:0;
+    padding:0
 }
-
-html, body {
-  width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden; /* স্ক্রিনের বাইরে চলে যাওয়া পুরোপুরি বন্ধ করবে */
-  scroll-behavior: smooth;
-  -webkit-text-size-adjust: 100%;
+html,body {
+    width:100%;
+    min-height:100%;
+    overflow-x:hidden;
+    scroll-behavior:smooth
 }
-
 body {
-  font-family: 'Plus Jakarta Sans', 'Hind Siliguri', system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  transition: background-color 0.25s ease, color 0.25s ease;
+    font-family:"Plus Jakarta Sans","Hind Siliguri",system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    transition:.2s
 }
-
-button, input, select, textarea {
-  font-family: inherit;
-  font-size: inherit;
+button,input,select {
+    font:inherit
 }
-
 button {
-  cursor: pointer;
-  border: none;
-  outline: none;
+    cursor:pointer;
+    border:0
 }
-
 button:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
+    opacity:.5;
+    cursor:not-allowed
 }
-
-/* =========================================================================
-   ৪. টপবার হেডার (Topbar Header)
-   ========================================================================= */
 .topbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  width: 100%;
-  backdrop-filter: blur(14px);
-  background: color-mix(in srgb, var(--bg) 92%, transparent);
-  border-bottom: 1px solid var(--border);
+    position:sticky;
+    top:0;
+    z-index:100;
+    background:color-mix(in srgb,var(--bg) 92%,transparent);
+    backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--border)
 }
-
+.topbar-inner,.container {
+    max-width:1180px;
+    width:100%;
+    margin:auto
+}
 .topbar-inner {
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 12px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
+    padding:11px 16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px
 }
-
 .brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  user-select: none;
-  min-width: 0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    cursor:pointer
 }
-
 .brand-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 11px;
-  background: linear-gradient(135deg, var(--primary), var(--purple));
-  color: #ffffff;
-  display: grid;
-  place-items: center;
-  font-size: 19px;
-  flex-shrink: 0;
+    width:38px;
+    height:38px;
+    border-radius:12px;
+    display:grid;
+    place-items:center;
+    color:#fff;
+    background:linear-gradient(135deg,var(--primary),var(--purple));
+    font-size:20px
 }
-
 .brand h1 {
-  font-size: 17px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-  line-height: 1;
-  margin: 0;
-  padding: 0;
-  color: var(--text);
+    font-size:17px;
+    font-weight:800
 }
-
 .header-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
+    display:flex;
+    gap:7px
 }
-
-/* হেডার বাটনসমূহ */
-.btn-icon {
-  border: 1px solid var(--border);
-  background: var(--card);
-  color: var(--text);
-  padding: 7px 11px;
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  transition: all 0.2s ease;
-  white-space: nowrap;
+.btn {
+    border:1px solid var(--border);
+    background:var(--card);
+    color:var(--text);
+    padding:8px 11px;
+    border-radius:10px;
+    font-size:11.5px;
+    font-weight:800
 }
-
-.btn-icon:hover {
-  border-color: var(--primary);
-  color: var(--primary);
+.btn:hover {
+    border-color:var(--primary);
+    color:var(--primary)
 }
-
-.btn-pomo-header {
-  background: var(--danger);
-  color: #ffffff;
-  border: 1px solid var(--danger);
-  padding: 7px 12px;
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 800;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
+.btn.primary {
+    background:var(--primary);
+    border-color:var(--primary);
+    color:#fff
 }
-
-.btn-pomo-header:hover {
-  opacity: 0.92;
+.btn.danger {
+    background:var(--danger);
+    border-color:var(--danger);
+    color:#fff
 }
-
-/* =========================================================================
-   ৫. মূল কনটেইনার লেআউট (Main Container)
-   ========================================================================= */
 .container {
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 16px 14px 40px;
-  flex: 1;
+    padding:16px 14px 36px
 }
-
-/* =========================================================================
-   ৬. ড্যাশবোর্ড কার্ড ও প্রগ্রেস বার (Dashboard KPI Cards)
-   ========================================================================= */
-.dashboard {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-bottom: 12px;
+.grid4 {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px
 }
-
-.stat-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px 16px;
-  box-shadow: var(--shadow);
+.stat,.card {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow)
 }
-
-.stat-label {
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 750;
-  margin-bottom: 4px;
+.stat {
+    padding:14px 15px
 }
-
-.stat-value {
-  font-size: 24px;
-  font-weight: 850;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.1;
+.label {
+    font-size:10.5px;
+    color:var(--muted);
+    font-weight:750
 }
-
-.stat-sub {
-  margin-top: 4px;
-  color: var(--muted);
-  font-size: 10.5px;
+.value {
+    font-size:24px;
+    font-weight:900;
+    margin-top:3px
 }
-
-/* প্রগ্রেস বার */
-.overall-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px 16px;
-  box-shadow: var(--shadow);
-  margin-bottom: 14px;
+.sub {
+    font-size:10.5px;
+    color:var(--muted);
+    margin-top:3px
 }
-
-.overall-top {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 7px;
-  font-size: 12px;
-  font-weight: 800;
+.overall {
+    padding:14px 16px;
+    margin:12px 0
 }
-
-.progress-track {
-  width: 100%;
-  height: 9px;
-  background: var(--soft);
-  border-radius: 999px;
-  overflow: hidden;
+.row {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px
 }
-
-.progress-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--primary), var(--purple));
-  border-radius: 999px;
-  transition: width 0.4s ease;
+.progress {
+    height:9px;
+    background:var(--soft);
+    border-radius:99px;
+    overflow:hidden
 }
-
-/* কুইক স্ট্যাটাস গ্রিড */
-.quick-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-bottom: 16px;
+.fill {
+    height:100%;
+    width:0;
+    background:linear-gradient(90deg,var(--primary),var(--purple));
+    border-radius:99px;
+    transition:.35s
 }
-
-.quick-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 13px;
-  padding: 12px 14px;
-  box-shadow: var(--shadow);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
+.quick {
+    margin:12px 0;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px
 }
-
-.quick-icon {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  background: var(--soft);
-  display: grid;
-  place-items: center;
-  font-size: 17px;
-  flex-shrink: 0;
+.quick .card {
+    padding:11px 13px;
+    display:flex;
+    gap:9px;
+    align-items:center
 }
-
-.quick-label {
-  color: var(--muted);
-  font-size: 10.5px;
-  font-weight: 750;
-  white-space: nowrap;
+.qicon {
+    width:34px;
+    height:34px;
+    display:grid;
+    place-items:center;
+    border-radius:10px;
+    background:var(--soft);
+    font-size:17px
 }
-
-.quick-value {
-  font-size: 16px;
-  font-weight: 850;
-  font-variant-numeric: tabular-nums;
-  margin-top: 1px;
-  white-space: nowrap;
+.qval {
+    font-size:15px;
+    font-weight:900
 }
-
-/* =========================================================================
-   ৭. স্মার্ট কন্টিনিউ কার্ড (Continue Studying Banner)
-   ========================================================================= */
-.continue-card {
-  background: linear-gradient(135deg, var(--primary-soft), var(--card));
-  border: 1px solid color-mix(in srgb, var(--primary) 30%, var(--border));
-  border-radius: var(--radius);
-  padding: 14px 16px;
-  margin-bottom: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+.continue {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    padding:14px 16px;
+    margin-bottom:14px;
+    background:linear-gradient(135deg,var(--primary-soft),var(--card));
+    border-color:color-mix(in srgb,var(--primary) 30%,var(--border))
 }
-
-.continue-label {
-  color: var(--primary);
-  font-size: 10.5px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+.kicker {
+    font-size:10px;
+    font-weight:900;
+    color:var(--primary);
+    text-transform:uppercase;
+    letter-spacing:.05em
 }
-
-.continue-title {
-  margin-top: 3px;
-  font-size: 15px;
-  font-weight: 800;
-  line-height: 1.3;
+.continue h2 {
+    font-size:15px;
+    margin-top:3px
 }
-
-.continue-sub {
-  margin-top: 2px;
-  color: var(--muted);
-  font-size: 11.5px;
+.continue p {
+    font-size:10.5px;
+    color:var(--muted);
+    margin-top:2px
 }
-
-.continue-reason {
-  display: inline-block;
-  margin-left: 6px;
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: var(--primary-soft);
-  color: var(--primary);
-  font-size: 9.5px;
-  font-weight: 800;
+.tabs {
+    display:flex;
+    gap:5px;
+    padding:4px;
+    margin-bottom:15px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:13px;
+    overflow:auto
 }
-
-.continue-btn {
-  background: var(--primary);
-  color: #ffffff;
-  padding: 8px 14px;
-  border-radius: 10px;
-  font-weight: 800;
-  font-size: 11.5px;
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
+.tab {
+    white-space:nowrap;
+    padding:8px 13px;
+    border-radius:9px;
+    background:transparent;
+    color:var(--muted);
+    font-size:11.5px;
+    font-weight:850
 }
-
-/* =========================================================================
-   ৮. প্রধান নেভিগেশন ট্যাবসমূহ (Main Navigation Tabs)
-   মোবাইলে স্ক্রিনের বাইরে না গিয়ে হরিজন্টাল স্ক্রল করার সুবিধা।
-   ========================================================================= */
-.main-tabs {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-bottom: 16px;
-  padding: 4px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 13px;
-  max-width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+.tab.active {
+    background:var(--primary);
+    color:#fff
 }
-
-.main-tab {
-  background: transparent;
-  color: var(--muted);
-  padding: 8px 14px;
-  border-radius: 9px;
-  font-size: 12px;
-  font-weight: 800;
-  transition: all 0.15s ease;
-  white-space: nowrap;
-  flex-shrink: 0;
+.panel {
+    display:none
 }
-
-.main-tab.active {
-  background: var(--primary);
-  color: #ffffff;
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+.panel.active {
+    display:block
 }
-
-.app-panel {
-  display: none;
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-.app-panel.active {
-  display: block;
-}
-
-/* =========================================================================
-   ৯. টুলবার (সার্চ এবং বিষয় ড্রপডাউন)
-   ========================================================================= */
 .toolbar {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 13px 14px;
-  margin-bottom: 16px;
-  box-shadow: var(--shadow);
+    padding:13px;
+    margin-bottom:14px
 }
-
-.toolbar-main {
-  display: grid;
-  grid-template-columns: 1fr 220px;
-  gap: 8px;
+.toolbar-top {
+    display:grid;
+    grid-template-columns:1fr 220px;
+    gap:8px
 }
-
-.search, .select {
-  width: 100%;
-  max-width: 100%;
-  border: 1px solid var(--border);
-  background: var(--soft);
-  color: var(--text);
-  border-radius: 11px;
-  padding: 9px 12px;
-  outline: none;
-  font-size: 12px;
+.input,.select {
+    width:100%;
+    border:1px solid var(--border);
+    background:var(--soft);
+    color:var(--text);
+    border-radius:10px;
+    padding:9px 11px;
+    font-size:11.5px;
+    outline:0
 }
-
-.search:focus, .select:focus {
-  border-color: var(--primary);
+.input:focus,.select:focus {
+    border-color:var(--primary)
 }
-
-.filter-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 10px;
-  align-items: center;
+.filters {
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:6px;
+    margin-top:9px
 }
-
-.filter-btn, .action-small {
-  border: 1px solid var(--border);
-  background: var(--soft);
-  color: var(--text);
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 11px;
-  font-weight: 800;
-  white-space: nowrap;
+.filter {
+    padding:6px 9px;
+    border:1px solid var(--border);
+    background:var(--soft);
+    color:var(--text);
+    border-radius:8px;
+    font-size:10.5px;
+    font-weight:850
 }
-
-.filter-btn.active {
-  background: var(--primary);
-  color: #ffffff;
-  border-color: var(--primary);
+.filter.active {
+    background:var(--primary);
+    border-color:var(--primary);
+    color:#fff
 }
-
 .spacer {
-  flex: 1;
+    flex:1
 }
-
-/* =========================================================================
-   ১০. বিষয়ের কার্ড এবং চ্যাপ্টার লিস্ট (Subjects & Chapters Accordion)
-   ========================================================================= */
-#subjects {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.subjects {
+    display:grid;
+    gap:11px
 }
-
 .subject {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  transition: border-color 0.2s ease;
+    overflow:hidden
 }
-
-.subject:hover {
-  border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
+.subject-head {
+    display:flex;
+    align-items:center;
+    gap:11px;
+    padding:13px 14px;
+    border-bottom:1px solid var(--border);
+    cursor:pointer
 }
-
-.subject-header {
-  padding: 13px 15px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border-bottom: 1px solid var(--border);
-  cursor: pointer;
-  user-select: none;
-}
-
 .subject-icon {
-  width: 36px;
-  height: 36px;
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  background: var(--primary-soft);
-  color: var(--primary);
-  font-size: 18px;
+    width:36px;
+    height:36px;
+    border-radius:10px;
+    background:var(--primary-soft);
+    display:grid;
+    place-items:center;
+    font-size:18px;
+    flex:none
 }
-
 .subject-info {
-  flex: 1;
-  min-width: 0;
+    min-width:0;
+    flex:1
 }
-
 .subject-title {
-  font-size: 15px;
-  font-weight: 800;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    font-size:14px;
+    font-weight:850;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis
 }
-
 .subject-meta {
-  margin-top: 2px;
-  color: var(--muted);
-  font-size: 11px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    font-size:10.5px;
+    color:var(--muted);
+    margin-top:2px
 }
-
 .subject-progress {
-  width: 140px;
-  flex-shrink: 0;
+    width:145px;
+    flex:none
 }
-
-.subject-progress-text {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 3px;
-  color: var(--muted);
-  font-size: 10.5px;
-  font-weight: 700;
+.subject-progress .smallrow {
+    font-size:10px;
+    color:var(--muted);
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:3px
 }
-
-.subject-track {
-  height: 6px;
-  background: var(--soft);
-  border-radius: 999px;
-  overflow: hidden;
+.smallbar {
+    height:6px;
+    background:var(--soft);
+    border-radius:99px;
+    overflow:hidden
 }
-
-.subject-fill {
-  height: 100%;
-  background: var(--success);
-  border-radius: 999px;
-  transition: width 0.3s ease;
+.smallbar i {
+    display:block;
+    height:100%;
+    background:var(--success);
+    border-radius:99px
 }
-
-.chevron {
-  width: 24px;
-  height: 24px;
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  color: var(--muted);
-  font-size: 12px;
-  border-radius: 7px;
-  background: var(--soft);
-  transition: transform 0.2s ease;
+.chev {
+    width:24px;
+    height:24px;
+    border-radius:7px;
+    background:var(--soft);
+    display:grid;
+    place-items:center;
+    color:var(--muted);
+    font-size:11px;
+    transition:.2s
 }
-
-.subject.collapsed .chevron {
-  transform: rotate(-90deg);
+.subject.collapsed .chev {
+    transform:rotate(-90deg)
 }
-
 .subject.collapsed .subject-body {
-  display: none;
+    display:none
 }
-
 .subject-body {
-  padding: 10px;
-  background: var(--soft);
+    padding:9px;
+    background:var(--soft)
 }
-
-/* চ্যাপ্টার সারি (Chapter Rows) - মোবাইলে অটোমেটিক অ্যাডজাস্ট হবে */
-.chapter-list {
-  display: grid;
-  gap: 7px;
+.chapters {
+    display:grid;
+    gap:6px
 }
-
 .chapter {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  background: var(--card);
-  border-radius: 11px;
-  transition: all 0.15s ease;
-  max-width: 100%;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:9px 10px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px
 }
-
 .chapter.in-progress {
-  background: var(--warning-soft);
-  border-color: color-mix(in srgb, var(--warning) 35%, var(--border));
+    background:var(--warning-soft);
+    border-color:color-mix(in srgb,var(--warning) 35%,var(--border))
 }
-
 .chapter.complete {
-  background: var(--success-soft);
-  border-color: color-mix(in srgb, var(--success) 35%, var(--border));
+    background:var(--success-soft);
+    border-color:color-mix(in srgb,var(--success) 35%,var(--border))
 }
-
-.chapter.continue-highlight {
-  box-shadow: 0 0 0 3px var(--primary);
-  animation: pulse 1s infinite alternate;
+.num {
+    width:28px;
+    height:28px;
+    display:grid;
+    place-items:center;
+    border-radius:8px;
+    background:var(--soft);
+    font-size:10px;
+    font-weight:850;
+    color:var(--muted);
+    flex:none
 }
-
-@keyframes pulse {
-  from { transform: scale(1); }
-  to { transform: scale(1.008); }
+.chapter.in-progress .num {
+    background:var(--warning);
+    color:#fff
 }
-
-.chapter-number {
-  width: 28px;
-  height: 28px;
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  border-radius: 8px;
-  background: var(--soft);
-  color: var(--muted);
-  font-size: 10.5px;
-  font-weight: 800;
+.chapter.complete .num {
+    background:var(--success);
+    color:#fff
 }
-
-.chapter.in-progress .chapter-number {
-  background: var(--warning);
-  color: #ffffff;
+.chapter-main {
+    min-width:0;
+    flex:1
 }
-
-.chapter.complete .chapter-number {
-  background: var(--success);
-  color: #ffffff;
-}
-
-.chapter-content {
-  flex: 1;
-  min-width: 0;
-}
-
 .chapter-name {
-  font-size: 13px;
-  font-weight: 750;
-  line-height: 1.35;
-  word-break: break-word; /* লম্বা বাংলা শব্দ যাতে স্ক্রিনের বাইরে না যায় */
+    font-size:12px;
+    font-weight:750;
+    line-height:1.4;
+    word-break:break-word
 }
-
 .chapter-status {
-  margin-top: 2px;
-  color: var(--muted);
-  font-size: 10.5px;
+    font-size:10px;
+    color:var(--muted);
+    margin-top:2px
 }
-
 .chapter.in-progress .chapter-status {
-  color: var(--warning);
-  font-weight: 750;
+    color:var(--warning);
+    font-weight:800
 }
-
 .chapter.complete .chapter-status {
-  color: var(--success);
-  font-weight: 750;
+    color:var(--success);
+    font-weight:800
 }
-
-.chapter-tools {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
+.tools {
+    display:flex;
+    gap:5px;
+    flex:none
 }
-
-.btn-mini {
-  border: 1px solid var(--border);
-  background: var(--card);
-  color: var(--muted);
-  padding: 6px 9px;
-  border-radius: 8px;
-  font-size: 10.5px;
-  font-weight: 750;
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  white-space: nowrap;
+.mini {
+    padding:6px 8px;
+    border-radius:8px;
+    background:var(--soft);
+    color:var(--text);
+    border:1px solid var(--border);
+    font-size:10px;
+    font-weight:800;
+    white-space:nowrap
 }
-
-.btn-mini:hover {
-  color: var(--primary);
-  border-color: var(--primary);
+.mini:hover {
+    border-color:var(--primary);
+    color:var(--primary)
 }
-
-.status-btn {
-  min-width: 110px;
-  border: 1px solid var(--border);
-  background: var(--soft);
-  color: var(--text);
-  border-radius: 9px;
-  padding: 7px 10px;
-  font-size: 11px;
-  font-weight: 800;
-  text-align: center;
-  white-space: nowrap;
-  transition: all 0.15s ease;
+.status {
+    min-width:108px
 }
-
-.status-btn.in-progress {
-  border-color: var(--warning);
-  background: var(--warning);
-  color: #ffffff;
+.status.in-progress {
+    background:var(--warning);
+    border-color:var(--warning);
+    color:#fff
 }
-
-.status-btn.complete {
-  border-color: var(--success);
-  background: var(--success);
-  color: #ffffff;
+.status.complete {
+    background:var(--success);
+    border-color:var(--success);
+    color:#fff
 }
-
-/* =========================================================================
-   ১১. কার্ড ও এক্সাম সেকশন (Section Cards & Exams)
-   ========================================================================= */
-.section-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 16px 18px;
-  margin-bottom: 16px;
+.section {
+    padding:16px;
+    margin-bottom:12px
 }
-
-.section-title {
-  font-size: 16px;
-  font-weight: 800;
+.section h2 {
+    font-size:16px
 }
-
-.section-sub {
-  margin-top: 3px;
-  color: var(--muted);
-  font-size: 11.5px;
+.section p {
+    font-size:10.5px;
+    color:var(--muted);
+    margin-top:3px
 }
-
-.exam-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
+.exam-grid {
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px
 }
-
-.primary-btn {
-  background: var(--primary);
-  color: #ffffff;
-  padding: 8px 14px;
-  border-radius: 10px;
-  font-weight: 800;
-  font-size: 11.5px;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
+.exam {
+    padding:14px
 }
-
-.exam-list {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+.exam h3 {
+    font-size:14px
 }
-
-.exam-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 15px;
-  box-shadow: var(--shadow);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.exam .date {
+    font-size:10.5px;
+    color:var(--muted);
+    margin-top:2px
 }
-
-.exam-card-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.exam-name {
-  font-size: 15px;
-  font-weight: 800;
-}
-
-.exam-date {
-  margin-top: 2px;
-  color: var(--muted);
-  font-size: 11px;
-}
-
-.exam-countdown {
-  padding: 4px 8px;
-  border-radius: 8px;
-  background: var(--primary-soft);
-  color: var(--primary);
-  font-size: 10.5px;
-  font-weight: 800;
-  white-space: nowrap;
-}
-
-.exam-progress-row {
-  display: flex;
-  justify-content: space-between;
-  margin: 10px 0 4px;
-  font-size: 11px;
-  font-weight: 750;
-}
-
 .exam-actions {
-  display: flex;
-  gap: 6px;
-  margin-top: 12px;
+    display:flex;
+    gap:6px;
+    margin-top:11px
 }
-
-.exam-actions button {
-  border: 1px solid var(--border);
-  background: var(--soft);
-  color: var(--text);
-  padding: 6px 9px;
-  border-radius: 7px;
-  font-size: 10.5px;
-  font-weight: 800;
+.exam-actions .btn {
+    flex:1
 }
-
-/* =========================================================================
-   ১২. 🍅 পোমোডোরো ওভারলে ও টাইমার (Pomodoro Modal Overlay)
-   আগের স্টাইলের বড় ডিজিটাল ক্লক এবং টপিক সিলেক্টরযুক্ত।
-   ========================================================================= */
-.pomodoro-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 2000;
-  display: none;
-  background: rgba(15, 23, 42, 0.88);
-  backdrop-filter: blur(10px);
-  overflow-y: auto;
-  padding: 16px;
-}
-
-.pomodoro-overlay.show {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pomodoro-box {
-  width: 100%;
-  max-width: 520px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 22px;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
-  padding: 22px 18px;
-  text-align: center;
-  margin: auto;
-}
-
-.pomodoro-time {
-  font-size: clamp(52px, 14vw, 84px);
-  font-weight: 900;
-  font-variant-numeric: tabular-nums;
-  margin: 8px 0;
-  font-family: monospace;
-  letter-spacing: -0.03em;
-}
-
-.pomodoro-controls {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 14px;
-  flex-wrap: wrap;
-}
-
-.pomo-btn {
-  padding: 9px 16px;
-  border-radius: 11px;
-  font-size: 12px;
-  font-weight: 800;
-  border: 1px solid var(--border);
-  background: var(--soft);
-  color: var(--text);
-}
-
-.pomo-btn.primary {
-  background: var(--danger);
-  border-color: var(--danger);
-  color: #ffffff;
-}
-
-/* =========================================================================
-   ১৩. মোডাল ডায়ালগ ও টোস্ট (Modals & Toast)
-   ========================================================================= */
 .modal {
-  position: fixed;
-  inset: 0;
-  z-index: 3000;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(5px);
+    position:fixed;
+    inset:0;
+    z-index:1000;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:15px;
+    background:rgba(2,6,23,.68);
+    backdrop-filter:blur(7px)
 }
-
 .modal.show {
-  display: flex;
+    display:flex
 }
-
-.modal-box {
-  width: 100%;
-  max-width: 520px;
-  max-height: 90vh;
-  overflow-y: auto;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 20px;
-  box-shadow: var(--shadow);
+.modalbox {
+    width:100%;
+    max-width:560px;
+    max-height:90vh;
+    overflow:auto;
+    padding:19px
 }
-
+.modalbox h3 {
+    font-size:16px
+}
 .modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 16px;
+    display:flex;
+    justify-content:flex-end;
+    gap:7px;
+    margin-top:14px
 }
-
-.modal-cancel {
-  padding: 8px 14px;
-  background: var(--soft);
-  border-radius: 9px;
-  font-weight: 800;
-  font-size: 11.5px;
-  color: var(--text);
+.pomo {
+    position:fixed;
+    inset:0;
+    z-index:900;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:15px;
+    background:rgba(2,6,23,.88);
+    backdrop-filter:blur(10px)
 }
-
-.modal-ok {
-  padding: 8px 15px;
-  background: var(--primary);
-  color: #ffffff;
-  border-radius: 9px;
-  font-weight: 800;
-  font-size: 11.5px;
+.pomo.show {
+    display:flex
 }
-
-#toast {
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
-  z-index: 9999;
-  background: var(--text);
-  color: var(--bg);
-  padding: 9px 14px;
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 750;
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(10px);
-  transition: all 0.2s ease;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+.pomo-box {
+    width:100%;
+    max-width:520px;
+    text-align:center;
+    padding:20px
 }
-
-#toast.show {
-  opacity: 1;
-  transform: translateY(0);
+.pomo-clock {
+    font-size:clamp(55px,15vw,86px);
+    font-family:ui-monospace,monospace;
+    font-weight:900;
+    letter-spacing:-.04em;
+    margin:10px 0
 }
-
+.pomo-controls {
+    display:flex;
+    justify-content:center;
+    gap:7px;
+    flex-wrap:wrap;
+    margin-top:13px
+}
+.history-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px
+}
+.canvaswrap {
+    height:250px;
+    background:var(--soft);
+    border-radius:12px;
+    overflow:hidden
+}
+.canvaswrap canvas {
+    width:100%;
+    height:100%;
+    display:block
+}
+.list {
+    display:grid;
+    gap:5px;
+    margin-top:9px
+}
+.listrow {
+    display:flex;
+    justify-content:space-between;
+    gap:8px;
+    padding:6px 0;
+    border-bottom:1px solid var(--border);
+    font-size:10.5px
+}
+.listrow strong {
+    color:var(--primary)
+}
+.insights-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+    gap:7px;
+    margin-top:11px
+}
+.queue,.badge {
+    padding:11px;
+    border:1px solid var(--border);
+    border-radius:11px;
+    background:var(--card)
+}
+.queue .tag {
+    font-size:9px;
+    color:var(--primary);
+    font-weight:900
+}
+.queue h4 {
+    font-size:11.5px;
+    margin-top:3px
+}
+.queue p {
+    font-size:9.5px
+}
+.badge {
+    text-align:center
+}
+.badge .icon {
+    font-size:25px
+}
+.badge.locked {
+    opacity:.4
+}
+.toast {
+    position:fixed;
+    right:15px;
+    bottom:15px;
+    z-index:2000;
+    padding:9px 13px;
+    border-radius:10px;
+    background:var(--text);
+    color:var(--bg);
+    font-size:11px;
+    font-weight:800;
+    opacity:0;
+    transform:translateY(10px);
+    pointer-events:none;
+    transition:.2s
+}
+.toast.show {
+    opacity:1;
+    transform:none
+}
 footer {
-  text-align: center;
-  color: var(--muted);
-  font-size: 11.5px;
-  padding: 20px 14px;
-  border-top: 1px solid var(--border);
+    text-align:center;
+    color:var(--muted);
+    font-size:10.5px;
+    padding:18px;
+    border-top:1px solid var(--border)
 }
-
-/* =========================================================================
-   ১৪. মোবাইল স্ক্রিন রেসপনসিভ মিডিয়া কুয়েরি (Mobile Responsiveness)
-   স্ক্রিন সাইজ ছোট হলে উপাদানগুলো সুন্দরভাবে নিচে নেমে আসবে।
-   ========================================================================= */
-@media (max-width: 850px) {
-  .dashboard, .quick-grid, .exam-list {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .toolbar-main {
-    grid-template-columns: 1fr;
-  }
+@media(max-width:850px) {
+    .grid4,.quick {
+        grid-template-columns:repeat(2,1fr)
+    }
+    .toolbar-top {
+        grid-template-columns:1fr
+    }
+    .exam-grid,.history-grid {
+        grid-template-columns:1fr
+    }
 }
-
-@media (max-width: 550px) {
-  .topbar-inner {
-    padding: 10px 12px;
-  }
-  .brand h1 {
-    font-size: 15px;
-  }
-  .dashboard, .quick-grid, .exam-list {
-    grid-template-columns: 1fr;
-  }
-  .subject-progress {
-    display: none; /* মোবাইলে হেডার প্রগ্রেস বার লুকিয়ে রাখা যাতে ওভারফ্লো না হয় */
-  }
-  .chapter {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
-  .chapter-tools {
-    justify-content: space-between;
-    width: 100%;
-    margin-top: 4px;
-  }
-  .status-btn {
-    flex: 1;
-  }
+@media(max-width:560px) {
+    .grid4,.quick {
+        grid-template-columns:1fr
+    }
+    .subject-progress {
+        display:none
+    }
+    .chapter {
+        align-items:stretch;
+        flex-wrap:wrap
+    }
+    .tools {
+        width:100%
+    }
+    .tools .status {
+        flex:1
+    }
+    .exam-grid {
+        grid-template-columns:1fr
+    }
+    .header-actions .btn:first-child {
+        display:none
+    }
+    .brand h1 {
+        font-size:15px
+    }
 }
 </style>
-<script src="/_aistudio-iframe.js?v=6634132a"></script></head>
-
+</head>
 <body>
+<!-- ============================================================
+     HEADER / TOP NAVIGATION
+     ============================================================ -->
+<header class="topbar"><div class="topbar-inner">
+  <div class="brand" onclick="switchTab('syllabus')"><div class="brand-icon">📚</div><h1>Syllabus Tracker</h1></div>
+  <div class="header-actions"><button class="btn danger" onclick="openPomodoro()">🍅 Pomodoro</button><button id="themeBtn" class="btn" onclick="toggleTheme()">🌙 Dark</button></div>
+</div></header>
 
-<!-- =========================================================================
-     টপবার হেডার সেকশন
-     ========================================================================= -->
-<header class="topbar">
-  <div class="topbar-inner">
-    <div class="brand" onclick="switchTab('syllabus')">
-      <div class="brand-icon">📚</div>
-      <h1>Syllabus Tracker</h1>
-    </div>
-
-    <div class="header-actions">
-      <!-- 🍅 পোমোডোরো বাটন (আগের মতো টমেটো আইকনযুক্ত) -->
-      <button id="pomoHeaderBtn" class="btn-pomo-header" type="button" onclick="openPomodoro()">
-        🍅 Pomodoro
-      </button>
-
-      <!-- ডার্ক ও লাইট মোড টগল বাটন -->
-      <button id="themeBtn" class="btn-icon" type="button" onclick="toggleTheme()">
-        🌙 Dark
-      </button>
-    </div>
-  </div>
-</header>
-
+<!-- ============================================================
+     MAIN APP CONTENT
+     ============================================================ -->
 <main class="container">
+<!-- Dashboard summary cards -->
+<section class="grid4">
+  <div class="stat"><div class="label">Total Chapters</div><div id="statTotal" class="value">75</div><div class="sub">8 subjects</div></div>
+  <div class="stat"><div class="label">Completed</div><div id="statCompleted" class="value" style="color:var(--success)">0</div><div class="sub">Finished chapters</div></div>
+  <div class="stat"><div class="label">In Progress</div><div id="statInProgress" class="value" style="color:var(--warning)">0</div><div class="sub">Currently studying</div></div>
+  <div class="stat"><div class="label">Overall Progress</div><div id="statPercent" class="value" style="color:var(--primary)">0%</div><div class="sub">Syllabus completion</div></div>
+</section>
+<section class="card overall"><div class="row" style="font-size:11px;font-weight:850;margin-bottom:6px"><span>Overall Syllabus Progress</span><strong id="overallPercentText" style="color:var(--primary)">0%</strong></div><div class="progress"><div id="overallFill" class="fill"></div></div></section>
 
-  <!-- =========================================================================
-       ড্যাশবোর্ড পরিসংখ্যান (Dashboard KPI Cards)
-       ========================================================================= -->
-  <section class="dashboard">
-    <div class="stat-card">
-      <div class="stat-label">Total Chapters</div>
-      <div id="statTotal" class="stat-value">75</div>
-      <div class="stat-sub">Across all 8 subjects</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Completed</div>
-      <div id="statCompleted" class="stat-value" style="color:var(--success);">0</div>
-      <div class="stat-sub">Completed topics</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">In Progress</div>
-      <div id="statInProgress" class="stat-value" style="color:var(--warning);">0</div>
-      <div class="stat-sub">Currently reading</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Overall Progress</div>
-      <div id="statPercent" class="stat-value" style="color:var(--primary);">0%</div>
-      <div class="stat-sub">Syllabus completion</div>
-    </div>
-  </section>
+<section class="quick">
+  <div class="card"><div class="qicon">🍅</div><div><div class="label">Today's Focus</div><div id="quickTodayStudy" class="qval">0m</div></div></div>
+  <div class="card"><div class="qicon">🔥</div><div><div class="label">Study Streak</div><div id="quickStreak" class="qval">0 days</div></div></div>
+  <div class="card"><div class="qicon">🎯</div><div><div class="label">Daily Goal</div><div id="quickGoal" class="qval">0%</div></div></div>
+  <div class="card"><div class="qicon">📝</div><div><div class="label">Upcoming Exams</div><div id="quickExams" class="qval">0</div></div></div>
+</section>
 
-  <!-- সিলেবাস সমাপ্তির সামগ্রিক প্রগ্রেস বার -->
-  <section class="overall-card">
-    <div class="overall-top">
-      <span>Overall Syllabus Progress</span>
-      <span id="overallPercentText" style="color:var(--primary);">0%</span>
-    </div>
-    <div class="progress-track">
-      <div id="overallFill" class="progress-fill"></div>
-    </div>
-  </section>
+<section id="continueCard" class="card continue" style="display:none">
+  <div><div class="kicker">Continue Studying <span id="continueReason"></span></div><h2 id="continueTitle"></h2><p id="continueSub"></p></div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn primary" onclick="jumpToContinueTarget()">View in Syllabus →</button><button class="btn danger" onclick="startPomodoroForContinueTarget()">🍅 Study</button></div>
+</section>
 
-  <!-- কুইক স্ট্যাটাস (আজকের পড়া, স্ট্রিক, গোল %, আসন্ন পরীক্ষা) -->
-  <section class="quick-grid">
-    <div class="quick-card">
-      <div class="quick-icon">🍅</div>
-      <div>
-        <div class="quick-label">Today's Focus</div>
-        <div id="quickTodayStudy" class="quick-value">0m</div>
-      </div>
-    </div>
-    <div class="quick-card">
-      <div class="quick-icon">🔥</div>
-      <div>
-        <div class="quick-label">Study Streak</div>
-        <div id="quickStreak" class="quick-value">0 days</div>
-      </div>
-    </div>
-    <div class="quick-card">
-      <div class="quick-icon">🎯</div>
-      <div>
-        <div class="quick-label">Daily Goal</div>
-        <div id="quickGoal" class="quick-value">0%</div>
-      </div>
-    </div>
-    <div class="quick-card">
-      <div class="quick-icon">📝</div>
-      <div>
-        <div class="quick-label">Upcoming Exams</div>
-        <div id="quickExams" class="quick-value">0</div>
-      </div>
-    </div>
-  </section>
+<!-- Main navigation tabs -->
+<nav class="tabs">
+  <button class="tab active" data-tab="syllabus" onclick="switchTab('syllabus')">📚 Syllabus</button>
+  <button class="tab" data-tab="exams" onclick="switchTab('exams')">🎯 Exam Planner</button>
+  <button class="tab" data-tab="history" onclick="switchTab('history')">📊 Study History</button>
+  <button class="tab" data-tab="insights" onclick="switchTab('insights')">💡 Insights</button>
+</nav>
 
-  <!-- স্মার্ট কন্টিনিউ ব্যানার -->
-  <section id="continueCard" class="continue-card" style="display:none;">
-    <div>
-      <div class="continue-label">Continue Studying <span id="continueReason" class="continue-reason">Last Studied</span></div>
-      <div id="continueTitle" class="continue-title">ভৌত জগৎ ও পরিমাপ</div>
-      <div id="continueSub" class="continue-sub">Physics 1st Paper · Chapter 1</div>
-    </div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;">
-      <button class="continue-btn" type="button" onclick="jumpToContinueTarget()">
-        View in Syllabus →
-      </button>
-      <button class="continue-btn" style="background:var(--danger);" type="button" onclick="startPomodoroForContinueTarget()">
-        🍅 Study
-      </button>
-    </div>
-  </section>
+<!-- Syllabus tab -->
+<section id="syllabusPanel" class="panel active">
+  <div class="card toolbar">
+    <div class="toolbar-top"><input id="searchInput" class="input" placeholder="🔎 Search chapter or subject..." oninput="handleSearch(this.value)"><select id="bookSelectFilter" class="select" onchange="handleBookFilter(this.value)"></select></div>
+    <div class="filters"><span class="label">Status:</span><button class="filter active" data-status="all" onclick="handleStatusFilter('all')">All</button><button class="filter" data-status="not-started" onclick="handleStatusFilter('not-started')">⚪ Not Started</button><button class="filter" data-status="in-progress" onclick="handleStatusFilter('in-progress')">🟡 In Progress</button><button class="filter" data-status="complete" onclick="handleStatusFilter('complete')">🟢 Complete</button><span class="spacer"></span><button class="filter" onclick="setAllCollapse(false)">Expand All</button><button class="filter" onclick="setAllCollapse(true)">Collapse All</button></div>
+  </div>
+  <div id="subjects" class="subjects"></div>
+  <div style="text-align:center;margin-top:18px"><button class="filter" style="color:var(--danger)" onclick="openResetModal()">🗑️ Reset Syllabus Progress</button></div>
+</section>
 
-  <!-- প্রধান ৪টি ট্যাব নেভিগেশন -->
-  <nav class="main-tabs">
-    <button class="main-tab active" data-tab="syllabus" type="button" onclick="switchTab('syllabus')">📚 Syllabus</button>
-    <button class="main-tab" data-tab="exams" type="button" onclick="switchTab('exams')">🎯 Exam Planner</button>
-    <button class="main-tab" data-tab="history" type="button" onclick="switchTab('history')">📊 Study History</button>
-    <button class="main-tab" data-tab="insights" type="button" onclick="switchTab('insights')">💡 Insights</button>
-  </nav>
+<!-- Exam Planner tab -->
+<section id="examsPanel" class="panel">
+  <div id="examListView"><div class="row" style="margin-bottom:13px"><div><h2 style="font-size:16px">🎯 Custom Exam Planner</h2><p class="sub">Pick chapters included in an upcoming exam.</p></div><button class="btn primary" onclick="openExamModal()">＋ New Exam</button></div><div id="examList" class="exam-grid"></div></div>
+  <div id="examDetailView" style="display:none"></div>
+</section>
 
-  <!-- =========================================================================
-       প্যানেল ১: সিলেবাস প্যানেল (Syllabus Panel)
-       ========================================================================= -->
-  <section id="syllabusPanel" class="app-panel active">
-    <div class="toolbar">
-      <div class="toolbar-main">
-        <input id="searchInput" class="search" type="search" placeholder="🔎 Search chapter or subject..." oninput="handleSearch(this.value)">
-        <!-- ব্যবহারকারীর অনুরোধ অনুযায়ী: "📚 All Subjects" -->
-        <select id="bookSelectFilter" class="select" onchange="handleBookFilter(this.value)">
-          <option value="all">📚 All Subjects</option>
-        </select>
-      </div>
-      <div class="filter-row">
-        <span style="font-size:11.5px;font-weight:750;color:var(--muted);">Status:</span>
-        <button class="filter-btn active" data-status="all" onclick="handleStatusFilter('all')">All</button>
-        <button class="filter-btn" data-status="not-started" onclick="handleStatusFilter('not-started')">⚪ Not Started</button>
-        <button class="filter-btn" data-status="in-progress" onclick="handleStatusFilter('in-progress')">🟡 In Progress</button>
-        <button class="filter-btn" data-status="complete" onclick="handleStatusFilter('complete')">🟢 Complete</button>
-        <span class="spacer"></span>
-        <button class="action-small" onclick="setAllCollapse(false)">Expand All</button>
-        <button class="action-small" onclick="setAllCollapse(true)">Collapse All</button>
-      </div>
-    </div>
+<!-- Study History tab -->
+<section id="historyPanel" class="panel">
+  <div class="card section"><div class="row" style="margin-bottom:10px"><div><h2>📊 Study Time Graph</h2><p>Focus time grouped by day, week, or month.</p></div><div><button id="btnGraphDaily" class="filter active" onclick="setGraphPeriod('daily')">Daily</button><button id="btnGraphWeekly" class="filter" onclick="setGraphPeriod('weekly')">Weekly</button><button id="btnGraphMonthly" class="filter" onclick="setGraphPeriod('monthly')">Monthly</button></div></div><div class="canvaswrap"><canvas id="historyCanvas" width="1000" height="250"></canvas></div></div>
+  <div class="history-grid"><div class="card section"><h2>📅 Recent History</h2><div id="weeklyHistoryList" class="list"></div></div><div class="card section"><h2>📚 Book-wise Study Time</h2><div id="bookStudyList" class="list"></div></div></div>
+  <div class="card section"><div class="row"><div><b style="font-size:11px">🎯 Daily Target</b><span class="sub"> minutes/day</span></div><div style="display:flex;gap:6px"><input id="dailyGoalInput" class="input" style="width:80px" type="number" min="10" max="1440"><button class="filter" onclick="saveDailyGoal()">Save</button><button class="filter" style="color:var(--danger)" onclick="clearStudyHistory()">Clear History</button></div></div></div>
+</section>
 
-    <!-- বিষয় এবং অধ্যায়গুলো এখানে রেন্ডার হবে -->
-    <div id="subjects"></div>
-
-    <div style="text-align:center;margin-top:20px;">
-      <button class="action-small" style="color:var(--danger);border-color:var(--danger-soft);" onclick="openResetModal()">
-        🗑️ Reset Syllabus Progress
-      </button>
-    </div>
-  </section>
-
-  <!-- =========================================================================
-       প্যানেল ২: পরীক্ষা প্ল্যানার (Exam Planner Panel)
-       ========================================================================= -->
-  <section id="examsPanel" class="app-panel">
-    <div id="examListView">
-      <div class="exam-top">
-        <div>
-          <h2 class="section-title">🎯 Custom Exam Planner</h2>
-          <p class="section-sub">Pick only the chapters included in your upcoming exam.</p>
-        </div>
-        <button class="primary-btn" type="button" onclick="openExamModal()">＋ New Exam</button>
-      </div>
-      <div id="examList" class="exam-list"></div>
-    </div>
-
-    <!-- পরীক্ষা ডিটেইল ভিউ -->
-    <div id="examDetailView" style="display:none;">
-      <div class="section-card">
-        <button class="action-small" style="margin-bottom:10px;" onclick="closeExamDetail()">← Back to All Exams</button>
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;">
-          <div>
-            <h2 id="examDetailTitle" class="section-title" style="font-size:20px;">Exam Name</h2>
-            <p id="examDetailDate" class="section-sub">📅 Date</p>
-          </div>
-          <div style="text-align:right;">
-            <div id="examDetailPercent" style="font-size:26px;font-weight:900;color:var(--primary);">0%</div>
-            <div id="examDetailRatio" class="section-sub">0 / 0 completed</div>
-          </div>
-        </div>
-        <div class="progress-track" style="margin:12px 0 14px;">
-          <div id="examDetailFill" class="progress-fill"></div>
-        </div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <button id="examPomodoroBtn" class="primary-btn" onclick="startPomodoroForExam()">🍅 Study Next Chapter</button>
-          <button class="action-small" onclick="editCurrentExam()">✏️ Edit</button>
-          <button class="action-small" style="color:var(--danger);" onclick="deleteCurrentExam()">🗑️ Delete</button>
-        </div>
-      </div>
-
-      <div class="section-card">
-        <h3 class="section-title">Exam Chapters</h3>
-        <p class="section-sub">Synced in real-time with your main syllabus.</p>
-        <div id="examChapterList" style="margin-top:12px;display:grid;gap:7px;"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- =========================================================================
-       প্যানেল ৩: স্টাডি হিস্ট্রি ও গ্রাফ (Study History Panel)
-       ========================================================================= -->
-  <section id="historyPanel" class="app-panel">
-    <div class="section-card">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
-        <div>
-          <h2 class="section-title">📊 Study Time Graph</h2>
-          <p class="section-sub">Daily, weekly, and monthly focus distribution.</p>
-        </div>
-        <div style="display:flex;gap:5px;">
-          <button class="filter-btn active" id="btnGraphDaily" onclick="setGraphPeriod('daily')">Daily</button>
-          <button class="filter-btn" id="btnGraphWeekly" onclick="setGraphPeriod('weekly')">Weekly</button>
-          <button class="filter-btn" id="btnGraphMonthly" onclick="setGraphPeriod('monthly')">Monthly</button>
-        </div>
-      </div>
-      <div style="width:100%;height:220px;border-radius:12px;background:var(--soft);overflow:hidden;position:relative;">
-        <canvas id="historyCanvas" width="900" height="220" style="width:100%;height:100%;display:block;"></canvas>
-      </div>
-    </div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-      <div class="section-card">
-        <h3 class="section-title">📅 Past 7 Days History</h3>
-        <div id="weeklyHistoryList" style="margin-top:10px;display:grid;gap:6px;"></div>
-      </div>
-      <div class="section-card">
-        <h3 class="section-title">📚 Book-wise Study Time</h3>
-        <div id="bookStudyList" style="margin-top:10px;display:grid;gap:6px;"></div>
-      </div>
-    </div>
-
-    <div class="section-card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-        <span style="font-size:12px;font-weight:800;">🎯 Daily Target:</span>
-        <input id="dailyGoalInput" type="number" min="10" max="1440" value="120" style="width:75px;padding:5px 8px;border-radius:8px;border:1px solid var(--border);background:var(--soft);color:var(--text);font-weight:800;text-align:center;">
-        <span style="font-size:11px;color:var(--muted);">min/day</span>
-        <button class="action-small" onclick="saveDailyGoal()">Save Target</button>
-      </div>
-      <button class="action-small" style="color:var(--danger);" onclick="clearStudyHistory()">Clear Study History</button>
-    </div>
-  </section>
-
-  <!-- =========================================================================
-       প্যানেল ৪: ইনসাইটস ও অর্জন ব্যাজ (Insights Panel)
-       ========================================================================= -->
-  <section id="insightsPanel" class="app-panel">
-    <div class="section-card" style="background:linear-gradient(135deg,var(--primary-soft),var(--card));border-color:color-mix(in srgb,var(--primary) 30%,var(--border));">
-      <h2 class="section-title">🧠 Today's Focus Queue</h2>
-      <p class="section-sub">Recommended chapters based on in-progress and exam priorities.</p>
-      <div id="smartQueueList" style="margin-top:12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;"></div>
-    </div>
-
-    <div class="section-card">
-      <h3 class="section-title">🏆 Milestones & Achievements</h3>
-      <p class="section-sub">Unlock achievement badges as you progress through topics.</p>
-      <div id="badgeGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-top:12px;"></div>
-    </div>
-  </section>
-
+<!-- Insights tab -->
+<section id="insightsPanel" class="panel">
+  <div class="card section" style="background:linear-gradient(135deg,var(--primary-soft),var(--card))"><h2>🧠 Today's Focus Queue</h2><p>In-progress chapters first, then the next unfinished chapters.</p><div id="smartQueueList" class="insights-grid"></div></div>
+  <div class="card section"><h2>🏆 Milestones & Achievements</h2><p>Unlock badges as you complete chapters.</p><div id="badgeGrid" class="insights-grid"></div></div>
+</section>
 </main>
 
-<!-- =========================================================================
-     🍅 পোমোডোরো টাইমার ওভারলে (Pomodoro Timer Modal)
-     ========================================================================= -->
-<div id="pomodoroOverlay" class="pomodoro-overlay">
-  <div class="pomodoro-box">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-      <!-- 🍅 আইকনযুক্ত পোমোডোরো সেশন টাইটেল -->
-      <span id="pomoSessionTag" style="font-size:12px;font-weight:800;text-transform:uppercase;color:var(--primary);letter-spacing:0.04em;">
-        🍅 Focus · Session 1
-      </span>
-      <button class="action-small" onclick="closePomodoro()">✕ Close</button>
-    </div>
+<!-- Pomodoro overlay -->
+<div id="pomodoroOverlay" class="pomo"><div class="card pomo-box">
+  <div class="row"><b id="pomoSessionTag" style="font-size:11px;color:var(--primary)">🍅 Focus · Session 1</b><button class="filter" onclick="closePomodoro()">✕ Close</button></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px;text-align:left"><div><label class="label">Book</label><select id="pomoBookSelect" class="select" onchange="handlePomoBookChange(this.value)"></select></div><div><label class="label">Chapter</label><select id="pomoChapterSelect" class="select" onchange="handlePomoChapterChange(this.value)"></select></div></div>
+  <div id="pomoCurrentTopic" style="font-size:12px;font-weight:850;color:var(--primary);margin-top:10px;min-height:18px"></div>
+  <div id="pomoClock" class="pomo-clock">25:00</div><div class="progress" style="max-width:350px;margin:auto"><div id="pomoProgressFill" class="fill"></div></div>
+  <div class="pomo-controls"><button id="pomoStartBtn" class="btn danger" onclick="togglePomodoroPlay()">▶ Start</button><button class="btn" onclick="resetPomodoro()">↺ Reset</button><button class="btn" onclick="skipPomodoro()">⏭ Skip</button></div>
+</div></div>
 
-    <div style="margin-bottom:12px;display:grid;grid-template-columns:1fr 1fr;gap:7px;text-align:left;">
-      <div>
-        <label style="font-size:10.5px;font-weight:750;color:var(--muted);display:block;margin-bottom:3px;">Book</label>
-        <select id="pomoBookSelect" class="select" onchange="handlePomoBookChange(this.value)" style="padding:7px 9px;font-size:11.5px;">
-          <option value="">Select Book...</option>
-        </select>
-      </div>
-      <div>
-        <label style="font-size:10.5px;font-weight:750;color:var(--muted);display:block;margin-bottom:3px;">Chapter</label>
-        <select id="pomoChapterSelect" class="select" onchange="handlePomoChapterChange(this.value)" style="padding:7px 9px;font-size:11.5px;">
-          <option value="">Select Chapter...</option>
-        </select>
-      </div>
-    </div>
+<!-- Reset confirmation modal -->
+<div id="resetModal" class="modal"><div class="card modalbox" style="text-align:center"><div style="font-size:32px">⚠️</div><h3>Reset Syllabus Progress?</h3><p class="sub" style="margin:8px 0 14px">Chapter statuses will return to Not Started. Exam plans and study history stay safe.</p><div class="modal-actions" style="justify-content:center"><button class="btn" onclick="closeResetModal()">Cancel</button><button class="btn danger" onclick="confirmResetProgress()">Yes, Reset</button></div></div></div>
 
-    <div id="pomoCurrentTopic" style="font-size:12.5px;font-weight:800;color:var(--primary);margin-bottom:8px;min-height:18px;">
-      Select book & chapter to focus
-    </div>
+<!-- Exam create/edit modal -->
+<div id="examModal" class="modal"><div class="card modalbox"><h3 id="examModalTitle">Create Exam Plan</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px"><input id="inputExamName" class="input" placeholder="Exam name"><input id="inputExamDate" class="input" type="date"></div><div style="margin-top:10px"><label class="label">Select chapters</label><div id="examPickerList" style="max-height:270px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:7px;background:var(--soft);margin-top:4px"></div></div><div class="modal-actions"><button class="btn" onclick="closeExamModal()">Cancel</button><button class="btn primary" onclick="saveExamFromModal()">Save Exam</button></div></div></div>
+<!-- Toast notification -->
+<div id="toast" class="toast"></div>
+<footer><div>©turabi_alam</div><div style="margin-top:3px">Study • Track • Complete</div><div style="margin-top:3px">Made with ❤️ for HSC Students</div></footer>
 
-    <!-- বড় ডিজিটাল ঘড়ি -->
-    <div id="pomoClock" class="pomodoro-time">25:00</div>
-
-    <div class="progress-track" style="margin:12px auto;max-width:340px;">
-      <div id="pomoProgressFill" class="progress-fill" style="width:0%;"></div>
-    </div>
-
-    <div class="pomodoro-controls">
-      <button id="pomoStartBtn" class="pomo-btn primary" onclick="togglePomodoroPlay()">▶ Start</button>
-      <button class="pomo-btn" onclick="resetPomodoro()">↺ Reset</button>
-      <button class="pomo-btn" onclick="skipPomodoro()">⏭ Skip</button>
-    </div>
-  </div>
-</div>
-
-<!-- =========================================================================
-     রিসেট প্রগ্রেস মোডাল (Reset Confirmation Modal)
-     ========================================================================= -->
-<div id="resetModal" class="modal">
-  <div class="modal-box" style="text-align:center;">
-    <div style="font-size:32px;margin-bottom:6px;">⚠️</div>
-    <h3 class="section-title">Reset Syllabus Progress?</h3>
-    <p class="section-sub" style="margin:8px 0 16px;">All chapter completion statuses will be reset to Not Started. Exam plans and study history will remain safe.</p>
-    <div style="display:flex;justify-content:center;gap:8px;">
-      <button class="modal-cancel" onclick="closeResetModal()">Cancel</button>
-      <button class="modal-ok" style="background:var(--danger);" onclick="confirmResetProgress()">Yes, Reset</button>
-    </div>
-  </div>
-</div>
-
-<!-- =========================================================================
-     পরীক্ষা তৈরি/এডিট মোডাল (Exam Creation Modal)
-     ========================================================================= -->
-<div id="examModal" class="modal">
-  <div class="modal-box">
-    <h3 id="examModalTitle" class="section-title">Create New Exam Plan</h3>
-    <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      <div>
-        <label style="font-size:10.5px;font-weight:800;color:var(--muted);display:block;margin-bottom:3px;">Exam Name</label>
-        <input id="inputExamName" class="search" type="text" placeholder="e.g. Physics 1st Paper Term Exam">
-      </div>
-      <div>
-        <label style="font-size:10.5px;font-weight:800;color:var(--muted);display:block;margin-bottom:3px;">Exam Date</label>
-        <input id="inputExamDate" class="search" type="date">
-      </div>
-    </div>
-    <div style="margin-top:10px;">
-      <label style="font-size:10.5px;font-weight:800;color:var(--muted);display:block;margin-bottom:4px;">Select Included Chapters</label>
-      <div id="examPickerList" style="max-height:240px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:6px;background:var(--soft);"></div>
-    </div>
-    <div class="modal-actions">
-      <button class="modal-cancel" onclick="closeExamModal()">Cancel</button>
-      <button class="modal-ok" onclick="saveExamFromModal()">Save Exam</button>
-    </div>
-  </div>
-</div>
-
-<!-- টোস্ট নোটিফিকেশন মেসেজ -->
-<div id="toast">Notice</div>
-
-<!-- ফুটার কপিরাইট (৩টি আলাদা লাইনে, শেষ লাইনে Science শব্দ ছাড়া) -->
-<footer>
-  <div>©turabi_alam</div>
-  <div style="margin-top: 4px;">Study • Track • Complete</div>
-  <div style="margin-top: 4px;">Made with ❤️ for HSC Students</div>
-</footer>
-
-<!-- =========================================================================
-     ১৫. জাভাস্ক্রিপ্ট কোড (সম্পূর্ণ বাংলায় কমেন্ট সহ প্রতিটি লজিক)
-     ========================================================================= -->
 <script>
-/**
- * -------------------------------------------------------------------------
- * ক. বই এবং অধ্যায়ের ডেটা (HSC Science Syllabus)
- * মোট ৮টি বিষয় এবং ৭৫টি অধ্যায়ের সম্পূর্ণ বাংলা তালিকা।
- * -------------------------------------------------------------------------
- */
-const BOOKS = {
-  "Physics 1st Paper": 10,
-  "Physics 2nd Paper": 11,
-  "Chemistry 1st Paper": 5,
-  "Chemistry 2nd Paper": 5,
-  "Higher Math 1st Paper": 10,
-  "Higher Math 2nd Paper": 10,
-  "Botany": 12,
-  "Zoology": 12
-};
-
-const CHAPTER_NAMES = {
-  "Physics 1st Paper": [
-    "ভৌত জগৎ ও পরিমাপ",
-    "ভেক্টর",
-    "গতিবিদ্যা",
-    "নিউটনিয়ান বলবিদ্যা",
-    "কাজ, শক্তি ও ক্ষমতা",
-    "মহাকর্ষ ও অভিকর্ষ",
-    "পদার্থের গাঠনিক ধর্ম",
-    "পর্যায়বৃত্ত গতি",
-    "তরঙ্গ",
-    "আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব"
-  ],
-  "Physics 2nd Paper": [
-    "তাপগতিবিদ্যা",
-    "স্থির তড়িৎ",
-    "চল তড়িৎ",
-    "তড়িৎ প্রবাহের চৌম্বক ক্রিয়া",
-    "তড়িৎচৌম্বকীয় আবেশ ও পরিবর্তী প্রবাহ",
-    "জ্যামিতিক আলোকবিজ্ঞান",
-    "ভৌত আলোকবিজ্ঞান",
-    "আধুনিক পদার্থবিজ্ঞানের সূচনা",
-    "পরমাণু মডেল ও নিউক্লিয়ার পদার্থবিজ্ঞান",
-    "সেমিকন্ডাক্টর ও ইলেকট্রনিক্স",
-    "জ্যোতির্বিজ্ঞান"
-  ],
-  "Chemistry 1st Paper": [
-    "ল্যাবরেটরির নিরাপদ ব্যবহার",
-    "গুণগত রসায়ন",
-    "মৌলের পর্যায়বৃত্ত ধর্ম ও রাসায়নিক বন্ধন",
-    "রাসায়নিক পরিবর্তন",
-    "কর্মমুখী রসায়ন"
-  ],
-  "Chemistry 2nd Paper": [
-    "পরিবেশ রসায়ন",
-    "জৈব রসায়ন",
-    "পরিমাণগত রসায়ন",
-    "তড়িৎ রসায়ন",
-    "অর্থনৈতিক রসায়ন"
-  ],
-  "Higher Math 1st Paper": [
-    "ম্যাট্রিক্স ও নির্ণায়ক",
-    "ভেক্টর",
-    "সরলরেখা",
-    "বৃত্ত",
-    "বিন্যাস ও সমাবেশ",
-    "ত্রিকোণমিতিক অনুপাত",
-    "সংযুক্ত কোণের ত্রিকোণমিতিক অনুপাত",
-    "ফাংশন ও ফাংশনের লেখচিত্র",
-    "অন্তরীকরণ",
-    "যোগজীকরণ"
-  ],
-  "Higher Math 2nd Paper": [
-    "বাস্তব সংখ্যা ও অসমতা",
-    "যোগাশ্রয়ী প্রোগ্রাম",
-    "জটিল সংখ্যা",
-    "বহুপদী ও বহুপদী সমীকরণ",
-    "দ্বিপদী বিস্তৃতি",
-    "কণিক",
-    "বিপরীত ত্রিকোণমিতিক ফাংশন ও ত্রিকোণমিতিক সমীকরণ",
-    "স্থিতিবিদ্যা",
-    "সমতলে বস্তুকণার গতি",
-    "সম্ভাবনা"
-  ],
-  "Botany": [
-    "কোষ ও এর গঠন",
-    "কোষ বিভাজন",
-    "কোষ রসায়ন",
-    "অণুজীব",
-    "শৈবাল ও ছত্রাক",
-    "ব্রায়োফাইটা ও টেরিডোফাইটা",
-    "নগ্নবীজী ও আবৃতবীজী উদ্ভিদ",
-    "টিস্যু ও টিস্যুতন্ত্র",
-    "উদ্ভিদ শারীরতত্ত্ব",
-    "উদ্ভিদ প্রজনন",
-    "জীবপ্রযুক্তি",
-    "পরিবেশ ও সংরক্ষণ"
-  ],
-  "Zoology": [
-    "প্রাণীর বৈচিত্র্য ও শ্রেণিবিন্যাস",
-    "প্রাণীর পরিচিতি",
-    "পরিপাক ও শোষণ",
-    "রক্ত ও সঞ্চালন",
-    "শ্বাসক্রিয়া ও শ্বসন",
-    "বর্জ্য নিষ্কাশন",
-    "চলন ও অঙ্গচালনা",
-    "সমন্বয় ও নিয়ন্ত্রণ",
-    "মানব জীবনের ধারাবাহিকতা",
-    "মানবদেহের প্রতিরক্ষা",
-    "জিনতত্ত্ব ও বিবর্তন",
-    "প্রাণীর আচরণ"
-  ]
-};
-
-const BOOK_ICONS = {
-  "Physics 1st Paper": "⚛️",
-  "Physics 2nd Paper": "🔬",
-  "Chemistry 1st Paper": "🧪",
-  "Chemistry 2nd Paper": "🧫",
-  "Higher Math 1st Paper": "📐",
-  "Higher Math 2nd Paper": "📊",
-  "Botany": "🌱",
-  "Zoology": "🦎"
-};
-
-/**
- * -------------------------------------------------------------------------
- * খ. লোকাল স্টোরেজ কি (Local Storage Keys)
- * এই কি-গুলো ব্যবহার করে ব্রাউজারে সমস্ত ডেটা নিরাপদে সংরক্ষণ করা হয়।
- * -------------------------------------------------------------------------
- */
-const KEY_PROGRESS = "syllabusTracker";
-const KEY_THEME = "syllabusTheme";
-const KEY_LAST = "syllabusLastChapter";
-const KEY_COLLAPSED = "syllabusCollapsed";
-const KEY_HISTORY = "pomodoroDailyHistory";
-const KEY_EXAMS = "studentExamPlanner";
-const KEY_GOAL = "dailyStudyGoal";
-
-// লোকাল স্টোরেজ থেকে ডেটা পড়ার সেফ ফাংশন
-function getStorage(k, fb) {
-  try {
-    const val = localStorage.getItem(k);
-    return val ? JSON.parse(val) : fb;
-  } catch (e) {
-    return fb;
-  }
+const BOOKS= {
+    "Physics 1st Paper":["ভৌত জগৎ ও পরিমাপ","ভেক্টর","গতিবিদ্যা","নিউটনিয়ান বলবিদ্যা","কাজ, শক্তি ও ক্ষমতা","মহাকর্ষ ও অভিকর্ষ","পদার্থের গাঠনিক ধর্ম","পর্যায়বৃত্ত গতি","তরঙ্গ","আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব"],
+    "Physics 2nd Paper":["তাপগতিবিদ্যা","স্থির তড়িৎ","চল তড়িৎ","তড়িৎ প্রবাহের চৌম্বক ক্রিয়া","তড়িৎচৌম্বকীয় আবেশ ও পরিবর্তী প্রবাহ","জ্যামিতিক আলোকবিজ্ঞান","ভৌত আলোকবিজ্ঞান","আধুনিক পদার্থবিজ্ঞানের সূচনা","পরমাণু মডেল ও নিউক্লিয়ার পদার্থবিজ্ঞান","সেমিকন্ডাক্টর ও ইলেকট্রনিক্স","জ্যোতির্বিজ্ঞান"],
+    "Chemistry 1st Paper":["ল্যাবরেটরির নিরাপদ ব্যবহার","গুণগত রসায়ন","মৌলের পর্যায়বৃত্ত ধর্ম ও রাসায়নিক বন্ধন","রাসায়নিক পরিবর্তন","কর্মমুখী রসায়ন"],
+    "Chemistry 2nd Paper":["পরিবেশ রসায়ন","জৈব রসায়ন","পরিমাণগত রসায়ন","তড়িৎ রসায়ন","অর্থনৈতিক রসায়ন"],
+    "Higher Math 1st Paper":["ম্যাট্রিক্স ও নির্ণায়ক","ভেক্টর","সরলরেখা","বৃত্ত","বিন্যাস ও সমাবেশ","ত্রিকোণমিতিক অনুপাত","সংযুক্ত কোণের ত্রিকোণমিতিক অনুপাত","ফাংশন ও ফাংশনের লেখচিত্র","অন্তরীকরণ","যোগজীকরণ"],
+    "Higher Math 2nd Paper":["বাস্তব সংখ্যা ও অসমতা","যোগাশ্রয়ী প্রোগ্রাম","জটিল সংখ্যা","বহুপদী ও বহুপদী সমীকরণ","দ্বিপদী বিস্তৃতি","কণিক","বিপরীত ত্রিকোণমিতিক ফাংশন ও ত্রিকোণমিতিক সমীকরণ","স্থিতিবিদ্যা","সমতলে বস্তুকণার গতি","সম্ভাবনা"],
+    "Botany":["কোষ ও এর গঠন","কোষ বিভাজন","কোষ রসায়ন","অণুজীব","শৈবাল ও ছত্রাক","ব্রায়োফাইটা ও টেরিডোফাইটা","নগ্নবীজী ও আবৃতবীজী উদ্ভিদ","টিস্যু ও টিস্যুতন্ত্র","উদ্ভিদ শারীরতত্ত্ব","উদ্ভিদ প্রজনন","জীবপ্রযুক্তি","পরিবেশ ও সংরক্ষণ"],
+    "Zoology":["প্রাণীর বৈচিত্র্য ও শ্রেণিবিন্যাস","প্রাণীর পরিচিতি","পরিপাক ও শোষণ","রক্ত ও সঞ্চালন","শ্বাসক্রিয়া ও শ্বসন","বর্জ্য নিষ্কাশন","চলন ও অঙ্গচালনা","সমন্বয় ও নিয়ন্ত্রণ","মানব জীবনের ধারাবাহিকতা","মানবদেহের প্রতিরক্ষা","জিনতত্ত্ব ও বিবর্তন","প্রাণীর আচরণ"]
 }
-
-// লোকাল স্টোরেজে ডেটা সেভ করার সেফ ফাংশন
-function setStorage(k, val) {
-  try {
-    localStorage.setItem(k, JSON.stringify(val));
-  } catch (e) {
-    console.warn("Storage error:", e);
-  }
+;
+// Subject icons used in the syllabus cards.
+const ICONS= {
+    "Physics 1st Paper":"⚛️","Physics 2nd Paper":"🔬","Chemistry 1st Paper":"🧪","Chemistry 2nd Paper":"🧫","Higher Math 1st Paper":"📐","Higher Math 2nd Paper":"📊","Botany":"🌱","Zoology":"🦎"
 }
-
-// গ্লোবাল স্টেটসমূহ
-let progress = getStorage(KEY_PROGRESS, {});
-let lastChapter = getStorage(KEY_LAST, null);
-let collapsed = getStorage(KEY_COLLAPSED, {});
-let exams = getStorage(KEY_EXAMS, []);
-let historyData = getStorage(KEY_HISTORY, {});
-let dailyGoal = Number(localStorage.getItem(KEY_GOAL)) || 120;
-
-let currentTab = "syllabus";
-let searchQuery = "";
-let selectedBookFilter = "all";
-let selectedStatusFilter = "all";
-let selectedExamId = null;
-
-// চ্যাপ্টারের ইউনিক কি তৈরি (যেমন: Physics 1st Paper__1)
-function chKey(b, c) {
-  return b + "__" + c;
+;
+// LocalStorage keys. Keeping these names unchanged preserves saved user data.
+const KEY= {
+    progress:"syllabusTracker",theme:"syllabusTheme",last:"syllabusLastChapter",collapsed:"syllabusCollapsed",history:"pomodoroDailyHistory",exams:"studentExamPlanner",goal:"dailyStudyGoal"
 }
-
-// আজকের তারিখের স্ট্রিং তৈরি (YYYY-MM-DD)
-function todayStr() {
-  const d = new Date();
-  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+;
+// Small LocalStorage helper functions.
+const load=(k,d)=> {
+    try {
+        return JSON.parse(localStorage.getItem(k))??d
+    } catch {
+        return d
+    }
 }
-
-// সেকেন্ডকে ঘন্টা ও মিনিটে রূপান্তর
-function formatDuration(sec) {
-  const t = Math.max(0, Math.round(sec));
-  const h = Math.floor(t / 3600);
-  const m = Math.floor((t % 3600) / 60);
-  const s = t % 60;
-  if (h > 0) return h + "h " + m + "m";
-  if (m > 0) return m + "m" + (s > 0 ? " " + s + "s" : "");
-  return s + "s";
+,save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+// ============================================================
+// 2. APP STATE
+// These variables hold the current UI/data state while the app is open.
+// ============================================================
+let progress=load(KEY.progress, {
 }
-
-/**
- * -------------------------------------------------------------------------
- * গ. ডার্ক মোড এবং লাইট মোড টগল (Dark Mode Logic)
- * -------------------------------------------------------------------------
- */
-function applyTheme(isDark) {
-  document.documentElement.classList.toggle("dark", isDark);
-  document.body.classList.toggle("dark", isDark);
-  const btn = document.getElementById("themeBtn");
-  if (btn) btn.textContent = isDark ? "☀️ Light" : "🌙 Dark";
-  localStorage.setItem(KEY_THEME, isDark ? "dark" : "light");
-  renderHistoryGraph();
+),last=load(KEY.last,null),collapsed=load(KEY.collapsed, {
 }
-
+),history=load(KEY.history, {
+}
+),exams=load(KEY.exams,[]),goal=Number(localStorage.getItem(KEY.goal))||120;
+let currentTab="syllabus",search="",bookFilter="all",statusFilter="all",selectedExam=null,editingExam=null,graphPeriod="daily";
+const chKey=(b,c)=>b+"__"+c, today=()=> {
+    const d=new Date();
+    return d.toISOString().slice(0,10)
+}
+;
+const fmt=s=> {
+    s=Math.max(0,Math.round(s));
+    let h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;
+    return h?`${h}h ${m}m`:m?`${m}m${x?" "+x+"s":""}`:`${x}s`
+}
+;
+// Show a short notification at the bottom-right of the screen.
+function toast(t) {
+    const e=document.getElementById("toast");
+    e.textContent=t;
+    e.classList.add("show");
+    clearTimeout(window.__toast);
+    window.__toast=setTimeout(()=>e.classList.remove("show"),2200)
+}
+// Apply and save Dark/Light mode.
+function applyTheme(d) {
+    document.documentElement.classList.toggle("dark",d);
+    document.body.classList.toggle("dark",d);
+    document.getElementById("themeBtn").textContent=d?"☀️ Light":"🌙 Dark";
+    localStorage.setItem(KEY.theme,d?"dark":"light");
+    if(currentTab==="history")drawGraph()
+}
 function toggleTheme() {
-  const isDark = !document.documentElement.classList.contains("dark");
-  applyTheme(isDark);
-  showToast(isDark ? "🌙 Dark Mode Enabled" : "☀️ Light Mode Enabled");
+    applyTheme(!document.documentElement.classList.contains("dark"));
+    toast(document.documentElement.classList.contains("dark")?"🌙 Dark Mode":"☀️ Light Mode")
 }
-
-// প্রাথমিক থিম লোড
-const savedTheme = localStorage.getItem(KEY_THEME) || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-applyTheme(savedTheme === "dark");
-
-/**
- * -------------------------------------------------------------------------
- * ঘ. ট্যাব পরিবর্তন করার লজিক (Tab Switching Logic)
- * কোনো প্রকার আটকানো ছাড়া সরাসরি সিলেবাস, এক্সাম, হিস্ট্রি ও ইনসাইটস প্যানেল দেখাবে।
- * -------------------------------------------------------------------------
- */
-function switchTab(tabId) {
-  currentTab = tabId;
-  document.querySelectorAll(".main-tab").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.tab === tabId);
-  });
-  document.querySelectorAll(".app-panel").forEach(panel => {
-    panel.classList.toggle("active", panel.id === (tabId + "Panel"));
-  });
-
-  if (tabId === "exams") renderExams();
-  if (tabId === "history") renderHistory();
-  if (tabId === "insights") renderInsights();
+// Switch between Syllabus, Exam Planner, History and Insights.
+function switchTab(t) {
+    currentTab=t;
+    document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===t));
+    document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===t+"Panel"));
+    if(t==="exams")renderExams();
+    if(t==="history")renderHistory();
+    if(t==="insights")renderInsights()
 }
-
-/**
- * -------------------------------------------------------------------------
- * ঙ. ড্যাশবোর্ড আপডেট (Update Dashboard & KPI Progress)
- * -------------------------------------------------------------------------
- */
+// ============================================================
+// 3. DASHBOARD / PROGRESS SUMMARY
+// Recalculates the numbers shown at the top of the app.
+// ============================================================
 function updateDashboard() {
-  let total = 0, completed = 0, inProgress = 0;
-
-  Object.keys(BOOKS).forEach(b => {
-    const count = BOOKS[b];
-    total += count;
-    for (let c = 1; c <= count; c++) {
-      const st = progress[chKey(b, c)];
-      if (st === "complete") completed++;
-      else if (st === "in-progress") inProgress++;
+    let total=0,done=0,inp=0;
+    Object.entries(BOOKS).forEach(([b,arr])=> {
+        total+=arr.length;
+        arr.forEach((_,i)=> {
+            const s=progress[chKey(b,i+1)];
+            if(s==="complete")done++;
+            if(s==="in-progress")inp++
+        }
+        )
     }
-  });
-
-  const pct = total > 0 ? ((completed / total) * 100).toFixed(0) : "0";
-  document.getElementById("statTotal").textContent = total;
-  document.getElementById("statCompleted").textContent = completed;
-  document.getElementById("statInProgress").textContent = inProgress;
-  document.getElementById("statPercent").textContent = pct + "%";
-  document.getElementById("overallPercentText").textContent = pct + "%";
-  document.getElementById("overallFill").style.width = pct + "%";
-
-  // আজকের পড়ার মোট সময়
-  const todaySec = Number(historyData[todayStr()]?.totalSeconds || 0);
-  document.getElementById("quickTodayStudy").textContent = formatDuration(todaySec);
-
-  // পড়ার স্ট্রিক হিসাব
-  let streak = 0, cursor = new Date();
-  if (Number(historyData[todayStr()]?.totalSeconds || 0) <= 0) {
-    cursor = new Date(Date.now() - 86400000);
-  }
-  while (true) {
-    const dStr = cursor.getFullYear() + "-" + String(cursor.getMonth() + 1).padStart(2, "0") + "-" + String(cursor.getDate()).padStart(2, "0");
-    if (Number(historyData[dStr]?.totalSeconds || 0) > 0) {
-      streak++;
-      cursor = new Date(cursor.getTime() - 86400000);
-      if (streak > 365) break;
-    } else break;
-  }
-  document.getElementById("quickStreak").textContent = streak + " days";
-
-  // ডেইলি গোল হিসাব
-  const goalSec = dailyGoal * 60;
-  const goalPct = goalSec > 0 ? Math.min(100, Math.round((todaySec / goalSec) * 100)) : 0;
-  document.getElementById("quickGoal").textContent = goalPct + "%";
-
-  // আসন্ন পরীক্ষার সংখ্যা
-  const todayTime = new Date().setHours(0, 0, 0, 0);
-  const upExams = exams.filter(e => e.date && new Date(e.date + "T00:00:00").getTime() >= todayTime).length;
-  document.getElementById("quickExams").textContent = upExams;
-
-  updateContinueCard();
-}
-
-/**
- * -------------------------------------------------------------------------
- * চ. স্মার্ট কন্টিনিউ কার্ড (Smart Continue Studying Card)
- * -------------------------------------------------------------------------
- */
-let currentContinueTarget = null;
-
-function findContinueTarget() {
-  if (lastChapter && BOOKS[lastChapter.book] && progress[chKey(lastChapter.book, lastChapter.chapter)] === "in-progress") {
-    return { book: lastChapter.book, chapter: lastChapter.chapter, reason: "Last Studied" };
-  }
-  for (const b of Object.keys(BOOKS)) {
-    for (let c = 1; c <= BOOKS[b]; c++) {
-      if (progress[chKey(b, c)] === "in-progress") {
-        return { book: b, chapter: c, reason: "In Progress" };
-      }
+    );
+    const pct=Math.round(done/total*100),sec=Number(history[today()]?.totalSeconds||0);
+    document.getElementById("statTotal").textContent=total;
+    document.getElementById("statCompleted").textContent=done;
+    document.getElementById("statInProgress").textContent=inp;
+    document.getElementById("statPercent").textContent=pct+"%";
+    document.getElementById("overallPercentText").textContent=pct+"%";
+    document.getElementById("overallFill").style.width=pct+"%";
+    document.getElementById("quickTodayStudy").textContent=fmt(sec);
+    let cur=new Date(),streak=0;
+    if(sec<=0)cur.setDate(cur.getDate()-1);
+    while(history[cur.toISOString().slice(0,10)]?.totalSeconds>0) {
+        streak++;
+        cur.setDate(cur.getDate()-1);
+        if(streak>366)break
     }
-  }
-  for (const b of Object.keys(BOOKS)) {
-    for (let c = 1; c <= BOOKS[b]; c++) {
-      if (!progress[chKey(b, c)]) {
-        return { book: b, chapter: c, reason: "Next Uncompleted" };
-      }
+    document.getElementById("quickStreak").textContent=streak+" days";
+    document.getElementById("quickGoal").textContent=Math.min(100,Math.round(sec/(goal*60)*100))+"%";
+    document.getElementById("quickExams").textContent=exams.filter(e=>e.date>=today()).length;
+    updateContinue();
+}
+// Decide which chapter should appear in "Continue Studying".
+function findContinue() {
+    if(last&&BOOKS[last.book]&&progress[chKey(last.book,last.chapter)]==="in-progress")return {
+        ...last,reason:"Last Studied"
     }
-  }
-  return null;
+    ;
+    for(const b of Object.keys(BOOKS))for(let c=1;
+    c<=BOOKS[b].length;
+    c++)if(progress[chKey(b,c)]==="in-progress")return {
+        book:b,chapter:c,reason:"In Progress"
+    }
+    ;
+    for(const b of Object.keys(BOOKS))for(let c=1;
+    c<=BOOKS[b].length;
+    c++)if(!progress[chKey(b,c)])return {
+        book:b,chapter:c,reason:"Next Uncompleted"
+    }
+    ;
+    return null
 }
-
-function updateContinueCard() {
-  const card = document.getElementById("continueCard");
-  currentContinueTarget = findContinueTarget();
-  if (!currentContinueTarget) {
-    card.style.display = "none";
-    return;
-  }
-  card.style.display = "flex";
-  document.getElementById("continueReason").textContent = currentContinueTarget.reason;
-  document.getElementById("continueTitle").textContent = CHAPTER_NAMES[currentContinueTarget.book]?.[currentContinueTarget.chapter - 1] || ("Chapter " + currentContinueTarget.chapter);
-  document.getElementById("continueSub").textContent = currentContinueTarget.book + " · Chapter " + currentContinueTarget.chapter;
+let continueTarget=null;
+function updateContinue() {
+    continueTarget=findContinue();
+    const e=document.getElementById("continueCard");
+    if(!continueTarget) {
+        e.style.display="none";
+        return
+    }
+    e.style.display="flex";
+    document.getElementById("continueReason").textContent=continueTarget.reason;
+    document.getElementById("continueTitle").textContent=BOOKS[continueTarget.book][continueTarget.chapter-1];
+    document.getElementById("continueSub").textContent=`${continueTarget.book} · Chapter ${continueTarget.chapter}`
 }
-
 function jumpToContinueTarget() {
-  if (!currentContinueTarget) return;
-  switchTab("syllabus");
-  collapsed[currentContinueTarget.book] = false;
-  setStorage(KEY_COLLAPSED, collapsed);
-  renderSyllabus();
-
-  setTimeout(() => {
-    const el = document.getElementById("ch_row_" + currentContinueTarget.book + "_" + currentContinueTarget.chapter);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-      el.classList.add("continue-highlight");
-      setTimeout(() => el.classList.remove("continue-highlight"), 2500);
+    if(!continueTarget)return;
+    switchTab("syllabus");
+    collapsed[continueTarget.book]=false;
+    save(KEY.collapsed,collapsed);
+    renderSyllabus();
+    setTimeout(()=>document.getElementById(`ch_${slug(continueTarget.book)}_${continueTarget.chapter}`)?.scrollIntoView( {
+        behavior:"smooth",block:"center"
     }
-  }, 100);
+    ),80)
 }
-
 function startPomodoroForContinueTarget() {
-  if (!currentContinueTarget) return;
-  openPomodoroFor(currentContinueTarget.book, currentContinueTarget.chapter);
+    if(continueTarget)openPomodoroFor(continueTarget.book,continueTarget.chapter)
 }
-
-/**
- * -------------------------------------------------------------------------
- * ছ. সিলেবাস রেন্ডার এবং ফিল্টারিং (Syllabus Rendering)
- * -------------------------------------------------------------------------
- */
+function slug(s) {
+    return s.replace(/[^a-zA-Z0-9]/g,"_")
+}
+// ============================================================
+// 4. SYLLABUS RENDERING + FILTERS
+// Builds all subject/chapter cards from BOOKS + progress state.
+// ============================================================
 function renderSyllabus() {
-  const container = document.getElementById("subjects");
-  container.innerHTML = "";
-
-  const query = searchQuery.toLowerCase().trim();
-
-  Object.keys(BOOKS).forEach(b => {
-    if (selectedBookFilter !== "all" && selectedBookFilter !== b) return;
-
-    const count = BOOKS[b];
-    const names = CHAPTER_NAMES[b] || [];
-    let completed = 0, inProg = 0;
-    const visibleChs = [];
-
-    for (let c = 1; c <= count; c++) {
-      const st = progress[chKey(b, c)] || "not-started";
-      if (st === "complete") completed++;
-      else if (st === "in-progress") inProg++;
-
-      const chName = names[c - 1] || "";
-      if (selectedStatusFilter !== "all" && st !== selectedStatusFilter) continue;
-      if (query && !b.toLowerCase().includes(query) && !chName.toLowerCase().includes(query) && String(c) !== query) continue;
-
-      visibleChs.push(c);
+    const box=document.getElementById("subjects");
+    box.innerHTML="";
+    const q=search.toLowerCase().trim();
+    Object.entries(BOOKS).forEach(([b,arr])=> {
+        if(bookFilter!=="all"&&bookFilter!==b)return;
+        let done=0,inp=0,visible=[];
+        arr.forEach((name,i)=> {
+            let c=i+1,s=progress[chKey(b,c)]||"not-started";
+            if(s==="complete")done++;
+            if(s==="in-progress")inp++;
+            if((statusFilter==="all"||statusFilter===s)&&(!q||b.toLowerCase().includes(q)||name.toLowerCase().includes(q)||String(c)===q))visible.push(c)
+        }
+        );
+        if(!visible.length)return;
+        let pct=Math.round(done/arr.length*100),col=!!collapsed[b]&&!q&&statusFilter==="all";
+        const card=document.createElement("div");
+        card.className="card subject"+(col?" collapsed":"");
+        card.innerHTML=`<div class="subject-head" onclick="toggleBookCollapse(${JSON.stringify(b)})"><div class="subject-icon">${ICONS[b]}</div><div class="subject-info"><div class="subject-title">${b}</div><div class="subject-meta">${done} complete · ${inp} in progress · ${arr.length} total</div></div><div class="subject-progress"><div class="smallrow"><span>${done}/${arr.length}</span><span>${pct}%</span></div><div class="smallbar"><i style="width:${pct}%"></i></div></div><div class="chev">▼</div></div><div class="subject-body"><div class="chapters">${visible.map(c=>chapterHTML(b,c,arr[c-1])).join("")}</div></div>`;
+        box.appendChild(card);
     }
-
-    if (visibleChs.length === 0) return;
-
-    const isCollapsed = !!collapsed[b] && !query && selectedStatusFilter === "all";
-    const pct = ((completed / count) * 100).toFixed(0);
-
-    const card = document.createElement("div");
-    card.className = "subject" + (isCollapsed ? " collapsed" : "");
-    card.innerHTML = `
-      <div class="subject-header" onclick="toggleBookCollapse('${b}')">
-        <div class="subject-icon">${BOOK_ICONS[b] || "📚"}</div>
-        <div class="subject-info">
-          <div class="subject-title">${b}</div>
-          <div class="subject-meta">${completed} complete · ${inProg} in progress · ${count} total</div>
-        </div>
-        <div class="subject-progress">
-          <div class="subject-progress-text">
-            <span>${completed}/${count}</span>
-            <span>${pct}%</span>
-          </div>
-          <div class="subject-track"><div class="subject-fill" style="width:${pct}%;"></div></div>
-        </div>
-        <div class="chevron">▼</div>
-      </div>
-      <div class="subject-body">
-        <div class="chapter-list">
-          ${visibleChs.map(c => {
-            const st = progress[chKey(b, c)] || "not-started";
-            const name = names[c - 1] || ("Chapter " + c);
-            const stClass = st === "complete" ? "complete" : st === "in-progress" ? "in-progress" : "";
-            const stText = st === "complete" ? "✓ Complete" : st === "in-progress" ? "🟡 In Progress" : "⚪ Not Started";
-
-            return `
-              <div id="ch_row_${b}_${c}" class="chapter ${stClass}">
-                <div class="chapter-number">${String(c).padStart(2, "0")}</div>
-                <div class="chapter-content">
-                  <div class="chapter-name">${name}</div>
-                  <div class="chapter-status">${stText}</div>
-                </div>
-                <div class="chapter-tools">
-                  <button class="btn-mini" onclick="openPomodoroFor('${b}', ${c})">🍅 Focus</button>
-                  <button class="status-btn ${stClass}" onclick="toggleChapterStatus('${b}', ${c})">${stText}</button>
-                </div>
-              </div>
-            `;
-          }).join("")}
-        </div>
-      </div>
-    `;
-    container.appendChild(card);
-  });
+    );
 }
-
-// চ্যাপ্টারের স্ট্যাটাস পরিবর্তন করা (⚪ -> 🟡 -> 🟢)
-function toggleChapterStatus(b, c) {
-  const k = chKey(b, c);
-  const st = progress[k] || "not-started";
-  if (st === "not-started") {
-    progress[k] = "in-progress";
-    showToast("🟡 In Progress");
-  } else if (st === "in-progress") {
-    progress[k] = "complete";
-    showToast("🟢 Complete!");
-  } else {
-    delete progress[k];
-    showToast("⚪ Not Started");
-  }
-  lastChapter = { book: b, chapter: c };
-  setStorage(KEY_PROGRESS, progress);
-  setStorage(KEY_LAST, lastChapter);
-  updateDashboard();
-  renderSyllabus();
+// Create the HTML for one chapter row.
+function chapterHTML(b,c,name) {
+    const s=progress[chKey(b,c)]||"not-started",cls=s==="complete"?"complete":s==="in-progress"?"in-progress":"",text=s==="complete"?"✓ Complete":s==="in-progress"?"🟡 In Progress":"⚪ Not Started";
+    return `<div id="ch_${slug(b)}_${c}" class="chapter ${cls}"><div class="num">${String(c).padStart(2,"0")}</div><div class="chapter-main"><div class="chapter-name">${name}</div><div class="chapter-status">${text}</div></div><div class="tools"><button class="mini" onclick='openPomodoroFor(${JSON.stringify(b)},${c})'>🍅 Focus</button><button class="mini status ${cls}" onclick='toggleChapterStatus(${JSON.stringify(b)},${c})'>${text}</button></div></div>`
 }
-
+// Cycle: Not Started -> In Progress -> Complete -> Not Started.
+function toggleChapterStatus(b,c) {
+    const k=chKey(b,c),s=progress[k]||"not-started";
+    if(s==="not-started") {
+        progress[k]="in-progress";
+        toast("🟡 In Progress")
+    } else if(s==="in-progress") {
+        progress[k]="complete";
+        toast("🟢 Complete!")
+    } else {
+        delete progress[k];
+        toast("⚪ Not Started")
+    }
+    last= {
+        book:b,chapter:c
+    }
+    ;
+    save(KEY.progress,progress);
+    save(KEY.last,last);
+    updateDashboard();
+    renderSyllabus();
+    if(currentTab==="insights")renderInsights()
+}
 function toggleBookCollapse(b) {
-  collapsed[b] = !collapsed[b];
-  setStorage(KEY_COLLAPSED, collapsed);
-  renderSyllabus();
+    collapsed[b]=!collapsed[b];
+    save(KEY.collapsed,collapsed);
+    renderSyllabus()
 }
-
-function setAllCollapse(coll) {
-  Object.keys(BOOKS).forEach(b => collapsed[b] = coll);
-  setStorage(KEY_COLLAPSED, collapsed);
-  renderSyllabus();
+function setAllCollapse(v) {
+    Object.keys(BOOKS).forEach(b=>collapsed[b]=v);
+    save(KEY.collapsed,collapsed);
+    renderSyllabus()
 }
-
-function handleSearch(val) {
-  searchQuery = val;
-  renderSyllabus();
+function handleSearch(v) {
+    search=v;
+    renderSyllabus()
 }
-
-function handleBookFilter(val) {
-  selectedBookFilter = val;
-  renderSyllabus();
+function handleBookFilter(v) {
+    bookFilter=v;
+    renderSyllabus()
 }
-
-function handleStatusFilter(val) {
-  selectedStatusFilter = val;
-  document.querySelectorAll(".filter-btn").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.status === val);
-  });
-  renderSyllabus();
+function handleStatusFilter(v) {
+    statusFilter=v;
+    document.querySelectorAll(".filter[data-status]").forEach(x=>x.classList.toggle("active",x.dataset.status===v));
+    renderSyllabus()
 }
-
-/**
- * -------------------------------------------------------------------------
- * জ. পরীক্ষা প্ল্যানার লজিক (Custom Exam Planner)
- * -------------------------------------------------------------------------
- */
+// ============================================================
+// 5. EXAM PLANNER
+// Create, edit, delete and view custom exam plans.
+// ============================================================
 function renderExams() {
-  const list = document.getElementById("examList");
-  list.innerHTML = "";
-
-  if (selectedExamId) {
-    renderExamDetail();
-    return;
-  }
-  document.getElementById("examListView").style.display = "block";
-  document.getElementById("examDetailView").style.display = "none";
-
-  if (exams.length === 0) {
-    list.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--muted);">No exams planned yet. Click "＋ New Exam" to set up your syllabus test.</div>`;
-    return;
-  }
-
-  exams.forEach(ex => {
-    const chapters = ex.chapters || [];
-    let done = 0;
-    chapters.forEach(c => {
-      if (progress[chKey(c.book, c.chapter)] === "complete") done++;
-    });
-    const pct = chapters.length > 0 ? ((done / chapters.length) * 100).toFixed(0) : "0";
-
-    const card = document.createElement("div");
-    card.className = "exam-card";
-    card.innerHTML = `
-      <div>
-        <div class="exam-card-top">
-          <div>
-            <div class="exam-name">${ex.name}</div>
-            <div class="exam-date">📅 ${ex.date || "No date set"}</div>
-          </div>
-          <div class="exam-countdown">${chapters.length} chapters</div>
-        </div>
-        <div class="exam-progress-row">
-          <span>Preparation</span>
-          <span style="color:var(--primary);font-weight:800;">${done}/${chapters.length} (${pct}%)</span>
-        </div>
-        <div class="progress-track"><div class="progress-fill" style="width:${pct}%;"></div></div>
-      </div>
-      <div class="exam-actions">
-        <button style="flex:1;background:var(--primary);color:#fff;" onclick="openExamDetail('${ex.id}')">View Chapters</button>
-        <button onclick="editExam('${ex.id}')">Edit</button>
-        <button style="color:var(--danger);" onclick="deleteExam('${ex.id}')">Delete</button>
-      </div>
-    `;
-    list.appendChild(card);
-  });
-}
-
-function openExamDetail(id) {
-  selectedExamId = id;
-  document.getElementById("examListView").style.display = "none";
-  document.getElementById("examDetailView").style.display = "block";
-  renderExamDetail();
-}
-
-function closeExamDetail() {
-  selectedExamId = null;
-  renderExams();
-}
-
-function renderExamDetail() {
-  const exam = exams.find(e => e.id === selectedExamId);
-  if (!exam) {
-    closeExamDetail();
-    return;
-  }
-
-  const chapters = exam.chapters || [];
-  let done = 0;
-  chapters.forEach(c => {
-    if (progress[chKey(c.book, c.chapter)] === "complete") done++;
-  });
-  const pct = chapters.length > 0 ? ((done / chapters.length) * 100).toFixed(0) : "0";
-
-  document.getElementById("examDetailTitle").textContent = exam.name;
-  document.getElementById("examDetailDate").textContent = "📅 " + (exam.date || "No date");
-  document.getElementById("examDetailPercent").textContent = pct + "%";
-  document.getElementById("examDetailRatio").textContent = done + " / " + chapters.length + " chapters completed";
-  document.getElementById("examDetailFill").style.width = pct + "%";
-
-  const list = document.getElementById("examChapterList");
-  list.innerHTML = chapters.map(c => {
-    const st = progress[chKey(c.book, c.chapter)] || "not-started";
-    const name = CHAPTER_NAMES[c.book]?.[c.chapter - 1] || ("Chapter " + c.chapter);
-    const isDone = st === "complete";
-    return `
-      <div class="chapter ${isDone ? 'complete' : ''}" style="justify-content:space-between;">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <button style="width:24px;height:24px;border-radius:6px;border:1px solid var(--border);background:${isDone ? 'var(--success)' : 'var(--card)'};color:#fff;font-weight:900;" onclick="toggleExamChapterDone('${c.book}', ${c.chapter})">
-            ${isDone ? '✓' : ''}
-          </button>
-          <div>
-            <div style="font-size:13px;font-weight:750;">${name}</div>
-            <div style="font-size:11px;color:var(--muted);">${c.book} · Chapter ${c.chapter}</div>
-          </div>
-        </div>
-        <button class="btn-mini" onclick="openPomodoroFor('${c.book}', ${c.chapter})">🍅 Study</button>
-      </div>
-    `;
-  }).join("");
-}
-
-function toggleExamChapterDone(b, c) {
-  const k = chKey(b, c);
-  if (progress[k] === "complete") delete progress[k];
-  else progress[k] = "complete";
-  setStorage(KEY_PROGRESS, progress);
-  updateDashboard();
-  renderExamDetail();
-  renderSyllabus();
-}
-
-function startPomodoroForExam() {
-  const exam = exams.find(e => e.id === selectedExamId);
-  if (!exam) return;
-  const unfinished = (exam.chapters || []).find(c => progress[chKey(c.book, c.chapter)] !== "complete");
-  if (unfinished) {
-    openPomodoroFor(unfinished.book, unfinished.chapter);
-  } else {
-    showToast("🎉 All exam chapters are complete!");
-  }
-}
-
-function openExamModal() {
-  document.getElementById("inputExamName").value = "";
-  document.getElementById("inputExamDate").value = "";
-  populateExamPicker();
-  document.getElementById("examModal").classList.add("show");
-}
-
-function closeExamModal() {
-  document.getElementById("examModal").classList.remove("show");
-}
-
-function populateExamPicker() {
-  const container = document.getElementById("examPickerList");
-  let html = "";
-  Object.keys(BOOKS).forEach(b => {
-    html += `<div style="font-weight:800;font-size:11.5px;color:var(--primary);margin:6px 0 3px;">${b}</div>`;
-    const count = BOOKS[b];
-    const names = CHAPTER_NAMES[b] || [];
-    for (let c = 1; c <= count; c++) {
-      html += `
-        <label style="display:flex;align-items:center;gap:6px;font-size:11.5px;padding:3px 0;cursor:pointer;">
-          <input type="checkbox" data-book="${b}" data-ch="${c}">
-          <span>${c}. ${names[c - 1] || ('Ch ' + c)}</span>
-        </label>
-      `;
+    if(selectedExam) {
+        renderExamDetail();
+        return
     }
-  });
-  container.innerHTML = html;
+    document.getElementById("examListView").style.display="block";
+    document.getElementById("examDetailView").style.display="none";
+    const box=document.getElementById("examList");
+    box.innerHTML="";
+    if(!exams.length) {
+        box.innerHTML=`<div class="card section" style="grid-column:1/-1;text-align:center"><p>No exams planned yet. Create your first exam plan.</p></div>`;
+        return
+    }
+    exams.forEach(e=> {
+        let done=(e.chapters||[]).filter(c=>progress[chKey(c.book,c.chapter)]==="complete").length,p=e.chapters?.length?Math.round(done/e.chapters.length*100):0;
+        const d=document.createElement("div");
+        d.className="card exam";
+        d.innerHTML=`<div class="row"><div><h3>${esc(e.name)}</h3><div class="date">📅 ${e.date}</div></div><span class="filter">${e.chapters.length} chapters</span></div><div style="margin:10px 0 4px;font-size:10px;font-weight:800;display:flex;justify-content:space-between"><span>Preparation</span><strong style="color:var(--primary)">${done}/${e.chapters.length} (${p}%)</strong></div><div class="progress"><div class="fill" style="width:${p}%"></div></div><div class="exam-actions"><button class="btn primary" onclick='openExamDetail(${JSON.stringify(e.id)})'>View Chapters</button><button class="btn" onclick='editExam(${JSON.stringify(e.id)})'>Edit</button><button class="btn" style="color:var(--danger)" onclick='deleteExam(${JSON.stringify(e.id)})'>Delete</button></div>`;
+        box.appendChild(d)
+    }
+    )
 }
-
+function openExamDetail(id) {
+    selectedExam=id;
+    renderExamDetail()
+}
+function closeExamDetail() {
+    selectedExam=null;
+    renderExams()
+}
+// Show all chapters selected for the current exam.
+function renderExamDetail() {
+    const e=exams.find(x=>x.id===selectedExam);
+    if(!e) {
+        selectedExam=null;
+        return renderExams()
+    }
+    const done=e.chapters.filter(c=>progress[chKey(c.book,c.chapter)]==="complete").length,p=e.chapters.length?Math.round(done/e.chapters.length*100):0;
+    document.getElementById("examListView").style.display="none";
+    const v=document.getElementById("examDetailView");
+    v.style.display="block";
+    v.innerHTML=`<div class="card section"><button class="filter" onclick="closeExamDetail()">← Back</button><div class="row" style="margin-top:10px"><div><h2>${esc(e.name)}</h2><p>📅 ${e.date}</p></div><div style="text-align:right"><b style="font-size:25px;color:var(--primary)">${p}%</b><p>${done} / ${e.chapters.length} completed</p></div></div><div class="progress" style="margin:12px 0"><div class="fill" style="width:${p}%"></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn primary" onclick="startPomodoroForExam()">🍅 Study Next Chapter</button><button class="btn" onclick='editExam(${JSON.stringify(e.id)})'>✏️ Edit</button><button class="btn" style="color:var(--danger)" onclick='deleteExam(${JSON.stringify(e.id)})'>🗑️ Delete</button></div></div><div class="card section"><h2>Exam Chapters</h2><p>Synced with your main syllabus.</p><div class="list">${e.chapters.map(c=>{let d=progress[chKey(c.book,c.chapter)]==="complete",n=BOOKS[c.book][c.chapter-1];return `<div class="chapter ${d?"complete":""}"><button class="mini ${d?"status complete":""}" onclick='toggleExamChapterDone(${JSON.stringify(c.book)},${c.chapter})'>$ {
+        d?"✓":"○"
+    }
+    </button><div class="chapter-main"><div class="chapter-name">$ {
+        n
+    }
+    </div><div class="chapter-status">$ {
+        c.book
+    }
+    · Chapter $ {
+        c.chapter
+    }
+    </div></div><button class="mini" onclick='openPomodoroFor(${JSON.stringify(c.book)},${c.chapter})'>🍅 Study</button></div>`}).join("")}</div></div>`
+}
+// Open the create-exam form.
+function openExamModal() {
+    editingExam=null;
+    document.getElementById("examModalTitle").textContent="Create Exam Plan";
+    document.getElementById("inputExamName").value="";
+    document.getElementById("inputExamDate").value="";
+    populateExamPicker([]);
+    document.getElementById("examModal").classList.add("show")
+}
+function closeExamModal() {
+    document.getElementById("examModal").classList.remove("show")
+}
+function populateExamPicker(selected=[]) {
+    const set=new Set(selected.map(x=>chKey(x.book,x.chapter))),box=document.getElementById("examPickerList");
+    box.innerHTML=Object.entries(BOOKS).map(([b,a])=>`<div style="font-size:10px;font-weight:900;color:var(--primary);margin:6px 0">${b}</div>`+a.map((n,i)=>`<label style="display:flex;gap:6px;align-items:center;font-size:10.5px;padding:3px 0"><input type="checkbox" data-book="${esc(b)}" data-ch="${i+1}" ${set.has(chKey(b,i+1))?"checked":""}><span>${i+1}. ${n}</span></label>`).join("")).join("")
+}
+// Save a new exam or update an existing exam.
 function saveExamFromModal() {
-  const name = document.getElementById("inputExamName").value.trim();
-  const date = document.getElementById("inputExamDate").value;
-  if (!name || !date) {
-    alert("Please enter exam name and date.");
-    return;
-  }
-  const checked = document.querySelectorAll("#examPickerList input[type='checkbox']:checked");
-  if (checked.length === 0) {
-    alert("Please select at least one chapter.");
-    return;
-  }
-  const chapters = Array.from(checked).map(input => ({
-    book: input.dataset.book,
-    chapter: Number(input.dataset.ch),
-    priority: "medium"
-  }));
-
-  exams.push({
-    id: Date.now().toString(),
-    name,
-    date,
-    chapters
-  });
-
-  setStorage(KEY_EXAMS, exams);
-  closeExamModal();
-  updateDashboard();
-  renderExams();
-  showToast("🎯 Exam plan created!");
-}
-
-function deleteExam(id) {
-  if (confirm("Are you sure you want to delete this exam plan?")) {
-    exams = exams.filter(e => e.id !== id);
-    setStorage(KEY_EXAMS, exams);
+    const name=document.getElementById("inputExamName").value.trim(),date=document.getElementById("inputExamDate").value;
+    if(!name||!date)return toast("Please enter exam name and date.");
+    const checked=[...document.querySelectorAll("#examPickerList input:checked")].map(x=>( {
+        book:x.dataset.book,chapter:Number(x.dataset.ch)
+    }
+    ));
+    if(!checked.length)return toast("Select at least one chapter.");
+    if(editingExam) {
+        const e=exams.find(x=>x.id===editingExam);
+        e.name=name;
+        e.date=date;
+        e.chapters=checked
+    } else exams.push( {
+        id:Date.now().toString(),name,date,chapters:checked
+    }
+    );
+    save(KEY.exams,exams);
+    closeExamModal();
     updateDashboard();
     renderExams();
-    showToast("🗑️ Exam deleted");
-  }
+    toast(editingExam?"✏️ Exam updated":"🎯 Exam plan created")
 }
-
-function deleteCurrentExam() {
-  if (selectedExamId) {
-    deleteExam(selectedExamId);
-    closeExamDetail();
-  }
+function editExam(id) {
+    const e=exams.find(x=>x.id===id);
+    if(!e)return;
+    editingExam=id;
+    document.getElementById("examModalTitle").textContent="Edit Exam Plan";
+    document.getElementById("inputExamName").value=e.name;
+    document.getElementById("inputExamDate").value=e.date;
+    populateExamPicker(e.chapters);
+    document.getElementById("examModal").classList.add("show")
 }
-
-/**
- * -------------------------------------------------------------------------
- * ঝ. 🍅 পোমোডোরো টাইমার লজিক (Pomodoro Focus Timer)
- * -------------------------------------------------------------------------
- */
-let pomoRunning = false;
-let pomoMode = "focus";
-let pomoFocusMin = 25;
-let pomoBreakMin = 5;
-let pomoRemaining = 25 * 60;
-let pomoTimer = null;
-let pomoEndTime = null;
-let pomoBook = "Physics 1st Paper";
-let pomoChapter = 1;
-let pomoSession = 1;
-
+function deleteExam(id) {
+    if(!confirm("Delete this exam plan?"))return;
+    exams=exams.filter(e=>e.id!==id);
+    save(KEY.exams,exams);
+    selectedExam=null;
+    updateDashboard();
+    renderExams();
+    toast("🗑️ Exam deleted")
+}
+function toggleExamChapterDone(b,c) {
+    const k=chKey(b,c);
+    if(progress[k]==="complete")delete progress[k];
+    else progress[k]="complete";
+    save(KEY.progress,progress);
+    updateDashboard();
+    renderExamDetail();
+    renderSyllabus()
+}
+function startPomodoroForExam() {
+    const e=exams.find(x=>x.id===selectedExam);
+    if(!e)return;
+    const c=e.chapters.find(x=>progress[chKey(x.book,x.chapter)]!=="complete");
+    c?openPomodoroFor(c.book,c.chapter):toast("🎉 All exam chapters are complete!")
+}
+// ============================================================
+// 6. POMODORO TIMER
+// Focus sessions record study time in LocalStorage.
+// ============================================================
+let pomo= {
+    running:false,mode:"focus",focus:25,break:5,remaining:1500,end:0,book:"Physics 1st Paper",chapter:1,session:1,timer:null
+}
+;
+// Open Pomodoro with a specific book/chapter selected.
+function openPomodoroFor(b,c) {
+    pomo.book=b;
+    pomo.chapter=c;
+    openPomodoro()
+}
 function openPomodoro() {
-  document.getElementById("pomodoroOverlay").classList.add("show");
-  populatePomoPickers();
-  updatePomoDisplay();
+    document.getElementById("pomodoroOverlay").classList.add("show");
+    populatePomoPickers();
+    updatePomoDisplay()
 }
-
-function openPomodoroFor(b, c) {
-  pomoBook = b;
-  pomoChapter = c;
-  openPomodoro();
-}
-
 function closePomodoro() {
-  document.getElementById("pomodoroOverlay").classList.remove("show");
+    document.getElementById("pomodoroOverlay").classList.remove("show")
 }
-
 function populatePomoPickers() {
-  const bSelect = document.getElementById("pomoBookSelect");
-  bSelect.innerHTML = Object.keys(BOOKS).map(b => `<option value="${b}" ${b === pomoBook ? 'selected' : ''}>${b}</option>`).join("");
-  handlePomoBookChange(pomoBook);
+    const b=document.getElementById("pomoBookSelect");
+    b.innerHTML=Object.keys(BOOKS).map(x=>`<option ${x===pomo.book?"selected":""}>${x}</option>`).join("");
+    handlePomoBookChange(pomo.book)
 }
-
 function handlePomoBookChange(b) {
-  pomoBook = b;
-  const cSelect = document.getElementById("pomoChapterSelect");
-  const count = BOOKS[b] || 10;
-  const names = CHAPTER_NAMES[b] || [];
-  cSelect.innerHTML = Array.from({ length: count }, (_, i) => i + 1).map(c => `
-    <option value="${c}" ${c === pomoChapter ? 'selected' : ''}>${c}. ${names[c - 1] || ('Ch ' + c)}</option>
-  `).join("");
-  handlePomoChapterChange(cSelect.value || 1);
+    pomo.book=b;
+    const s=document.getElementById("pomoChapterSelect");
+    s.innerHTML=BOOKS[b].map((n,i)=>`<option value="${i+1}" ${i+1===pomo.chapter?"selected":""}>${i+1}. ${n}</option>`).join("");
+    handlePomoChapterChange(s.value)
 }
-
 function handlePomoChapterChange(c) {
-  pomoChapter = Number(c);
-  const name = CHAPTER_NAMES[pomoBook]?.[pomoChapter - 1] || ("Chapter " + pomoChapter);
-  document.getElementById("pomoCurrentTopic").textContent = pomoBook + " · " + name;
+    pomo.chapter=Number(c);
+    document.getElementById("pomoCurrentTopic").textContent=`${pomo.book} · ${BOOKS[pomo.book][pomo.chapter-1]}`
 }
-
 function updatePomoDisplay() {
-  const m = Math.floor(pomoRemaining / 60);
-  const s = pomoRemaining % 60;
-  document.getElementById("pomoClock").textContent = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
-
-  const total = (pomoMode === "focus" ? pomoFocusMin : pomoBreakMin) * 60;
-  const pct = total > 0 ? (((total - pomoRemaining) / total) * 100).toFixed(0) : 0;
-  document.getElementById("pomoProgressFill").style.width = pct + "%";
-  document.getElementById("pomoSessionTag").textContent = "🍅 " + (pomoMode === "focus" ? "Focus" : "Break") + " · Session " + pomoSession;
-
-  const btn = document.getElementById("pomoStartBtn");
-  btn.textContent = pomoRunning ? "⏸ Pause" : "▶ Start";
+    let m=Math.floor(pomo.remaining/60),s=pomo.remaining%60;
+    document.getElementById("pomoClock").textContent=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+    let total=(pomo.mode==="focus"?pomo.focus:pomo.break)*60;
+    document.getElementById("pomoProgressFill").style.width=((total-pomo.remaining)/total*100)+"%";
+    document.getElementById("pomoSessionTag").textContent=`🍅 ${pomo.mode==="focus"?"Focus":"Break"} · Session ${pomo.session}`;
+    document.getElementById("pomoStartBtn").textContent=pomo.running?"⏸ Pause":"▶ Start"
 }
-
+// Start or pause the countdown.
 function togglePomodoroPlay() {
-  if (pomoRunning) {
-    clearInterval(pomoTimer);
-    pomoRunning = false;
-    updatePomoDisplay();
-  } else {
-    pomoRunning = true;
-    pomoEndTime = Date.now() + pomoRemaining * 1000;
-    pomoTimer = setInterval(pomoTick, 500);
-    updatePomoDisplay();
-  }
-}
-
-function pomoTick() {
-  const now = Date.now();
-  pomoRemaining = Math.max(0, Math.ceil((pomoEndTime - now) / 1000));
-  updatePomoDisplay();
-
-  // প্রতি সেকেন্ডে ফোকাস টাইম হিস্ট্রিতে যোগ করা
-  if (pomoMode === "focus") {
-    addStudySeconds(pomoBook, pomoChapter, 1);
-  }
-
-  if (pomoRemaining <= 0) {
-    clearInterval(pomoTimer);
-    pomoRunning = false;
-    if (pomoMode === "focus") {
-      pomoMode = "break";
-      pomoRemaining = pomoBreakMin * 60;
-      showToast("🎉 Focus session complete! Time for a short break.");
+    if(pomo.running) {
+        clearInterval(pomo.timer);
+        pomo.running=false
     } else {
-      pomoMode = "focus";
-      pomoSession++;
-      pomoRemaining = pomoFocusMin * 60;
-      showToast("⏰ Break finished! Ready for next focus session.");
+        pomo.running=true;
+        pomo.end=Date.now()+pomo.remaining*1000;
+        pomo.timer=setInterval(pomoTick,500)
     }
+    updatePomoDisplay()
+}
+// Timer heartbeat: update clock and record focus time.
+function pomoTick() {
+    pomo.remaining=Math.max(0,Math.ceil((pomo.end-Date.now())/1000));
+    if(pomo.mode==="focus"&&pomo.remaining%1===0)addStudySeconds(pomo.book,pomo.chapter,.5);
     updatePomoDisplay();
-  }
+    if(pomo.remaining<=0) {
+        clearInterval(pomo.timer);
+        pomo.running=false;
+        if(pomo.mode==="focus") {
+            pomo.mode="break";
+            pomo.remaining=pomo.break*60;
+            toast("🎉 Focus complete! Take a short break.")
+        } else {
+            pomo.mode="focus";
+            pomo.session++;
+            pomo.remaining=pomo.focus*60;
+            toast("⏰ Break finished! Ready for the next focus.")
+        }
+        updatePomoDisplay()
+    }
 }
-
 function resetPomodoro() {
-  clearInterval(pomoTimer);
-  pomoRunning = false;
-  pomoMode = "focus";
-  pomoSession = 1;
-  pomoRemaining = pomoFocusMin * 60;
-  updatePomoDisplay();
+    clearInterval(pomo.timer);
+    pomo.running=false;
+    pomo.mode="focus";
+    pomo.session=1;
+    pomo.remaining=pomo.focus*60;
+    updatePomoDisplay()
 }
-
 function skipPomodoro() {
-  clearInterval(pomoTimer);
-  pomoRunning = false;
-  if (pomoMode === "focus") {
-    pomoMode = "break";
-    pomoRemaining = pomoBreakMin * 60;
-  } else {
-    pomoMode = "focus";
-    pomoSession++;
-    pomoRemaining = pomoFocusMin * 60;
-  }
-  updatePomoDisplay();
+    clearInterval(pomo.timer);
+    pomo.running=false;
+    if(pomo.mode==="focus") {
+        pomo.mode="break";
+        pomo.remaining=pomo.break*60
+    } else {
+        pomo.mode="focus";
+        pomo.session++;
+        pomo.remaining=pomo.focus*60
+    }
+    updatePomoDisplay()
 }
-
-function addStudySeconds(b, c, sec) {
-  const day = todayStr();
-  if (!historyData[day]) {
-    historyData[day] = { totalSeconds: 0, sessions: 0, byBook: {}, byChapter: {} };
-  }
-  historyData[day].totalSeconds = (historyData[day].totalSeconds || 0) + sec;
-  historyData[day].byBook[b] = (historyData[day].byBook[b] || 0) + sec;
-  historyData[day].byChapter[chKey(b, c)] = (historyData[day].byChapter[chKey(b, c)] || 0) + sec;
-  setStorage(KEY_HISTORY, historyData);
-  updateDashboard();
+// Add focus time to today's history by book and chapter.
+function addStudySeconds(b,c,sec) {
+    const d=today();
+    history[d]??= {
+        totalSeconds:0,sessions:0,byBook: {
+        }
+        ,byChapter: {
+        }
+    }
+    ;
+    history[d].totalSeconds+=sec;
+    history[d].byBook[b]=(history[d].byBook[b]||0)+sec;
+    history[d].byChapter[chKey(b,c)]=(history[d].byChapter[chKey(b,c)]||0)+sec;
+    save(KEY.history,history);
+    updateDashboard()
 }
-
-/**
- * -------------------------------------------------------------------------
- * ঞ. স্টাডি হিস্ট্রি ও গ্রাফ লজিক (Study Time Graph)
- * -------------------------------------------------------------------------
- */
-let graphPeriod = "daily";
-
+// ============================================================
+// 7. STUDY HISTORY
+// Graph and recent/book-wise study-time summaries.
+// ============================================================
 function setGraphPeriod(p) {
-  graphPeriod = p;
-  document.getElementById("btnGraphDaily").classList.toggle("active", p === "daily");
-  document.getElementById("btnGraphWeekly").classList.toggle("active", p === "weekly");
-  document.getElementById("btnGraphMonthly").classList.toggle("active", p === "monthly");
-  renderHistoryGraph();
+    graphPeriod=p;
+    document.querySelectorAll("#btnGraphDaily,#btnGraphWeekly,#btnGraphMonthly").forEach(x=>x.classList.remove("active"));
+    document.getElementById("btnGraph"+p[0].toUpperCase()+p.slice(1)).classList.add("active");
+    drawGraph()
 }
-
-function renderHistory() {
-  renderHistoryGraph();
-
-  // বিগত ৭ দিনের পড়া
-  const wList = document.getElementById("weeklyHistoryList");
-  let wHtml = "";
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(Date.now() - i * 86400000);
-    const dStr = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
-    const sec = Number(historyData[dStr]?.totalSeconds || 0);
-    wHtml += `
-      <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:5px 0;border-bottom:1px solid var(--border);">
-        <span style="font-weight:700;">${i === 0 ? 'Today' : i === 1 ? 'Yesterday' : dStr}</span>
-        <span style="font-weight:800;color:var(--primary);">${formatDuration(sec)}</span>
-      </div>
-    `;
-  }
-  wList.innerHTML = wHtml;
-
-  // বিষয়ভিত্তিক পড়ার মোট সময়
-  const bTotals = {};
-  Object.values(historyData).forEach(day => {
-    Object.entries(day.byBook || {}).forEach(([b, s]) => {
-      bTotals[b] = (bTotals[b] || 0) + Number(s || 0);
-    });
-  });
-
-  const bList = document.getElementById("bookStudyList");
-  bList.innerHTML = Object.keys(BOOKS).map(b => {
-    const sec = bTotals[b] || 0;
-    return `
-      <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:5px 0;border-bottom:1px solid var(--border);">
-        <span style="font-weight:700;">${b}</span>
-        <span style="font-weight:800;color:var(--primary);">${formatDuration(sec)}</span>
-      </div>
-    `;
-  }).join("");
+function groupedHistory() {
+    const out= {
+    }
+    ;
+    Object.entries(history).forEach(([d,v])=> {
+        let key=d;
+        if(graphPeriod==="weekly") {
+            let x=new Date(d);
+            x.setDate(x.getDate()-x.getDay());
+            key=x.toISOString().slice(0,10)
+        }
+        if(graphPeriod==="monthly")key=d.slice(0,7);
+        out[key]=(out[key]||0)+(v.totalSeconds||0)
+    }
+    );
+    return Object.entries(out).sort((a,b)=>a[0].localeCompare(b[0])).slice(-14)
 }
-
-function renderHistoryGraph() {
-  const canvas = document.getElementById("historyCanvas");
-  if (!canvas) return;
-  const ctx = canvas.getContext("2d");
-  const w = canvas.width, h = canvas.height;
-  ctx.clearRect(0, 0, w, h);
-
-  const days = Object.keys(historyData).sort().slice(-14);
-  if (days.length === 0) {
-    ctx.fillStyle = "#64748b";
-    ctx.font = "12px sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText("No focus sessions recorded yet. Start studying with Pomodoro to plot your graph.", w / 2, h / 2);
-    return;
-  }
-
-  const values = days.map(d => Number(historyData[d]?.totalSeconds || 0));
-  const maxVal = Math.max(...values, 1800);
-
-  const pad = { top: 20, right: 20, bottom: 30, left: 45 };
-  const plotW = w - pad.left - pad.right;
-  const plotH = h - pad.top - pad.bottom;
-
-  ctx.strokeStyle = document.documentElement.classList.contains("dark") ? "#1e293b" : "#e2e8f0";
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  for (let i = 0; i <= 4; i++) {
-    const y = pad.top + (plotH / 4) * i;
-    ctx.moveTo(pad.left, y);
-    ctx.lineTo(w - pad.right, y);
-  }
-  ctx.stroke();
-
-  const step = plotW / Math.max(1, days.length - 1);
-  ctx.beginPath();
-  days.forEach((d, i) => {
-    const x = pad.left + i * step;
-    const y = pad.top + plotH - (values[i] / maxVal) * plotH;
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  });
-
-  ctx.strokeStyle = "#3b82f6";
-  ctx.lineWidth = 3;
-  ctx.stroke();
-
-  days.forEach((d, i) => {
-    const x = pad.left + i * step;
-    const y = pad.top + plotH - (values[i] / maxVal) * plotH;
+// Draw the history graph on the canvas.
+function drawGraph() {
+    const c=document.getElementById("historyCanvas"),ctx=c.getContext("2d"),r=c.getBoundingClientRect(),dpr=devicePixelRatio||1;
+    c.width=r.width*dpr;
+    c.height=r.height*dpr;
+    ctx.scale(dpr,dpr);
+    const w=r.width,h=r.height;
+    ctx.clearRect(0,0,w,h);
+    const data=groupedHistory();
+    if(!data.length) {
+        ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--muted");
+        ctx.font="12px sans-serif";
+        ctx.textAlign="center";
+        ctx.fillText("No focus sessions yet. Start Pomodoro to build your graph.",w/2,h/2);
+        return
+    }
+    const max=Math.max(...data.map(x=>x[1]),1800),pad= {
+        l:42,r:18,t:18,b:32
+    }
+    ,pw=w-pad.l-pad.r,ph=h-pad.t-pad.b;
+    ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue("--border");
+    for(let i=0;
+    i<=4;
+    i++) {
+        let y=pad.t+ph*i/4;
+        ctx.beginPath();
+        ctx.moveTo(pad.l,y);
+        ctx.lineTo(w-pad.r,y);
+        ctx.stroke()
+    }
+    ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue("--primary");
+    ctx.lineWidth=3;
     ctx.beginPath();
-    ctx.arc(x, y, 4, 0, Math.PI * 2);
-    ctx.fillStyle = "#2563eb";
-    ctx.fill();
-    ctx.strokeStyle = "#fff";
-    ctx.lineWidth = 2;
+    data.forEach(([k,v],i)=> {
+        let x=pad.l+(data.length===1?pw/2:i*pw/(data.length-1)),y=pad.t+ph-(v/max)*ph;
+        i?ctx.lineTo(x,y):ctx.moveTo(x,y)
+    }
+    );
     ctx.stroke();
-  });
+    ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--primary");
+    data.forEach(([k,v],i)=> {
+        let x=pad.l+(data.length===1?pw/2:i*pw/(data.length-1)),y=pad.t+ph-(v/max)*ph;
+        ctx.beginPath();
+        ctx.arc(x,y,4,0,Math.PI*2);
+        ctx.fill();
+        ctx.font="9px sans-serif";
+        ctx.textAlign="center";
+        ctx.fillText(k.slice(5),x,h-10)
+    }
+    )
 }
-
+// Render recent history and book-wise totals.
+function renderHistory() {
+    document.getElementById("dailyGoalInput").value=goal;
+    drawGraph();
+    const recent=[];
+    for(let i=0;
+    i<7;
+    i++) {
+        let d=new Date();
+        d.setDate(d.getDate()-i);
+        let k=d.toISOString().slice(0,10);
+        recent.push(`<div class="listrow"><span>${i===0?"Today":i===1?"Yesterday":k}</span><strong>${fmt(history[k]?.totalSeconds||0)}</strong></div>`)
+    }
+    document.getElementById("weeklyHistoryList").innerHTML=recent.join("");
+    const totals= {
+    }
+    ;
+    Object.values(history).forEach(v=>Object.entries(v.byBook|| {
+    }
+    ).forEach(([b,s])=>totals[b]=(totals[b]||0)+s));
+    document.getElementById("bookStudyList").innerHTML=Object.keys(BOOKS).map(b=>`<div class="listrow"><span>${b}</span><strong>${fmt(totals[b]||0)}</strong></div>`).join("")
+}
 function saveDailyGoal() {
-  const val = Number(document.getElementById("dailyGoalInput").value) || 120;
-  dailyGoal = val;
-  localStorage.setItem(KEY_GOAL, val);
-  updateDashboard();
-  showToast("🎯 Daily target updated to " + val + "m");
+    goal=Number(document.getElementById("dailyGoalInput").value)||120;
+    localStorage.setItem(KEY.goal,goal);
+    updateDashboard();
+    toast("🎯 Daily target updated")
 }
-
 function clearStudyHistory() {
-  if (confirm("Are you sure you want to clear your study history?")) {
-    historyData = {};
-    setStorage(KEY_HISTORY, historyData);
+    if(!confirm("Clear all study history?"))return;
+    history= {
+    }
+    ;
+    save(KEY.history,history);
     updateDashboard();
     renderHistory();
-    showToast("🧹 Study history cleared");
-  }
+    toast("🧹 Study history cleared")
 }
-
-/**
- * -------------------------------------------------------------------------
- * ট. ইনসাইটস ও অর্জন ব্যাজ (Insights & Badges)
- * -------------------------------------------------------------------------
- */
+// ============================================================
+// 8. INSIGHTS + ACHIEVEMENTS
+// Builds the smart study queue and milestone badges.
+// ============================================================
 function renderInsights() {
-  const queue = [];
-  Object.keys(BOOKS).forEach(b => {
-    for (let c = 1; c <= BOOKS[b]; c++) {
-      if (progress[chKey(b, c)] === "in-progress" && queue.length < 6) {
-        queue.push({ book: b, chapter: c, tag: "In Progress" });
-      }
+    const q=[];
+    for(const b of Object.keys(BOOKS))for(let c=1;
+    c<=BOOKS[b].length;
+    c++)if(progress[chKey(b,c)]==="in-progress"&&q.length<6)q.push( {
+        book:b,chapter:c,tag:"In Progress"
     }
-  });
-  if (queue.length < 6) {
-    Object.keys(BOOKS).forEach(b => {
-      for (let c = 1; c <= BOOKS[b]; c++) {
-        if (!progress[chKey(b, c)] && queue.length < 6) {
-          queue.push({ book: b, chapter: c, tag: "Up Next" });
-        }
-      }
-    });
-  }
-
-  const qContainer = document.getElementById("smartQueueList");
-  qContainer.innerHTML = queue.map(item => `
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:11px;padding:10px;display:flex;justify-content:space-between;align-items:center;">
-      <div style="min-width:0;">
-        <span style="font-size:9.5px;font-weight:800;color:var(--primary);background:var(--primary-soft);padding:2px 5px;border-radius:5px;">${item.tag}</span>
-        <div style="font-size:12.5px;font-weight:800;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${CHAPTER_NAMES[item.book]?.[item.chapter - 1] || ('Ch ' + item.chapter)}</div>
-        <div style="font-size:10.5px;color:var(--muted);">${item.book} · Ch ${item.chapter}</div>
-      </div>
-      <button class="btn-mini" style="background:var(--primary);color:#fff;" onclick="openPomodoroFor('${item.book}', ${item.chapter})">Study</button>
-    </div>
-  `).join("");
-
-  let doneCount = 0;
-  Object.values(progress).forEach(st => {
-    if (st === "complete") doneCount++;
-  });
-
-  const badges = [
-    { title: "First Step", desc: "Complete 1 chapter", unlocked: doneCount >= 1, icon: "🌱" },
-    { title: "Bookworm", desc: "Complete 10 chapters", unlocked: doneCount >= 10, icon: "📚" },
-    { title: "Halfway", desc: "Complete 38 chapters", unlocked: doneCount >= 38, icon: "🚀" },
-    { title: "Master", desc: "Complete 75 chapters", unlocked: doneCount >= 75, icon: "🏆" }
-  ];
-
-  document.getElementById("badgeGrid").innerHTML = badges.map(b => `
-    <div style="padding:12px;border-radius:11px;border:1px solid var(--border);background:var(--card);text-align:center;opacity:${b.unlocked ? 1 : 0.4};">
-      <div style="font-size:24px;">${b.icon}</div>
-      <div style="font-weight:800;font-size:12px;margin-top:3px;">${b.title}</div>
-      <div style="font-size:10.5px;color:var(--muted);">${b.desc}</div>
-    </div>
-  `).join("");
+    );
+    if(q.length<6)for(const b of Object.keys(BOOKS))for(let c=1;
+    c<=BOOKS[b].length;
+    c++)if(!progress[chKey(b,c)]&&q.length<6)q.push( {
+        book:b,chapter:c,tag:"Up Next"
+    }
+    );
+    document.getElementById("smartQueueList").innerHTML=q.map(x=>`<div class="queue"><div class="tag">${x.tag}</div><h4>${BOOKS[x.book][x.chapter-1]}</h4><p>${x.book} · Ch ${x.chapter}</p><button class="mini" style="margin-top:7px" onclick='openPomodoroFor(${JSON.stringify(x.book)},${x.chapter})'>🍅 Study</button></div>`).join("")||`<div class="queue">🎉 Everything is complete!</div>`;
+    let done=Object.values(progress).filter(x=>x==="complete").length;
+    const badges=[["🌱","First Step","Complete 1 chapter",done>=1],["📚","Bookworm","Complete 10 chapters",done>=10],["🚀","Halfway","Complete 38 chapters",done>=38],["🏆","Master","Complete 75 chapters",done>=75]];
+    document.getElementById("badgeGrid").innerHTML=badges.map(b=>`<div class="badge ${b[3]?"":"locked"}"><div class="icon">${b[0]}</div><b>${b[1]}</b><p>${b[2]}</p></div>`).join("")
 }
-
-
-/**
- * -------------------------------------------------------------------------
- * ড. রিসেট এবং টোস্ট মেসেজ (Reset & Toast Helpers)
- * -------------------------------------------------------------------------
- */
+// ============================================================
+// 9. RESET + UTILITY FUNCTIONS
+// Reset affects syllabus progress only; history/exams remain safe.
+// ============================================================
 function openResetModal() {
-  document.getElementById("resetModal").classList.add("show");
+    document.getElementById("resetModal").classList.add("show")
 }
-
 function closeResetModal() {
-  document.getElementById("resetModal").classList.remove("show");
+    document.getElementById("resetModal").classList.remove("show")
 }
-
 function confirmResetProgress() {
-  progress = {};
-  lastChapter = null;
-  setStorage(KEY_PROGRESS, progress);
-  localStorage.removeItem(KEY_LAST);
-  closeResetModal();
-  updateDashboard();
-  renderSyllabus();
-  showToast("✅ Syllabus progress reset");
+    progress= {
+    }
+    ;
+    last=null;
+    save(KEY.progress,progress);
+    localStorage.removeItem(KEY.last);
+    closeResetModal();
+    updateDashboard();
+    renderSyllabus();
+    toast("✅ Syllabus progress reset")
 }
-
-let toastT = null;
-function showToast(msg) {
-  const el = document.getElementById("toast");
-  el.textContent = msg;
-  el.classList.add("show");
-  clearTimeout(toastT);
-  toastT = setTimeout(() => el.classList.remove("show"), 2200);
-}
-
-/**
- * -------------------------------------------------------------------------
- * ঢ. অ্যাপ ইনিশিয়ালাইজেশন (App Init)
- * -------------------------------------------------------------------------
- */
-function initApp() {
-  const bSelect = document.getElementById("bookSelectFilter");
-  // ব্যবহারকারীর অনুরোধ অনুযায়ী: "📚 All Subjects"
-  bSelect.innerHTML = `<option value="all">📚 All Subjects</option>` + Object.keys(BOOKS).map(b => `<option value="${b}">${b}</option>`).join("");
-
-  updateDashboard();
-  renderSyllabus();
-}
-
-window.addEventListener("DOMContentLoaded", initApp);
-
-/**
- * -------------------------------------------------------------------------
- * ণ. PWA সার্ভিস ওয়ার্কার রেজিস্টার (Service Worker Registration)
- * এটি অফলাইনে কাজ করতে এবং PWABuilder-এ ফুল স্কোর পেতে সাহায্য করে।
- * -------------------------------------------------------------------------
- */
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js", { scope: "./" })
-      .then(reg => {
-        console.log("PWA Service Worker registered:", reg.scope);
-      })
-      .catch(err => {
-        console.warn("PWA Service Worker registration failed:", err);
-      });
-  });
-}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+// ============================================================
+// 10. APP STARTUP
+// Load saved settings/data and render the initial screen.
+// ============================================================
+function init(){const sel=document.getElementById("bookSelectFilter");sel.innerHTML=`<option value="all">📚 All Subjects</option>`+Object.keys(BOOKS).map(b=>`<option>${b}</option>`).join("");applyTheme((localStorage.getItem(KEY.theme)||"light")==="dark");updateDashboard();renderSyllabus();window.addEventListener("resize",()=>{if(currentTab==="history")drawGraph()})}
+// Start the app after the HTML has loaded.
+document.addEventListener("DOMContentLoaded",init);
 </script>
-
 </body>
 </html>
