@@ -1523,19 +1523,66 @@ function applyCustomPomoTime(){
 }
 
 function updatePomoDisplay(){
-    ...
-}
     let m=Math.floor(pomo.remaining/60),s=pomo.remaining%60;
     let timeStr=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+
     document.getElementById("pomoClock").textContent=timeStr;
+
     let total=(pomo.mode==="focus"?pomo.focus:pomo.break)*60;
-    document.getElementById("pomoProgressFill").style.width=((total-pomo.remaining)/total*100)+"%";
-    document.getElementById("pomoSessionTag").textContent=`🍅 ${pomo.mode==="focus"?"Focus":"Break"} · Session ${pomo.session}`;
-    document.getElementById("pomoStartBtn").textContent=pomo.running?"⏸ Pause":"▶ Start";
+
+    document.getElementById("pomoProgressFill").style.width=
+        Math.max(0,Math.min(100,(total-pomo.remaining)/total*100))+"%";
+
+    document.getElementById("pomoSessionTag").textContent=
+        `${pomo.mode==="focus"?"🍅 Focus":"☕ Break"} · Session ${pomo.session}`;
+
+    document.getElementById("pomoStartBtn").textContent=
+        pomo.running?"⏸ Pause":"▶ Start";
+
+    const modeLabel=pomo.mode==="focus"?"Focus":"Break";
+    const modeIcon=pomo.mode==="focus"?"🍅":"☕";
+
+    const headerBtn=document.getElementById("pomoHeaderBtn");
+
+    if(headerBtn){
+        if(pomo.running){
+            headerBtn.textContent=`${modeIcon} ${modeLabel} ${timeStr}`;
+        }else if(pomo.remaining>0){
+            headerBtn.textContent=`⏸ ${modeLabel} ${timeStr}`;
+        }else{
+            headerBtn.textContent="🍅 Pomodoro";
+        }
+    }
+
+    const floating=document.getElementById("pomoFloatingTimer");
+
+    if(floating){
+        if(pomo.running || pomo.remaining>0){
+            floating.classList.add("show");
+            floating.classList.toggle("running",pomo.running);
+            floating.classList.toggle("break",pomo.mode==="break");
+            floating.classList.toggle("paused",!pomo.running);
+
+            floating.textContent=pomo.running
+                ? `${modeIcon} ${modeLabel} · ${timeStr}`
+                : `⏸ ${modeLabel} · ${timeStr}`;
+        }else{
+            floating.classList.remove("show","running","break","paused");
+        }
+    }
+
     if(pomo.running){
-        document.title=`(${timeStr}) ${pomo.mode==="focus"?"🍅 Focus":"☕ Break"} • Syllabus Tracker`;
+        document.title=
+            `(${timeStr}) ${modeIcon} ${modeLabel} • Syllabus Tracker`;
+
         updateBackgroundPomodoroNotification();
-    } else {
+
+    }else if(pomo.remaining>0){
+
+        document.title=`⏸ ${timeStr} • Syllabus Tracker`;
+
+    }else{
+
         document.title="Syllabus Tracker";
     }
 }
