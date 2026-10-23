@@ -1675,21 +1675,53 @@ function pomoTick(){
 
 function handlePomoFinish(){
     playAlertSound();
-    const chName=BOOKS[pomo.book]?.[pomo.chapter-1]||`Chapter ${pomo.chapter}`;
-    if(pomo.mode==="focus"){
-        sendSysNotification("🎉 Focus Complete!",`Awesome job! Finished studying ${pomo.book} • ${chName}. Time for a break!`);
-        pomo.mode="break";
-        pomo.remaining=pomo.break*60;
-        openPomoAlert("focus-complete");
+
+    const chName =
+        BOOKS[pomo.book]?.[pomo.chapter-1] ||
+        `Chapter ${pomo.chapter}`;
+
+    if(pomo.mode === "focus"){
+        sendSysNotification(
+            "🎉 Focus Complete!",
+            `Awesome job! Finished studying ${pomo.book} • ${chName}. Time for a break!`
+        );
+
+        // Automatically switch to break
+        pomo.mode = "break";
+        pomo.remaining = pomo.break * 60;
+
     } else {
-        sendSysNotification("⏰ Break Finished!",`Break is done for ${pomo.book}! Ready for next focus?`);
-        pomo.mode="focus";
+        sendSysNotification(
+            "⏰ Break Finished!",
+            `Break is done for ${pomo.book}! Starting your next focus session.`
+        );
+
+        // Automatically switch to next focus
+        pomo.mode = "focus";
         pomo.session++;
-        pomo.remaining=pomo.focus*60;
-        openPomoAlert("break-complete");
+        pomo.remaining = pomo.focus * 60;
     }
+
+    // Automatically start the next phase
+    clearInterval(pomo.timer);
+    pomo.timer = null;
+
+    pomo.running = true;
+    lastTick = Date.now();
+    pomo.end = Date.now() + pomo.remaining * 1000;
+
+    pomo.timer = setInterval(pomoTick, 500);
+
+    updateBackgroundPomodoroNotification(true);
     savePomoState();
     updatePomoDisplay();
+
+    // Show alert without stopping the timer
+    openPomoAlert(
+        pomo.mode === "break"
+            ? "focus-complete"
+            : "break-complete"
+    );
 }
 
 function openPomoAlert(type){
