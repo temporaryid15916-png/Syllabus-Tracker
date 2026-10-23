@@ -168,15 +168,10 @@ button:disabled {
   font-weight: 800;
   letter-spacing: -0.02em;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.brand p {
-  color: var(--muted);
-  font-size: 11px;
-  margin-top: 1px;
-  white-space: nowrap;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  color: var(--text);
 }
 
 .header-actions {
@@ -1093,7 +1088,7 @@ footer {
   }
 }
 </style>
-<script src="/_aistudio-iframe.js?v=6634132a"></script></head>
+</head>
 
 <body>
 
@@ -1104,10 +1099,7 @@ footer {
   <div class="topbar-inner">
     <div class="brand" onclick="switchTab('syllabus')">
       <div class="brand-icon">📚</div>
-      <div>
-        <h1>Syllabus Tracker</h1>
-        <p>HSC Science Study & Exam Planner</p>
-      </div>
+      <h1>Syllabus Tracker</h1>
     </div>
 
     <div class="header-actions">
@@ -1455,10 +1447,11 @@ footer {
 <!-- টোস্ট নোটিফিকেশন মেসেজ -->
 <div id="toast">Notice</div>
 
-<!-- ফুটার কপিরাইট -->
+<!-- ফুটার কপিরাইট (৩টি আলাদা লাইনে, শেষ লাইনে Science শব্দ ছাড়া) -->
 <footer>
-  <div>©turabi_alam · Study • Track • Complete</div>
-  <div style="margin-top:3px;">Made with ❤️ for HSC Science Students</div>
+  <div>©turabi_alam</div>
+  <div style="margin-top: 4px;">Study • Track • Complete</div>
+  <div style="margin-top: 4px;">Made with ❤️ for HSC Students</div>
 </footer>
 
 <!-- =========================================================================
