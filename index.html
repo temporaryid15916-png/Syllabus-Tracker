@@ -800,7 +800,7 @@ footer {
         font-size:16px;
     }
 }
-    .pomo-floating {
+.pomo-floating {
     position:fixed;
     right:18px;
     bottom:18px;
@@ -858,7 +858,7 @@ footer {
 </div></header>
 
 <main class="container">
-<!-- Line 1 & Line 2: 2 cards per line on mobile -->
+<!-- Line 1 & Line 2 -->
 <section class="grid4">
   <div class="stat"><div class="label">Total Chapters</div><div id="statTotal" class="value">75</div><div class="sub">8 subjects</div></div>
   <div class="stat"><div class="label">Completed</div><div id="statCompleted" class="value" style="color:var(--success)">0</div><div class="sub">Finished chapters</div></div>
@@ -866,10 +866,10 @@ footer {
   <div class="stat"><div class="label">Overall Progress</div><div id="statPercent" class="value" style="color:var(--primary)">0.00%</div><div class="sub">Syllabus completion</div></div>
 </section>
 
-<!-- Line 3: Minimal Pure Progress Bar (NO text, NO card wrapper) -->
+<!-- Line 3: Minimal Pure Progress Bar -->
 <div class="progress" style="height:8px;margin:6px 0 10px;background:var(--soft)"><div id="overallFill" class="fill"></div></div>
 
-<!-- Line 4 & Line 5: Quick focus & streak cards (2 cards per line on mobile) -->
+<!-- Line 4 & Line 5 -->
 <section class="quick">
   <div class="card"><div class="qicon">🍅</div><div><div class="label">Today's Focus</div><div id="quickTodayStudy" class="qval">0m</div></div></div>
   <div class="card"><div class="qicon">🔥</div><div><div class="label">Study Streak</div><div id="quickStreak" class="qval">0 days</div></div></div>
@@ -918,11 +918,13 @@ footer {
   <div class="card section"><h2>🏆 Milestones & Achievements</h2><p>Unlock badges as you complete chapters.</p><div id="badgeGrid" class="insights-grid"></div></div>
 </section>
 </main>
+
 <div id="pomoFloatingTimer"
      class="pomo-floating"
      onclick="openPomodoro()">
 </div>
-<!-- Pomodoro Overlay with Custom Time Setter and Enable Alert -->
+
+<!-- Pomodoro Overlay -->
 <div id="pomodoroOverlay" class="pomo"><div class="card pomo-box">
   <div class="row" style="align-items:center">
     <b id="pomoSessionTag" style="font-size:12px;color:var(--primary)">🍅 Focus · Session 1</b>
@@ -931,8 +933,17 @@ footer {
       <button class="filter" onclick="closePomodoro()">✕ Close</button>
     </div>
   </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px;text-align:left"><div><label class="label">Book</label><select id="pomoBookSelect" class="select" onchange="handlePomoBookChange(this.value)"></select></div><div><label class="label">Chapter</label><select id="pomoChapterSelect" class="select" onchange="handlePomoChapterChange(this.value)"></select></div></div>
-  <div id="pomoCurrentTopic" style="font-size:13px;font-weight:850;color:var(--primary);margin-top:10px;min-height:18px"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px;text-align:left">
+    <div>
+      <label class="label">Book</label>
+      <select id="pomoBookSelect" class="select" onchange="handlePomoBookChange(this.value)"></select>
+    </div>
+    <div>
+      <label class="label">Chapter</label>
+      <select id="pomoChapterSelect" class="select" onchange="handlePomoChapterChange(this.value)"></select>
+    </div>
+  </div>
+  <div id="pomoCurrentTopic" style="font-size:13px;font-weight:850;color:var(--muted);margin-top:10px;min-height:18px">Please select a subject and chapter</div>
   <div id="pomoClock" class="pomo-clock">25:00</div>
   <div class="progress" style="max-width:350px;margin:auto"><div id="pomoProgressFill" class="fill"></div></div>
   
@@ -956,33 +967,17 @@ footer {
   </div>
 </div></div>
 
-<!-- In-App Pomodoro Completion Alert Modal -->
-<div id="pomoAlertModal" class="modal"><div class="card modalbox" style="text-align:center;max-width:400px">
-  <div id="pomoAlertIcon" style="font-size:42px">🍅</div>
-  <h3 id="pomoAlertTitle" style="margin-top:4px">Focus Complete!</h3>
-  <p id="pomoAlertMsg" class="sub" style="margin:8px 0 16px"></p>
-  <div class="modal-actions" style="justify-content:center;flex-direction:column;gap:8px">
-    <button id="pomoAlertActionBtn" class="btn primary" onclick="handlePomoAlertAction()">Start Break</button>
-    <button class="btn" onclick="closePomoAlert()">Dismiss</button>
-  </div>
-</div></div>
-
-<!-- In-App Clear History Confirmation Modal -->
+<!-- Modals -->
 <div id="clearHistoryModal" class="modal"><div class="card modalbox" style="text-align:center;max-width:420px"><div style="font-size:33px">⚠️</div><h3>Clear Study History?</h3><p class="sub" style="margin:8px 0 14px">Are you sure you want to clear all logged study focus sessions? Your syllabus progress and exam plans remain safe.</p><div class="modal-actions" style="justify-content:center"><button class="btn" onclick="closeClearHistoryModal()">Cancel</button><button class="btn danger" onclick="confirmClearStudyHistory()">Yes, Clear</button></div></div></div>
 
-<!-- In-App Reset Daily Target Confirmation Modal -->
 <div id="resetDailyGoalModal" class="modal"><div class="card modalbox" style="text-align:center;max-width:400px"><div style="font-size:33px">🎯</div><h3>Reset Daily Study Target?</h3><p class="sub" style="margin:8px 0 14px">Reset your daily study goal back to the default 120 minutes (2 hours)?</p><div class="modal-actions" style="justify-content:center"><button class="btn" onclick="closeResetDailyGoalModal()">Cancel</button><button class="btn primary" onclick="confirmResetDailyGoal()">Yes, Reset</button></div></div></div>
 
-<!-- In-App Alert Enabled Confirmation Modal -->
 <div id="alertEnabledModal" class="modal"><div class="card modalbox" style="text-align:center;max-width:410px"><div style="font-size:38px">🔔</div><h3 id="alertEnabledTitle" style="margin-top:6px">Pomodoro Alert Enabled</h3><p id="alertEnabledDesc" class="sub" style="margin:8px 0 16px"></p><div class="modal-actions" style="justify-content:center"><button class="btn primary" onclick="closeAlertEnabledModal()">Got it</button></div></div></div>
 
-<!-- In-App Delete Exam Confirmation Modal -->
 <div id="deleteExamModal" class="modal"><div class="card modalbox" style="text-align:center;max-width:420px"><div style="font-size:33px">⚠️</div><h3>Delete Exam Plan?</h3><p id="deleteExamModalMsg" class="sub" style="margin:8px 0 14px">Are you sure you want to delete this exam plan?</p><div class="modal-actions" style="justify-content:center"><button class="btn" onclick="closeDeleteExamModal()">Cancel</button><button class="btn danger" onclick="confirmDeleteExam()">Yes, Delete</button></div></div></div>
 
-<!-- Reset Progress Modal -->
 <div id="resetModal" class="modal"><div class="card modalbox" style="text-align:center"><div style="font-size:33px">⚠️</div><h3>Reset Syllabus Progress?</h3><p class="sub" style="margin:8px 0 14px">Chapter statuses will return to Not Started. Exam plans and study history stay safe.</p><div class="modal-actions" style="justify-content:center"><button class="btn" onclick="closeResetModal()">Cancel</button><button class="btn danger" onclick="confirmResetProgress()">Yes, Reset</button></div></div></div>
 
-<!-- Exam Create/Edit Modal -->
 <div id="examModal" class="modal"><div class="card modalbox"><h3 id="examModalTitle">Create Exam Plan</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px"><input id="inputExamName" class="input" placeholder="Exam name"><input id="inputExamDate" class="input" type="date"></div><div style="margin-top:10px"><label class="label">Select chapters</label><div id="examPickerList" style="max-height:270px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:7px;background:var(--soft);margin-top:4px"></div></div><div class="modal-actions"><button class="btn" onclick="closeExamModal()">Cancel</button><button class="btn primary" onclick="saveExamFromModal()">Save Exam</button></div></div></div>
 
 <div id="toast" class="toast"></div>
@@ -1018,14 +1013,19 @@ const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{retur
 let progress=load(KEY.progress,{}),last=load(KEY.last,null),collapsed=load(KEY.collapsed,{}),history=load(KEY.history,{}),exams=load(KEY.exams,[]),goal=Number(localStorage.getItem(KEY.goal))||120;
 let currentTab="syllabus",search="",bookFilter="all",statusFilter="all",selectedExam=null,editingExam=null,graphPeriod="daily",pendingExamDeleteId=null;
 
-const chKey=(b,c)=>b+"__"+c;
-const today = () => {
-    const d = new Date();
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
+// Accurate Local Timezone Helper
+const formatDateKey = (d = new Date()) => {
+    const dt = d instanceof Date ? d : new Date(d);
+    const year = dt.getFullYear();
+    const month = String(dt.getMonth() + 1).padStart(2, '0');
+    const day = String(dt.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 };
+const today = () => formatDateKey(new Date());
+
+let currentDayKey = today();
+
+const chKey=(b,c)=>b+"__"+c;
 const fmtPct=(val)=>(Number(val||0)).toFixed(2)+"%";
 
 const fmt=s=>{
@@ -1091,7 +1091,7 @@ function updateDashboard(){
 
     let cur=new Date(),streak=0;
     if(sec<=0)cur.setDate(cur.getDate()-1);
-    while(history[cur.toISOString().slice(0,10)]?.totalSeconds>0){
+    while(history[formatDateKey(cur)]?.totalSeconds>0){
         streak++;
         cur.setDate(cur.getDate()-1);
         if(streak>366)break;
@@ -1308,9 +1308,9 @@ function startPomodoroForExam(){
     c?openPomodoroFor(c.book,c.chapter):toast("🎉 All exam chapters are complete!");
 }
 
-// Pomodoro Timer with Custom Settings & Accurate Background Delta
+// Pomodoro Timer with Manual Selection and Locked Mode Once Started
 let pomo={
-    running:false,mode:"focus",focus:25,break:5,remaining:1500,end:0,book:"Physics 1st Paper",chapter:1,session:1,timer:null
+    running:false,started:false,mode:"focus",focus:25,break:5,remaining:1500,end:0,book:"",chapter:null,session:1,timer:null
 };
 let lastTick=Date.now();
 let lastBgNotificationAt=0;
@@ -1330,8 +1330,6 @@ function getAudioContext(){
     return audioCtx;
 }
 
-// Same-origin Service Worker for Android/Chrome background notifications.
-// A real SW file is required; Blob/data URLs are not reliably registerable on GitHub Pages.
 let swReg=null;
 if("serviceWorker" in navigator){
     navigator.serviceWorker.register("./sw.js", {scope:"./"})
@@ -1347,8 +1345,17 @@ function notifySW(type,payload={}){
     }catch(e){}
 }
 
+function openPomodoroFor(b,c){
+    if(pomo.started){
+        toast("⚠️ Reset Pomodoro before changing chapter!");
+        openPomodoro();
+        return;
+    }
+    pomo.book=b;
+    pomo.chapter=c;
+    openPomodoro();
+}
 
-function openPomodoroFor(b,c){pomo.book=b;pomo.chapter=c;openPomodoro();}
 function openPomodoro(){
     getAudioContext();
     document.getElementById("pomodoroOverlay").classList.add("show");
@@ -1383,7 +1390,6 @@ function updateAlertUI(){
     }
 }
 
-
 function openAlertEnabledModal(title,msg){
     document.getElementById("alertEnabledTitle").textContent=title;
     document.getElementById("alertEnabledDesc").textContent=msg;
@@ -1398,7 +1404,7 @@ async function togglePomodoroAlert(){
 
     if(!("Notification" in window)){
         toast("🔔 In-app alert is active");
-        openAlertEnabledModal("In-App Alert Active","Your Pomodoro will use the audio alarm and completion popup when the timer finishes.");
+        openAlertEnabledModal("In-App Alert Active","Your Pomodoro will use the audio alarm when the timer finishes.");
         updateAlertUI();
         return;
     }
@@ -1417,14 +1423,13 @@ async function togglePomodoroAlert(){
             openAlertEnabledModal("Device Notifications Enabled","You will receive a Pomodoro notification when a session finishes. Keep browser notifications allowed on your phone.");
         }else{
             toast("🔔 In-app alert active (browser permission: "+perm+")");
-            openAlertEnabledModal("In-App Alert Active","Browser notifications were not enabled, but the in-app audio alarm and completion popup remain available.");
+            openAlertEnabledModal("In-App Alert Active","Browser notifications were not enabled, but the in-app audio alarm remains available.");
         }
     }catch(e){
         toast("Could not enable device notifications");
     }
     updateAlertUI();
 }
-
 
 function sendSysNotification(title,body){
     if(!("Notification" in window)||Notification.permission!=="granted")return;
@@ -1454,16 +1459,17 @@ function updateBackgroundPomodoroNotification(force=false){
     lastBgNotificationAt=now;
     const m=Math.floor(pomo.remaining/60),s=pomo.remaining%60;
     const timeStr=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+    const bookTitle = pomo.book || "Focus";
+    const chName = (pomo.book && pomo.chapter && BOOKS[pomo.book]?.[pomo.chapter-1]) ? BOOKS[pomo.book][pomo.chapter-1] : "";
     notifySW("POMODORO_UPDATE",{
         title:pomo.mode==="focus"?"🍅 Pomodoro Focus":"☕ Pomodoro Break",
-        body:`${timeStr} remaining • ${pomo.book} · ${BOOKS[pomo.book]?.[pomo.chapter-1]||`Chapter ${pomo.chapter}`}`
+        body:`${timeStr} remaining • ${bookTitle}${chName ? ' · ' + chName : ''}`
     });
 }
 
 function clearBackgroundPomodoroNotification(){
     notifySW("POMODORO_STOP");
 }
-
 
 function tryDirectNotif(title,body){
     try {
@@ -1499,20 +1505,64 @@ function playAlertSound(){
     }
 }
 
+// Populate Pickers with Unselected Default & Lock Logic
 function populatePomoPickers(){
     const b=document.getElementById("pomoBookSelect");
-    b.innerHTML=Object.keys(BOOKS).map(x=>`<option ${x===pomo.book?"selected":""}>${x}</option>`).join("");
-    handlePomoBookChange(pomo.book);
-}
-function handlePomoBookChange(b){
-    pomo.book=b;
+    let bHtml = `<option value="" ${!pomo.book ? "selected disabled" : "disabled"}>-- Select Subject --</option>`;
+    bHtml += Object.keys(BOOKS).map(x=>`<option value="${x}" ${x===pomo.book?"selected":""}>${x}</option>`).join("");
+    b.innerHTML = bHtml;
+    b.disabled = !!pomo.started;
+
     const s=document.getElementById("pomoChapterSelect");
-    s.innerHTML=BOOKS[b].map((n,i)=>`<option value="${i+1}" ${i+1===pomo.chapter?"selected":""}>${i+1}. ${n}</option>`).join("");
-    handlePomoChapterChange(s.value);
+    if(!pomo.book || !BOOKS[pomo.book]){
+        s.innerHTML = `<option value="" selected disabled>-- Select Chapter --</option>`;
+        s.disabled = true;
+    } else {
+        let sHtml = `<option value="" ${!pomo.chapter ? "selected disabled" : "disabled"}>-- Select Chapter --</option>`;
+        sHtml += BOOKS[pomo.book].map((n,i)=>`<option value="${i+1}" ${pomo.chapter===(i+1)?"selected":""}>${i+1}. ${n}</option>`).join("");
+        s.innerHTML = sHtml;
+        s.disabled = !!pomo.started;
+    }
+
+    const topicEl = document.getElementById("pomoCurrentTopic");
+    if(pomo.book && pomo.chapter && BOOKS[pomo.book]?.[pomo.chapter-1]){
+        topicEl.textContent = `${pomo.book} · ${BOOKS[pomo.book][pomo.chapter-1]}`;
+        topicEl.style.color = "var(--primary)";
+    } else {
+        topicEl.textContent = "Please select a subject and chapter to begin";
+        topicEl.style.color = "var(--muted)";
+    }
 }
+
+function handlePomoBookChange(b){
+    if(pomo.started) return;
+    pomo.book = b || "";
+    pomo.chapter = null;
+    const s = document.getElementById("pomoChapterSelect");
+    if(!pomo.book || !BOOKS[pomo.book]){
+        s.innerHTML = `<option value="" selected disabled>-- Select Chapter --</option>`;
+        s.disabled = true;
+    } else {
+        let sHtml = `<option value="" selected disabled>-- Select Chapter --</option>`;
+        sHtml += BOOKS[pomo.book].map((n,i)=>`<option value="${i+1}">${i+1}. ${n}</option>`).join("");
+        s.innerHTML = sHtml;
+        s.disabled = false;
+    }
+    handlePomoChapterChange("");
+}
+
 function handlePomoChapterChange(c){
-    pomo.chapter=Number(c);
-    document.getElementById("pomoCurrentTopic").textContent=`${pomo.book} · ${BOOKS[pomo.book][pomo.chapter-1]}`;
+    if(pomo.started) return;
+    pomo.chapter = c ? Number(c) : null;
+    const topicEl = document.getElementById("pomoCurrentTopic");
+    if(pomo.book && pomo.chapter && BOOKS[pomo.book]?.[pomo.chapter-1]){
+        topicEl.textContent = `${pomo.book} · ${BOOKS[pomo.book][pomo.chapter-1]}`;
+        topicEl.style.color = "var(--primary)";
+    } else {
+        topicEl.textContent = "Please select a subject and chapter to begin";
+        topicEl.style.color = "var(--muted)";
+    }
+    savePomoState();
 }
 
 function applyCustomPomoTime(){
@@ -1553,7 +1603,7 @@ function updatePomoDisplay(){
     if(headerBtn){
         if(pomo.running){
             headerBtn.textContent=`${modeIcon} ${modeLabel} ${timeStr}`;
-        }else if(pomo.remaining>0){
+        }else if(pomo.started && pomo.remaining>0){
             headerBtn.textContent=`⏸ ${modeLabel} ${timeStr}`;
         }else{
             headerBtn.textContent="🍅 Pomodoro";
@@ -1563,7 +1613,7 @@ function updatePomoDisplay(){
     const floating=document.getElementById("pomoFloatingTimer");
 
     if(floating){
-        if(pomo.running || pomo.remaining>0){
+        if(pomo.running || (pomo.started && pomo.remaining>0)){
             floating.classList.add("show");
             floating.classList.toggle("running",pomo.running);
             floating.classList.toggle("break",pomo.mode==="break");
@@ -1580,15 +1630,10 @@ function updatePomoDisplay(){
     if(pomo.running){
         document.title=
             `(${timeStr}) ${modeIcon} ${modeLabel} • Syllabus Tracker`;
-
         updateBackgroundPomodoroNotification();
-
-    }else if(pomo.remaining>0){
-
+    }else if(pomo.started && pomo.remaining>0){
         document.title=`⏸ ${timeStr} • Syllabus Tracker`;
-
     }else{
-
         document.title="Syllabus Tracker";
     }
 }
@@ -1596,7 +1641,7 @@ function updatePomoDisplay(){
 function savePomoState(){
     try{
         localStorage.setItem("syllabusPomoState",JSON.stringify({
-            running:pomo.running,mode:pomo.mode,focus:pomo.focus,break:pomo.break,remaining:pomo.remaining,end:pomo.end,book:pomo.book,chapter:pomo.chapter,session:pomo.session
+            running:pomo.running,started:pomo.started,mode:pomo.mode,focus:pomo.focus,break:pomo.break,remaining:pomo.remaining,end:pomo.end,book:pomo.book,chapter:pomo.chapter,session:pomo.session
         }));
     }catch(e){}
 }
@@ -1607,26 +1652,39 @@ function restorePomoState(){
         if(!st)return;
 
         if(BOOKS[st.book])pomo.book=st.book;
-        if(BOOKS[pomo.book]?.[Number(st.chapter)-1])pomo.chapter=Number(st.chapter);
+        else pomo.book="";
+
+        if(pomo.book && BOOKS[pomo.book]?.[Number(st.chapter)-1])pomo.chapter=Number(st.chapter);
+        else pomo.chapter=null;
+
         if(Number.isFinite(st.focus))pomo.focus=Math.max(1,Math.min(240,Number(st.focus)));
         if(Number.isFinite(st.break))pomo.break=Math.max(1,Math.min(60,Number(st.break)));
         if(Number.isFinite(st.session))pomo.session=Math.max(1,Number(st.session));
 
+        pomo.started=!!st.started;
         pomo.mode=st.mode==="break"?"break":"focus";
         pomo.remaining=Math.max(0,Number(st.remaining)||0);
         pomo.end=Number(st.end)||0;
 
-        if(st.running && pomo.end>0){
+        const focusInput=document.getElementById("pomoCustomFocus");
+        const breakInput=document.getElementById("pomoCustomBreak");
+        if(focusInput)focusInput.value=pomo.focus;
+        if(breakInput)breakInput.value=pomo.break;
+
+        if(st.running && pomo.end>0 && pomo.book && pomo.chapter){
             const now=Date.now();
             pomo.remaining=Math.max(0,Math.ceil((pomo.end-now)/1000));
 
             if(pomo.remaining>0){
                 pomo.running=true;
+                pomo.started=true;
                 lastTick=now;
                 pomo.timer=setInterval(pomoTick,500);
 
-                document.getElementById("pomoBookSelect").disabled=true;
-                document.getElementById("pomoChapterSelect").disabled=true;
+                const bSelect=document.getElementById("pomoBookSelect");
+                const cSelect=document.getElementById("pomoChapterSelect");
+                if(bSelect)bSelect.disabled=true;
+                if(cSelect)cSelect.disabled=true;
             }else{
                 pomo.running=false;
                 pomo.timer=null;
@@ -1642,17 +1700,28 @@ function restorePomoState(){
 function togglePomodoroPlay(){
     getAudioContext();
 
+    // Check if subject and chapter are selected
+    if(!pomo.book || !pomo.chapter || !BOOKS[pomo.book]?.[pomo.chapter-1]){
+        toast("⚠️ Please select a subject and chapter first!");
+        return;
+    }
+
     if(pomo.running){
         clearInterval(pomo.timer);
         pomo.timer = null;
         pomo.running = false;
-
         clearBackgroundPomodoroNotification();
-
     } else {
         pomo.running = true;
+        pomo.started = true;
         lastTick = Date.now();
         pomo.end = Date.now() + pomo.remaining * 1000;
+
+        // Lock subject and chapter selections
+        const bSelect=document.getElementById("pomoBookSelect");
+        const cSelect=document.getElementById("pomoChapterSelect");
+        if(bSelect)bSelect.disabled=true;
+        if(cSelect)cSelect.disabled=true;
 
         clearInterval(pomo.timer);
         pomo.timer = setInterval(pomoTick, 500);
@@ -1664,16 +1733,21 @@ function togglePomodoroPlay(){
     updatePomoDisplay();
 }
 
- 
-
 function pomoTick(){
     const now=Date.now();
-    const elapsedSeconds=Math.max(0,Math.min(60,(now-lastTick)/1000));
-    lastTick=now;
-    pomo.remaining=Math.max(0,Math.ceil((pomo.end-now)/1000));
-    if(pomo.mode==="focus"&&elapsedSeconds>0)addStudySeconds(pomo.book,pomo.chapter,elapsedSeconds);
+    const prevTick = lastTick;
+    lastTick = now;
+
+    const activeSecondsPassed = Math.max(0, (Math.min(now, pomo.end) - prevTick) / 1000);
+    pomo.remaining = Math.max(0, Math.ceil((pomo.end - now) / 1000));
+
+    if(pomo.mode==="focus" && activeSecondsPassed>0 && pomo.book && pomo.chapter){
+        addStudySeconds(pomo.book, pomo.chapter, activeSecondsPassed);
+    }
+
     savePomoState();
     updatePomoDisplay();
+
     if(pomo.remaining<=0){
         clearInterval(pomo.timer);
         pomo.running=false;
@@ -1685,98 +1759,49 @@ function pomoTick(){
 function handlePomoFinish(){
     playAlertSound();
 
-    const chName =
-        BOOKS[pomo.book]?.[pomo.chapter-1] ||
-        `Chapter ${pomo.chapter}`;
+    const chName = BOOKS[pomo.book]?.[pomo.chapter-1] || `Chapter ${pomo.chapter}`;
 
     if(pomo.mode === "focus"){
         sendSysNotification(
             "🎉 Focus Complete!",
-            `Awesome job! Finished studying ${pomo.book} • ${chName}. Time for a break!`
+            `Finished studying ${pomo.book} • ${chName}. Break started automatically!`
         );
+        toast(`☕ Break started (${pomo.break}m)`);
 
-        // Automatically switch to break
         pomo.mode = "break";
         pomo.remaining = pomo.break * 60;
-
     } else {
         sendSysNotification(
             "⏰ Break Finished!",
-            `Break is done for ${pomo.book}! Starting your next focus session.`
+            `Break is done! Next focus session started.`
         );
+        toast(`🍅 Focus session ${pomo.session + 1} started`);
 
-        // Automatically switch to next focus
         pomo.mode = "focus";
         pomo.session++;
         pomo.remaining = pomo.focus * 60;
     }
 
-    // Automatically start the next phase
+    // Next phase starts automatically with continuous lock
     clearInterval(pomo.timer);
     pomo.timer = null;
 
     pomo.running = true;
+    pomo.started = true;
     lastTick = Date.now();
     pomo.end = Date.now() + pomo.remaining * 1000;
-
     pomo.timer = setInterval(pomoTick, 500);
 
     updateBackgroundPomodoroNotification(true);
     savePomoState();
     updatePomoDisplay();
-
-    // Show alert without stopping the timer
-    openPomoAlert(
-        pomo.mode === "break"
-            ? "focus-complete"
-            : "break-complete"
-    );
 }
-
-function openPomoAlert(type){
-    const modal = document.getElementById("pomoAlertModal");
-    const icon = document.getElementById("pomoAlertIcon");
-    const title = document.getElementById("pomoAlertTitle");
-    const msg = document.getElementById("pomoAlertMsg");
-    const btn = document.getElementById("pomoAlertActionBtn");
-
-    if(!modal) return;
-
-    if(type === "focus-complete"){
-        icon.textContent = "🍅";
-        title.textContent = "Focus Session Complete!";
-        msg.textContent =
-            `Awesome job! You finished studying ${pomo.book} · Chapter ${pomo.chapter}. ` +
-            `Your break has started automatically.`;
-
-        // Timer is already running — button only closes popup
-        btn.textContent = "☕ Break Started";
-        btn.onclick = () => {
-            closePomoAlert();
-        };
-
-    } else {
-        icon.textContent = "⏰";
-        title.textContent = "Break Finished!";
-        msg.textContent =
-            "Your break is complete. Your next focus session has started automatically.";
-
-        // Timer is already running — button only closes popup
-        btn.textContent = "▶ Focus Started";
-        btn.onclick = () => {
-            closePomoAlert();
-        };
-    }
-
-    modal.classList.add("show");
-}
-
-function closePomoAlert(){document.getElementById("pomoAlertModal").classList.remove("show");}
 
 function resetPomodoro(){
     clearInterval(pomo.timer);
     pomo.timer=null;
     pomo.running=false;
+    pomo.started=false;
     pomo.end=0;
     clearBackgroundPomodoroNotification();
 
@@ -1784,14 +1809,22 @@ function resetPomodoro(){
     pomo.session=1;
     pomo.remaining=pomo.focus*60;
 
-    document.getElementById("pomoBookSelect").disabled=false;
-    document.getElementById("pomoChapterSelect").disabled=false;
+    // Unlock subject and chapter dropdowns on reset
+    const bSelect=document.getElementById("pomoBookSelect");
+    const cSelect=document.getElementById("pomoChapterSelect");
+    if(bSelect)bSelect.disabled=false;
+    if(cSelect)cSelect.disabled=!pomo.book;
 
     savePomoState();
     updatePomoDisplay();
+    toast("↺ Pomodoro reset");
 }
 
 function skipPomodoro(){
+    if(!pomo.book || !pomo.chapter){
+        toast("⚠️ Please select a subject and chapter first!");
+        return;
+    }
     clearInterval(pomo.timer);
     pomo.running=false;
     clearBackgroundPomodoroNotification();
@@ -1808,6 +1841,7 @@ function skipPomodoro(){
 }
 
 function addStudySeconds(b,c,sec){
+    if(!b || !c) return;
     const d=today();
     history[d]??={totalSeconds:0,sessions:0,byBook:{},byChapter:{}};
     history[d].totalSeconds+=sec;
@@ -1817,11 +1851,16 @@ function addStudySeconds(b,c,sec){
     updateDashboard();
 }
 
-// Background sync on tab focus
+// Background sync on tab focus and midnight transition check
 document.addEventListener("visibilitychange",()=>{
-    if(pomo.running&&document.visibilityState==="visible"){
+    checkMidnightChange();
+    if(pomo.running && document.visibilityState==="visible"){
         pomoTick();
     }
+});
+
+window.addEventListener("focus",()=>{
+    checkMidnightChange();
 });
 
 // Study History
@@ -1837,9 +1876,10 @@ function groupedHistory(){
     Object.entries(history).forEach(([d,v])=>{
         let key=d;
         if(graphPeriod==="weekly"){
-            let x=new Date(d);
-            x.setDate(x.getDate()-x.getDay());
-            key=x.toISOString().slice(0,10);
+            let parts = d.split('-').map(Number);
+            let x = new Date(parts[0], parts[1]-1, parts[2]);
+            x.setDate(x.getDate() - x.getDay());
+            key = formatDateKey(x);
         }
         if(graphPeriod==="monthly")key=d.slice(0,7);
         out[key]=(out[key]||0)+(v.totalSeconds||0);
@@ -1848,7 +1888,10 @@ function groupedHistory(){
 }
 
 function drawGraph(){
-    const c=document.getElementById("historyCanvas"),ctx=c.getContext("2d"),r=c.getBoundingClientRect(),dpr=devicePixelRatio||1;
+    const c=document.getElementById("historyCanvas");
+    if(!c)return;
+    const ctx=c.getContext("2d"),r=c.getBoundingClientRect(),dpr=devicePixelRatio||1;
+    if(!r.width || !r.height) return;
     c.width=r.width*dpr;c.height=r.height*dpr;
     ctx.scale(dpr,dpr);
     const w=r.width,h=r.height;
@@ -1890,7 +1933,7 @@ function renderHistory(){
     const recent=[];
     for(let i=0;i<7;i++){
         let d=new Date();d.setDate(d.getDate()-i);
-        let k=d.toISOString().slice(0,10);
+        let k=formatDateKey(d);
         recent.push(`<div class="listrow"><span>${i===0?"Today":i===1?"Yesterday":k}</span><strong>${fmt(history[k]?.totalSeconds||0)}</strong></div>`);
     }
     document.getElementById("weeklyHistoryList").innerHTML=recent.join("");
@@ -1957,6 +2000,31 @@ function confirmResetProgress(){
 
 function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
 
+// Midnight check & auto-refresh
+function checkMidnightChange(){
+    const newDay = today();
+    if(newDay !== currentDayKey){
+        currentDayKey = newDay;
+        updateDashboard();
+        if(currentTab==="history") renderHistory();
+    }
+}
+
+function scheduleMidnightRefresh(){
+    const now = new Date();
+    const nextMidnight = new Date(now);
+    nextMidnight.setHours(24, 0, 0, 0);
+
+    setTimeout(() => {
+        checkMidnightChange();
+        scheduleMidnightRefresh();
+    }, nextMidnight - now);
+}
+
+// 30s heartbeat to guarantee instant reset
+setInterval(checkMidnightChange, 30000);
+scheduleMidnightRefresh();
+
 function init(){
     const sel=document.getElementById("bookSelectFilter");
     sel.innerHTML=`<option value="all">📚 All Subjects</option>`+Object.keys(BOOKS).map(b=>`<option>${b}</option>`).join("");
@@ -1967,19 +2035,6 @@ function init(){
     window.addEventListener("resize",()=>{if(currentTab==="history")drawGraph();});
 }
 document.addEventListener("DOMContentLoaded",init);
-    function scheduleMidnightRefresh(){
-    const now = new Date();
-    const nextMidnight = new Date(now);
-
-    nextMidnight.setHours(24, 0, 0, 0);
-
-    setTimeout(() => {
-        updateDashboard();
-        scheduleMidnightRefresh();
-    }, nextMidnight - now);
-}
-
-scheduleMidnightRefresh();
 </script>
 </body>
 </html>
