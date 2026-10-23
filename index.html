@@ -889,15 +889,6 @@ footer {
     <button class="btn" onclick="skipPomodoro()">⏭ Skip</button>
   </div>
 
-  <!-- Background Alert Banner -->
-  <div id="pomoAlertBanner" style="margin-top:12px;padding:9px 12px;border-radius:10px;background:var(--soft);border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;text-align:left;gap:8px">
-    <div style="font-size:11px">
-      <strong style="display:block;font-size:11.5px">🔔 Background & Device Alert</strong>
-      <span id="pomoAlertBannerText" style="color:var(--muted)">Get alerted even when you leave the app or lock screen.</span>
-    </div>
-    <button id="pomoTestAlertBtn" class="btn primary" style="padding:5px 9px;font-size:11px;white-space:nowrap" onclick="togglePomodoroAlert()">Enable Alert</button>
-  </div>
-
   <!-- Custom Time Setup -->
   <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border)">
     <div style="font-size:11.5px;font-weight:750;color:var(--muted);margin-bottom:6px">Custom Session Duration</div>
@@ -1032,7 +1023,8 @@ function updateDashboard(){
     document.getElementById("statCompleted").textContent=done;
     document.getElementById("statInProgress").textContent=inp;
     document.getElementById("statPercent").textContent=pctStr;
-    document.getElementById("overallPercentText").textContent=pctStr;
+    const overallPercentEl=document.getElementById("overallPercentText");
+    if(overallPercentEl)overallPercentEl.textContent=pctStr;
     const subEl=document.getElementById("overallCountSub");
     if(subEl)subEl.textContent=`${done} / ${total} chapters`;
     document.getElementById("overallFill").style.width=pctVal+"%";
@@ -1262,6 +1254,7 @@ let pomo={
     running:false,mode:"focus",focus:25,break:5,remaining:1500,end:0,book:"Physics 1st Paper",chapter:1,session:1,timer:null
 };
 let lastTick=Date.now();
+let lastBgNotificationAt=0;
 
 // Global AudioContext with mobile gesture unlock
 let audioCtx=null;
@@ -1278,18 +1271,23 @@ function getAudioContext(){
     return audioCtx;
 }
 
-// Inline Service Worker for mobile notifications on Android Chrome
+// Same-origin Service Worker for Android/Chrome background notifications.
+// A real SW file is required; Blob/data URLs are not reliably registerable on GitHub Pages.
 let swReg=null;
-if('serviceWorker' in navigator){
-    try {
-        const swBlob=new Blob([
-            "self.addEventListener('notificationclick',function(e){e.notification.close();e.waitUntil(clients.matchAll({type:'window'}).then(function(cl){for(var i=0;i<cl.length;i++){if(cl[i].url&&'focus' in cl[i])return cl[i].focus();}if(clients.openWindow)return clients.openWindow('/');}));});"
-        ],{type:'application/javascript'});
-        navigator.serviceWorker.register(URL.createObjectURL(swBlob))
-            .then(reg=>{swReg=reg;})
-            .catch(()=>{});
+if("serviceWorker" in navigator){
+    navigator.serviceWorker.register("./sw.js", {scope:"./"})
+        .then(reg=>{swReg=reg;})
+        .catch(()=>{});
+}
+
+function notifySW(type,payload={}){
+    if(!swReg) return;
+    try{
+        if(swReg.active) swReg.active.postMessage({type,payload});
+        else navigator.serviceWorker.ready.then(reg=>reg.active?.postMessage({type,payload})).catch(()=>{});
     }catch(e){}
 }
+
 
 function openPomodoroFor(b,c){pomo.book=b;pomo.chapter=c;openPomodoro();}
 function openPomodoro(){
@@ -1303,40 +1301,29 @@ function closePomodoro(){document.getElementById("pomodoroOverlay").classList.re
 
 function updateAlertUI(){
     const btn=document.getElementById("pomoAlertBtn");
-    const testBtn=document.getElementById("pomoTestAlertBtn");
-    const bannerText=document.getElementById("pomoAlertBannerText");
+    if(!btn)return;
+
     if(!("Notification" in window)){
-        if(btn)btn.textContent="🔔 In-App Alert Active";
-        if(testBtn)testBtn.textContent="Test Sound";
-        if(bannerText)bannerText.textContent="Loud audio chime & visual alert will ring when session finishes.";
+        btn.textContent="🔔 Alert Active";
+        btn.style.color="var(--success)";
+        btn.style.borderColor="var(--success)";
+        btn.title="In-app audio alert is available";
         return;
     }
+
     if(Notification.permission==="granted"){
-        if(btn){
-            btn.textContent="🔔 Alert Active (Test)";
-            btn.style.color="var(--success)";
-            btn.style.borderColor="var(--success)";
-            btn.title="Click to test alert chime & notification";
-        }
-        if(testBtn){
-            testBtn.textContent="Test Alert Sound";
-            testBtn.className="btn";
-        }
-        if(bannerText)bannerText.textContent="✅ Device alert enabled! Rings & notifies even if tab is switched or screen locked.";
-    } else {
-        if(btn){
-            btn.textContent="🔔 Enable Alert";
-            btn.style.color="var(--warning)";
-            btn.style.borderColor="var(--warning)";
-            btn.title="Click to enable background device alerts";
-        }
-        if(testBtn){
-            testBtn.textContent="Enable Alert";
-            testBtn.className="btn primary";
-        }
-        if(bannerText)bannerText.textContent="Click to enable device alerts and audio notifications in the background.";
+        btn.textContent="🔔 Alert Enabled";
+        btn.style.color="var(--success)";
+        btn.style.borderColor="var(--success)";
+        btn.title="Pomodoro device alerts are enabled";
+    }else{
+        btn.textContent="🔔 Enable Alert";
+        btn.style.color="var(--warning)";
+        btn.style.borderColor="var(--warning)";
+        btn.title="Enable Pomodoro device alerts";
     }
 }
+
 
 function openAlertEnabledModal(title,msg){
     document.getElementById("alertEnabledTitle").textContent=title;
@@ -1349,22 +1336,16 @@ function closeAlertEnabledModal(){
 
 async function togglePomodoroAlert(){
     getAudioContext();
-    playAlertSound();
-    if(navigator.vibrate){
-        try{navigator.vibrate([200,100,200]);}catch(e){}
-    }
 
     if(!("Notification" in window)){
-        toast("🔔 Alert Enabled! (Audio chime & popup active)");
-        openAlertEnabledModal("In-App Audio Alert Active","When your Pomodoro session finishes, the alarm bell will ring and the completion dialog will pop up on your screen.");
+        toast("🔔 In-app alert is active");
+        openAlertEnabledModal("In-App Alert Active","Your Pomodoro will use the audio alarm and completion popup when the timer finishes.");
         updateAlertUI();
         return;
     }
 
     if(Notification.permission==="granted"){
-        sendSysNotification("🔔 Pomodoro Alert Active","Your alerts will notify you in background!");
-        toast("🔔 Alert is already active! Test chime played.");
-        openAlertEnabledModal("Background Alert Active","System notifications and audio chime are enabled. You will be alerted even if you switch apps or lock your phone.");
+        toast("🔔 Alert is already enabled");
         updateAlertUI();
         return;
     }
@@ -1372,39 +1353,58 @@ async function togglePomodoroAlert(){
     try {
         const perm=await Notification.requestPermission();
         if(perm==="granted"){
-            sendSysNotification("🔔 Syllabus Tracker Alert Enabled","Pomodoro alerts will now notify you even in background!");
-            toast("🔔 Device alert enabled! Test notification sent.");
-            openAlertEnabledModal("Device Notifications Enabled","You will now receive alerts in your notification shade and hear a bell when your session ends.");
-        } else {
-            toast("🔔 Audio & In-App Alert Active (Browser notification: "+perm+")");
-            openAlertEnabledModal("Audio & In-App Alert Active","Audio alarm and completion popup will ring when your timer finishes.");
+            sendSysNotification("🔔 Syllabus Tracker Alerts Enabled","Pomodoro completion alerts are now enabled.");
+            toast("🔔 Device alert enabled");
+            openAlertEnabledModal("Device Notifications Enabled","You will receive a Pomodoro notification when a session finishes. Keep browser notifications allowed on your phone.");
+        }else{
+            toast("🔔 In-app alert active (browser permission: "+perm+")");
+            openAlertEnabledModal("In-App Alert Active","Browser notifications were not enabled, but the in-app audio alarm and completion popup remain available.");
         }
     }catch(e){
-        try {
-            Notification.requestPermission((p)=>{
-                if(p==="granted"){
-                    sendSysNotification("🔔 Syllabus Tracker Alert Enabled","Pomodoro alerts will now notify you even in background!");
-                    toast("🔔 Device alert enabled! Test notification sent.");
-                }
-                updateAlertUI();
-            });
-        }catch(err){}
+        toast("Could not enable device notifications");
     }
     updateAlertUI();
 }
 
+
 function sendSysNotification(title,body){
     if(!("Notification" in window)||Notification.permission!=="granted")return;
-    if(swReg&&swReg.showNotification){
-        swReg.showNotification(title,{
-            body:body,
-            icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🍅</text></svg>',
-            vibrate:[300,150,300]
-        }).catch(()=>tryDirectNotif(title,body));
-        return;
-    }
-    tryDirectNotif(title,body);
+    const show=reg=>{
+        try{
+            if(reg?.showNotification){
+                reg.showNotification(title,{
+                    body,
+                    tag:"syllabus-pomodoro",
+                    renotify:true,
+                    vibrate:[300,150,300]
+                }).catch(()=>tryDirectNotif(title,body));
+                return;
+            }
+        }catch(e){}
+        tryDirectNotif(title,body);
+    };
+    if(swReg)show(swReg);
+    else if(navigator.serviceWorker?.ready)navigator.serviceWorker.ready.then(show).catch(()=>tryDirectNotif(title,body));
+    else tryDirectNotif(title,body);
 }
+
+function updateBackgroundPomodoroNotification(force=false){
+    if(!pomo.running || !("Notification" in window) || Notification.permission!=="granted")return;
+    const now=Date.now();
+    if(!force && now-lastBgNotificationAt<15000)return;
+    lastBgNotificationAt=now;
+    const m=Math.floor(pomo.remaining/60),s=pomo.remaining%60;
+    const timeStr=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+    notifySW("POMODORO_UPDATE",{
+        title:pomo.mode==="focus"?"🍅 Pomodoro Focus":"☕ Pomodoro Break",
+        body:`${timeStr} remaining • ${pomo.book} · ${BOOKS[pomo.book]?.[pomo.chapter-1]||`Chapter ${pomo.chapter}`}`
+    });
+}
+
+function clearBackgroundPomodoroNotification(){
+    notifySW("POMODORO_STOP");
+}
+
 
 function tryDirectNotif(title,body){
     try {
@@ -1464,6 +1464,7 @@ function applyCustomPomoTime(){
     if(!pomo.running){
         pomo.remaining=(pomo.mode==="focus"?pomo.focus:pomo.break)*60;
     }
+    savePomoState();
     updatePomoDisplay();
     toast(`⏱ Custom duration applied: ${f}m focus / ${b}m break`);
 }
@@ -1478,9 +1479,45 @@ function updatePomoDisplay(){
     document.getElementById("pomoStartBtn").textContent=pomo.running?"⏸ Pause":"▶ Start";
     if(pomo.running){
         document.title=`(${timeStr}) ${pomo.mode==="focus"?"🍅 Focus":"☕ Break"} • Syllabus Tracker`;
+        updateBackgroundPomodoroNotification();
     } else {
         document.title="Syllabus Tracker";
     }
+}
+
+function savePomoState(){
+    try{
+        localStorage.setItem("syllabusPomoState",JSON.stringify({
+            running:pomo.running,mode:pomo.mode,focus:pomo.focus,break:pomo.break,remaining:pomo.remaining,end:pomo.end,book:pomo.book,chapter:pomo.chapter,session:pomo.session
+        }));
+    }catch(e){}
+}
+
+function restorePomoState(){
+    try{
+        const st=JSON.parse(localStorage.getItem("syllabusPomoState")||"null");
+        if(!st)return;
+        if(BOOKS[st.book])pomo.book=st.book;
+        if(BOOKS[pomo.book]?.[Number(st.chapter)-1])pomo.chapter=Number(st.chapter);
+        if(Number.isFinite(st.focus))pomo.focus=Math.max(1,Math.min(240,Number(st.focus)));
+        if(Number.isFinite(st.break))pomo.break=Math.max(1,Math.min(60,Number(st.break)));
+        if(Number.isFinite(st.session))pomo.session=Math.max(1,Number(st.session));
+        pomo.mode=st.mode==="break"?"break":"focus";
+        pomo.remaining=Math.max(0,Number(st.remaining)||0);
+        pomo.end=Number(st.end)||0;
+        if(st.running && pomo.end>0){
+            const now=Date.now();
+            pomo.remaining=Math.max(0,Math.ceil((pomo.end-now)/1000));
+            if(pomo.remaining>0){
+                pomo.running=true;
+                lastTick=now;
+                pomo.timer=setInterval(pomoTick,500);
+            }else{
+                pomo.running=false;
+                handlePomoFinish();
+            }
+        }
+    }catch(e){}
 }
 
 function togglePomodoroPlay(){
@@ -1488,11 +1525,13 @@ function togglePomodoroPlay(){
     if(pomo.running){
         clearInterval(pomo.timer);
         pomo.running=false;
+        clearBackgroundPomodoroNotification();
     } else {
         pomo.running=true;
         lastTick=Date.now();
         pomo.end=Date.now()+pomo.remaining*1000;
         pomo.timer=setInterval(pomoTick,500);
+        updateBackgroundPomodoroNotification(true);
     }
     updatePomoDisplay();
 }
@@ -1503,10 +1542,12 @@ function pomoTick(){
     lastTick=now;
     pomo.remaining=Math.max(0,Math.ceil((pomo.end-now)/1000));
     if(pomo.mode==="focus"&&elapsedSeconds>0)addStudySeconds(pomo.book,pomo.chapter,elapsedSeconds);
+    savePomoState();
     updatePomoDisplay();
     if(pomo.remaining<=0){
         clearInterval(pomo.timer);
         pomo.running=false;
+        clearBackgroundPomodoroNotification();
         handlePomoFinish();
     }
 }
@@ -1526,6 +1567,7 @@ function handlePomoFinish(){
         pomo.remaining=pomo.focus*60;
         openPomoAlert("break-complete");
     }
+    savePomoState();
     updatePomoDisplay();
 }
 
@@ -1557,15 +1599,18 @@ function closePomoAlert(){document.getElementById("pomoAlertModal").classList.re
 function resetPomodoro(){
     clearInterval(pomo.timer);
     pomo.running=false;
+    clearBackgroundPomodoroNotification();
     pomo.mode="focus";
     pomo.session=1;
     pomo.remaining=pomo.focus*60;
+    savePomoState();
     updatePomoDisplay();
 }
 
 function skipPomodoro(){
     clearInterval(pomo.timer);
     pomo.running=false;
+    clearBackgroundPomodoroNotification();
     if(pomo.mode==="focus"){
         pomo.mode="break";
         pomo.remaining=pomo.break*60;
@@ -1574,6 +1619,7 @@ function skipPomodoro(){
         pomo.session++;
         pomo.remaining=pomo.focus*60;
     }
+    savePomoState();
     updatePomoDisplay();
 }
 
@@ -1731,6 +1777,7 @@ function init(){
     const sel=document.getElementById("bookSelectFilter");
     sel.innerHTML=`<option value="all">📚 All Subjects</option>`+Object.keys(BOOKS).map(b=>`<option>${b}</option>`).join("");
     applyTheme((localStorage.getItem(KEY.theme)||"light")==="dark");
+    restorePomoState();
     updateDashboard();
     renderSyllabus();
     window.addEventListener("resize",()=>{if(currentTab==="history")drawGraph();});
