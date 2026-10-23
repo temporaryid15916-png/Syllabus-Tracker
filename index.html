@@ -1642,13 +1642,15 @@ function togglePomodoroPlay(){
         pomo.running=false;
         pomo.end=0;
         clearBackgroundPomodoroNotification();
-
     }else{
         pomo.running=true;
         lastTick=Date.now();
         pomo.end=Date.now()+pomo.remaining*1000;
         pomo.timer=setInterval(pomoTick,500);
         updateBackgroundPomodoroNotification(true);
+
+        document.getElementById("pomoBookSelect").disabled=true;
+        document.getElementById("pomoChapterSelect").disabled=true;
     }
 
     savePomoState();
