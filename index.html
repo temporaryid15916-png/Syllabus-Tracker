@@ -9,6 +9,8 @@
 <meta name="theme-color" content="#0f172a">
 <title>Syllabus Tracker - HSC Science</title>
 <link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="./icon.svg">
+<link rel="apple-touch-icon" href="./icon-192.png">
 
 <!-- গুগল ফন্ট: বাংলা লেখার জন্য Hind Siliguri এবং আধুনিক লুকের জন্য Plus Jakarta Sans -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1088,7 +1090,7 @@ footer {
   }
 }
 </style>
-</head>
+<script src="/_aistudio-iframe.js?v=6634132a"></script></head>
 
 <body>
 
@@ -2539,6 +2541,24 @@ function initApp() {
 }
 
 window.addEventListener("DOMContentLoaded", initApp);
+
+/**
+ * -------------------------------------------------------------------------
+ * ণ. PWA সার্ভিস ওয়ার্কার রেজিস্টার (Service Worker Registration)
+ * এটি অফলাইনে কাজ করতে এবং PWABuilder-এ ফুল স্কোর পেতে সাহায্য করে।
+ * -------------------------------------------------------------------------
+ */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js", { scope: "./" })
+      .then(reg => {
+        console.log("PWA Service Worker registered:", reg.scope);
+      })
+      .catch(err => {
+        console.warn("PWA Service Worker registration failed:", err);
+      });
+  });
+}
 </script>
 
 </body>
