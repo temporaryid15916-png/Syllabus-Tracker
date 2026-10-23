@@ -718,7 +718,32 @@ footer {
 }
 @media(max-width:560px) {
     .grid4,.quick {
-        grid-template-columns:1fr;
+        grid-template-columns:repeat(2,1fr) !important;
+        gap:8px !important;
+    }
+    .stat {
+        padding:10px 11px !important;
+    }
+    .stat .value {
+        font-size:20px !important;
+    }
+    .stat .label {
+        font-size:11px !important;
+    }
+    .stat .sub {
+        font-size:10px !important;
+    }
+    .quick .card {
+        padding:9px 10px !important;
+        gap:8px !important;
+    }
+    .quick .qicon {
+        width:28px !important;
+        height:28px !important;
+        font-size:14px !important;
+    }
+    .quick .qval {
+        font-size:14px !important;
     }
     .subject-progress {
         display:none;
@@ -742,7 +767,7 @@ footer {
     }
 }
 </style>
-<script src="/_aistudio-iframe.js?v=6634132a"></script></head>
+</head>
 <body>
 <header class="topbar"><div class="topbar-inner">
   <div class="brand" onclick="switchTab('syllabus')"><div class="brand-icon">📚</div><h1>Syllabus Tracker</h1></div>
@@ -753,15 +778,24 @@ footer {
 </div></header>
 
 <main class="container">
-<!-- Dashboard summary cards with 0.00% precision -->
+<!-- Dashboard summary cards: 2 per line on mobile, 0.00% precision -->
 <section class="grid4">
   <div class="stat"><div class="label">Total Chapters</div><div id="statTotal" class="value">75</div><div class="sub">8 subjects</div></div>
   <div class="stat"><div class="label">Completed</div><div id="statCompleted" class="value" style="color:var(--success)">0</div><div class="sub">Finished chapters</div></div>
   <div class="stat"><div class="label">In Progress</div><div id="statInProgress" class="value" style="color:var(--warning)">0</div><div class="sub">Currently studying</div></div>
   <div class="stat"><div class="label">Overall Progress</div><div id="statPercent" class="value" style="color:var(--primary)">0.00%</div><div class="sub">Syllabus completion</div></div>
 </section>
-<section class="card overall"><div class="row" style="font-size:12px;font-weight:850;margin-bottom:6px"><span>Overall Syllabus Progress</span><strong id="overallPercentText" style="color:var(--primary)">0.00%</strong></div><div class="progress"><div id="overallFill" class="fill"></div></div></section>
 
+<!-- Line 3: Minimal Overall Progress Bar without bulky heading text -->
+<section class="card overall" style="padding:10px 14px;margin:8px 0">
+  <div class="row" style="font-size:11px;font-weight:800;margin-bottom:5px">
+    <span id="overallCountSub" style="color:var(--muted)">0 / 75 chapters</span>
+    <strong id="overallPercentText" style="color:var(--primary);font-size:13px">0.00%</strong>
+  </div>
+  <div class="progress" style="height:8px"><div id="overallFill" class="fill"></div></div>
+</section>
+
+<!-- Line 4 & 5: Quick focus & streak cards (2 per line on mobile) -->
 <section class="quick">
   <div class="card"><div class="qicon">🍅</div><div><div class="label">Today's Focus</div><div id="quickTodayStudy" class="qval">0m</div></div></div>
   <div class="card"><div class="qicon">🔥</div><div><div class="label">Study Streak</div><div id="quickStreak" class="qval">0 days</div></div></div>
@@ -811,9 +845,15 @@ footer {
 </section>
 </main>
 
-<!-- Pomodoro Overlay with Custom Time Setter -->
+<!-- Pomodoro Overlay with Custom Time Setter and Enable Alert -->
 <div id="pomodoroOverlay" class="pomo"><div class="card pomo-box">
-  <div class="row"><b id="pomoSessionTag" style="font-size:12px;color:var(--primary)">🍅 Focus · Session 1</b><button class="filter" onclick="closePomodoro()">✕ Close</button></div>
+  <div class="row" style="align-items:center">
+    <b id="pomoSessionTag" style="font-size:12px;color:var(--primary)">🍅 Focus · Session 1</b>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button id="pomoAlertBtn" class="btn" style="padding:4px 9px;font-size:11px;font-weight:800;border-color:var(--warning);color:var(--warning)" onclick="togglePomodoroAlert()">🔔 Enable Alert</button>
+      <button class="filter" onclick="closePomodoro()">✕ Close</button>
+    </div>
+  </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px;text-align:left"><div><label class="label">Book</label><select id="pomoBookSelect" class="select" onchange="handlePomoBookChange(this.value)"></select></div><div><label class="label">Chapter</label><select id="pomoChapterSelect" class="select" onchange="handlePomoChapterChange(this.value)"></select></div></div>
   <div id="pomoCurrentTopic" style="font-size:13px;font-weight:850;color:var(--primary);margin-top:10px;min-height:18px"></div>
   <div id="pomoClock" class="pomo-clock">25:00</div>
@@ -825,8 +865,17 @@ footer {
     <button class="btn" onclick="skipPomodoro()">⏭ Skip</button>
   </div>
 
+  <!-- Background Alert Banner -->
+  <div id="pomoAlertBanner" style="margin-top:12px;padding:9px 12px;border-radius:10px;background:var(--soft);border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;text-align:left;gap:8px">
+    <div style="font-size:11px">
+      <strong style="display:block;font-size:11.5px">🔔 Background & Device Alert</strong>
+      <span id="pomoAlertBannerText" style="color:var(--muted)">Get alerted even when you leave the app or lock screen.</span>
+    </div>
+    <button id="pomoTestAlertBtn" class="btn primary" style="padding:5px 9px;font-size:11px;white-space:nowrap" onclick="togglePomodoroAlert()">Enable Alert</button>
+  </div>
+
   <!-- Custom Time Setup -->
-  <div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--border)">
+  <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border)">
     <div style="font-size:11.5px;font-weight:750;color:var(--muted);margin-bottom:6px">Custom Session Duration</div>
     <div style="display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap">
       <span class="label">Focus:</span>
@@ -954,6 +1003,8 @@ function updateDashboard(){
     document.getElementById("statInProgress").textContent=inp;
     document.getElementById("statPercent").textContent=pctStr;
     document.getElementById("overallPercentText").textContent=pctStr;
+    const subEl=document.getElementById("overallCountSub");
+    if(subEl)subEl.textContent=`${done} / ${total} chapters`;
     document.getElementById("overallFill").style.width=pctVal+"%";
     document.getElementById("quickTodayStudy").textContent=fmt(sec);
 
@@ -1186,8 +1237,94 @@ function openPomodoro(){
     document.getElementById("pomodoroOverlay").classList.add("show");
     populatePomoPickers();
     updatePomoDisplay();
+    updateAlertUI();
 }
 function closePomodoro(){document.getElementById("pomodoroOverlay").classList.remove("show");}
+
+function updateAlertUI(){
+    const btn=document.getElementById("pomoAlertBtn");
+    const testBtn=document.getElementById("pomoTestAlertBtn");
+    const bannerText=document.getElementById("pomoAlertBannerText");
+    if(!("Notification" in window)){
+        if(btn)btn.textContent="🔔 In-App Alert";
+        if(testBtn)testBtn.textContent="Test Sound";
+        if(bannerText)bannerText.textContent="Audio chime & in-app alert active.";
+        return;
+    }
+    if(Notification.permission==="granted"){
+        if(btn){
+            btn.textContent="🔔 Alert Active (Test)";
+            btn.style.color="var(--success)";
+            btn.style.borderColor="var(--success)";
+            btn.title="Click to test alert chime & notification";
+        }
+        if(testBtn){
+            testBtn.textContent="Test Alert Sound";
+            testBtn.className="btn";
+        }
+        if(bannerText)bannerText.textContent="✅ Device alert enabled! Rings & notifies even if tab is switched or screen locked.";
+    } else {
+        if(btn){
+            btn.textContent="🔔 Enable Alert";
+            btn.style.color="var(--warning)";
+            btn.style.borderColor="var(--warning)";
+            btn.title="Click to enable background device alerts";
+        }
+        if(testBtn){
+            testBtn.textContent="Enable Alert";
+            testBtn.className="btn primary";
+        }
+        if(bannerText)bannerText.textContent="Click to enable system notifications for alerts in the background.";
+    }
+}
+
+async function togglePomodoroAlert(){
+    if(!("Notification" in window)){
+        playAlertSound();
+        toast("🔔 Alert sound chime tested! (System notifications not supported in this frame/browser)");
+        return;
+    }
+    if(Notification.permission==="granted"){
+        playAlertSound();
+        sendSysNotification("🔔 Pomodoro Alert Test","Your alerts will notify you in background!");
+        toast("🔔 Test alert chime and notification sent!");
+        updateAlertUI();
+        return;
+    }
+    try {
+        const perm=await Notification.requestPermission();
+        if(perm==="granted"){
+            playAlertSound();
+            sendSysNotification("🔔 Syllabus Tracker Alert Enabled","Pomodoro alerts will now notify you even in background!");
+            toast("🔔 Alert enabled! Test notification sent.");
+        } else {
+            toast("⚠️ Notification permission: "+perm);
+        }
+    } catch(e){
+        try {
+            Notification.requestPermission((p)=>{
+                if(p==="granted"){
+                    playAlertSound();
+                    sendSysNotification("🔔 Syllabus Tracker Alert Enabled","Pomodoro alerts will now notify you even in background!");
+                    toast("🔔 Alert enabled! Test notification sent.");
+                }
+                updateAlertUI();
+            });
+        } catch(err){}
+    }
+    updateAlertUI();
+}
+
+function sendSysNotification(title,body){
+    if("Notification" in window && Notification.permission==="granted"){
+        try {
+            new Notification(title,{
+                body,
+                icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🍅</text></svg>'
+            });
+        } catch(err){}
+    }
+}
 
 function populatePomoPickers(){
     const b=document.getElementById("pomoBookSelect");
@@ -1258,11 +1395,14 @@ function pomoTick(){
 
 function handlePomoFinish(){
     playAlertSound();
+    const chName=BOOKS[pomo.book]?.[pomo.chapter-1]||`Chapter ${pomo.chapter}`;
     if(pomo.mode==="focus"){
+        sendSysNotification("🎉 Focus Complete!",`Awesome job! Finished studying ${pomo.book} • ${chName}. Time for a break!`);
         pomo.mode="break";
         pomo.remaining=pomo.break*60;
         openPomoAlert("focus-complete");
     } else {
+        sendSysNotification("⏰ Break Finished!",`Break is done for ${pomo.book}! Ready for next focus?`);
         pomo.mode="focus";
         pomo.session++;
         pomo.remaining=pomo.focus*60;
