@@ -1560,18 +1560,24 @@ function restorePomoState(){
         pomo.mode=st.mode==="break"?"break":"focus";
         pomo.remaining=Math.max(0,Number(st.remaining)||0);
         pomo.end=Number(st.end)||0;
-        if(st.running && pomo.end>0){
-            const now=Date.now();
-            pomo.remaining=Math.max(0,Math.ceil((pomo.end-now)/1000));
-            if(pomo.remaining>0){
-                pomo.running=true;
-                lastTick=now;
-                pomo.timer=setInterval(pomoTick,500);
-            }else{
-                pomo.running=false;
-                handlePomoFinish();
-            }
-        }
+if(st.running && pomo.end>0){
+    const now=Date.now();
+    pomo.remaining=Math.max(0,Math.ceil((pomo.end-now)/1000));
+
+    if(pomo.remaining>0){
+        pomo.running=true;
+        lastTick=now;
+        pomo.timer=setInterval(pomoTick,500);
+    }else{
+        pomo.running=false;
+        pomo.timer=null;
+        handlePomoFinish();
+    }
+
+}else{
+    pomo.running=false;
+    pomo.timer=null;
+}
     }catch(e){}
 }
 
