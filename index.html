@@ -1725,25 +1725,40 @@ function handlePomoFinish(){
 }
 
 function openPomoAlert(type){
-    const modal=document.getElementById("pomoAlertModal");
-    const icon=document.getElementById("pomoAlertIcon");
-    const title=document.getElementById("pomoAlertTitle");
-    const msg=document.getElementById("pomoAlertMsg");
-    const btn=document.getElementById("pomoAlertActionBtn");
+    const modal = document.getElementById("pomoAlertModal");
+    const icon = document.getElementById("pomoAlertIcon");
+    const title = document.getElementById("pomoAlertTitle");
+    const msg = document.getElementById("pomoAlertMsg");
+    const btn = document.getElementById("pomoAlertActionBtn");
 
-    if(type==="focus-complete"){
-        icon.textContent="🍅";
-        title.textContent="Focus Session Complete!";
-        msg.textContent=`Awesome job! You finished studying ${pomo.book} · Chapter ${pomo.chapter}. Ready for a 5-minute break?`;
-        btn.textContent="☕ Start Break Now";
-        btn.onclick=()=>{closePomoAlert();togglePomodoroPlay();};
+    if(!modal) return;
+
+    if(type === "focus-complete"){
+        icon.textContent = "🍅";
+        title.textContent = "Focus Session Complete!";
+        msg.textContent =
+            `Awesome job! You finished studying ${pomo.book} · Chapter ${pomo.chapter}. ` +
+            `Your break has started automatically.`;
+
+        // Timer is already running — button only closes popup
+        btn.textContent = "☕ Break Started";
+        btn.onclick = () => {
+            closePomoAlert();
+        };
+
     } else {
-        icon.textContent="⏰";
-        title.textContent="Break Finished!";
-        msg.textContent="Your break is complete. Ready to begin your next focus session?";
-        btn.textContent="▶ Start Next Focus Session";
-        btn.onclick=()=>{closePomoAlert();togglePomodoroPlay();};
+        icon.textContent = "⏰";
+        title.textContent = "Break Finished!";
+        msg.textContent =
+            "Your break is complete. Your next focus session has started automatically.";
+
+        // Timer is already running — button only closes popup
+        btn.textContent = "▶ Focus Started";
+        btn.onclick = () => {
+            closePomoAlert();
+        };
     }
+
     modal.classList.add("show");
 }
 
