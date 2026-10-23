@@ -1093,7 +1093,7 @@ function renderSyllabus(){
         if(!visible.length)return;
         let rawPct=arr.length>0?(done/arr.length*100):0;
         let pct=fmtPct(rawPct);
-        let col=!!collapsed[b]&&!q&&statusFilter==="all";
+        let col=!!collapsed[b];
         const card=document.createElement("div");
         card.className="card subject"+(col?" collapsed":"");
         card.innerHTML=`<div class="subject-head" onclick='toggleBookCollapse(${JSON.stringify(b)})'><div class="subject-icon">${ICONS[b]}</div><div class="subject-info"><div class="subject-title"><span>${b}</span><span class="badge-pct">${pct}</span></div><div class="subject-meta">${done} complete · ${inp} in progress · ${arr.length} total</div></div><div class="subject-progress"><div class="smallrow"><span>${done}/${arr.length}</span><span>${pct}</span></div><div class="smallbar"><i style="width:${rawPct}%"></i></div></div><div class="chev">▼</div></div><div class="subject-body"><div class="chapters">${visible.map(c=>chapterHTML(b,c,arr[c-1])).join("")}</div></div>`;
