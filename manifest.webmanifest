@@ -5,16 +5,29 @@
   "description": "Complete HSC Science syllabus tracker with Pomodoro focus timer, custom exam planner, and study analytics.",
   "lang": "bn",
   "dir": "ltr",
+
   "start_url": "./index.html",
   "scope": "./",
+
   "display": "standalone",
-  "display_override": ["standalone", "window-controls-overlay"],
+  "display_override": [
+    "standalone",
+    "window-controls-overlay"
+  ],
+
   "orientation": "portrait-primary",
+
   "background_color": "#0b1120",
   "theme_color": "#0f172a",
+
   "prefer_related_applications": false,
   "related_applications": [],
-  "categories": ["education", "productivity"],
+
+  "categories": [
+    "education",
+    "productivity"
+  ],
+
   "icons": [
     {
       "src": "./icon-192.png",
@@ -41,6 +54,7 @@
       "purpose": "maskable"
     }
   ],
+
   "screenshots": [
     {
       "src": "./splash.png",
