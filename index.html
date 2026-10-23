@@ -1717,11 +1717,18 @@ function closePomoAlert(){document.getElementById("pomoAlertModal").classList.re
 
 function resetPomodoro(){
     clearInterval(pomo.timer);
+    pomo.timer=null;
     pomo.running=false;
+    pomo.end=0;
     clearBackgroundPomodoroNotification();
+
     pomo.mode="focus";
     pomo.session=1;
     pomo.remaining=pomo.focus*60;
+
+    document.getElementById("pomoBookSelect").disabled=false;
+    document.getElementById("pomoChapterSelect").disabled=false;
+
     savePomoState();
     updatePomoDisplay();
 }
