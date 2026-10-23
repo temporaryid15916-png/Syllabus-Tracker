@@ -1019,7 +1019,13 @@ let progress=load(KEY.progress,{}),last=load(KEY.last,null),collapsed=load(KEY.c
 let currentTab="syllabus",search="",bookFilter="all",statusFilter="all",selectedExam=null,editingExam=null,graphPeriod="daily",pendingExamDeleteId=null;
 
 const chKey=(b,c)=>b+"__"+c;
-const today=()=>{const d=new Date();return d.toISOString().slice(0,10)};
+const today = () => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
 const fmtPct=(val)=>(Number(val||0)).toFixed(2)+"%";
 
 const fmt=s=>{
