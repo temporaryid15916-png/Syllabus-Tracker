@@ -1847,7 +1847,7 @@ function handlePomoFinish(){
             "🎉 Focus Complete!",
             `Finished studying ${pomo.book} • ${chName}. Starting the ${pomo.break}m break automatically.`
         );
-        toast(`☕ Focus complete — ${pomo.break}m break started automatically`);
+        toast(`☕ Focus complete — ${pomo.break}m break started`);
 
         pomo.mode = "break";
         pomo.remaining = pomo.break * 60;
@@ -1856,7 +1856,7 @@ function handlePomoFinish(){
             "⏰ Break Finished!",
             `Break is done! Starting focus session ${pomo.session + 1} automatically.`
         );
-        toast(`🍅 Break complete — Focus Session ${pomo.session + 1} started automatically`);
+        toast(`🍅 Break complete — Focus Session ${pomo.session + 1} started`);
 
         pomo.mode = "focus";
         pomo.session++;
