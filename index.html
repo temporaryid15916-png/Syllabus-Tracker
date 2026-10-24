@@ -1819,7 +1819,12 @@ function pomoTick(){
         savePomoState();
     }
 
-    updatePomoDisplay();
+   updatePomoDisplay();
+
+    // Keep Study History display live without saving to localStorage every second
+    if(currentTab === "history"){
+        renderHistory();
+    }
 
     if(pomo.remaining<=0){
         clearInterval(pomo.timer);
