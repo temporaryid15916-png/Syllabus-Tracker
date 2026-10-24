@@ -1942,7 +1942,6 @@ function addStudySeconds(b,c,sec){
 
 function flushStudySeconds(force = false){
     if(pendingStudySeconds <= 0 || !pomo.book || !pomo.chapter) return;
-    if(!force && pendingStudySeconds < 4) return;
 
     const d=today();
     history[d]??={totalSeconds:0,sessions:0,byBook:{},byChapter:{}};
@@ -1955,7 +1954,6 @@ function flushStudySeconds(force = false){
     save(KEY.history, history);
     updateDashboard();
 }
-
 document.addEventListener("visibilitychange",()=>{
     checkMidnightChange();
     if(document.visibilityState === "hidden"){
