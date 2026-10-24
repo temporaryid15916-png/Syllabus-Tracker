@@ -1636,16 +1636,18 @@ function updatePomoDisplay(){
     const modeIcon=pomo.mode==="focus"?"🍅":"☕";
 
     const headerBtn=document.getElementById("pomoHeaderBtn");
-    if(headerBtn){
-        if(pomo.running){
-            headerBtn.textContent=`${modeIcon} ${modeLabel} ${timeStr}`;
-        }else if(pomo.started && pomo.remaining>0){
-            headerBtn.textContent=`⏸ ${modeLabel} ${timeStr}`;
-        }else{
-            headerBtn.textContent="🍅 Pomodoro";
-        }
+if(headerBtn){
+    if(pomo.running){
+        headerBtn.textContent=`${modeIcon} ${modeLabel} ${timeStr}`;
+        headerBtn.classList.add("pomo-active-pulse");
+    }else if(pomo.started && pomo.remaining>0){
+        headerBtn.textContent=`⏸ ${modeLabel} ${timeStr}`;
+        headerBtn.classList.remove("pomo-active-pulse");
+    }else{
+        headerBtn.textContent="🍅 Pomodoro";
+        headerBtn.classList.remove("pomo-active-pulse");
     }
-
+}
     const floating=document.getElementById("pomoFloatingTimer");
     if(floating){
         if(pomo.running || (pomo.started && pomo.remaining>0)){
