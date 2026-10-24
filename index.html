@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
 <meta name="theme-color" content="#0f172a">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" type="image/png" href="./icon-192.png">
 
 <title>Syllabus Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -760,7 +759,7 @@ footer {
         font-size:12px !important;
     }
     #continueCard {
-        display:none !important;
+        display:flex;
     }
     .tabs {
         margin-bottom:8px !important;
@@ -1070,9 +1069,14 @@ function updateDashboard(){
     document.getElementById("overallFill").style.width=pctVal+"%";
     document.getElementById("quickTodayStudy").textContent=fmt(sec);
 
+    // Use the in-memory pending study time for today before reading streak days.
+    // This prevents the first study tick of a new day from temporarily dropping
+    // an existing streak to zero before localStorage is flushed.
     let cur=new Date(),streak=0;
     if(sec<=0)cur.setDate(cur.getDate()-1);
-    while(history[formatDateKey(cur)]?.totalSeconds>0){
+    while((formatDateKey(cur)===today()
+        ? sec
+        : Number(history[formatDateKey(cur)]?.totalSeconds||0))>0){
         streak++;
         cur.setDate(cur.getDate()-1);
         if(streak>1000)break;
@@ -1304,7 +1308,7 @@ function startPomodoroForExam(){
 
 // Pomodoro Timer with Buffered Storage & Performance Guard
 let pomo = {
-    running:false,started:false,mode:"focus",focus:25,break:5,remaining:1500,end:0,book:"",chapter:null,session:1,timer:null
+    running:false,started:false,awaitingNext:false,mode:"focus",focus:25,break:5,remaining:1500,end:0,book:"",chapter:null,session:1,timer:null
 };
 let lastTick = Date.now();
 let lastBgNotificationAt = 0;
@@ -1319,11 +1323,17 @@ function getAudioContext(){
             if(AC)audioCtx=new AC();
         }
         if(audioCtx&&audioCtx.state==='suspended'){
-            audioCtx.resume();
+            const p=audioCtx.resume();
+            if(p&&typeof p.catch==="function")p.catch(()=>{});
         }
     }catch(e){}
     return audioCtx;
 }
+
+// Unlock Web Audio during a real user gesture so completion sounds can play later.
+["pointerdown","keydown","touchstart"].forEach(type=>{
+    document.addEventListener(type,()=>{ getAudioContext(); },{passive:true});
+});
 
 let swReg=null;
 if("serviceWorker" in navigator){
@@ -1564,16 +1574,29 @@ function applyCustomPomoTime(){
         toast("⚠️ Pause or reset Pomodoro before changing duration!");
         return;
     }
+
     const f=Math.max(1,Math.min(240,Number(document.getElementById("pomoCustomFocus").value)||25));
     const b=Math.max(1,Math.min(60,Number(document.getElementById("pomoCustomBreak").value)||5));
+
+    const oldTotal=(pomo.mode==="focus"?pomo.focus:pomo.break)*60;
+    const oldRemaining=Math.max(0,Number(pomo.remaining)||0);
+    const elapsed=Math.max(0,oldTotal-oldRemaining);
+
     pomo.focus=f;
     pomo.break=b;
-    pomo.remaining=(pomo.mode==="focus"?pomo.focus:pomo.break)*60;
+
+    const newTotal=(pomo.mode==="focus"?pomo.focus:pomo.break)*60;
+    if(!pomo.started){
+        pomo.remaining=newTotal;
+    }else{
+        // Preserve elapsed progress instead of wiping a paused session.
+        pomo.remaining=Math.max(0,newTotal-Math.min(elapsed,newTotal));
+    }
+
     savePomoState();
     updatePomoDisplay();
     toast(`⏱ Custom duration applied: ${f}m focus / ${b}m break`);
 }
-
 function updatePomoDisplay(){
     let m=Math.floor(pomo.remaining/60),s=pomo.remaining%60;
     let timeStr=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
@@ -1590,7 +1613,7 @@ function updatePomoDisplay(){
     if(tagEl) tagEl.textContent=`${pomo.mode==="focus"?"🍅 Focus":"☕ Break"} · Session ${pomo.session}`;
 
     const startBtn = document.getElementById("pomoStartBtn");
-    if(startBtn) startBtn.textContent=pomo.running?"⏸ Pause":"▶ Start";
+    if(startBtn) startBtn.textContent=pomo.running?"⏸ Pause":(pomo.awaitingNext?"▶ Start Next":"▶ Start");
 
     const modeLabel=pomo.mode==="focus"?"Focus":"Break";
     const modeIcon=pomo.mode==="focus"?"🍅":"☕";
@@ -1634,7 +1657,7 @@ function updatePomoDisplay(){
 function savePomoState(){
     try{
         localStorage.setItem("syllabusPomoState",JSON.stringify({
-            running:pomo.running,started:pomo.started,mode:pomo.mode,focus:pomo.focus,break:pomo.break,remaining:pomo.remaining,end:pomo.end,book:pomo.book,chapter:pomo.chapter,session:pomo.session,lastTick:lastTick
+            running:pomo.running,started:pomo.started,awaitingNext:pomo.awaitingNext,mode:pomo.mode,focus:pomo.focus,break:pomo.break,remaining:pomo.remaining,end:pomo.end,book:pomo.book,chapter:pomo.chapter,session:pomo.session,lastTick:lastTick
         }));
     }catch(e){}
 }
@@ -1655,6 +1678,7 @@ function restorePomoState(){
         if(Number.isFinite(st.session))pomo.session=Math.max(1,Number(st.session));
 
         pomo.started=!!st.started;
+        pomo.awaitingNext=!!st.awaitingNext;
         pomo.mode=st.mode==="break"?"break":"focus";
         pomo.remaining=Math.max(0,Number(st.remaining)||0);
         pomo.end=Number(st.end)||0;
@@ -1679,18 +1703,14 @@ function restorePomoState(){
                 if(bSelect)bSelect.disabled=true;
                 if(cSelect)cSelect.disabled=true;
             } else {
-                // Timer finished while tab was closed/inactive
-                if(pomo.mode === "focus"){
-                    const creditable = Math.min(st.remaining || (pomo.focus * 60), pomo.focus * 60);
-                    if(creditable > 0){
-                        addStudySeconds(pomo.book, pomo.chapter, creditable);
-                        flushStudySeconds(true);
-                    }
-                }
-                // Transition gracefully to next phase without auto-running indefinitely
+                // The timer expired while the page was closed/inactive.
+                // IMPORTANT: time elapsed while the page was closed is NOT study time.
+                // The active timer already credited time through pomoTick() before it
+                // became unavailable, so never credit st.remaining here.
                 pomo.running=false;
                 pomo.timer=null;
                 pomo.started=true;
+                pomo.awaitingNext=true;
                 if(pomo.mode === "focus"){
                     pomo.mode = "break";
                     pomo.remaining = pomo.break * 60;
@@ -1699,6 +1719,7 @@ function restorePomoState(){
                     pomo.session++;
                     pomo.remaining = pomo.focus * 60;
                 }
+                pomo.end=0;
                 savePomoState();
             }
         }else{
@@ -1725,6 +1746,7 @@ function togglePomodoroPlay(){
     } else {
         pomo.running = true;
         pomo.started = true;
+        pomo.awaitingNext = false;
         lastTick = Date.now();
         pomo.end = Date.now() + pomo.remaining * 1000;
 
@@ -1778,46 +1800,44 @@ function handlePomoFinish(){
 
     const chName = BOOKS[pomo.book]?.[pomo.chapter-1] || `Chapter ${pomo.chapter}`;
 
+    clearInterval(pomo.timer);
+    pomo.timer = null;
+    pomo.running = false;
+    pomo.started = true;
+    pomo.awaitingNext = true;
+    pomo.end = 0;
+
     if(pomo.mode === "focus"){
         sendSysNotification(
             "🎉 Focus Complete!",
-            `Finished studying ${pomo.book} • ${chName}. Break started automatically!`
+            `Finished studying ${pomo.book} • ${chName}. Press Start when you're ready for the ${pomo.break}m break.`
         );
-        toast(`☕ Break started (${pomo.break}m)`);
+        toast(`☕ Focus complete — press Start for ${pomo.break}m break`);
 
         pomo.mode = "break";
         pomo.remaining = pomo.break * 60;
     } else {
         sendSysNotification(
             "⏰ Break Finished!",
-            `Break is done! Next focus session started.`
+            "Break is done! Press Start when you're ready for the next focus session."
         );
-        toast(`🍅 Focus session ${pomo.session + 1} started`);
+        toast(`🍅 Break complete — press Start for focus session ${pomo.session + 1}`);
 
         pomo.mode = "focus";
         pomo.session++;
         pomo.remaining = pomo.focus * 60;
     }
 
-    clearInterval(pomo.timer);
-    pomo.timer = null;
-
-    pomo.running = true;
-    pomo.started = true;
-    lastTick = Date.now();
-    pomo.end = Date.now() + pomo.remaining * 1000;
-    pomo.timer = setInterval(pomoTick, 500);
-
-    updateBackgroundPomodoroNotification(true);
+    clearBackgroundPomodoroNotification();
     savePomoState();
     updatePomoDisplay();
 }
-
 function resetPomodoro(){
     clearInterval(pomo.timer);
     pomo.timer=null;
     pomo.running=false;
     pomo.started=false;
+    pomo.awaitingNext=false;
     pomo.end=0;
     flushStudySeconds(true);
     clearBackgroundPomodoroNotification();
@@ -1883,6 +1903,7 @@ document.addEventListener("visibilitychange",()=>{
     checkMidnightChange();
     if(document.visibilityState === "hidden"){
         flushStudySeconds(true);
+        if(pomo.running) savePomoState();
     }
     if(pomo.running && document.visibilityState==="visible"){
         pomoTick();
@@ -1926,52 +1947,84 @@ function drawGraph(){
     ctx.scale(dpr,dpr);
     const w=r.width,h=r.height;
     ctx.clearRect(0,0,w,h);
+
     const data=groupedHistory();
+    const muted=getComputedStyle(document.body).getPropertyValue("--muted");
+    const border=getComputedStyle(document.body).getPropertyValue("--border");
+    const primary=getComputedStyle(document.body).getPropertyValue("--primary");
+
     if(!data.length){
-        ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--muted");
+        ctx.fillStyle=muted;
         ctx.font="12px sans-serif";
         ctx.textAlign="center";
         ctx.fillText("No focus sessions yet. Start Pomodoro to build your graph.",w/2,h/2);
         return;
     }
-    const max=Math.max(...data.map(x=>x[1]),1800),pad={l:42,r:18,t:18,b:32},pw=w-pad.l-pad.r,ph=h-pad.t-pad.b;
-    ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue("--border");
+
+    const pad={l:58,r:18,t:18,b:32};
+    const pw=w-pad.l-pad.r,ph=h-pad.t-pad.b;
+    const rawMax=Math.max(...data.map(x=>x[1]),1800);
+
+    // Round the Y-axis ceiling to a readable 30-minute increment.
+    const step=Math.max(1800,Math.ceil(rawMax/1800)*1800);
+    const max=step;
+
+    ctx.strokeStyle=border;
+    ctx.lineWidth=1;
+    ctx.font="10px sans-serif";
     for(let i=0;i<=4;i++){
-        let y=pad.t+ph*i/4;
-        ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();
+        const ratio=i/4;
+        const y=pad.t+ph*ratio;
+        ctx.beginPath();
+        ctx.moveTo(pad.l,y);
+        ctx.lineTo(w-pad.r,y);
+        ctx.stroke();
+
+        const seconds=max*(1-ratio);
+        const mins=Math.round(seconds/60);
+        const label=mins>=60
+            ? `${Math.floor(mins/60)}h${mins%60?` ${mins%60}m`:""}`
+            : `${mins}m`;
+        ctx.fillStyle=muted;
+        ctx.textAlign="right";
+        ctx.fillText(label,pad.l-7,y+3);
     }
 
-    ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue("--primary");
+    ctx.strokeStyle=primary;
     ctx.lineWidth=3;
     ctx.beginPath();
     if(data.length === 1){
-        const y = pad.t + ph - (data[0][1] / max) * ph;
-        ctx.moveTo(pad.l, y);
-        ctx.lineTo(w - pad.r, y);
-    } else {
+        const y=pad.t+ph-(data[0][1]/max)*ph;
+        ctx.moveTo(pad.l,y);
+        ctx.lineTo(w-pad.r,y);
+    }else{
         data.forEach(([k,v],i)=>{
-            let x=pad.l+i*pw/(data.length-1),y=pad.t+ph-(v/max)*ph;
+            const x=pad.l+i*pw/(data.length-1);
+            const y=pad.t+ph-(v/max)*ph;
             i?ctx.lineTo(x,y):ctx.moveTo(x,y);
         });
     }
     ctx.stroke();
 
-    ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--primary");
+    ctx.fillStyle=primary;
     data.forEach(([k,v],i)=>{
-        let x=pad.l+(data.length===1?pw/2:i*pw/(data.length-1)),y=pad.t+ph-(v/max)*ph;
-        ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();
-        ctx.font="9px sans-serif";ctx.textAlign="center";
+        const x=pad.l+(data.length===1?pw/2:i*pw/(data.length-1));
+        const y=pad.t+ph-(v/max)*ph;
+        ctx.beginPath();
+        ctx.arc(x,y,4,0,Math.PI*2);
+        ctx.fill();
 
-        let label = k;
-        if(graphPeriod === "monthly" && k.length >= 7){
-            label = k.slice(5) + "/'" + k.slice(2,4);
-        } else if(k.length >= 10){
-            label = k.slice(5);
+        ctx.font="9px sans-serif";
+        ctx.textAlign="center";
+        let label=k;
+        if(graphPeriod==="monthly"&&k.length>=7){
+            label=k.slice(5)+"/'"+k.slice(2,4);
+        }else if(k.length>=10){
+            label=k.slice(5);
         }
         ctx.fillText(label,x,h-10);
     });
 }
-
 function renderHistory(){
     document.getElementById("dailyGoalInput").value=goal;
     drawGraph();
@@ -2088,6 +2141,7 @@ function init(){
     window.addEventListener("resize",()=>{if(currentTab==="history")drawGraph();});
     window.addEventListener("beforeunload",()=>{
         flushStudySeconds(true);
+        savePomoState();
     });
 }
 document.addEventListener("DOMContentLoaded",init);
