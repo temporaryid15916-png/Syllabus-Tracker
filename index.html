@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
 <meta name="theme-color" content="#0f172a">
 <link rel="manifest" href="./manifest.webmanifest">
-
 <link rel="icon" type="image/png" href="./icon-192.png">
 
 <title>Syllabus Tracker</title>
@@ -174,10 +173,6 @@ button {
     font-size:11.5px;
     color:var(--muted);
     margin-top:3px;
-}
-.overall {
-    padding:14px 16px;
-    margin:12px 0;
 }
 .row {
     display:flex;
@@ -821,23 +816,18 @@ footer {
     backdrop-filter:blur(14px);
     -webkit-backdrop-filter:blur(14px);
 }
-
 .pomo-floating.show {
     display:flex;
 }
-
 .pomo-floating.running {
     border-color:var(--warning);
 }
-
 .pomo-floating.break {
     border-color:var(--primary);
 }
-
 .pomo-floating.paused {
     opacity:.85;
 }
-
 @media(max-width:600px) {
     .pomo-floating {
         right:12px;
@@ -858,7 +848,6 @@ footer {
 </div></header>
 
 <main class="container">
-<!-- Line 1 & Line 2 -->
 <section class="grid4">
   <div class="stat"><div class="label">Total Chapters</div><div id="statTotal" class="value">75</div><div class="sub">8 subjects</div></div>
   <div class="stat"><div class="label">Completed</div><div id="statCompleted" class="value" style="color:var(--success)">0</div><div class="sub">Finished chapters</div></div>
@@ -866,12 +855,10 @@ footer {
   <div class="stat"><div class="label">Overall Progress</div><div id="statPercent" class="value" style="color:var(--primary)">0.00%</div><div class="sub">Syllabus completion</div></div>
 </section>
 
-<!-- Line 3: Minimal Pure Progress Bar -->
 <div class="progress" style="height:8px;margin:6px 0 10px;background:var(--soft)"><div id="overallFill" class="fill"></div></div>
 
-<!-- Line 4 & Line 5 -->
 <section class="quick">
-  <div class="card"><div class="qicon">🍅</div><div><div class="label">Today's Focus</div><div id="quickTodayStudy" class="qval">0m</div></div></div>
+  <div class="card"><div class="qicon">🍅</div><div><div class="label">Today's Focus</div><div id="quickTodayStudy" class="qval">0s</div></div></div>
   <div class="card"><div class="qicon">🔥</div><div><div class="label">Study Streak</div><div id="quickStreak" class="qval">0 days</div></div></div>
   <div class="card"><div class="qicon">🎯</div><div><div class="label">Daily Goal</div><div id="quickGoal" class="qval">0.00%</div></div></div>
   <div class="card"><div class="qicon">📝</div><div><div class="label">Upcoming Exams</div><div id="quickExams" class="qval">0</div></div></div>
@@ -919,10 +906,7 @@ footer {
 </section>
 </main>
 
-<div id="pomoFloatingTimer"
-     class="pomo-floating"
-     onclick="openPomodoro()">
-</div>
+<div id="pomoFloatingTimer" class="pomo-floating" onclick="openPomodoro()"></div>
 
 <!-- Pomodoro Overlay -->
 <div id="pomodoroOverlay" class="pomo"><div class="card pomo-box">
@@ -953,7 +937,6 @@ footer {
     <button class="btn" onclick="skipPomodoro()">⏭ Skip</button>
   </div>
 
-  <!-- Custom Time Setup -->
   <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border)">
     <div style="font-size:11.5px;font-weight:750;color:var(--muted);margin-bottom:6px">Custom Session Duration</div>
     <div style="display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap">
@@ -989,7 +972,7 @@ footer {
 </footer>
 
 <script>
-const BOOKS= {
+const BOOKS = {
     "Physics 1st Paper":["ভৌত জগৎ ও পরিমাপ","ভেক্টর","গতিবিদ্যা","নিউটনিয়ান বলবিদ্যা","কাজ, শক্তি ও ক্ষমতা","মহাকর্ষ ও অভিকর্ষ","পদার্থের গাঠনিক ধর্ম","পর্যায়বৃত্ত গতি","তরঙ্গ","আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব"],
     "Physics 2nd Paper":["তাপগতিবিদ্যা","স্থির তড়িৎ","চল তড়িৎ","তড়িৎ প্রবাহের চৌম্বক ক্রিয়া","তড়িৎচৌম্বকীয় আবেশ ও পরিবর্তী প্রবাহ","জ্যামিতিক আলোকবিজ্ঞান","ভৌত আলোকবিজ্ঞান","আধুনিক পদার্থবিজ্ঞানের সূচনা","পরমাণু মডেল ও নিউক্লিয়ার পদার্থবিজ্ঞান","সেমিকন্ডাক্টর ও ইলেকট্রনিক্স","জ্যোতির্বিজ্ঞান"],
     "Chemistry 1st Paper":["ল্যাবরেটরির নিরাপদ ব্যবহার","গুণগত রসায়ন","মৌলের পর্যায়বৃত্ত ধর্ম ও রাসায়নিক বন্ধন","রাসায়নিক পরিবর্তন","কর্মমুখী রসায়ন"],
@@ -1000,20 +983,22 @@ const BOOKS= {
     "Zoology":["প্রাণীর বৈচিত্র্য ও শ্রেণিবিন্যাস","প্রাণীর পরিচিতি","পরিপাক ও শোষণ","রক্ত ও সঞ্চালন","শ্বাসক্রিয়া ও শ্বসন","বর্জ্য নিষ্কাশন","চলন ও অঙ্গচালনা","সমন্বয় ও নিয়ন্ত্রণ","মানব জীবনের ধারাবাহিকতা","মানবদেহের প্রতিরক্ষা","জিনতত্ত্ব ও বিবর্তন","প্রাণীর আচরণ"]
 };
 
-const ICONS= {
+const ICONS = {
     "Physics 1st Paper":"⚛️","Physics 2nd Paper":"🔬","Chemistry 1st Paper":"🧪","Chemistry 2nd Paper":"🧫","Higher Math 1st Paper":"📐","Higher Math 2nd Paper":"📊","Botany":"🌱","Zoology":"🦎"
 };
 
-const KEY= {
+const KEY = {
     progress:"syllabusTracker",theme:"syllabusTheme",last:"syllabusLastChapter",collapsed:"syllabusCollapsed",history:"pomodoroDailyHistory",exams:"studentExamPlanner",goal:"dailyStudyGoal"
 };
 
 const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
 
-let progress=load(KEY.progress,{}),last=load(KEY.last,null),collapsed=load(KEY.collapsed,{}),history=load(KEY.history,{}),exams=load(KEY.exams,[]),goal=Number(localStorage.getItem(KEY.goal))||120;
+let progress=load(KEY.progress,{}),last=load(KEY.last,null),collapsed=load(KEY.collapsed,{}),history=load(KEY.history,{}),exams=load(KEY.exams,[]);
+let goal=Number(localStorage.getItem(KEY.goal));
+if(!goal || isNaN(goal) || goal < 10) goal = 120;
+
 let currentTab="syllabus",search="",bookFilter="all",statusFilter="all",selectedExam=null,editingExam=null,graphPeriod="daily",pendingExamDeleteId=null;
 
-// Accurate Local Timezone Helper
 const formatDateKey = (d = new Date()) => {
     const dt = d instanceof Date ? d : new Date(d);
     const year = dt.getFullYear();
@@ -1022,7 +1007,6 @@ const formatDateKey = (d = new Date()) => {
     return `${year}-${month}-${day}`;
 };
 const today = () => formatDateKey(new Date());
-
 let currentDayKey = today();
 
 const chKey=(b,c)=>b+"__"+c;
@@ -1036,6 +1020,7 @@ const fmt=s=>{
 
 function toast(t){
     const e=document.getElementById("toast");
+    if(!e)return;
     e.textContent=t;
     e.classList.add("show");
     clearTimeout(window.__toast);
@@ -1075,17 +1060,13 @@ function updateDashboard(){
     });
     const pctVal=total>0?(done/total*100):0;
     const pctStr=fmtPct(pctVal);
-    const sec=Number(history[today()]?.totalSeconds||0);
+    const sec=Number(history[today()]?.totalSeconds||0) + Math.round(pendingStudySeconds);
     const goalVal=Math.min(100,(sec/(goal*60)*100));
 
     document.getElementById("statTotal").textContent=total;
     document.getElementById("statCompleted").textContent=done;
     document.getElementById("statInProgress").textContent=inp;
     document.getElementById("statPercent").textContent=pctStr;
-    const overallPercentEl=document.getElementById("overallPercentText");
-    if(overallPercentEl)overallPercentEl.textContent=pctStr;
-    const subEl=document.getElementById("overallCountSub");
-    if(subEl)subEl.textContent=`${done} / ${total} chapters`;
     document.getElementById("overallFill").style.width=pctVal+"%";
     document.getElementById("quickTodayStudy").textContent=fmt(sec);
 
@@ -1094,7 +1075,7 @@ function updateDashboard(){
     while(history[formatDateKey(cur)]?.totalSeconds>0){
         streak++;
         cur.setDate(cur.getDate()-1);
-        if(streak>366)break;
+        if(streak>1000)break;
     }
     document.getElementById("quickStreak").textContent=streak+" days";
     document.getElementById("quickGoal").textContent=fmtPct(goalVal);
@@ -1122,11 +1103,24 @@ function updateContinue(){
 
 function jumpToContinueTarget(){
     if(!continueTarget)return;
+    // Reset filters so that the target chapter is visible
+    search = "";
+    bookFilter = "all";
+    statusFilter = "all";
+    const sInput = document.getElementById("searchInput");
+    if(sInput) sInput.value = "";
+    const bSelect = document.getElementById("bookSelectFilter");
+    if(bSelect) bSelect.value = "all";
+    document.querySelectorAll(".filter[data-status]").forEach(x => x.classList.toggle("active", x.dataset.status === "all"));
+
     switchTab("syllabus");
     collapsed[continueTarget.book]=false;
     save(KEY.collapsed,collapsed);
     renderSyllabus();
-    setTimeout(()=>document.getElementById(`ch_${slug(continueTarget.book)}_${continueTarget.chapter}`)?.scrollIntoView({behavior:"smooth",block:"center"}),80);
+    setTimeout(()=>{
+        const el = document.getElementById(`ch_${slug(continueTarget.book)}_${continueTarget.chapter}`);
+        if(el) el.scrollIntoView({behavior:"smooth",block:"center"});
+    },120);
 }
 
 function startPomodoroForContinueTarget(){
@@ -1308,15 +1302,16 @@ function startPomodoroForExam(){
     c?openPomodoroFor(c.book,c.chapter):toast("🎉 All exam chapters are complete!");
 }
 
-// Pomodoro Timer with Manual Selection and Locked Mode Once Started
-let pomo={
+// Pomodoro Timer with Buffered Storage & Performance Guard
+let pomo = {
     running:false,started:false,mode:"focus",focus:25,break:5,remaining:1500,end:0,book:"",chapter:null,session:1,timer:null
 };
-let lastTick=Date.now();
-let lastBgNotificationAt=0;
+let lastTick = Date.now();
+let lastBgNotificationAt = 0;
+let pendingStudySeconds = 0;
+let lastPomoStateSave = 0;
 
-// Global AudioContext with mobile gesture unlock
-let audioCtx=null;
+let audioCtx = null;
 function getAudioContext(){
     try {
         if(!audioCtx){
@@ -1353,6 +1348,7 @@ function openPomodoroFor(b,c){
     }
     pomo.book=b;
     pomo.chapter=c;
+    savePomoState();
     openPomodoro();
 }
 
@@ -1401,7 +1397,6 @@ function closeAlertEnabledModal(){
 
 async function togglePomodoroAlert(){
     getAudioContext();
-
     if(!("Notification" in window)){
         toast("🔔 In-app alert is active");
         openAlertEnabledModal("In-App Alert Active","Your Pomodoro will use the audio alarm when the timer finishes.");
@@ -1422,7 +1417,7 @@ async function togglePomodoroAlert(){
             toast("🔔 Device alert enabled");
             openAlertEnabledModal("Device Notifications Enabled","You will receive a Pomodoro notification when a session finishes. Keep browser notifications allowed on your phone.");
         }else{
-            toast("🔔 In-app alert active (browser permission: "+perm+")");
+            toast("🔔 In-app alert active (permission: "+perm+")");
             openAlertEnabledModal("In-App Alert Active","Browser notifications were not enabled, but the in-app audio alarm remains available.");
         }
     }catch(e){
@@ -1505,7 +1500,6 @@ function playAlertSound(){
     }
 }
 
-// Populate Pickers with Unselected Default & Lock Logic
 function populatePomoPickers(){
     const b=document.getElementById("pomoBookSelect");
     let bHtml = `<option value="" ${!pomo.book ? "selected disabled" : "disabled"}>-- Select Subject --</option>`;
@@ -1566,13 +1560,15 @@ function handlePomoChapterChange(c){
 }
 
 function applyCustomPomoTime(){
+    if(pomo.running){
+        toast("⚠️ Pause or reset Pomodoro before changing duration!");
+        return;
+    }
     const f=Math.max(1,Math.min(240,Number(document.getElementById("pomoCustomFocus").value)||25));
     const b=Math.max(1,Math.min(60,Number(document.getElementById("pomoCustomBreak").value)||5));
     pomo.focus=f;
     pomo.break=b;
-    if(!pomo.running){
-        pomo.remaining=(pomo.mode==="focus"?pomo.focus:pomo.break)*60;
-    }
+    pomo.remaining=(pomo.mode==="focus"?pomo.focus:pomo.break)*60;
     savePomoState();
     updatePomoDisplay();
     toast(`⏱ Custom duration applied: ${f}m focus / ${b}m break`);
@@ -1582,24 +1578,24 @@ function updatePomoDisplay(){
     let m=Math.floor(pomo.remaining/60),s=pomo.remaining%60;
     let timeStr=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
 
-    document.getElementById("pomoClock").textContent=timeStr;
+    const clockEl = document.getElementById("pomoClock");
+    if(clockEl) clockEl.textContent=timeStr;
 
     let total=(pomo.mode==="focus"?pomo.focus:pomo.break)*60;
 
-    document.getElementById("pomoProgressFill").style.width=
-        Math.max(0,Math.min(100,(total-pomo.remaining)/total*100))+"%";
+    const progFill = document.getElementById("pomoProgressFill");
+    if(progFill) progFill.style.width=Math.max(0,Math.min(100,(total-pomo.remaining)/total*100))+"%";
 
-    document.getElementById("pomoSessionTag").textContent=
-        `${pomo.mode==="focus"?"🍅 Focus":"☕ Break"} · Session ${pomo.session}`;
+    const tagEl = document.getElementById("pomoSessionTag");
+    if(tagEl) tagEl.textContent=`${pomo.mode==="focus"?"🍅 Focus":"☕ Break"} · Session ${pomo.session}`;
 
-    document.getElementById("pomoStartBtn").textContent=
-        pomo.running?"⏸ Pause":"▶ Start";
+    const startBtn = document.getElementById("pomoStartBtn");
+    if(startBtn) startBtn.textContent=pomo.running?"⏸ Pause":"▶ Start";
 
     const modeLabel=pomo.mode==="focus"?"Focus":"Break";
     const modeIcon=pomo.mode==="focus"?"🍅":"☕";
 
     const headerBtn=document.getElementById("pomoHeaderBtn");
-
     if(headerBtn){
         if(pomo.running){
             headerBtn.textContent=`${modeIcon} ${modeLabel} ${timeStr}`;
@@ -1611,14 +1607,12 @@ function updatePomoDisplay(){
     }
 
     const floating=document.getElementById("pomoFloatingTimer");
-
     if(floating){
         if(pomo.running || (pomo.started && pomo.remaining>0)){
             floating.classList.add("show");
             floating.classList.toggle("running",pomo.running);
             floating.classList.toggle("break",pomo.mode==="break");
             floating.classList.toggle("paused",!pomo.running);
-
             floating.textContent=pomo.running
                 ? `${modeIcon} ${modeLabel} · ${timeStr}`
                 : `⏸ ${modeLabel} · ${timeStr}`;
@@ -1628,8 +1622,7 @@ function updatePomoDisplay(){
     }
 
     if(pomo.running){
-        document.title=
-            `(${timeStr}) ${modeIcon} ${modeLabel} • Syllabus Tracker`;
+        document.title=`(${timeStr}) ${modeIcon} ${modeLabel} • Syllabus Tracker`;
         updateBackgroundPomodoroNotification();
     }else if(pomo.started && pomo.remaining>0){
         document.title=`⏸ ${timeStr} • Syllabus Tracker`;
@@ -1641,7 +1634,7 @@ function updatePomoDisplay(){
 function savePomoState(){
     try{
         localStorage.setItem("syllabusPomoState",JSON.stringify({
-            running:pomo.running,started:pomo.started,mode:pomo.mode,focus:pomo.focus,break:pomo.break,remaining:pomo.remaining,end:pomo.end,book:pomo.book,chapter:pomo.chapter,session:pomo.session
+            running:pomo.running,started:pomo.started,mode:pomo.mode,focus:pomo.focus,break:pomo.break,remaining:pomo.remaining,end:pomo.end,book:pomo.book,chapter:pomo.chapter,session:pomo.session,lastTick:lastTick
         }));
     }catch(e){}
 }
@@ -1673,9 +1666,9 @@ function restorePomoState(){
 
         if(st.running && pomo.end>0 && pomo.book && pomo.chapter){
             const now=Date.now();
-            pomo.remaining=Math.max(0,Math.ceil((pomo.end-now)/1000));
-
-            if(pomo.remaining>0){
+            if(now < pomo.end){
+                // Session is still active
+                pomo.remaining=Math.max(0,Math.ceil((pomo.end-now)/1000));
                 pomo.running=true;
                 pomo.started=true;
                 lastTick=now;
@@ -1685,10 +1678,28 @@ function restorePomoState(){
                 const cSelect=document.getElementById("pomoChapterSelect");
                 if(bSelect)bSelect.disabled=true;
                 if(cSelect)cSelect.disabled=true;
-            }else{
+            } else {
+                // Timer finished while tab was closed/inactive
+                if(pomo.mode === "focus"){
+                    const creditable = Math.min(st.remaining || (pomo.focus * 60), pomo.focus * 60);
+                    if(creditable > 0){
+                        addStudySeconds(pomo.book, pomo.chapter, creditable);
+                        flushStudySeconds(true);
+                    }
+                }
+                // Transition gracefully to next phase without auto-running indefinitely
                 pomo.running=false;
                 pomo.timer=null;
-                handlePomoFinish();
+                pomo.started=true;
+                if(pomo.mode === "focus"){
+                    pomo.mode = "break";
+                    pomo.remaining = pomo.break * 60;
+                } else {
+                    pomo.mode = "focus";
+                    pomo.session++;
+                    pomo.remaining = pomo.focus * 60;
+                }
+                savePomoState();
             }
         }else{
             pomo.running=false;
@@ -1700,7 +1711,6 @@ function restorePomoState(){
 function togglePomodoroPlay(){
     getAudioContext();
 
-    // Check if subject and chapter are selected
     if(!pomo.book || !pomo.chapter || !BOOKS[pomo.book]?.[pomo.chapter-1]){
         toast("⚠️ Please select a subject and chapter first!");
         return;
@@ -1710,6 +1720,7 @@ function togglePomodoroPlay(){
         clearInterval(pomo.timer);
         pomo.timer = null;
         pomo.running = false;
+        flushStudySeconds(true);
         clearBackgroundPomodoroNotification();
     } else {
         pomo.running = true;
@@ -1717,7 +1728,6 @@ function togglePomodoroPlay(){
         lastTick = Date.now();
         pomo.end = Date.now() + pomo.remaining * 1000;
 
-        // Lock subject and chapter selections
         const bSelect=document.getElementById("pomoBookSelect");
         const cSelect=document.getElementById("pomoChapterSelect");
         if(bSelect)bSelect.disabled=true;
@@ -1743,14 +1753,21 @@ function pomoTick(){
 
     if(pomo.mode==="focus" && activeSecondsPassed>0 && pomo.book && pomo.chapter){
         addStudySeconds(pomo.book, pomo.chapter, activeSecondsPassed);
+        flushStudySeconds(false);
     }
 
-    savePomoState();
+    // Save timer state periodically (every 3 seconds) instead of 2x/sec
+    if(now - lastPomoStateSave > 3000){
+        lastPomoStateSave = now;
+        savePomoState();
+    }
+
     updatePomoDisplay();
 
     if(pomo.remaining<=0){
         clearInterval(pomo.timer);
         pomo.running=false;
+        flushStudySeconds(true);
         clearBackgroundPomodoroNotification();
         handlePomoFinish();
     }
@@ -1782,7 +1799,6 @@ function handlePomoFinish(){
         pomo.remaining = pomo.focus * 60;
     }
 
-    // Next phase starts automatically with continuous lock
     clearInterval(pomo.timer);
     pomo.timer = null;
 
@@ -1803,13 +1819,13 @@ function resetPomodoro(){
     pomo.running=false;
     pomo.started=false;
     pomo.end=0;
+    flushStudySeconds(true);
     clearBackgroundPomodoroNotification();
 
     pomo.mode="focus";
     pomo.session=1;
     pomo.remaining=pomo.focus*60;
 
-    // Unlock subject and chapter dropdowns on reset
     const bSelect=document.getElementById("pomoBookSelect");
     const cSelect=document.getElementById("pomoChapterSelect");
     if(bSelect)bSelect.disabled=false;
@@ -1827,6 +1843,7 @@ function skipPomodoro(){
     }
     clearInterval(pomo.timer);
     pomo.running=false;
+    flushStudySeconds(true);
     clearBackgroundPomodoroNotification();
     if(pomo.mode==="focus"){
         pomo.mode="break";
@@ -1840,20 +1857,33 @@ function skipPomodoro(){
     updatePomoDisplay();
 }
 
+// Memory buffer to eliminate battery drain & excessive localStorage I/O
 function addStudySeconds(b,c,sec){
-    if(!b || !c) return;
+    if(!b || !c || sec <= 0) return;
+    pendingStudySeconds += sec;
+}
+
+function flushStudySeconds(force = false){
+    if(pendingStudySeconds <= 0 || !pomo.book || !pomo.chapter) return;
+    if(!force && pendingStudySeconds < 4) return;
+
     const d=today();
     history[d]??={totalSeconds:0,sessions:0,byBook:{},byChapter:{}};
-    history[d].totalSeconds+=sec;
-    history[d].byBook[b]=(history[d].byBook[b]||0)+sec;
-    history[d].byChapter[chKey(b,c)]=(history[d].byChapter[chKey(b,c)]||0)+sec;
-    save(KEY.history,history);
+    history[d].totalSeconds += pendingStudySeconds;
+    history[d].byBook[pomo.book] = (history[d].byBook[pomo.book] || 0) + pendingStudySeconds;
+    const ck = chKey(pomo.book, pomo.chapter);
+    history[d].byChapter[ck] = (history[d].byChapter[ck] || 0) + pendingStudySeconds;
+
+    pendingStudySeconds = 0;
+    save(KEY.history, history);
     updateDashboard();
 }
 
-// Background sync on tab focus and midnight transition check
 document.addEventListener("visibilitychange",()=>{
     checkMidnightChange();
+    if(document.visibilityState === "hidden"){
+        flushStudySeconds(true);
+    }
     if(pomo.running && document.visibilityState==="visible"){
         pomoTick();
     }
@@ -1910,20 +1940,35 @@ function drawGraph(){
         let y=pad.t+ph*i/4;
         ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();
     }
+
     ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue("--primary");
     ctx.lineWidth=3;
     ctx.beginPath();
-    data.forEach(([k,v],i)=>{
-        let x=pad.l+(data.length===1?pw/2:i*pw/(data.length-1)),y=pad.t+ph-(v/max)*ph;
-        i?ctx.lineTo(x,y):ctx.moveTo(x,y);
-    });
+    if(data.length === 1){
+        const y = pad.t + ph - (data[0][1] / max) * ph;
+        ctx.moveTo(pad.l, y);
+        ctx.lineTo(w - pad.r, y);
+    } else {
+        data.forEach(([k,v],i)=>{
+            let x=pad.l+i*pw/(data.length-1),y=pad.t+ph-(v/max)*ph;
+            i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+        });
+    }
     ctx.stroke();
+
     ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--primary");
     data.forEach(([k,v],i)=>{
         let x=pad.l+(data.length===1?pw/2:i*pw/(data.length-1)),y=pad.t+ph-(v/max)*ph;
         ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();
         ctx.font="9px sans-serif";ctx.textAlign="center";
-        ctx.fillText(k.slice(5),x,h-10);
+
+        let label = k;
+        if(graphPeriod === "monthly" && k.length >= 7){
+            label = k.slice(5) + "/'" + k.slice(2,4);
+        } else if(k.length >= 10){
+            label = k.slice(5);
+        }
+        ctx.fillText(label,x,h-10);
     });
 }
 
@@ -1934,19 +1979,25 @@ function renderHistory(){
     for(let i=0;i<7;i++){
         let d=new Date();d.setDate(d.getDate()-i);
         let k=formatDateKey(d);
-        recent.push(`<div class="listrow"><span>${i===0?"Today":i===1?"Yesterday":k}</span><strong>${fmt(history[k]?.totalSeconds||0)}</strong></div>`);
+        const daySec = (history[k]?.totalSeconds||0) + (k===today()?Math.round(pendingStudySeconds):0);
+        recent.push(`<div class="listrow"><span>${i===0?"Today":i===1?"Yesterday":k}</span><strong>${fmt(daySec)}</strong></div>`);
     }
     document.getElementById("weeklyHistoryList").innerHTML=recent.join("");
     const totals={};
-    Object.values(history).forEach(v=>Object.entries(v.byBook||{}).forEach(([b,s])=>totals[b]=(totals[b]||0)+s));
+    Object.values(history).forEach(v=>Object.entries(v?.byBook||{}).forEach(([b,s])=>totals[b]=(totals[b]||0)+s));
+    if(pomo.book && pendingStudySeconds > 0){
+        totals[pomo.book] = (totals[pomo.book]||0) + pendingStudySeconds;
+    }
     document.getElementById("bookStudyList").innerHTML=Object.keys(BOOKS).map(b=>`<div class="listrow"><span>${b}</span><strong>${fmt(totals[b]||0)}</strong></div>`).join("");
 }
 
 function saveDailyGoal(){
-    goal=Number(document.getElementById("dailyGoalInput").value)||120;
+    const inputVal = Number(document.getElementById("dailyGoalInput").value);
+    goal = (!inputVal || isNaN(inputVal) || inputVal < 10) ? 120 : Math.min(1440, Math.max(10, inputVal));
+    document.getElementById("dailyGoalInput").value = goal;
     localStorage.setItem(KEY.goal,goal);
     updateDashboard();
-    toast("🎯 Daily target updated");
+    toast(`🎯 Daily target updated (${goal}m)`);
 }
 
 function openResetDailyGoalModal(){
@@ -1968,6 +2019,7 @@ function openClearHistoryModal(){document.getElementById("clearHistoryModal").cl
 function closeClearHistoryModal(){document.getElementById("clearHistoryModal").classList.remove("show");}
 function confirmClearStudyHistory(){
     history={};
+    pendingStudySeconds=0;
     save(KEY.history,history);
     closeClearHistoryModal();
     updateDashboard();
@@ -2000,10 +2052,10 @@ function confirmResetProgress(){
 
 function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
 
-// Midnight check & auto-refresh
 function checkMidnightChange(){
     const newDay = today();
     if(newDay !== currentDayKey){
+        flushStudySeconds(true);
         currentDayKey = newDay;
         updateDashboard();
         if(currentTab==="history") renderHistory();
@@ -2021,7 +2073,6 @@ function scheduleMidnightRefresh(){
     }, nextMidnight - now);
 }
 
-// 30s heartbeat to guarantee instant reset
 setInterval(checkMidnightChange, 30000);
 scheduleMidnightRefresh();
 
@@ -2030,9 +2081,14 @@ function init(){
     sel.innerHTML=`<option value="all">📚 All Subjects</option>`+Object.keys(BOOKS).map(b=>`<option>${b}</option>`).join("");
     applyTheme((localStorage.getItem(KEY.theme)||"light")==="dark");
     restorePomoState();
+    populatePomoPickers();
+    updatePomoDisplay();
     updateDashboard();
     renderSyllabus();
     window.addEventListener("resize",()=>{if(currentTab==="history")drawGraph();});
+    window.addEventListener("beforeunload",()=>{
+        flushStudySeconds(true);
+    });
 }
 document.addEventListener("DOMContentLoaded",init);
 </script>
