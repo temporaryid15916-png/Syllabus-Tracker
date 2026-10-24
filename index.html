@@ -1703,25 +1703,41 @@ function restorePomoState(){
                 if(bSelect)bSelect.disabled=true;
                 if(cSelect)cSelect.disabled=true;
             } else {
-                // The timer expired while the page was closed/inactive.
-                // IMPORTANT: time elapsed while the page was closed is NOT study time.
-                // The active timer already credited time through pomoTick() before it
-                // became unavailable, so never credit st.remaining here.
-                pomo.running=false;
-                pomo.timer=null;
-                pomo.started=true;
-                pomo.awaitingNext=true;
-                if(pomo.mode === "focus"){
-                    pomo.mode = "break";
-                    pomo.remaining = pomo.break * 60;
-                } else {
-                    pomo.mode = "focus";
-                    pomo.session++;
-                    pomo.remaining = pomo.focus * 60;
-                }
-                pomo.end=0;
-                savePomoState();
-            }
+    // The timer expired while the page was closed/inactive.
+    // Do not count the inactive/closed time as study time.
+    // Automatically move to the next phase and start it.
+
+    pomo.running = false;
+    pomo.timer = null;
+    pomo.started = true;
+    pomo.awaitingNext = false;
+
+    if(pomo.mode === "focus"){
+        pomo.mode = "break";
+        pomo.remaining = pomo.break * 60;
+    } else {
+        pomo.mode = "focus";
+        pomo.session++;
+        pomo.remaining = pomo.focus * 60;
+    }
+
+    // Automatically start the next phase
+    lastTick = Date.now();
+    pomo.end = Date.now() + pomo.remaining * 1000;
+    pomo.running = true;
+
+    const bSelect = document.getElementById("pomoBookSelect");
+    const cSelect = document.getElementById("pomoChapterSelect");
+
+    if(bSelect) bSelect.disabled = true;
+    if(cSelect) cSelect.disabled = true;
+
+    clearInterval(pomo.timer);
+    pomo.timer = setInterval(pomoTick, 500);
+
+    updateBackgroundPomodoroNotification(true);
+    savePomoState();
+}
         }else{
             pomo.running=false;
             pomo.timer=null;
