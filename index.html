@@ -2409,6 +2409,7 @@ async function communityJoinPublic(id){
   if(!communityUser)return;
   const {data,error}=await communityClient.rpc("join_public_study_community",{p_community_id:id});
   if(error)return communityStatus(error.message,"error");
+  communityForgetLeftCommunity(id);
   communityStatus("Public Community-তে join করা হয়েছে।","ok");
   await communityLoadMyCommunities();await communityLoadDiscover();
   if(data?.id)await communitySelect(data.id);
@@ -2419,9 +2420,24 @@ async function communityJoinByCode(){
   if(!code)return communityStatus("Invite code লিখো।","error");
   const {data,error}=await communityClient.rpc("join_study_community",{p_invite_code:code});
   if(error)return communityStatus(error.message,"error");
+  if(data?.id)communityForgetLeftCommunity(data.id);
   document.getElementById("communityInviteCode").value="";
   communityStatus("Community-তে join করা হয়েছে।","ok");
   await communityLoadMyCommunities();if(data?.id)await communitySelect(data.id);
+}
+function communityHiddenIdsKey(userId){return "syllabusTrackerLeftCommunities:"+String(userId||"");}
+function communityGetHiddenIds(userId=communityUser?.id){
+  try{return new Set(JSON.parse(localStorage.getItem(communityHiddenIdsKey(userId))||"[]").map(String));}catch(_e){return new Set();}
+}
+function communityRememberLeftCommunity(id,userId=communityUser?.id){
+  if(!id||!userId)return;
+  const ids=communityGetHiddenIds(userId);ids.add(String(id));
+  try{localStorage.setItem(communityHiddenIdsKey(userId),JSON.stringify([...ids]));}catch(_e){}
+}
+function communityForgetLeftCommunity(id,userId=communityUser?.id){
+  if(!id||!userId)return;
+  const ids=communityGetHiddenIds(userId);ids.delete(String(id));
+  try{localStorage.setItem(communityHiddenIdsKey(userId),JSON.stringify([...ids]));}catch(_e){}
 }
 async function communityLoadMyCommunities(forceRefresh=false){
   if(!communityClient||!communityUser)return;
@@ -2438,7 +2454,8 @@ async function communityLoadMyCommunities(forceRefresh=false){
     if(error){if(box)box.innerHTML='<div class="community-empty">Community list load হয়নি।</div>';return communityStatus(error.message,"error");}
     // Show only memberships whose Community still exists. If the last member
     // deleted a Community but orphan membership rows remain, hide those rows.
-    communityMemberships=(data||[]).filter(m=>m&&m.communities&&m.communities.id);
+    const hiddenCommunityIds=communityGetHiddenIds(requestedUserId);
+    communityMemberships=(data||[]).filter(m=>m&&m.communities&&m.communities.id&&!hiddenCommunityIds.has(String(m.community_id)));
     communityLoadDiscover();
     if(!communityMemberships.length){if(box)box.innerHTML='<div class="community-empty">এখনো কোনো Community নেই। নতুন তৈরি করো অথবা invite code দিয়ে join করো।</div>';communityResetUI();return;}
     if(box)box.innerHTML=communityMemberships.map(m=>{const c=m.communities||{};return `<div class="community-item"><div><strong>${communityEsc(c.name||"Community")}</strong><small>${communityEsc(m.role||"member")} · ${communityEsc(c.visibility||"private")}</small></div><button class="mini" data-community-select="${communityEsc(c.id||m.community_id)}">Open</button></div>`}).join("");
@@ -2611,6 +2628,7 @@ async function confirmCommunityLeave(){
         const check=await communityClient.from("community_members").select("community_id").eq("community_id",entry.community_id).eq("user_id",communityUser.id).maybeSingle();
         if(check.error)throw new Error("Membership verify করা যায়নি: "+check.error.message);
         if(check.data)throw new Error((entry.communities?.name||entry.community_id)+": Supabase-এ membership এখনও আছে। SQL leave function ঠিক করতে হবে।");
+        communityRememberLeftCommunity(entry.community_id,communityUser.id);
         removed++;
         communityMemberships=communityMemberships.filter(m=>m.community_id!==entry.community_id);
       }
@@ -2639,6 +2657,7 @@ async function confirmCommunityLeave(){
     const membershipCheck=await communityClient.from("community_members").select("community_id").eq("community_id",id).eq("user_id",communityUser.id).maybeSingle();
     if(membershipCheck.error)throw new Error("Leave-এর পর membership verify করা যায়নি: "+membershipCheck.error.message);
     if(membershipCheck.data)throw new Error("Supabase বলেছে Leave হয়েছে, কিন্তু community_members-এ তোমার membership এখনও আছে। SQL leave function ঠিক করতে হবে।");
+    communityRememberLeftCommunity(id,communityUser.id);
     communityCleanupRealtime();
     communityCurrent=null;
     // Remove the departed Community immediately, then reconcile with a fresh DB read.
