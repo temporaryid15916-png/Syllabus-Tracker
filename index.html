@@ -8,6 +8,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png">
 <title>Syllabus Tracker</title>
+<script>try{if(localStorage.getItem("syllabusTheme")==="dark")document.documentElement.classList.add("dark");}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -52,12 +53,18 @@ html.dark,body.dark {
     margin:0;
     padding:0;
 }
-html,body {
+html {
     width:100%;
     max-width:100%;
     min-height:100%;
     overflow-x:hidden;
     scroll-behavior:smooth;
+}
+body {
+    width:100%;
+    max-width:100%;
+    min-height:100%;
+    overflow-x:clip;
 }
 body {
     font-family:"Plus Jakarta Sans","Hind Siliguri",system-ui,sans-serif;
@@ -594,6 +601,9 @@ button {
 .pomo-box {
     width:100%;
     max-width:520px;
+    max-height:92vh;
+    max-height:92dvh;
+    overflow:auto;
     text-align:center;
     padding:22px;
     position:relative;
@@ -696,6 +706,9 @@ button {
 .toast.show {
     opacity:1;
     transform:none;
+}
+body:has(.pomo-floating.show) .toast {
+    bottom:82px;
 }
 footer {
     text-align:center;
@@ -821,6 +834,10 @@ footer {
 }
 .pomo-floating.running {
     border-color:var(--warning);
+    animation:pomoPulse 1.8s ease-in-out infinite;
+}
+
+.pomo-active-pulse {
     animation:pomoPulse 1.8s ease-in-out infinite;
 }
 
@@ -959,8 +976,8 @@ footer {
 
 <!-- Community Tab: independent module; existing tracker panels remain unchanged -->
 <section id="communityPanel" class="panel">
-  <div id="communityStatus" class="community-status">Community ব্যবহার করতে Supabase backend configure করতে হবে। আপনার বর্তমান tracker localStorage-এ আগের মতোই থাকবে।</div>
-  <div id="communityAuthView" class="community-wrap">
+  <div id="communityStatus" class="community-status" style="display:none"></div>
+  <div id="communityAuthView" class="community-wrap" style="grid-template-columns:minmax(0,520px);justify-content:center">
     <div class="card community-card">
       <div style="font-size:27px">👥</div><h2 style="margin-top:5px">Syllabus Tracker Community</h2>
       <p>বন্ধুদের সঙ্গে পড়াশোনার অগ্রগতি ভাগ করো, একসঙ্গে লক্ষ্য পূরণ করো এবং group chat-এ কথা বলো। Progress কেবল একই Community-র সদস্যদের জন্য।</p>
@@ -971,12 +988,6 @@ footer {
         <div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn primary" onclick="communitySignIn()">Login</button><button class="btn" onclick="communitySignUp()">Create account</button><button class="btn" onclick="communityResetPassword()">Forgot password?</button></div>
       </div>
       <p style="margin-top:10px">প্রথমবার account তৈরি করলে email confirmation প্রয়োজন হতে পারে।</p>
-    </div>
-    <div class="card community-card">
-      <h2>শুরু করার আগে</h2>
-      <p>Community chat, membership ও progress নিরাপদে শেয়ার করার জন্য অনলাইন database প্রয়োজন। নিচের setup guide-এর SQL একবার Supabase SQL Editor-এ চালিয়ে project URL ও public anon key বসালে এই অংশ সংযুক্ত হবে।</p>
-      <div class="community-metrics"><div class="community-metric"><strong>🔐</strong><span>Email + Password</span></div><div class="community-metric"><strong>👥</strong><span>Same-community access</span></div><div class="community-metric"><strong>💬</strong><span>Realtime chat</span></div></div>
-      <p style="margin-top:12px">কখনোই Supabase service_role key HTML ফাইলে বসাবে না।</p>
     </div>
   </div>
   <div id="communityAppView" style="display:none">
@@ -1044,9 +1055,9 @@ footer {
     <div style="font-size:11.5px;font-weight:750;color:var(--muted);margin-bottom:6px">Custom Session Duration</div>
     <div style="display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap">
       <span class="label">Focus:</span>
-      <input id="pomoCustomFocus" class="input" style="width:65px;padding:5px;text-align:center" type="number" min="1" max="240" value="25">
+      <input id="pomoCustomFocus" class="input" style="width:65px;padding:5px;text-align:center" type="number" min="1" max="240" step="1" value="25">
       <span class="label">min | Break:</span>
-      <input id="pomoCustomBreak" class="input" style="width:60px;padding:5px;text-align:center" type="number" min="1" max="60" value="5">
+      <input id="pomoCustomBreak" class="input" style="width:60px;padding:5px;text-align:center" type="number" min="1" max="60" step="1" value="5">
       <span class="label">min</span>
       <button class="btn primary" style="padding:6px 10px;font-size:11.5px" onclick="applyCustomPomoTime()">Apply</button>
     </div>
@@ -1186,7 +1197,7 @@ function updateDashboard(){
         cur.setDate(cur.getDate()-1);
         if(streak>1000)break;
     }
-    document.getElementById("quickStreak").textContent=streak+" days";
+    document.getElementById("quickStreak").textContent=streak+(streak===1?" day":" days");
     document.getElementById("quickGoal").textContent=fmtPct(goalVal);
     document.getElementById("quickExams").textContent=exams.filter(e=>e.date>=today()).length;
     updateContinue();
@@ -1254,7 +1265,7 @@ function renderSyllabus(){
         if(!visible.length)return;
         let rawPct=arr.length>0?(done/arr.length*100):0;
         let pct=fmtPct(rawPct);
-        let col=!!collapsed[b];
+        let col=!!collapsed[b] && !q && statusFilter==="all";
         const card=document.createElement("div");
         card.className="card subject"+(col?" collapsed":"");
         card.innerHTML=`<div class="subject-head" onclick='toggleBookCollapse(${JSON.stringify(b)})'><div class="subject-icon">${ICONS[b]}</div><div class="subject-info"><div class="subject-title"><span>${b}</span><span class="badge-pct">${pct}</span></div><div class="subject-meta">${done} complete · ${inp} in progress · ${arr.length} total</div></div><div class="subject-progress"><div class="smallrow"><span>${done}/${arr.length}</span><span>${pct}</span></div><div class="smallbar"><i style="width:${rawPct}%"></i></div></div><div class="chev">▼</div></div><div class="subject-body"><div class="chapters">${visible.map(c=>chapterHTML(b,c,arr[c-1])).join("")}</div></div>`;
@@ -1302,12 +1313,13 @@ function renderExams(){
         return;
     }
     exams.forEach(e=>{
-        let done=(e.chapters||[]).filter(c=>progress[chKey(c.book,c.chapter)]==="complete").length;
-        let raw=e.chapters?.length?(done/e.chapters.length*100):0;
+        const chapters=(e.chapters||[]).filter(c=>BOOKS[c.book]?.[Number(c.chapter)-1]);
+        let done=chapters.filter(c=>progress[chKey(c.book,c.chapter)]==="complete").length;
+        let raw=chapters.length?(done/chapters.length*100):0;
         let p=fmtPct(raw);
         const d=document.createElement("div");
         d.className="card exam";
-        d.innerHTML=`<div class="row"><div><h3>${esc(e.name)}</h3><div class="date">📅 ${e.date}</div></div><span class="filter">${e.chapters.length} chapters</span></div><div style="margin:10px 0 4px;font-size:11px;font-weight:800;display:flex;justify-content:space-between"><span>Preparation</span><strong style="color:var(--primary)">${done}/${e.chapters.length} (${p})</strong></div><div class="progress"><div class="fill" style="width:${raw}%"></div></div><div class="exam-actions"><button class="btn primary" onclick='openExamDetail(${JSON.stringify(e.id)})'>View Chapters</button><button class="btn" onclick='editExam(${JSON.stringify(e.id)})'>Edit</button><button class="btn" style="color:var(--danger)" onclick='openDeleteExamModal(${JSON.stringify(e.id)})'>Delete</button></div>`;
+        d.innerHTML=`<div class="row"><div><h3>${esc(e.name)}</h3><div class="date">📅 ${e.date||""}</div></div><span class="filter">${(e.chapters||[]).length} chapters</span></div><div style="margin:10px 0 4px;font-size:11px;font-weight:800;display:flex;justify-content:space-between"><span>Preparation</span><strong style="color:var(--primary)">${done}/${chapters.length} (${p})</strong></div><div class="progress"><div class="fill" style="width:${raw}%"></div></div><div class="exam-actions"><button class="btn primary" onclick='openExamDetail(${JSON.stringify(e.id)})'>View Chapters</button><button class="btn" onclick='editExam(${JSON.stringify(e.id)})'>Edit</button><button class="btn" style="color:var(--danger)" onclick='openDeleteExamModal(${JSON.stringify(e.id)})'>Delete</button></div>`;
         box.appendChild(d);
     });
 }
@@ -1318,13 +1330,14 @@ function closeExamDetail(){selectedExam=null;renderExams();}
 function renderExamDetail(){
     const e=exams.find(x=>x.id===selectedExam);
     if(!e){selectedExam=null;return renderExams();}
-    const done=e.chapters.filter(c=>progress[chKey(c.book,c.chapter)]==="complete").length;
-    const raw=e.chapters.length?(done/e.chapters.length*100):0;
+    const chapters=(e.chapters||[]).filter(c=>BOOKS[c.book]?.[Number(c.chapter)-1]);
+    const done=chapters.filter(c=>progress[chKey(c.book,c.chapter)]==="complete").length;
+    const raw=chapters.length?(done/chapters.length*100):0;
     const p=fmtPct(raw);
     document.getElementById("examListView").style.display="none";
     const v=document.getElementById("examDetailView");
     v.style.display="block";
-    v.innerHTML=`<div class="card section"><button class="filter" onclick="closeExamDetail()">← Back</button><div class="row" style="margin-top:10px"><div><h2>${esc(e.name)}</h2><p>📅 ${e.date}</p></div><div style="text-align:right"><b style="font-size:26px;color:var(--primary)">${p}</b><p>${done} / ${e.chapters.length} completed</p></div></div><div class="progress" style="margin:12px 0"><div class="fill" style="width:${raw}%"></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn primary" onclick="startPomodoroForExam()">🍅 Study Next Chapter</button><button class="btn" onclick='editExam(${JSON.stringify(e.id)})'>✏️ Edit</button><button class="btn" style="color:var(--danger)" onclick='openDeleteExamModal(${JSON.stringify(e.id)})'>🗑️ Delete</button></div></div><div class="card section"><h2>Exam Chapters</h2><p>Synced with your main syllabus.</p><div class="list">${e.chapters.map(c=>{let d=progress[chKey(c.book,c.chapter)]==="complete",n=BOOKS[c.book][c.chapter-1];return `<div class="chapter ${d?"complete":""}"><button class="mini ${d?"status complete":""}" onclick='toggleExamChapterDone(${JSON.stringify(c.book)},${c.chapter})'>${d?"✓":"○"}</button><div class="chapter-main"><div class="chapter-name">${n}</div><div class="chapter-status">${c.book} · Chapter ${c.chapter}</div></div><button class="mini" onclick='openPomodoroFor(${JSON.stringify(c.book)},${c.chapter})'>🍅 Study</button></div>`}).join("")}</div></div>`;
+    v.innerHTML=`<div class="card section"><button class="filter" onclick="closeExamDetail()">← Back</button><div class="row" style="margin-top:10px"><div><h2>${esc(e.name)}</h2><p>📅 ${e.date}</p></div><div style="text-align:right"><b style="font-size:26px;color:var(--primary)">${p}</b><p>${done} / ${chapters.length} completed</p></div></div><div class="progress" style="margin:12px 0"><div class="fill" style="width:${raw}%"></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn primary" onclick="startPomodoroForExam()">🍅 Study Next Chapter</button><button class="btn" onclick='editExam(${JSON.stringify(e.id)})'>✏️ Edit</button><button class="btn" style="color:var(--danger)" onclick='openDeleteExamModal(${JSON.stringify(e.id)})'>🗑️ Delete</button></div></div><div class="card section"><h2>Exam Chapters</h2><p>Synced with your main syllabus.</p><div class="list">${chapters.map(c=>{let d=progress[chKey(c.book,c.chapter)]==="complete",n=BOOKS[c.book]?.[c.chapter-1];if(!n)return "";return `<div class="chapter ${d?"complete":""}"><button class="mini ${d?"status complete":""}" onclick='toggleExamChapterDone(${JSON.stringify(c.book)},${c.chapter})'>${d?"✓":"○"}</button><div class="chapter-main"><div class="chapter-name">${n}</div><div class="chapter-status">${c.book} · Chapter ${c.chapter}</div></div><button class="mini" onclick='openPomodoroFor(${JSON.stringify(c.book)},${c.chapter})'>🍅 Study</button></div>`}).join("")}</div></div>`;
 }
 
 function openExamModal(){
@@ -1399,15 +1412,18 @@ function toggleExamChapterDone(b,c){
     if(progress[k]==="complete")delete progress[k];
     else progress[k]="complete";
     save(KEY.progress,progress);
+    last={book:b,chapter:c};
+    save(KEY.last,last);
     updateDashboard();
     renderExamDetail();
     renderSyllabus();
+    if(currentTab==="insights")renderInsights();
 }
 
 function startPomodoroForExam(){
     const e=exams.find(x=>x.id===selectedExam);
     if(!e)return;
-    const c=e.chapters.find(x=>progress[chKey(x.book,x.chapter)]!=="complete");
+    const c=(e.chapters||[]).find(x=>BOOKS[x.book]?.[Number(x.chapter)-1] && progress[chKey(x.book,x.chapter)]!=="complete");
     c?openPomodoroFor(c.book,c.chapter):toast("🎉 All exam chapters are complete!");
 }
 
@@ -1419,6 +1435,8 @@ let lastTick = Date.now();
 let lastBgNotificationAt = 0;
 let pendingStudySeconds = 0;
 let lastPomoStateSave = 0;
+let lastHistoryRenderAt = 0;
+let lastDashboardTickAt = 0;
 
 let audioCtx = null;
 function getAudioContext(){
@@ -1680,8 +1698,8 @@ function applyCustomPomoTime(){
         return;
     }
 
-    const f=Math.max(1,Math.min(240,Number(document.getElementById("pomoCustomFocus").value)||25));
-    const b=Math.max(1,Math.min(60,Number(document.getElementById("pomoCustomBreak").value)||5));
+    const f=Math.round(Math.max(1,Math.min(240,Number(document.getElementById("pomoCustomFocus").value)||25)));
+    const b=Math.round(Math.max(1,Math.min(60,Number(document.getElementById("pomoCustomBreak").value)||5)));
 
     const oldTotal=(pomo.mode==="focus"?pomo.focus:pomo.break)*60;
     const oldRemaining=Math.max(0,Number(pomo.remaining)||0);
@@ -1703,7 +1721,8 @@ function applyCustomPomoTime(){
     toast(`⏱ Custom duration applied: ${f}m focus / ${b}m break`);
 }
 function updatePomoDisplay(){
-    let m=Math.floor(pomo.remaining/60),s=pomo.remaining%60;
+    const remaining=Math.max(0,Math.round(Number(pomo.remaining)||0));
+    let m=Math.floor(remaining/60),s=Math.floor(remaining%60);
     let timeStr=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
 
     const clockEl = document.getElementById("pomoClock");
@@ -1712,7 +1731,7 @@ function updatePomoDisplay(){
     let total=(pomo.mode==="focus"?pomo.focus:pomo.break)*60;
 
     const progFill = document.getElementById("pomoProgressFill");
-    if(progFill) progFill.style.width=Math.max(0,Math.min(100,(total-pomo.remaining)/total*100))+"%";
+    if(progFill) progFill.style.width=Math.max(0,Math.min(100,(total-remaining)/Math.max(1,total)*100))+"%";
 
     const tagEl = document.getElementById("pomoSessionTag");
     if(tagEl) tagEl.textContent=`${pomo.mode==="focus"?"🍅 Focus":"☕ Break"} · Session ${pomo.session}`;
@@ -1780,14 +1799,14 @@ function restorePomoState(){
         if(pomo.book && BOOKS[pomo.book]?.[Number(st.chapter)-1])pomo.chapter=Number(st.chapter);
         else pomo.chapter=null;
 
-        if(Number.isFinite(st.focus))pomo.focus=Math.max(1,Math.min(240,Number(st.focus)));
-        if(Number.isFinite(st.break))pomo.break=Math.max(1,Math.min(60,Number(st.break)));
+        if(Number.isFinite(Number(st.focus)))pomo.focus=Math.round(Math.max(1,Math.min(240,Number(st.focus))));
+        if(Number.isFinite(Number(st.break)))pomo.break=Math.round(Math.max(1,Math.min(60,Number(st.break))));
         if(Number.isFinite(st.session))pomo.session=Math.max(1,Number(st.session));
 
         pomo.started=!!st.started;
         pomo.awaitingNext=!!st.awaitingNext;
         pomo.mode=st.mode==="break"?"break":"focus";
-        pomo.remaining=Math.max(0,Number(st.remaining)||0);
+        pomo.remaining=Math.max(0,Math.round(Number(st.remaining)||0));
         pomo.end=Number(st.end)||0;
 
         const focusInput=document.getElementById("pomoCustomFocus");
@@ -1810,40 +1829,28 @@ function restorePomoState(){
                 if(bSelect)bSelect.disabled=true;
                 if(cSelect)cSelect.disabled=true;
             } else {
-    // The timer expired while the page was closed/inactive.
-    // Do not count the inactive/closed time as study time.
-    // Automatically move to the next phase and start it.
-
-    pomo.running = false;
-    pomo.timer = null;
-    pomo.started = true;
-    pomo.awaitingNext = false;
-
-    if(pomo.mode === "focus"){
-        pomo.mode = "break";
-        pomo.remaining = pomo.break * 60;
-    } else {
-        pomo.mode = "focus";
-        pomo.session++;
-        pomo.remaining = pomo.focus * 60;
-    }
-
-    // Automatically start the next phase
-    lastTick = Date.now();
-    pomo.end = Date.now() + pomo.remaining * 1000;
-    pomo.running = true;
-
-    const bSelect = document.getElementById("pomoBookSelect");
-    const cSelect = document.getElementById("pomoChapterSelect");
-
-    if(bSelect) bSelect.disabled = true;
-    if(cSelect) cSelect.disabled = true;
-
-    clearInterval(pomo.timer);
-    pomo.timer = setInterval(pomoTick, 500);
-
-    updateBackgroundPomodoroNotification(true);
-    savePomoState();
+                // The saved phase expired while the page was closed. Advance once,
+                // but leave the next phase paused until the user presses Start.
+                pomo.running=false;
+                pomo.timer=null;
+                pomo.started=true;
+                pomo.awaitingNext=false;
+                if(pomo.mode==="focus"){
+                    pomo.mode="break";
+                    pomo.remaining=pomo.break*60;
+                }else{
+                    pomo.mode="focus";
+                    pomo.session++;
+                    pomo.remaining=pomo.focus*60;
+                }
+                pomo.end=0;
+                lastTick=Date.now();
+                const bSelect=document.getElementById("pomoBookSelect");
+                const cSelect=document.getElementById("pomoChapterSelect");
+                if(bSelect)bSelect.disabled=true;
+                if(cSelect)cSelect.disabled=true;
+                clearBackgroundPomodoroNotification();
+                savePomoState();
 }
         }else{
             pomo.running=false;
@@ -1893,7 +1900,7 @@ function pomoTick(){
     const prevTick = lastTick;
     lastTick = now;
 
-    const activeSecondsPassed = Math.max(0, (Math.min(now, pomo.end) - prevTick) / 1000);
+    const activeSecondsPassed = Math.min(5,Math.max(0, (Math.min(now, pomo.end) - prevTick) / 1000));
     pomo.remaining = Math.max(0, Math.ceil((pomo.end - now) / 1000));
 
     if(pomo.mode==="focus" && activeSecondsPassed>0 && pomo.book && pomo.chapter){
@@ -1908,9 +1915,11 @@ function pomoTick(){
     }
 
    updatePomoDisplay();
+    updateDashboard();
 
-    // Keep Study History display live without saving to localStorage every second
-    if(currentTab === "history"){
+    // Redraw the history graph at most once per second.
+    if(currentTab === "history" && now-lastHistoryRenderAt>=1000){
+        lastHistoryRenderAt=now;
         renderHistory();
     }
 
@@ -2030,6 +2039,7 @@ function addStudySeconds(b,c,sec){
 
 function flushStudySeconds(force = false){
     if(pendingStudySeconds <= 0 || !pomo.book || !pomo.chapter) return;
+    if(!force && pendingStudySeconds < 10) return;
 
     const d=today();
     history[d]??={totalSeconds:0,sessions:0,byBook:{},byChapter:{}};
@@ -2303,26 +2313,41 @@ document.addEventListener("DOMContentLoaded",init);
 const COMMUNITY_SUPABASE_URL = "https://nnengzucbzfbadnuvcfx.supabase.co";
 const COMMUNITY_SUPABASE_ANON_KEY = "sb_publishable_Fflqb_CxmYFGlvt6A-46dg_E3UaHffp";
 let communityClient=null, communityUser=null, communityCurrent=null, communityRealtime=null, communityMemberships=[];
+const communityProfileNameCache=new Map();
+let communityLastUserId=undefined,communitySelectionToken=0,communityMembershipLoadPromise=null;
 const communityConfigured=()=>!!(window.supabase?.createClient && COMMUNITY_SUPABASE_URL.startsWith("https://") && !COMMUNITY_SUPABASE_URL.includes("PASTE_") && COMMUNITY_SUPABASE_ANON_KEY && !COMMUNITY_SUPABASE_ANON_KEY.includes("PASTE_"));
 function communityStatus(message,type=""){const e=document.getElementById("communityStatus");if(e){e.textContent=message;e.className="community-status"+(type?" "+type:"");e.style.display="block";}}
 function communityEsc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
 function communityInit(){
+  if(!window.supabase?.createClient){communityStatus("Supabase library লোড হয়নি, internet check করো","error");return;}
   if(!communityConfigured()){communityStatus("Community backend এখনো configure করা হয়নি। Supabase project URL ও anon key বসিয়ে SQL setup সম্পন্ন করলে Login/Community চালু হবে।");return;}
   try{communityClient=window.supabase.createClient(COMMUNITY_SUPABASE_URL,COMMUNITY_SUPABASE_ANON_KEY);}
   catch(e){communityStatus("Supabase configuration error: "+e.message,"error");return;}
   communityClient.auth.getSession().then(({data,error})=>{if(error)communityStatus(error.message,"error");communityApplySession(data?.session||null);});
-  communityClient.auth.onAuthStateChange((_event,session)=>{communityApplySession(session);});
+  communityClient.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>communityApplySession(session),0);});
+}
+function communityResetUI(){
+  const ids={communityChat:'<div class="community-empty">Select a Community to view messages.</div>',communityMembers:'<div class="community-empty">Member progress will appear here.</div>',communityMyProgress:'',communityMyList:'<div class="community-empty">এখনো কোনো Community নেই। নতুন তৈরি করো অথবা invite code দিয়ে join করো।</div>',communityDiscoverList:'<div class="community-empty">Public communities will appear here.</div>'};
+  Object.entries(ids).forEach(([id,html])=>{const el=document.getElementById(id);if(el)el.innerHTML=html;});
+  const invite=document.getElementById("communityInviteInfo");if(invite){invite.style.display="none";invite.textContent="";}
+  const title=document.getElementById("communityRoomTitle");if(title)title.textContent="Select a Community";
+  const desc=document.getElementById("communityRoomDescription");if(desc)desc.textContent="Chat and member progress will appear here.";
+  const input=document.getElementById("communityMessageInput");if(input)input.value="";
+  communityMemberships=[];communityCurrent=null;communityProfileNameCache.clear();communityCleanupRealtime();
 }
 function communityApplySession(session){
-  communityUser=session?.user||null;
+  const nextUser=session?.user||null,nextId=nextUser?.id||null;
+  if(nextId===communityLastUserId)return;
+  communityLastUserId=nextId;
+  communityUser=nextUser;
+  communityResetUI();
   const auth=document.getElementById("communityAuthView"),app=document.getElementById("communityAppView");
   if(auth)auth.style.display=communityUser?"none":"grid";
   if(app)app.style.display=communityUser?"block":"none";
-  if(!communityUser){communityCleanupRealtime();communityCurrent=null;return;}
-  document.getElementById("communitySignedEmail").textContent=communityUser.email||"Signed in";
-  document.getElementById("communityWelcome").textContent="👋 Welcome to Community";
-  communityStatus("Login successful. তোমার Community নির্বাচন করো।","ok");
-  communityLoadMyCommunities();
+  if(!communityUser)return;
+  const email=document.getElementById("communitySignedEmail");if(email)email.textContent=communityUser.email||"Signed in";
+  const welcome=document.getElementById("communityWelcome");if(welcome)welcome.textContent="👋 Welcome to Community";
+  setTimeout(()=>{if(communityUser?.id===nextId)communityLoadMyCommunities();},0);
 }
 async function communitySignIn(){
   if(!communityClient)return communityStatus("Supabase setup সম্পন্ন হয়নি।","error");
@@ -2347,7 +2372,7 @@ async function communityResetPassword(){
   const {error}=await communityClient.auth.resetPasswordForEmail(email,{redirectTo:location.href.split("#")[0]});
   communityStatus(error?error.message:"যদি এই email-এ account থাকে, password reset-এর নির্দেশনা পাঠানো হবে।",error?"error":"ok");
 }
-async function communitySignOut(){if(communityClient){communityCleanupRealtime();await communityClient.auth.signOut();}communityUser=null;communityCurrent=null;communityApplySession(null);communityStatus("Logout successful.");}
+async function communitySignOut(){if(communityClient){communityCleanupRealtime();await communityClient.auth.signOut();}communityUser=null;communityResetUI();communityApplySession(null);communityStatus("Logout successful.");}
 async function communityCreate(){
   if(!communityUser)return;
   const name=document.getElementById("newCommunityName").value.trim(),description=document.getElementById("newCommunityDescription").value.trim(),visibility=document.getElementById("newCommunityVisibility").value;
@@ -2365,7 +2390,7 @@ async function communityLoadDiscover(){
   const {data,error}=await communityClient.rpc("discover_public_study_communities");
   if(error){box.innerHTML='<div class="community-empty">Public groups load হয়নি।</div>';return communityStatus(error.message,"error");}
   const available=(data||[]).filter(c=>!communityMemberships.some(m=>m.community_id===c.id));
-  box.innerHTML=available.length?available.map(c=>`<div class="community-item"><div><strong>${communityEsc(c.name)}</strong><small>${communityEsc(c.description||"Public study group")} · ${Number(c.member_count)||0} members</small></div><button class="mini" onclick="communityJoinPublic('${communityEsc(c.id)}')">Join</button></div>`).join(""):'<div class="community-empty">এখন কোনো নতুন public group পাওয়া যায়নি।</div>';
+  box.innerHTML=available.length?available.map(c=>`<div class="community-item"><div><strong>${communityEsc(c.name)}</strong><small>${communityEsc(c.description||"Public study group")} · ${Number(c.member_count)||0} members</small></div><button class="mini" data-community-join="${communityEsc(c.id)}">Join</button></div>`).join(""):'<div class="community-empty">এখন কোনো নতুন public group পাওয়া যায়নি।</div>';
 }
 async function communityJoinPublic(id){
   if(!communityUser)return;
@@ -2387,21 +2412,30 @@ async function communityJoinByCode(){
 }
 async function communityLoadMyCommunities(){
   if(!communityClient||!communityUser)return;
-  const box=document.getElementById("communityMyList");box.innerHTML='<div class="community-empty">Loading…</div>';
-  const {data,error}=await communityClient.from("community_members").select("community_id,role,communities(id,name,description,visibility)").eq("user_id",communityUser.id).order("joined_at",{ascending:false});
-  if(error){box.innerHTML='<div class="community-empty">Community list load হয়নি।</div>';return communityStatus(error.message,"error");}
-  communityMemberships=(data||[]);
-  communityLoadDiscover();
-  if(!communityMemberships.length){box.innerHTML='<div class="community-empty">এখনো কোনো Community নেই। নতুন তৈরি করো অথবা invite code দিয়ে join করো।</div>';return;}
-  box.innerHTML=communityMemberships.map(m=>{const c=m.communities||{};return `<div class="community-item"><div><strong>${communityEsc(c.name||"Community")}</strong><small>${communityEsc(m.role||"member")} · ${communityEsc(c.visibility||"private")}</small></div><button class="mini" onclick="communitySelect('${communityEsc(c.id||m.community_id)}')">Open</button></div>`}).join("");
-  if(!communityCurrent)await communitySelect(communityMemberships[0].community_id);
+  if(communityMembershipLoadPromise)return communityMembershipLoadPromise;
+  const requestedUserId=communityUser.id;
+  communityMembershipLoadPromise=(async()=>{
+    const box=document.getElementById("communityMyList");if(box)box.innerHTML='<div class="community-empty">Loading…</div>';
+    const {data,error}=await communityClient.from("community_members").select("community_id,role,communities(id,name,description,visibility)").eq("user_id",requestedUserId).order("joined_at",{ascending:false});
+    if(communityUser?.id!==requestedUserId)return;
+    if(error){if(box)box.innerHTML='<div class="community-empty">Community list load হয়নি।</div>';return communityStatus(error.message,"error");}
+    communityMemberships=(data||[]);
+    communityLoadDiscover();
+    if(!communityMemberships.length){if(box)box.innerHTML='<div class="community-empty">এখনো কোনো Community নেই। নতুন তৈরি করো অথবা invite code দিয়ে join করো।</div>';communityResetUI();return;}
+    if(box)box.innerHTML=communityMemberships.map(m=>{const c=m.communities||{};return `<div class="community-item"><div><strong>${communityEsc(c.name||"Community")}</strong><small>${communityEsc(m.role||"member")} · ${communityEsc(c.visibility||"private")}</small></div><button class="mini" data-community-select="${communityEsc(c.id||m.community_id)}">Open</button></div>`}).join("");
+    if(!communityCurrent||!communityMemberships.some(m=>m.community_id===communityCurrent.id))await communitySelect(communityMemberships[0].community_id);
+  })();
+  try{await communityMembershipLoadPromise;}finally{communityMembershipLoadPromise=null;}
 }
 function communityCleanupRealtime(){if(communityRealtime&&communityClient){communityClient.removeChannel(communityRealtime);}communityRealtime=null;}
 async function communitySelect(id){
   if(!communityClient||!communityUser)return;
   const member=communityMemberships.find(m=>m.community_id===id);if(!member)return communityStatus("এই Community-র সদস্যপদ পাওয়া যায়নি।","error");
+  const token=++communitySelectionToken;
   communityCleanupRealtime();communityCurrent=member.communities||{id};
   const c=communityCurrent;
+  document.getElementById("communityChat").innerHTML='<div class="community-empty">Messages loading…</div>';
+  document.getElementById("communityMembers").innerHTML='<div class="community-empty">Members loading…</div>';
   document.getElementById("communityRoomTitle").textContent=c.name||"Community";
   document.getElementById("communityRoomDescription").textContent=c.description||"Study together";
   const invite=document.getElementById("communityInviteInfo");
@@ -2410,19 +2444,33 @@ async function communitySelect(id){
   if(member.role==="owner"||member.role==="admin"){
     invite.style.display="block";invite.textContent="Invite code loading…";
     const {data:inviteCode}=await communityClient.rpc("get_study_community_invite_code",{p_community_id:id});
+    if(token!==communitySelectionToken||communityCurrent?.id!==id)return;
     invite.textContent=inviteCode?.invite_code?"Invite code: "+inviteCode.invite_code:"Invite code শুধু owner/admin দেখতে পারবেন।";
   }else invite.style.display="none";
   await Promise.all([communityLoadMessages(id),communityLoadMembers(id)]);
+  if(token!==communitySelectionToken||communityCurrent?.id!==id||!communityUser)return;
+  communityCleanupRealtime();
   communityRealtime=communityClient.channel("community-"+id)
-    .on("postgres_changes",{event:"INSERT",schema:"public",table:"community_messages",filter:"community_id=eq."+id},payload=>communityAppendMessage(payload.new))
-    .on("postgres_changes",{event:"*",schema:"public",table:"community_progress",filter:"community_id=eq."+id},()=>communityLoadMembers(id))
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"community_messages",filter:"community_id=eq."+id},async payload=>{
+      const msg=payload.new;if(!msg.profiles&&msg.user_id){msg.profiles={display_name:await communityGetProfileName(msg.user_id)};}communityAppendMessage(msg);
+    })
+    .on("postgres_changes",{event:"*",schema:"public",table:"community_progress",filter:"community_id=eq."+id},()=>{if(communityCurrent?.id===id)communityLoadMembers(id);})
     .subscribe();
+}
+async function communityGetProfileName(userId){
+  if(!userId)return "Member";
+  if(communityProfileNameCache.has(userId))return communityProfileNameCache.get(userId);
+  const {data}=await communityClient.from("profiles").select("display_name").eq("id",userId).maybeSingle();
+  const name=data?.display_name||"Member";communityProfileNameCache.set(userId,name);return name;
 }
 async function communityLoadMessages(id){
   const box=document.getElementById("communityChat");box.innerHTML='<div class="community-empty">Messages loading…</div>';
-  const {data,error}=await communityClient.from("community_messages").select("id,user_id,body,created_at,profiles(display_name)").eq("community_id",id).order("created_at",{ascending:true}).limit(150);
+  const {data,error}=await communityClient.from("community_messages").select("id,community_id,user_id,body,created_at,profiles(display_name)").eq("community_id",id).order("created_at",{ascending:false}).limit(150);
   if(error){box.innerHTML='<div class="community-empty">Chat load হয়নি।</div>';return communityStatus(error.message,"error");}
-  box.innerHTML="";(data||[]).forEach(communityAppendMessage);if(!data?.length)box.innerHTML='<div class="community-empty">প্রথম message পাঠিয়ে কথোপকথন শুরু করো।</div>';box.scrollTop=box.scrollHeight;
+  if(communityCurrent?.id!==id)return;
+  box.innerHTML="";const messages=(data||[]).reverse();
+  for(const message of messages){if(!message.profiles&&message.user_id)message.profiles={display_name:await communityGetProfileName(message.user_id)};else if(message.user_id&&message.profiles?.display_name)communityProfileNameCache.set(message.user_id,message.profiles.display_name);communityAppendMessage(message);}
+  if(!messages.length)box.innerHTML='<div class="community-empty">প্রথম message পাঠিয়ে কথোপকথন শুরু করো।</div>';box.scrollTop=box.scrollHeight;
 }
 function communityAppendMessage(m){
   const box=document.getElementById("communityChat");if(!box||!communityCurrent||m.community_id&&m.community_id!==communityCurrent.id)return;
@@ -2436,8 +2484,8 @@ function communityAppendMessage(m){
 async function communitySendMessage(){
   if(!communityCurrent||!communityUser)return communityStatus("আগে একটি Community নির্বাচন করো।","error");
   const input=document.getElementById("communityMessageInput"),body=input.value.trim();if(!body)return;
-  const {error}=await communityClient.from("community_messages").insert({community_id:communityCurrent.id,user_id:communityUser.id,body});
-  if(error)return communityStatus(error.message,"error");input.value="";
+  const roomId=communityCurrent.id;const {data,error}=await communityClient.from("community_messages").insert({community_id:roomId,user_id:communityUser.id,body}).select("id,community_id,user_id,body,created_at").single();
+  if(error)return communityStatus(error.message,"error");if(communityCurrent?.id===roomId){if(data)data.profiles={display_name:communityUser.user_metadata?.display_name||communityUser.email?.split("@")[0]||"You"};communityAppendMessage(data);}input.value="";
 }
 async function communityLoadMembers(id){
   const box=document.getElementById("communityMembers");box.innerHTML='<div class="community-empty">Members loading…</div>';
@@ -2465,8 +2513,14 @@ async function communityLeave(){
   if(!confirm("এই Community থেকে বের হতে চাও?"))return;
   const id=communityCurrent.id;const {error}=await communityClient.from("community_members").delete().eq("community_id",id).eq("user_id",communityUser.id);
   if(error)return communityStatus(error.message,"error");
-  communityCleanupRealtime();communityCurrent=null;communityStatus("Community থেকে বের হয়েছ।");await communityLoadMyCommunities();
+  communityCleanupRealtime();communityCurrent=null;communityStatus("Community থেকে বের হয়েছ।");await communityLoadMyCommunities();if(!communityMemberships.length)communityResetUI();
 }
+document.addEventListener("click",event=>{
+  const selectButton=event.target.closest("[data-community-select]");
+  if(selectButton){communitySelect(selectButton.dataset.communitySelect);return;}
+  const joinButton=event.target.closest("[data-community-join]");
+  if(joinButton)communityJoinPublic(joinButton.dataset.communityJoin);
+});
 document.addEventListener("DOMContentLoaded",communityInit);
 </script>
 
