@@ -2360,7 +2360,7 @@ async function communitySignUp(){
   if(!communityClient)return communityStatus("Supabase setup সম্পন্ন হয়নি।","error");
   const email=document.getElementById("communityEmail").value.trim(),password=document.getElementById("communityPassword").value,displayName=document.getElementById("communityDisplayName").value.trim();
   if(!email||password.length<8)return communityStatus("সঠিক email এবং অন্তত ৮ অক্ষরের password দাও।","error");
-  const {data,error}=await communityClient.auth.signUp({email,password,options:{data:{display_name:displayName||email.split("@")[0]}}});
+  const {data,error}=await communityClient.auth.signUp({email,password,options:{emailRedirectTo:"https://temporaryid15916-png.github.io/Syllabus-Tracker/",data:{display_name:displayName||email.split("@")[0]}}});
   if(error)return communityStatus(error.message,"error");
   if(data.session)communityStatus("Account তৈরি হয়েছে এবং login সম্পন্ন।","ok");
   else communityStatus("Account তৈরি হয়েছে। Email confirmation link খুলে account confirm করো।","ok");
