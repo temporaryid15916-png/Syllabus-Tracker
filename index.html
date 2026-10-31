@@ -1003,7 +1003,7 @@ footer {
           <div class="community-form"><input id="communityInviteCode" class="input" maxlength="20" placeholder="Invite code"><button class="btn" onclick="communityJoinByCode()">Join Community</button></div>
         </div>
         <div class="card community-card"><div class="row"><h2>Discover public groups</h2><button class="mini" onclick="communityLoadDiscover()">↻ Find</button></div><p>Public Community-তে invite code ছাড়াই join করা যায়।</p><div id="communityDiscoverList" class="community-list"><div class="community-empty">Find public groups.</div></div></div>
-        <div class="card community-card"><div class="row" style="flex-wrap:wrap"><h2>Your Communities</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="mini" onclick="communityLoadMyCommunities(true)">↻ Refresh</button><button class="mini" onclick="communityCleanListedMemberships()">Remove old entries</button></div></div><div id="communityMyList" class="community-list"><div class="community-empty">Loading…</div></div></div>
+        <div class="card community-card"><div class="row" style="flex-wrap:wrap"><h2>Your Communities</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="mini" onclick="communityLoadMyCommunities(true)">↻ Refresh</button><button class="mini" onclick="communityCleanListedMemberships()">Clean stale list</button></div></div><div id="communityMyList" class="community-list"><div class="community-empty">Loading…</div></div></div>
         <div class="card community-card"><h2>Study progress sharing</h2><p>নিচের button চাপলে এই browser-এ থাকা বর্তমান syllabus completion ও study-time summary নির্বাচিত Community-তে share হবে। এটি existing local data মুছবে না।</p><button class="btn primary" style="margin-top:10px" onclick="communitySyncProgress()">Share my progress</button><div id="communityMyProgress" class="community-metrics"></div></div>
       </div>
       <div class="community-stack">
@@ -2327,7 +2327,7 @@ const COMMUNITY_SUPABASE_URL = "https://nnengzucbzfbadnuvcfx.supabase.co";
 const COMMUNITY_SUPABASE_ANON_KEY = "sb_publishable_Fflqb_CxmYFGlvt6A-46dg_E3UaHffp";
 let communityClient=null, communityUser=null, communityCurrent=null, communityRealtime=null, communityMemberships=[];
 const communityProfileNameCache=new Map();
-let communityLastUserId=undefined,communitySelectionToken=0,communityMembershipLoadPromise=null,communityLeaveAllMode=false;
+let communityLastUserId=undefined,communitySelectionToken=0,communityMembershipLoadPromise=null;
 const communityConfigured=()=>!!(window.supabase?.createClient && COMMUNITY_SUPABASE_URL.startsWith("https://") && !COMMUNITY_SUPABASE_URL.includes("PASTE_") && COMMUNITY_SUPABASE_ANON_KEY && !COMMUNITY_SUPABASE_ANON_KEY.includes("PASTE_"));
 function communityStatus(message,type=""){const e=document.getElementById("communityStatus");if(e){e.textContent=message;e.className="community-status"+(type?" "+type:"");e.style.display="block";}}
 function communityEsc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
@@ -2340,8 +2340,6 @@ function communityInit(){
   communityClient.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>communityApplySession(session),0);});
 }
 function communityResetUI(){
-  communityCurrent=null;
-  communitySelectionToken++;
   const ids={communityChat:'<div class="community-empty">Select a Community to view messages.</div>',communityMembers:'<div class="community-empty">Member progress will appear here.</div>',communityMyProgress:'',communityMyList:'<div class="community-empty">এখনো কোনো Community নেই। নতুন তৈরি করো অথবা invite code দিয়ে join করো।</div>',communityDiscoverList:'<div class="community-empty">Public communities will appear here.</div>'};
   Object.entries(ids).forEach(([id,html])=>{const el=document.getElementById(id);if(el)el.innerHTML=html;});
   const invite=document.getElementById("communityInviteInfo");if(invite){invite.style.display="none";invite.textContent="";}
@@ -2429,10 +2427,7 @@ async function communityJoinByCode(){
 }
 function communityHiddenIdsKey(userId){return "syllabusTrackerLeftCommunities:"+String(userId||"");}
 function communityGetHiddenIds(userId=communityUser?.id){
-  try{
-    const value=JSON.parse(localStorage.getItem(communityHiddenIdsKey(userId))||"[]");
-    return new Set(Array.isArray(value)?value.map(String):[]);
-  }catch(_e){return new Set();}
+  try{return new Set(JSON.parse(localStorage.getItem(communityHiddenIdsKey(userId))||"[]").map(String));}catch(_e){return new Set();}
 }
 function communityRememberLeftCommunity(id,userId=communityUser?.id){
   if(!id||!userId)return;
@@ -2459,25 +2454,19 @@ async function communityLoadMyCommunities(forceRefresh=false){
     if(error){if(box)box.innerHTML='<div class="community-empty">Community list load হয়নি।</div>';return communityStatus(error.message,"error");}
     // Show only memberships whose Community still exists. If the last member
     // deleted a Community but orphan membership rows remain, hide those rows.
-    const hiddenCommunityIds=communityGetHiddenIds(requestedUserId);
-    communityMemberships=(data||[]).filter(m=>m&&m.community_id&&m.communities&&m.communities.id&&!hiddenCommunityIds.has(String(m.community_id)));
+    // Supabase is the source of truth: never hide an active membership just because
+    // an old browser-local marker exists. Only show rows whose Community still exists.
+    communityMemberships=(data||[]).filter(m=>m&&m.community_id&&m.communities&&m.communities.id);
     communityLoadDiscover();
     if(!communityMemberships.length){if(box)box.innerHTML='<div class="community-empty">এখনো কোনো Community নেই। নতুন তৈরি করো অথবা invite code দিয়ে join করো।</div>';communityResetUI();return;}
     if(box)box.innerHTML=communityMemberships.map(m=>{const c=m.communities||{};return `<div class="community-item"><div><strong>${communityEsc(c.name||"Community")}</strong><small>${communityEsc(m.role||"member")} · ${communityEsc(c.visibility||"private")}</small></div><button class="mini" data-community-select="${communityEsc(c.id||m.community_id)}">Open</button></div>`}).join("");
-    if(!communityCurrent||!communityMemberships.some(m=>String(m.community_id)===String(communityCurrent.id)))await communitySelect(communityMemberships[0].community_id);
+    if(!communityCurrent||!communityMemberships.some(m=>m.community_id===communityCurrent.id))await communitySelect(communityMemberships[0].community_id);
   })();
   try{await communityMembershipLoadPromise;}finally{communityMembershipLoadPromise=null;}
 }
 function communityCleanupRealtime(){if(communityRealtime&&communityClient){communityClient.removeChannel(communityRealtime);}communityRealtime=null;}
 async function communitySelect(id){
   if(!communityClient||!communityUser)return;
-  // A departed Community must not be re-added from a stale/direct membership query.
-  // Joining it again explicitly clears this per-user hidden marker in the join handlers.
-  if(communityGetHiddenIds(communityUser.id).has(String(id))){
-    communityMemberships=communityMemberships.filter(m=>String(m.community_id)!==String(id));
-    await communityLoadMyCommunities(true);
-    return communityStatus("এই Community থেকে তুমি আগে Leave করেছ। আবার যোগ দিতে চাইলে invite code বা public group থেকে Join করো।","error");
-  }
   // The membership list may still be loading immediately after create/join.
   // Recover the requested membership directly before showing an error.
   let member=communityMemberships.find(m=>m.community_id===id);
@@ -2583,21 +2572,21 @@ async function communitySyncProgress(){
 function closeCommunityLeaveConfirm(){
   const modal=document.getElementById("communityLeaveConfirmModal");
   if(modal)modal.classList.remove("show");
-  communityLeaveAllMode=false;
 }
 function communityCleanListedMemberships(){
+  // This action must never remove valid memberships. The previous implementation
+  // called leave_study_community for EVERY visible Community, which could remove
+  // the user's access to all groups. Refresh from Supabase instead.
   if(!communityClient||!communityUser){communityStatus("আগে Login করো।","error");return;}
-  const entries=communityMemberships.filter(m=>m&&m.community_id&&m.communities?.id);
-  if(!entries.length){communityStatus("Remove করার মতো কোনো পুরোনো Community entry নেই।","ok");return;}
-  communityLeaveAllMode=true;
-  const text=document.getElementById("communityLeaveConfirmText");
-  const title=document.getElementById("communityLeaveConfirmTitle");
-  const button=document.getElementById("communityLeaveConfirmButton");
-  if(title)title.textContent="পুরোনো Community entry সরাবে?";
-  if(text)text.textContent=`তোমার তালিকায় ${entries.length}টি Community আছে। সবগুলো থেকে তোমার membership সরানো হবে। কোনো Community-তে তুমি শেষ সদস্য/owner হলে সেটি মুছে যেতে পারে। নিশ্চিত হলে তবেই এগোও।`;
-  if(button)button.textContent="সবগুলো সরাও";
-  document.getElementById("communityLeaveConfirmModal")?.classList.add("show");
+  communityStatus("Supabase থেকে Community list refresh করা হচ্ছে…");
+  communityLoadMyCommunities(true).then(()=>{
+    communityStatus("Community list refresh হয়েছে। কোনো Community থেকে Leave করা হয়নি।","ok");
+  }).catch(error=>{
+    console.error("Community list refresh failed:",error);
+    communityStatus("Community list refresh করা যায়নি: "+(error?.message||String(error)),"error");
+  });
 }
+
 function communityLeave(){
   const status=document.getElementById("communityLeaveStatus");
   const showLeaveStatus=(message,type="")=>{
@@ -2608,7 +2597,6 @@ function communityLeave(){
   if(!communityCurrent?.id){showLeaveStatus("কোনো Community Open করা নেই। Your Communities থেকে Open চাপো, তারপর Leave করো।","error");return;}
   const currentMembership=communityMemberships.find(m=>m.community_id===communityCurrent.id);
   const isLastMember=communityMemberships.length===1 && !!currentMembership && currentMembership.role==="owner";
-  communityLeaveAllMode=false;
   const title=document.getElementById("communityLeaveConfirmTitle");if(title)title.textContent="Community থেকে বের হবে?";
   const confirmButton=document.getElementById("communityLeaveConfirmButton");if(confirmButton)confirmButton.textContent="হ্যাঁ, Leave";
   const text=document.getElementById("communityLeaveConfirmText");
@@ -2626,34 +2614,6 @@ async function confirmCommunityLeave(){
     if(status){status.textContent=message;status.className="community-status"+(type?" "+type:"");status.style.display="block";}
     communityStatus(message,type);
   };
-  if(communityLeaveAllMode){
-    const entries=communityMemberships.filter(m=>m&&m.community_id&&m.communities?.id);
-    closeCommunityLeaveConfirm();
-    if(confirmButton){confirmButton.disabled=true;confirmButton.textContent="অপেক্ষা করো…";}
-    showLeaveStatus("পুরোনো membership পরিষ্কার করা হচ্ছে…");
-    let removed=0;const failed=[];
-    try{
-      for(const entry of entries){
-        const {data,error}=await communityClient.rpc("leave_study_community",{p_community_id:entry.community_id});
-        if(error)throw new Error((entry.communities?.name||entry.community_id)+": "+error.message);
-        if(data?.left!==true)throw new Error((entry.communities?.name||entry.community_id)+": Leave নিশ্চিত হয়নি।");
-        const check=await communityClient.from("community_members").select("community_id").eq("community_id",entry.community_id).eq("user_id",communityUser.id).maybeSingle();
-        if(check.error)throw new Error("Membership verify করা যায়নি: "+check.error.message);
-        if(check.data)throw new Error((entry.communities?.name||entry.community_id)+": Supabase-এ membership এখনও আছে। SQL leave function ঠিক করতে হবে।");
-        communityRememberLeftCommunity(entry.community_id,communityUser.id);
-        removed++;
-        communityMemberships=communityMemberships.filter(m=>m.community_id!==entry.community_id);
-      }
-      communityCurrent=null;communityCleanupRealtime();
-      await communityLoadMyCommunities(true);
-      if(!communityMemberships.length)communityResetUI();
-      const list=document.getElementById("communityMyList");
-      if(list&&!communityMemberships.length)list.innerHTML='<div class="community-empty">এখনো কোনো Community নেই। নতুন তৈরি করো অথবা invite code দিয়ে join করো।</div>';
-      showLeaveStatus(`${removed}টি পুরোনো Community membership সরানো হয়েছে। তালিকা নতুন করে লোড করা হয়েছে।`,"ok");
-    }catch(error){console.error("Community membership cleanup failed:",error);showLeaveStatus("সব entry সরানো যায়নি: "+(error?.message||String(error)),"error");await communityLoadMyCommunities(true);}
-    finally{if(confirmButton){confirmButton.disabled=false;confirmButton.textContent="হ্যাঁ, Leave";}communityLeaveAllMode=false;}
-    return;
-  }
   if(!communityClient||!communityUser||!communityCurrent?.id){closeCommunityLeaveConfirm();showLeaveStatus("কোনো Community Open করা নেই। Your Communities থেকে Open চাপো, তারপর Leave করো।","error");return;}
   const id=communityCurrent.id;
   closeCommunityLeaveConfirm();
