@@ -853,6 +853,39 @@ footer {
         font-size:12px;
     }
 }
+
+/* Community module: isolated styles so existing tracker styling stays intact */
+.community-wrap{display:grid;grid-template-columns:minmax(230px,.8fr) minmax(0,1.6fr);gap:12px}
+.community-stack{display:grid;gap:10px;align-content:start}
+.community-card{padding:15px}
+.community-card h2,.community-card h3{font-size:15px}
+.community-card p{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5}
+.community-form{display:grid;gap:8px;margin-top:12px}
+.community-form label{font-size:11px;font-weight:800;color:var(--muted)}
+.community-form .btn{min-height:38px}
+.community-status{padding:10px 12px;border:1px solid var(--border);background:var(--soft);border-radius:10px;font-size:12px;line-height:1.5;margin-bottom:12px}
+.community-status.error{border-color:var(--danger);color:var(--danger)}
+.community-status.ok{border-color:var(--success);color:var(--success)}
+.community-list{display:grid;gap:7px;margin-top:10px}
+.community-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--soft)}
+.community-item strong{font-size:12px;display:block}
+.community-item small{font-size:10px;color:var(--muted)}
+.community-item .mini{flex:none}
+.community-chat{min-height:320px;max-height:460px;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:10px;background:var(--soft);border:1px solid var(--border);border-radius:12px;margin:12px 0}
+.community-message{max-width:90%;align-self:flex-start;background:var(--card);border:1px solid var(--border);border-radius:11px;padding:8px 10px;overflow-wrap:anywhere}
+.community-message.mine{align-self:flex-end;border-color:color-mix(in srgb,var(--primary) 35%,var(--border));background:var(--primary-soft)}
+.community-message strong{font-size:11px}
+.community-message p{font-size:12px;color:var(--text);margin:3px 0}
+.community-message small{font-size:10px;color:var(--muted)}
+.community-empty{text-align:center;margin:auto;padding:24px 12px;color:var(--muted);font-size:12px}
+.community-members{display:grid;gap:7px;margin-top:10px}
+.community-member{padding:9px 10px;border:1px solid var(--border);border-radius:9px;display:flex;justify-content:space-between;gap:8px;font-size:11px}
+.community-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:10px}
+.community-metric{background:var(--soft);border:1px solid var(--border);border-radius:10px;padding:10px}
+.community-metric strong{font-size:16px;display:block}
+.community-metric span{font-size:10px;color:var(--muted)}
+@media(max-width:760px){.community-wrap{grid-template-columns:1fr}.community-chat{min-height:260px;max-height:380px}.community-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 </style>
 </head>
 <body>
@@ -891,6 +924,7 @@ footer {
   <button class="tab" data-tab="exams" onclick="switchTab('exams')">🎯 Exam Planner</button>
   <button class="tab" data-tab="history" onclick="switchTab('history')">📊 Study History</button>
   <button class="tab" data-tab="insights" onclick="switchTab('insights')">💡 Insights</button>
+  <button class="tab" data-tab="community" onclick="switchTab('community')">👥 Community</button>
 </nav>
 
 <!-- Syllabus Tab -->
@@ -920,6 +954,58 @@ footer {
 <section id="insightsPanel" class="panel">
   <div class="card section" style="background:linear-gradient(135deg,var(--primary-soft),var(--card))"><h2>🧠 Today's Focus Queue</h2><p>In-progress chapters first, then the next unfinished chapters.</p><div id="smartQueueList" class="insights-grid"></div></div>
   <div class="card section"><h2>🏆 Milestones & Achievements</h2><p>Unlock badges as you complete chapters.</p><div id="badgeGrid" class="insights-grid"></div></div>
+</section>
+
+
+<!-- Community Tab: independent module; existing tracker panels remain unchanged -->
+<section id="communityPanel" class="panel">
+  <div id="communityStatus" class="community-status">Community ব্যবহার করতে Supabase backend configure করতে হবে। আপনার বর্তমান tracker localStorage-এ আগের মতোই থাকবে।</div>
+  <div id="communityAuthView" class="community-wrap">
+    <div class="card community-card">
+      <div style="font-size:27px">👥</div><h2 style="margin-top:5px">Syllabus Tracker Community</h2>
+      <p>বন্ধুদের সঙ্গে পড়াশোনার অগ্রগতি ভাগ করো, একসঙ্গে লক্ষ্য পূরণ করো এবং group chat-এ কথা বলো। Progress কেবল একই Community-র সদস্যদের জন্য।</p>
+      <div class="community-form">
+        <label for="communityEmail">Email address</label><input id="communityEmail" class="input" type="email" autocomplete="email" placeholder="you@example.com">
+        <label for="communityPassword">Password</label><input id="communityPassword" class="input" type="password" autocomplete="current-password" placeholder="At least 8 characters">
+        <label for="communityDisplayName">Display name (registration only)</label><input id="communityDisplayName" class="input" maxlength="40" placeholder="তোমার নাম">
+        <div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn primary" onclick="communitySignIn()">Login</button><button class="btn" onclick="communitySignUp()">Create account</button><button class="btn" onclick="communityResetPassword()">Forgot password?</button></div>
+      </div>
+      <p style="margin-top:10px">প্রথমবার account তৈরি করলে email confirmation প্রয়োজন হতে পারে।</p>
+    </div>
+    <div class="card community-card">
+      <h2>শুরু করার আগে</h2>
+      <p>Community chat, membership ও progress নিরাপদে শেয়ার করার জন্য অনলাইন database প্রয়োজন। নিচের setup guide-এর SQL একবার Supabase SQL Editor-এ চালিয়ে project URL ও public anon key বসালে এই অংশ সংযুক্ত হবে।</p>
+      <div class="community-metrics"><div class="community-metric"><strong>🔐</strong><span>Email + Password</span></div><div class="community-metric"><strong>👥</strong><span>Same-community access</span></div><div class="community-metric"><strong>💬</strong><span>Realtime chat</span></div></div>
+      <p style="margin-top:12px">কখনোই Supabase service_role key HTML ফাইলে বসাবে না।</p>
+    </div>
+  </div>
+  <div id="communityAppView" style="display:none">
+    <div class="card community-card" style="margin-bottom:12px"><div class="row" style="flex-wrap:wrap"><div><h2 id="communityWelcome">Community</h2><p id="communitySignedEmail"></p></div><button class="btn" onclick="communitySignOut()">Logout</button></div></div>
+    <div class="community-wrap">
+      <div class="community-stack">
+        <div class="card community-card">
+          <h2>＋ Create Community</h2><p>একটি study group তৈরি করো।</p>
+          <div class="community-form"><input id="newCommunityName" class="input" maxlength="60" placeholder="Community name"><input id="newCommunityDescription" class="input" maxlength="240" placeholder="Short description (optional)"><select id="newCommunityVisibility" class="select"><option value="private">Private · Invite code required</option><option value="public">Public · Anyone can join</option></select><button class="btn primary" onclick="communityCreate()">Create Community</button></div>
+        </div>
+        <div class="card community-card">
+          <h2>↗ Join with invite code</h2><p>অন্য সদস্যের দেওয়া code ব্যবহার করো।</p>
+          <div class="community-form"><input id="communityInviteCode" class="input" maxlength="20" placeholder="Invite code"><button class="btn" onclick="communityJoinByCode()">Join Community</button></div>
+        </div>
+        <div class="card community-card"><div class="row"><h2>Discover public groups</h2><button class="mini" onclick="communityLoadDiscover()">↻ Find</button></div><p>Public Community-তে invite code ছাড়াই join করা যায়।</p><div id="communityDiscoverList" class="community-list"><div class="community-empty">Find public groups.</div></div></div>
+        <div class="card community-card"><div class="row"><h2>Your Communities</h2><button class="mini" onclick="communityLoadMyCommunities()">↻ Refresh</button></div><div id="communityMyList" class="community-list"><div class="community-empty">Loading…</div></div></div>
+        <div class="card community-card"><h2>Study progress sharing</h2><p>নিচের button চাপলে এই browser-এ থাকা বর্তমান syllabus completion ও study-time summary নির্বাচিত Community-তে share হবে। এটি existing local data মুছবে না।</p><button class="btn primary" style="margin-top:10px" onclick="communitySyncProgress()">Share my progress</button><div id="communityMyProgress" class="community-metrics"></div></div>
+      </div>
+      <div class="community-stack">
+        <div class="card community-card">
+          <div class="row" style="flex-wrap:wrap"><div><h2 id="communityRoomTitle">Select a Community</h2><p id="communityRoomDescription">Chat and member progress will appear here.</p></div><button class="btn" onclick="communityLeave()">Leave</button></div>
+          <div id="communityInviteInfo" class="community-status" style="display:none;margin-top:10px"></div>
+          <div id="communityChat" class="community-chat"><div class="community-empty">বাম পাশ থেকে একটি Community নির্বাচন করো।</div></div>
+          <div class="community-form"><textarea id="communityMessageInput" class="input" rows="2" maxlength="2000" placeholder="Write a message…" style="resize:vertical"></textarea><div class="row"><span class="sub">Respect other learners. No passwords or private data.</span><button class="btn primary" onclick="communitySendMessage()">Send ↗</button></div></div>
+        </div>
+        <div class="card community-card"><h2>Members & study progress</h2><p>শুধু নির্বাচিত Community-র সদস্যদের share করা summary দেখা যাবে।</p><div id="communityMembers" class="community-members"><div class="community-empty">কোনো Community নির্বাচিত হয়নি।</div></div></div>
+      </div>
+    </div>
+  </div>
 </section>
 </main>
 
@@ -1063,6 +1149,7 @@ function switchTab(t){
     if(t==="exams")renderExams();
     if(t==="history")renderHistory();
     if(t==="insights")renderInsights();
+    if(t==="community" && typeof communityInit==="function" && !communityClient)communityInit();
 }
 
 function updateDashboard(){
@@ -2202,5 +2289,186 @@ function init(){
 }
 document.addEventListener("DOMContentLoaded",init);
 </script>
+
+<!-- Community integration. Requires project URL + anon key; no service-role key belongs in client code. -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/*
+  Community module configuration:
+  1) Create a Supabase project.
+  2) Run Syllabus-Tracker-Community.sql in its SQL Editor.
+  3) Replace both placeholders below with Project URL and publishable/anon key.
+  Existing Syllabus Tracker storage keys and timer code are intentionally untouched.
+*/
+const COMMUNITY_SUPABASE_URL = "https://nnengzucbzfbadnuvcfx.supabase.co";
+const COMMUNITY_SUPABASE_ANON_KEY = "sb_publishable_Fflqb_CxmYFGlvt6A-46dg_E3UaHffp";
+let communityClient=null, communityUser=null, communityCurrent=null, communityRealtime=null, communityMemberships=[];
+const communityConfigured=()=>!!(window.supabase?.createClient && COMMUNITY_SUPABASE_URL.startsWith("https://") && !COMMUNITY_SUPABASE_URL.includes("PASTE_") && COMMUNITY_SUPABASE_ANON_KEY && !COMMUNITY_SUPABASE_ANON_KEY.includes("PASTE_"));
+function communityStatus(message,type=""){const e=document.getElementById("communityStatus");if(e){e.textContent=message;e.className="community-status"+(type?" "+type:"");e.style.display="block";}}
+function communityEsc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+function communityInit(){
+  if(!communityConfigured()){communityStatus("Community backend এখনো configure করা হয়নি। Supabase project URL ও anon key বসিয়ে SQL setup সম্পন্ন করলে Login/Community চালু হবে।");return;}
+  try{communityClient=window.supabase.createClient(COMMUNITY_SUPABASE_URL,COMMUNITY_SUPABASE_ANON_KEY);}
+  catch(e){communityStatus("Supabase configuration error: "+e.message,"error");return;}
+  communityClient.auth.getSession().then(({data,error})=>{if(error)communityStatus(error.message,"error");communityApplySession(data?.session||null);});
+  communityClient.auth.onAuthStateChange((_event,session)=>{communityApplySession(session);});
+}
+function communityApplySession(session){
+  communityUser=session?.user||null;
+  const auth=document.getElementById("communityAuthView"),app=document.getElementById("communityAppView");
+  if(auth)auth.style.display=communityUser?"none":"grid";
+  if(app)app.style.display=communityUser?"block":"none";
+  if(!communityUser){communityCleanupRealtime();communityCurrent=null;return;}
+  document.getElementById("communitySignedEmail").textContent=communityUser.email||"Signed in";
+  document.getElementById("communityWelcome").textContent="👋 Welcome to Community";
+  communityStatus("Login successful. তোমার Community নির্বাচন করো।","ok");
+  communityLoadMyCommunities();
+}
+async function communitySignIn(){
+  if(!communityClient)return communityStatus("Supabase setup সম্পন্ন হয়নি।","error");
+  const email=document.getElementById("communityEmail").value.trim(),password=document.getElementById("communityPassword").value;
+  if(!email||!password)return communityStatus("Email ও password দুটোই দাও।","error");
+  const {error}=await communityClient.auth.signInWithPassword({email,password});
+  if(error)communityStatus(error.message,"error");
+}
+async function communitySignUp(){
+  if(!communityClient)return communityStatus("Supabase setup সম্পন্ন হয়নি।","error");
+  const email=document.getElementById("communityEmail").value.trim(),password=document.getElementById("communityPassword").value,displayName=document.getElementById("communityDisplayName").value.trim();
+  if(!email||password.length<8)return communityStatus("সঠিক email এবং অন্তত ৮ অক্ষরের password দাও।","error");
+  const {data,error}=await communityClient.auth.signUp({email,password,options:{data:{display_name:displayName||email.split("@")[0]}}});
+  if(error)return communityStatus(error.message,"error");
+  if(data.session)communityStatus("Account তৈরি হয়েছে এবং login সম্পন্ন।","ok");
+  else communityStatus("Account তৈরি হয়েছে। Email confirmation link খুলে account confirm করো।","ok");
+}
+async function communityResetPassword(){
+  if(!communityClient)return communityStatus("Supabase setup সম্পন্ন হয়নি।","error");
+  const email=document.getElementById("communityEmail").value.trim();
+  if(!email)return communityStatus("Password reset-এর জন্য email লিখো।","error");
+  const {error}=await communityClient.auth.resetPasswordForEmail(email,{redirectTo:location.href.split("#")[0]});
+  communityStatus(error?error.message:"যদি এই email-এ account থাকে, password reset-এর নির্দেশনা পাঠানো হবে।",error?"error":"ok");
+}
+async function communitySignOut(){if(communityClient){communityCleanupRealtime();await communityClient.auth.signOut();}communityUser=null;communityCurrent=null;communityApplySession(null);communityStatus("Logout successful.");}
+async function communityCreate(){
+  if(!communityUser)return;
+  const name=document.getElementById("newCommunityName").value.trim(),description=document.getElementById("newCommunityDescription").value.trim(),visibility=document.getElementById("newCommunityVisibility").value;
+  if(name.length<3)return communityStatus("Community name অন্তত ৩ অক্ষরের হতে হবে।","error");
+  const {data,error}=await communityClient.rpc("create_study_community",{p_name:name,p_description:description,p_visibility:visibility});
+  if(error)return communityStatus(error.message,"error");
+  document.getElementById("newCommunityName").value="";document.getElementById("newCommunityDescription").value="";
+  communityStatus("Community তৈরি হয়েছে। Invite code: "+(data?.invite_code||"—"),"ok");
+  await communityLoadMyCommunities();
+  if(data?.id)await communitySelect(data.id);
+}
+async function communityLoadDiscover(){
+  if(!communityClient||!communityUser)return;
+  const box=document.getElementById("communityDiscoverList");box.innerHTML='<div class="community-empty">Searching…</div>';
+  const {data,error}=await communityClient.rpc("discover_public_study_communities");
+  if(error){box.innerHTML='<div class="community-empty">Public groups load হয়নি।</div>';return communityStatus(error.message,"error");}
+  const available=(data||[]).filter(c=>!communityMemberships.some(m=>m.community_id===c.id));
+  box.innerHTML=available.length?available.map(c=>`<div class="community-item"><div><strong>${communityEsc(c.name)}</strong><small>${communityEsc(c.description||"Public study group")} · ${Number(c.member_count)||0} members</small></div><button class="mini" onclick="communityJoinPublic('${communityEsc(c.id)}')">Join</button></div>`).join(""):'<div class="community-empty">এখন কোনো নতুন public group পাওয়া যায়নি।</div>';
+}
+async function communityJoinPublic(id){
+  if(!communityUser)return;
+  const {data,error}=await communityClient.rpc("join_public_study_community",{p_community_id:id});
+  if(error)return communityStatus(error.message,"error");
+  communityStatus("Public Community-তে join করা হয়েছে।","ok");
+  await communityLoadMyCommunities();await communityLoadDiscover();
+  if(data?.id)await communitySelect(data.id);
+}
+async function communityJoinByCode(){
+  if(!communityUser)return;
+  const code=document.getElementById("communityInviteCode").value.trim();
+  if(!code)return communityStatus("Invite code লিখো।","error");
+  const {data,error}=await communityClient.rpc("join_study_community",{p_invite_code:code});
+  if(error)return communityStatus(error.message,"error");
+  document.getElementById("communityInviteCode").value="";
+  communityStatus("Community-তে join করা হয়েছে।","ok");
+  await communityLoadMyCommunities();if(data?.id)await communitySelect(data.id);
+}
+async function communityLoadMyCommunities(){
+  if(!communityClient||!communityUser)return;
+  const box=document.getElementById("communityMyList");box.innerHTML='<div class="community-empty">Loading…</div>';
+  const {data,error}=await communityClient.from("community_members").select("community_id,role,communities(id,name,description,visibility)").eq("user_id",communityUser.id).order("joined_at",{ascending:false});
+  if(error){box.innerHTML='<div class="community-empty">Community list load হয়নি।</div>';return communityStatus(error.message,"error");}
+  communityMemberships=(data||[]);
+  communityLoadDiscover();
+  if(!communityMemberships.length){box.innerHTML='<div class="community-empty">এখনো কোনো Community নেই। নতুন তৈরি করো অথবা invite code দিয়ে join করো।</div>';return;}
+  box.innerHTML=communityMemberships.map(m=>{const c=m.communities||{};return `<div class="community-item"><div><strong>${communityEsc(c.name||"Community")}</strong><small>${communityEsc(m.role||"member")} · ${communityEsc(c.visibility||"private")}</small></div><button class="mini" onclick="communitySelect('${communityEsc(c.id||m.community_id)}')">Open</button></div>`}).join("");
+  if(!communityCurrent)await communitySelect(communityMemberships[0].community_id);
+}
+function communityCleanupRealtime(){if(communityRealtime&&communityClient){communityClient.removeChannel(communityRealtime);}communityRealtime=null;}
+async function communitySelect(id){
+  if(!communityClient||!communityUser)return;
+  const member=communityMemberships.find(m=>m.community_id===id);if(!member)return communityStatus("এই Community-র সদস্যপদ পাওয়া যায়নি।","error");
+  communityCleanupRealtime();communityCurrent=member.communities||{id};
+  const c=communityCurrent;
+  document.getElementById("communityRoomTitle").textContent=c.name||"Community";
+  document.getElementById("communityRoomDescription").textContent=c.description||"Study together";
+  const invite=document.getElementById("communityInviteInfo");
+  const leaveButton=document.querySelector('#communityAppView button[onclick="communityLeave()"]');
+  if(leaveButton){leaveButton.disabled=member.role==="owner";leaveButton.title=member.role==="owner"?"Owner must transfer ownership or delete the Community first":"";}
+  if(member.role==="owner"||member.role==="admin"){
+    invite.style.display="block";invite.textContent="Invite code loading…";
+    const {data:inviteCode}=await communityClient.rpc("get_study_community_invite_code",{p_community_id:id});
+    invite.textContent=inviteCode?.invite_code?"Invite code: "+inviteCode.invite_code:"Invite code শুধু owner/admin দেখতে পারবেন।";
+  }else invite.style.display="none";
+  await Promise.all([communityLoadMessages(id),communityLoadMembers(id)]);
+  communityRealtime=communityClient.channel("community-"+id)
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"community_messages",filter:"community_id=eq."+id},payload=>communityAppendMessage(payload.new))
+    .on("postgres_changes",{event:"*",schema:"public",table:"community_progress",filter:"community_id=eq."+id},()=>communityLoadMembers(id))
+    .subscribe();
+}
+async function communityLoadMessages(id){
+  const box=document.getElementById("communityChat");box.innerHTML='<div class="community-empty">Messages loading…</div>';
+  const {data,error}=await communityClient.from("community_messages").select("id,user_id,body,created_at,profiles(display_name)").eq("community_id",id).order("created_at",{ascending:true}).limit(150);
+  if(error){box.innerHTML='<div class="community-empty">Chat load হয়নি।</div>';return communityStatus(error.message,"error");}
+  box.innerHTML="";(data||[]).forEach(communityAppendMessage);if(!data?.length)box.innerHTML='<div class="community-empty">প্রথম message পাঠিয়ে কথোপকথন শুরু করো।</div>';box.scrollTop=box.scrollHeight;
+}
+function communityAppendMessage(m){
+  const box=document.getElementById("communityChat");if(!box||!communityCurrent||m.community_id&&m.community_id!==communityCurrent.id)return;
+  const empty=box.querySelector(".community-empty");if(empty)empty.remove();
+  if(box.querySelector(`[data-message-id="${CSS.escape(String(m.id))}"]`))return;
+  const el=document.createElement("div");el.className="community-message"+(m.user_id===communityUser?.id?" mine":"");el.dataset.messageId=m.id;
+  const profile=m.profiles||{};const dt=m.created_at?new Date(m.created_at).toLocaleString():"now";
+  el.innerHTML=`<strong>${communityEsc(profile.display_name||(m.user_id===communityUser?.id?"You":"Member"))}</strong><p>${communityEsc(m.body)}</p><small>${communityEsc(dt)}</small>`;
+  box.appendChild(el);box.scrollTop=box.scrollHeight;
+}
+async function communitySendMessage(){
+  if(!communityCurrent||!communityUser)return communityStatus("আগে একটি Community নির্বাচন করো।","error");
+  const input=document.getElementById("communityMessageInput"),body=input.value.trim();if(!body)return;
+  const {error}=await communityClient.from("community_messages").insert({community_id:communityCurrent.id,user_id:communityUser.id,body});
+  if(error)return communityStatus(error.message,"error");input.value="";
+}
+async function communityLoadMembers(id){
+  const box=document.getElementById("communityMembers");box.innerHTML='<div class="community-empty">Members loading…</div>';
+  const {data,error}=await communityClient.from("community_progress").select("user_id,completed_chapters,total_chapters,today_seconds,total_seconds,streak_days,updated_at,profiles(display_name)").eq("community_id",id).order("updated_at",{ascending:false});
+  if(error){box.innerHTML='<div class="community-empty">Progress unavailable.</div>';return;}
+  if(!data?.length){box.innerHTML='<div class="community-empty">এখনো কেউ study progress share করেনি।</div>';return;}
+  box.innerHTML=data.map(m=>`<div class="community-member" style="display:block"><strong>${communityEsc(m.profiles?.display_name||"Member")}</strong><div class="community-metrics"><div class="community-metric"><strong>${Number(m.completed_chapters)||0}/${Number(m.total_chapters)||0}</strong><span>Chapters</span></div><div class="community-metric"><strong>${communityEsc(communityFmt(m.today_seconds))}</strong><span>Today</span></div><div class="community-metric"><strong>${communityEsc(communityFmt(m.total_seconds))}</strong><span>Total time</span></div><div class="community-metric"><strong>${Number(m.streak_days)||0}</strong><span>Day streak</span></div></div></div>`).join("");
+}
+function communityFmt(sec){sec=Math.max(0,Math.floor(Number(sec)||0));const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60);return h?`${h}h ${m}m`:`${m}m`;}
+async function communitySyncProgress(){
+  if(!communityCurrent||!communityUser)return communityStatus("Progress share করার আগে একটি Community নির্বাচন করো।","error");
+  const completed=Object.entries(BOOKS).reduce((n,[b,a])=>n+a.filter((_,i)=>progress[chKey(b,i+1)]==="complete").length,0);
+  const total=Object.values(BOOKS).reduce((n,a)=>n+a.length,0);
+  const todaySeconds=Number(history[today()]?.totalSeconds||0)+Math.round(pendingStudySeconds);
+  const totalSeconds=Object.values(history).reduce((n,d)=>n+Number(d?.totalSeconds||0),0)+Math.round(pendingStudySeconds);
+  let cur=new Date(),streak=0;if(todaySeconds<=0)cur.setDate(cur.getDate()-1);
+  while((formatDateKey(cur)===today()?todaySeconds:Number(history[formatDateKey(cur)]?.totalSeconds||0))>0){streak++;cur.setDate(cur.getDate()-1);if(streak>1000)break;}
+  const {error}=await communityClient.from("community_progress").upsert({community_id:communityCurrent.id,user_id:communityUser.id,completed_chapters:completed,total_chapters:total,today_seconds:todaySeconds,total_seconds:totalSeconds,streak_days:streak,updated_at:new Date().toISOString()},{onConflict:"community_id,user_id"});
+  if(error)return communityStatus(error.message,"error");
+  communityStatus("এই Community-র সদস্যদের সঙ্গে progress summary share করা হয়েছে।","ok");await communityLoadMembers(communityCurrent.id);
+  document.getElementById("communityMyProgress").innerHTML=`<div class="community-metric"><strong>${completed}/${total}</strong><span>Completed</span></div><div class="community-metric"><strong>${communityFmt(todaySeconds)}</strong><span>Today</span></div><div class="community-metric"><strong>${communityFmt(totalSeconds)}</strong><span>Total time</span></div>`;
+}
+async function communityLeave(){
+  if(!communityCurrent||!communityUser)return;
+  if(!confirm("এই Community থেকে বের হতে চাও?"))return;
+  const id=communityCurrent.id;const {error}=await communityClient.from("community_members").delete().eq("community_id",id).eq("user_id",communityUser.id);
+  if(error)return communityStatus(error.message,"error");
+  communityCleanupRealtime();communityCurrent=null;communityStatus("Community থেকে বের হয়েছ।");await communityLoadMyCommunities();
+}
+document.addEventListener("DOMContentLoaded",communityInit);
+</script>
+
 </body>
 </html>
