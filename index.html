@@ -1447,6 +1447,7 @@ let pomo = {
 let lastTick = Date.now();
 let lastBgNotificationAt = 0;
 let pendingStudySeconds = 0;
+let pendingStudyDay = today();
 let lastPomoStateSave = 0;
 let lastHistoryRenderAt = 0;
 let lastDashboardTickAt = 0;
@@ -1913,7 +1914,7 @@ function pomoTick(){
     const prevTick = lastTick;
     lastTick = now;
 
-    const activeSecondsPassed = Math.min(5,Math.max(0, (Math.min(now, pomo.end) - prevTick) / 1000));
+    const activeSecondsPassed = Math.max(0, (Math.min(now, pomo.end) - Math.max(prevTick, 0)) / 1000);
     pomo.remaining = Math.max(0, Math.ceil((pomo.end - now) / 1000));
 
     if(pomo.mode==="focus" && activeSecondsPassed>0 && pomo.book && pomo.chapter){
@@ -1949,56 +1950,36 @@ function handlePomoFinish(){
     playAlertSound();
 
     const chName = BOOKS[pomo.book]?.[pomo.chapter-1] || `Chapter ${pomo.chapter}`;
-
     clearInterval(pomo.timer);
     pomo.timer = null;
     pomo.running = false;
     pomo.started = true;
-    pomo.awaitingNext = false;
+    pomo.awaitingNext = true;
     pomo.end = 0;
 
+    // Prepare the next phase, but never start it without the user's action.
     if(pomo.mode === "focus"){
-        sendSysNotification(
-            "🎉 Focus Complete!",
-            `Finished studying ${pomo.book} • ${chName}. Starting the ${pomo.break}m break automatically.`
-        );
-        toast(`☕ Focus complete — ${pomo.break}m break started`);
-
+        sendSysNotification("🎉 Focus Complete!", `Finished studying ${pomo.book} • ${chName}. Your ${pomo.break}m break is ready.`);
+        toast(`☕ Focus complete — press Start when you're ready for the ${pomo.break}m break`);
         pomo.mode = "break";
         pomo.remaining = pomo.break * 60;
     } else {
-        sendSysNotification(
-            "⏰ Break Finished!",
-            `Break is done! Starting focus session ${pomo.session + 1} automatically.`
-        );
-        toast(`🍅 Break complete — Focus Session ${pomo.session + 1} started`);
-
+        sendSysNotification("⏰ Break Finished!", "Your break is done. Start the next focus session when you're ready.");
+        toast("🍅 Break complete — press Start for the next focus session");
         pomo.mode = "focus";
         pomo.session++;
         pomo.remaining = pomo.focus * 60;
     }
 
-    // Automatically start the next phase
-    pomo.running = true;
-    pomo.awaitingNext = false;
-    lastTick = Date.now();
-    pomo.end = Date.now() + pomo.remaining * 1000;
-
     const bSelect = document.getElementById("pomoBookSelect");
     const cSelect = document.getElementById("pomoChapterSelect");
-
-    if(bSelect) bSelect.disabled = true;
-    if(cSelect) cSelect.disabled = true;
-
-    clearInterval(pomo.timer);
-    pomo.timer = setInterval(pomoTick, 500);
-
+    if(bSelect) bSelect.disabled = !!pomo.book;
+    if(cSelect) cSelect.disabled = !!pomo.book;
     clearBackgroundPomodoroNotification();
-    updateBackgroundPomodoroNotification(true);
-
     savePomoState();
     updatePomoDisplay();
 }
+
 function resetPomodoro(){
     clearInterval(pomo.timer);
     pomo.timer=null;
@@ -2047,6 +2028,7 @@ function skipPomodoro(){
 // Memory buffer to eliminate battery drain & excessive localStorage I/O
 function addStudySeconds(b,c,sec){
     if(!b || !c || sec <= 0) return;
+    if(pendingStudySeconds <= 0) pendingStudyDay = today();
     pendingStudySeconds += sec;
 }
 
@@ -2054,7 +2036,7 @@ function flushStudySeconds(force = false){
     if(pendingStudySeconds <= 0 || !pomo.book || !pomo.chapter) return;
     if(!force && pendingStudySeconds < 10) return;
 
-    const d=today();
+    const d=pendingStudyDay||today();
     history[d]??={totalSeconds:0,sessions:0,byBook:{},byChapter:{}};
     history[d].totalSeconds += pendingStudySeconds;
     history[d].byBook[pomo.book] = (history[d].byBook[pomo.book] || 0) + pendingStudySeconds;
@@ -2062,6 +2044,7 @@ function flushStudySeconds(force = false){
     history[d].byChapter[ck] = (history[d].byChapter[ck] || 0) + pendingStudySeconds;
 
     pendingStudySeconds = 0;
+    pendingStudyDay = today();
     save(KEY.history, history);
     updateDashboard();
 }
@@ -2239,6 +2222,7 @@ function closeClearHistoryModal(){document.getElementById("clearHistoryModal").c
 function confirmClearStudyHistory(){
     history={};
     pendingStudySeconds=0;
+    pendingStudyDay=today();
     save(KEY.history,history);
     closeClearHistoryModal();
     updateDashboard();
@@ -2327,17 +2311,29 @@ const COMMUNITY_SUPABASE_URL = "https://nnengzucbzfbadnuvcfx.supabase.co";
 const COMMUNITY_SUPABASE_ANON_KEY = "sb_publishable_Fflqb_CxmYFGlvt6A-46dg_E3UaHffp";
 let communityClient=null, communityUser=null, communityCurrent=null, communityRealtime=null, communityMemberships=[];
 const communityProfileNameCache=new Map();
-let communityLastUserId=undefined,communitySelectionToken=0,communityMembershipLoadPromise=null;
+let communityLastUserId=undefined,communitySelectionToken=0,communityMembershipLoadPromise=null,communityAuthSubscription=null,communityInitStarted=false;
 const communityConfigured=()=>!!(window.supabase?.createClient && COMMUNITY_SUPABASE_URL.startsWith("https://") && !COMMUNITY_SUPABASE_URL.includes("PASTE_") && COMMUNITY_SUPABASE_ANON_KEY && !COMMUNITY_SUPABASE_ANON_KEY.includes("PASTE_"));
 function communityStatus(message,type=""){const e=document.getElementById("communityStatus");if(e){e.textContent=message;e.className="community-status"+(type?" "+type:"");e.style.display="block";}}
 function communityEsc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
 function communityInit(){
+  if(communityInitStarted)return;
+  communityInitStarted=true;
   if(!window.supabase?.createClient){communityStatus("Supabase library লোড হয়নি, internet check করো","error");return;}
   if(!communityConfigured()){communityStatus("Community backend এখনো configure করা হয়নি। Supabase project URL ও anon key বসিয়ে SQL setup সম্পন্ন করলে Login/Community চালু হবে।");return;}
-  try{communityClient=window.supabase.createClient(COMMUNITY_SUPABASE_URL,COMMUNITY_SUPABASE_ANON_KEY);}
-  catch(e){communityStatus("Supabase configuration error: "+e.message,"error");return;}
-  communityClient.auth.getSession().then(({data,error})=>{if(error)communityStatus(error.message,"error");communityApplySession(data?.session||null);});
-  communityClient.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>communityApplySession(session),0);});
+  try{
+    communityClient=window.supabase.createClient(COMMUNITY_SUPABASE_URL,COMMUNITY_SUPABASE_ANON_KEY,{
+      auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+    });
+  }catch(e){communityInitStarted=false;communityStatus("Supabase configuration error: "+e.message,"error");return;}
+  communityClient.auth.getSession().then(({data,error})=>{
+    if(error)communityStatus("Session restore হয়নি: "+error.message,"error");
+    communityApplySession(data?.session||null);
+  }).catch(e=>communityStatus("Login session restore হয়নি: "+(e?.message||e),"error"));
+  const {data}=communityClient.auth.onAuthStateChange((_event,session)=>{
+    // Avoid doing Supabase queries inside the auth callback itself.
+    setTimeout(()=>communityApplySession(session),0);
+  });
+  communityAuthSubscription=data?.subscription||null;
 }
 function communityResetUI(){
   const ids={communityChat:'<div class="community-empty">Select a Community to view messages.</div>',communityMembers:'<div class="community-empty">Member progress will appear here.</div>',communityMyProgress:'',communityMyList:'<div class="community-empty">এখনো কোনো Community নেই। নতুন তৈরি করো অথবা invite code দিয়ে join করো।</div>',communityDiscoverList:'<div class="community-empty">Public communities will appear here.</div>'};
@@ -2360,7 +2356,7 @@ function communityApplySession(session){
   if(!communityUser)return;
   const email=document.getElementById("communitySignedEmail");if(email)email.textContent=communityUser.email||"Signed in";
   const welcome=document.getElementById("communityWelcome");if(welcome)welcome.textContent="👋 Welcome to Community";
-  setTimeout(()=>{if(communityUser?.id===nextId)communityLoadMyCommunities();},0);
+  setTimeout(()=>{if(communityUser?.id===nextId)communityLoadMyCommunities(true);},0);
 }
 async function communitySignIn(){
   if(!communityClient)return communityStatus("Supabase setup সম্পন্ন হয়নি।","error");
@@ -2425,6 +2421,14 @@ async function communityJoinByCode(){
   communityStatus("Community-তে join করা হয়েছে।","ok");
   await communityLoadMyCommunities();if(data?.id)await communitySelect(data.id);
 }
+function communitySelectedKey(userId){return "syllabusTrackerSelectedCommunity:"+String(userId||"");}
+function communityRememberSelected(id,userId=communityUser?.id){
+  if(!id||!userId)return;
+  try{localStorage.setItem(communitySelectedKey(userId),String(id));}catch(_e){}
+}
+function communityGetSelected(userId=communityUser?.id){
+  try{return localStorage.getItem(communitySelectedKey(userId))||"";}catch(_e){return "";}
+}
 function communityHiddenIdsKey(userId){return "syllabusTrackerLeftCommunities:"+String(userId||"");}
 function communityGetHiddenIds(userId=communityUser?.id){
   try{return new Set(JSON.parse(localStorage.getItem(communityHiddenIdsKey(userId))||"[]").map(String));}catch(_e){return new Set();}
@@ -2460,7 +2464,11 @@ async function communityLoadMyCommunities(forceRefresh=false){
     communityLoadDiscover();
     if(!communityMemberships.length){if(box)box.innerHTML='<div class="community-empty">এখনো কোনো Community নেই। নতুন তৈরি করো অথবা invite code দিয়ে join করো।</div>';communityResetUI();return;}
     if(box)box.innerHTML=communityMemberships.map(m=>{const c=m.communities||{};return `<div class="community-item"><div><strong>${communityEsc(c.name||"Community")}</strong><small>${communityEsc(m.role||"member")} · ${communityEsc(c.visibility||"private")}</small></div><button class="mini" data-community-select="${communityEsc(c.id||m.community_id)}">Open</button></div>`}).join("");
-    if(!communityCurrent||!communityMemberships.some(m=>m.community_id===communityCurrent.id))await communitySelect(communityMemberships[0].community_id);
+    const savedCommunityId=communityGetSelected(requestedUserId);
+    const preferred=communityMemberships.find(m=>String(m.community_id)===String(savedCommunityId));
+    if(!communityCurrent||!communityMemberships.some(m=>m.community_id===communityCurrent.id)){
+      await communitySelect((preferred||communityMemberships[0]).community_id);
+    }
   })();
   try{await communityMembershipLoadPromise;}finally{communityMembershipLoadPromise=null;}
 }
@@ -2492,6 +2500,7 @@ async function communitySelect(id){
   }
   const token=++communitySelectionToken;
   communityCleanupRealtime();communityCurrent=member.communities||{id};
+  communityRememberSelected(id,communityUser.id);
   const c=communityCurrent;
   document.getElementById("communityChat").innerHTML='<div class="community-empty">Messages loading…</div>';
   document.getElementById("communityMembers").innerHTML='<div class="community-empty">Members loading…</div>';
