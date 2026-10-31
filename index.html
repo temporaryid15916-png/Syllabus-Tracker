@@ -1291,7 +1291,7 @@ function renderSyllabus(){
         if(!visible.length)return;
         let rawPct=arr.length>0?(done/arr.length*100):0;
         let pct=fmtPct(rawPct);
-        let col=!!collapsed[b] && !q && statusFilter==="all";
+        let col=!!collapsed[b] && !q; // respect collapse even with status filter; only force-expand while searching
         const card=document.createElement("div");
         card.className="card subject"+(col?" collapsed":"");
         card.innerHTML=`<div class="subject-head" onclick='toggleBookCollapse(${JSON.stringify(b)})'><div class="subject-icon">${ICONS[b]}</div><div class="subject-info"><div class="subject-title"><span>${b}</span><span class="badge-pct">${pct}</span></div><div class="subject-meta">${done} complete · ${inp} in progress · ${arr.length} total</div></div><div class="subject-progress"><div class="smallrow"><span>${done}/${arr.length}</span><span>${pct}</span></div><div class="smallbar"><i style="width:${rawPct}%"></i></div></div><div class="chev">▼</div></div><div class="subject-body"><div class="chapters">${visible.map(c=>chapterHTML(b,c,arr[c-1])).join("")}</div></div>`;
@@ -1489,7 +1489,7 @@ function getAudioContext(){
 
 let swReg=null;
 // App version — bump this string on every deploy so clients can detect updates.
-const APP_BUILD = "2026-10-31-c";
+const APP_BUILD = "2026-10-31-d";
 if("serviceWorker" in navigator){
     // Network-first SW + auto-activate so mobile normal refresh gets the latest HTML.
     navigator.serviceWorker.register("./sw.js?v="+APP_BUILD, {scope:"./", updateViaCache:"none"})
@@ -1680,27 +1680,42 @@ function tryDirectNotif(title,body){
 }
 
 function playAlertSound(){
+    // Web Audio chime (works after any prior user gesture unlocked the context)
     try {
         const ctx=getAudioContext();
         if(ctx){
-            const now=ctx.currentTime;
-            [523.25, 659.25, 783.99, 1046.5].forEach((freq,i)=>{
-                const osc=ctx.createOscillator();
-                const gain=ctx.createGain();
-                osc.type="sine";
-                osc.frequency.setValueAtTime(freq,now+i*0.15);
-                gain.gain.setValueAtTime(0,now+i*0.15);
-                gain.gain.linearRampToValueAtTime(0.4,now+i*0.15+0.03);
-                gain.gain.exponentialRampToValueAtTime(0.001,now+i*0.15+0.8);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start(now+i*0.15);
-                osc.stop(now+i*0.15+0.85);
-            });
+            const kick=()=>{
+                try{
+                    const now=ctx.currentTime;
+                    [523.25, 659.25, 783.99, 1046.5].forEach((freq,i)=>{
+                        const osc=ctx.createOscillator();
+                        const gain=ctx.createGain();
+                        osc.type="sine";
+                        osc.frequency.setValueAtTime(freq,now+i*0.15);
+                        gain.gain.setValueAtTime(0.0001,now+i*0.15);
+                        gain.gain.linearRampToValueAtTime(0.45,now+i*0.15+0.03);
+                        gain.gain.exponentialRampToValueAtTime(0.0001,now+i*0.15+0.85);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(now+i*0.15);
+                        osc.stop(now+i*0.15+0.9);
+                    });
+                }catch(_e){}
+            };
+            if(ctx.state==="suspended"){
+                ctx.resume().then(kick).catch(kick);
+            }else kick();
         }
     }catch(e){}
+    // HTMLAudio fallback for mobile browsers that block oscillators when backgrounded
+    try{
+        const a=new Audio("data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleXR+g5OPmY+HfXqBe5CWko+Jg4B9f4mQlZKNiIN+foKMlJOPi4aBf4KJlJSQjIeDgIGHkpSRjYeDgIGJlJWSjYeDgIGJlJWSjYeDgIGJlJWSjYeDgA==");
+        a.volume=0.85;
+        const p=a.play();
+        if(p&&typeof p.catch==="function")p.catch(()=>{});
+    }catch(e){}
     if(navigator.vibrate){
-        try{navigator.vibrate([400,200,400]);}catch(e){}
+        try{navigator.vibrate([400,200,400,200,400]);}catch(e){}
     }
 }
 
@@ -2014,15 +2029,15 @@ function handlePomoFinish(){
     pomo.awaitingNext = true;
     pomo.end = 0;
 
-    // Prepare the next phase, but never start it without the user's action.
+    // Switch to the next phase, then auto-start it after a short beat (sound/toast first).
     if(pomo.mode === "focus"){
-        sendSysNotification("🎉 Focus Complete!", `Finished studying ${pomo.book} • ${chName}. Your ${pomo.break}m break is ready.`);
-        toast(`☕ Focus complete — press Start when you're ready for the ${pomo.break}m break`);
+        sendSysNotification("🎉 Focus Complete!", `Finished studying ${pomo.book} • ${chName}. Starting ${pomo.break}m break.`);
+        toast(`☕ Focus complete — break starting…`);
         pomo.mode = "break";
         pomo.remaining = pomo.break * 60;
     } else {
-        sendSysNotification("⏰ Break Finished!", "Your break is done. Start the next focus session when you're ready.");
-        toast("🍅 Break complete — press Start for the next focus session");
+        sendSysNotification("⏰ Break Finished!", "Starting the next focus session.");
+        toast("🍅 Break complete — focus starting…");
         pomo.mode = "focus";
         pomo.session++;
         pomo.remaining = pomo.focus * 60;
@@ -2035,9 +2050,29 @@ function handlePomoFinish(){
     clearBackgroundPomodoroNotification();
     savePomoState();
     updatePomoDisplay();
+
+    // Auto-start next phase (focus → break → focus …) unless user already paused/reset.
+    clearTimeout(window.__pomoAutoNext);
+    window.__pomoAutoNext = setTimeout(()=>{
+        if(!pomo.book || !pomo.chapter)return;
+        if(pomo.running)return;
+        if(!pomo.started)return; // reset was pressed
+        // Start the prepared phase
+        pomo.running = true;
+        pomo.awaitingNext = false;
+        lastTick = Date.now();
+        pomo.end = Date.now() + pomo.remaining * 1000;
+        clearInterval(pomo.timer);
+        pomo.timer = setInterval(pomoTick, 500);
+        updateBackgroundPomodoroNotification(true);
+        savePomoState();
+        updatePomoDisplay();
+        playAlertSound();
+    }, 900);
 }
 
 function resetPomodoro(){
+    clearTimeout(window.__pomoAutoNext);
     clearInterval(pomo.timer);
     pomo.timer=null;
     pomo.running=false;
@@ -3392,16 +3427,39 @@ async function communityStopSharing(){
 function communityNotifyProgressChanged(){
   if(!communityClient||!communityUser)return;
   if(!communityMemberships.some(m=>communityIsShared(communityUser.id,m.community_id)))return;
+  // Debounce ~2s, but never wait more than ~15s between live study updates.
   clearTimeout(communityAutoTimer);
   const since=Date.now()-communityLastAutoAt;
+  const wait=since>=15000?2000:Math.max(2000,15000-since);
   communityAutoTimer=setTimeout(async()=>{
     communityLastAutoAt=Date.now();
     for(const m of communityMemberships.slice()){
       if(!communityUser)break;
-      if(communityIsShared(communityUser.id,m.community_id))await communityPushProgress(m.community_id,true,communitySame(communityCurrent?.id,m.community_id));
+      if(communityIsShared(communityUser.id,m.community_id)){
+        const ok=await communityPushProgress(m.community_id,true,communitySame(communityCurrent?.id,m.community_id));
+        if(!ok){
+          try{localStorage.setItem("syllabusCommunityProgressPending","1");}catch(_e){}
+        }else{
+          try{localStorage.removeItem("syllabusCommunityProgressPending");}catch(_e){}
+        }
+      }
     }
-  },since>=60000?3000:60000-since);
+  },wait);
 }
+// When back online, push any pending shared progress immediately.
+window.addEventListener("online",()=>{
+  try{
+    if(localStorage.getItem("syllabusCommunityProgressPending")==="1" || true){
+      communityLastAutoAt=0;
+      communityNotifyProgressChanged();
+    }
+  }catch(_e){communityNotifyProgressChanged();}
+});
+document.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState==="visible"){
+    try{communityLastAutoAt=0;communityNotifyProgressChanged();}catch(_e){}
+  }
+});
 
 /* ---------- leave ---------- */
 function closeCommunityLeaveConfirm(){
