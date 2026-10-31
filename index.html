@@ -2982,25 +2982,55 @@ async function communitySelect(id){
   communityLoadInvite(member,token);
   await Promise.all([communityLoadMessages(cid),communityLoadMembers(cid)]);
   if(stale()||!communitySame(communityCurrent?.id,cid))return;
-  communityRealtime=communityClient.channel("community-"+communitySid(cid)+"-"+Date.now())
-    .on("postgres_changes",{event:"INSERT",schema:"public",table:"community_messages",filter:"community_id=eq."+cid},async payload=>{
+  const filterId=communitySid(cid);
+  communityRealtime=communityClient.channel("community-"+filterId+"-"+Date.now())
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"community_messages",filter:"community_id=eq."+filterId},async payload=>{
       const msg=payload.new;if(!msg||!communitySame(communityCurrent?.id,cid))return;
       await communityFetchNames([msg.user_id]);communityAppendMessage(msg);
     })
-    .on("postgres_changes",{event:"*",schema:"public",table:"community_progress",filter:"community_id=eq."+cid},()=>{if(communitySame(communityCurrent?.id,cid))communityLoadMembers(cid,true);})
-    .subscribe();
+    .on("postgres_changes",{event:"*",schema:"public",table:"community_progress",filter:"community_id=eq."+filterId},()=>{if(communitySame(communityCurrent?.id,cid))communityLoadMembers(cid,true);})
+    .on("postgres_changes",{event:"*",schema:"public",table:"community_members",filter:"community_id=eq."+filterId},()=>{if(communitySame(communityCurrent?.id,cid))communityLoadMembers(cid,true);})
+    .subscribe((status)=>{
+      // If realtime is not enabled on the project, polling still covers updates.
+      if(status==="CHANNEL_ERROR"||status==="TIMED_OUT"){
+        console.warn("Community realtime unavailable; using polling fallback. Status:",status);
+      }
+    });
   communityStartPolling();
   // Keep a previously shared summary fresh after a reload.
   if(communityIsShared(uid,cid))communityPushProgress(cid,true,true);
 }
 
 /* ---------- names, messages ---------- */
+const communityMsgCacheKey=(uid,cid)=>"syllabusTrackerChatCache:"+communitySid(uid)+":"+communitySid(cid);
+function communityReadMsgCache(uid,cid){
+  try{
+    const arr=JSON.parse(localStorage.getItem(communityMsgCacheKey(uid,cid))||"[]");
+    return Array.isArray(arr)?arr:[];
+  }catch(_e){return [];}
+}
+function communityWriteMsgCache(uid,cid,messages){
+  try{
+    const slim=(messages||[]).slice(-120).map(m=>({
+      id:m.id,community_id:m.community_id,user_id:m.user_id,body:m.body,created_at:m.created_at
+    }));
+    localStorage.setItem(communityMsgCacheKey(uid,cid),JSON.stringify(slim));
+  }catch(_e){}
+}
+function communityMergeMessages(a,b){
+  const map=new Map();
+  [...(a||[]),...(b||[])].forEach(m=>{
+    if(!m||m.id==null)return;
+    map.set(communitySid(m.id),m);
+  });
+  return [...map.values()].sort((x,y)=>String(x.created_at||"").localeCompare(String(y.created_at||"")));
+}
 async function communityFetchNames(ids){
   const need=[...new Set((ids||[]).filter(i=>i!=null).map(communitySid))].filter(i=>!communityProfileNameCache.has(i)&&!communityNameMiss.has(i));
   if(!need.length||!communityClient)return;
   try{
-    const {data}=await communityClient.from("profiles").select("id,display_name").in("id",need);
-    (data||[]).forEach(p=>communityProfileNameCache.set(communitySid(p.id),p.display_name||"Member"));
+    const {data,error}=await communityClient.from("profiles").select("id,display_name").in("id",need);
+    if(!error)(data||[]).forEach(p=>communityProfileNameCache.set(communitySid(p.id),p.display_name||"Member"));
   }catch(_e){}
   need.forEach(i=>{if(!communityProfileNameCache.has(i))communityNameMiss.add(i);});
 }
@@ -3009,18 +3039,48 @@ function communityName(uid){
   if(communityProfileNameCache.has(k))return communityProfileNameCache.get(k);
   return communitySame(uid,communityUser?.id)?communityMyName():"Member";
 }
+function communityRenderMessageList(id,messages){
+  const box=communityEl("communityChat");
+  if(!box||!communitySame(communityCurrent?.id,id))return;
+  box.innerHTML="";
+  communityLastMessageAt=null;
+  (messages||[]).forEach(m=>communityAppendMessage(m));
+  if(!(messages||[]).length){
+    box.innerHTML='<div class="community-empty">প্রথম message পাঠিয়ে কথোপকথন শুরু করো।</div>';
+  }
+  box.scrollTop=box.scrollHeight;
+}
 async function communityLoadMessages(id){
   const box=communityEl("communityChat");
-  const {data,error}=await communityClient.from("community_messages").select("id,community_id,user_id,body,created_at").eq("community_id",id).order("created_at",{ascending:false}).limit(150);
+  if(!box)return;
+  const uid=communityUser?.id;
+  const cached=uid?communityReadMsgCache(uid,id):[];
+  // Show cached chat instantly so reload never looks empty.
+  if(cached.length && communitySame(communityCurrent?.id,id)){
+    await communityFetchNames(cached.map(m=>m.user_id));
+    communityRenderMessageList(id,cached);
+  }else if(communitySame(communityCurrent?.id,id)){
+    box.innerHTML='<div class="community-empty">Messages loading…</div>';
+  }
+  const cid=communitySid(id);
+  const {data,error}=await communityClient.from("community_messages")
+    .select("id,community_id,user_id,body,created_at")
+    .eq("community_id",cid)
+    .order("created_at",{ascending:false})
+    .limit(150);
   if(!communitySame(communityCurrent?.id,id))return;
-  if(error){box.innerHTML='<div class="community-empty">Chat load হয়নি।</div>';return communityStatus(communityErrText(error),"error");}
-  const messages=(data||[]).reverse();
-  await communityFetchNames(messages.map(m=>m.user_id));
+  if(error){
+    // Keep cache on screen; surface the real error so RLS issues are visible.
+    if(!cached.length)box.innerHTML='<div class="community-empty">Chat load হয়নি: '+communityEsc(communityErrText(error))+'</div>';
+    communityStatus("Chat load হয়নি: "+communityErrText(error),"error");
+    return;
+  }
+  const serverMsgs=(data||[]).slice().reverse();
+  const merged=communityMergeMessages(cached,serverMsgs);
+  await communityFetchNames(merged.map(m=>m.user_id));
   if(!communitySame(communityCurrent?.id,id))return;
-  box.innerHTML="";
-  messages.forEach(m=>communityAppendMessage(m));
-  if(!messages.length)box.innerHTML='<div class="community-empty">প্রথম message পাঠিয়ে কথোপকথন শুরু করো।</div>';
-  box.scrollTop=box.scrollHeight;
+  if(uid)communityWriteMsgCache(uid,id,merged);
+  communityRenderMessageList(id,merged);
 }
 function communityAppendMessage(m){
   const box=communityEl("communityChat");
@@ -3032,6 +3092,13 @@ function communityAppendMessage(m){
   const dt=m.created_at?new Date(m.created_at).toLocaleString():"now";
   el.innerHTML=`<strong>${communityEsc(communityName(m.user_id))}</strong><p>${communityEsc(m.body)}</p><small>${communityEsc(dt)}</small>`;
   box.appendChild(el);box.scrollTop=box.scrollHeight;
+  // Keep a local copy so reload still shows recent chat even if SELECT is flaky.
+  try{
+    if(communityUser?.id && communityCurrent?.id){
+      const cached=communityReadMsgCache(communityUser.id,communityCurrent.id);
+      communityWriteMsgCache(communityUser.id,communityCurrent.id,communityMergeMessages(cached,[m]));
+    }
+  }catch(_e){}
 }
 async function communitySendMessage(){
   if(!communityCurrent||!communityUser)return communityStatus("আগে একটি Community নির্বাচন করো।","error");
@@ -3039,32 +3106,45 @@ async function communitySendMessage(){
   const input=communityEl("communityMessageInput"),body=input.value.trim();if(!body)return;
   communityBusy.send=true;
   try{
-    const roomId=communityCurrent.id,row={community_id:roomId,user_id:communityUser.id,body};
+    const roomId=communityCurrent.id;
+    const row={community_id:communitySid(roomId),user_id:communityUser.id,body};
     const sel="id,community_id,user_id,body,created_at";
     let r=await communityClient.from("community_messages").insert(row).select(sel).single();
-    if(r.error&&/foreign key/i.test(r.error.message||"")){await communityEnsureProfile();r=await communityClient.from("community_messages").insert(row).select(sel).single();}
+    if(r.error&&/foreign key/i.test(r.error.message||"")){
+      await communityEnsureProfile();
+      r=await communityClient.from("community_messages").insert(row).select(sel).single();
+    }
     if(r.error)return communityStatus(communityErrText(r.error),"error");
     input.value="";
-    if(communitySame(communityCurrent?.id,roomId)&&r.data){await communityFetchNames([communityUser.id]);communityAppendMessage(r.data);}
+    if(communitySame(communityCurrent?.id,roomId)&&r.data){
+      await communityFetchNames([communityUser.id]);
+      communityAppendMessage(r.data);
+    }
   }catch(e){communityStatus(communityErrText(e),"error");}
   finally{communityBusy.send=false;}
 }
-function communityStartPolling(){communityStopPolling();communityPollTick=0;communityPollTimer=setInterval(communityPoll,6000);}
+function communityStartPolling(){communityStopPolling();communityPollTick=0;communityPollTimer=setInterval(communityPoll,3000);}
 function communityStopPolling(){if(communityPollTimer)clearInterval(communityPollTimer);communityPollTimer=null;}
 async function communityPoll(){
-  // Fallback for projects where Realtime is not enabled: pick up new messages / progress every few seconds.
+  // Fallback when Realtime is off: refresh chat + members every few seconds.
   if(!communityClient||!communityUser||!communityCurrent||document.visibilityState==="hidden")return;
   if(typeof currentTab!=="undefined"&&currentTab!=="community")return;
   const id=communityCurrent.id;communityPollTick++;
   try{
-    let q=communityClient.from("community_messages").select("id,community_id,user_id,body,created_at").eq("community_id",id).order("created_at",{ascending:true}).limit(100);
+    const cid=communitySid(id);
+    let q=communityClient.from("community_messages")
+      .select("id,community_id,user_id,body,created_at")
+      .eq("community_id",cid)
+      .order("created_at",{ascending:true})
+      .limit(100);
     if(communityLastMessageAt)q=q.gt("created_at",communityLastMessageAt);
     const {data,error}=await q;
     if(!error&&data&&data.length&&communitySame(communityCurrent?.id,id)){
       await communityFetchNames(data.map(m=>m.user_id));
       if(communitySame(communityCurrent?.id,id))data.forEach(m=>communityAppendMessage(m));
     }
-    if(communityPollTick%5===0&&communitySame(communityCurrent?.id,id))communityLoadMembers(id,true);
+    // Refresh members/progress often so shared progress becomes visible to others.
+    if(communityPollTick%2===0&&communitySame(communityCurrent?.id,id))communityLoadMembers(id,true);
   }catch(_e){}
 }
 
@@ -3072,23 +3152,52 @@ async function communityPoll(){
 async function communityLoadMembers(id,silent){
   const box=communityEl("communityMembers");if(!box)return;
   if(!silent)box.innerHTML='<div class="community-empty">Members loading…</div>';
+  const cid=communitySid(id);
   const [prog,mem]=await Promise.all([
-    communityClient.from("community_progress").select("user_id,completed_chapters,total_chapters,today_seconds,total_seconds,streak_days,updated_at").eq("community_id",id).order("updated_at",{ascending:false}),
-    communityClient.from("community_members").select("user_id,role").eq("community_id",id)
+    communityClient.from("community_progress")
+      .select("user_id,completed_chapters,total_chapters,today_seconds,total_seconds,streak_days,updated_at")
+      .eq("community_id",cid)
+      .order("updated_at",{ascending:false}),
+    communityClient.from("community_members")
+      .select("user_id,role")
+      .eq("community_id",cid)
   ]);
   if(!communitySame(communityCurrent?.id,id))return;
-  if(prog.error){if(!silent)box.innerHTML='<div class="community-empty">Progress load হয়নি: '+communityEsc(communityErrText(prog.error))+'</div>';return;}
-  const rows=prog.data||[],memberRows=mem.error?[]:(mem.data||[]);
+
+  // Do NOT abort the whole panel if only progress fails — still show members.
+  const rows=(!prog.error&&prog.data)?prog.data:[];
+  let memberRows=(!mem.error&&mem.data)?mem.data:[];
+
+  // Always include myself so the list is never mysteriously empty for the current user.
+  const me=communityUser?.id;
+  if(me && !memberRows.some(m=>communitySame(m.user_id,me))){
+    memberRows=[{user_id:me,role:"member"},...memberRows];
+  }
+
+  if(prog.error&&mem.error){
+    if(!silent)box.innerHTML='<div class="community-empty">Members/Progress load হয়নি: '+communityEsc(communityErrText(prog.error||mem.error))+'</div>';
+    if(!silent)communityStatus("Members/Progress: "+communityErrText(prog.error||mem.error),"error");
+    return;
+  }
+  if(prog.error&&!silent){
+    communityStatus("Progress load আংশিক ব্যর্থ: "+communityErrText(prog.error)+" — member list তবু দেখানো হচ্ছে।","error");
+  }
+  if(mem.error&&!silent){
+    communityStatus("Member list load আংশিক ব্যর্থ: "+communityErrText(mem.error),"error");
+  }
+
   await communityFetchNames([...rows.map(r=>r.user_id),...memberRows.map(r=>r.user_id)]);
   if(!communitySame(communityCurrent?.id,id))return;
-  const me=communityUser?.id,sharedIds=new Set(rows.map(r=>communitySid(r.user_id)));
+
+  const sharedIds=new Set(rows.map(r=>communitySid(r.user_id)));
   const label=uid=>communityEsc(communityName(uid))+(communitySame(uid,me)?" (You)":"");
   const cards=rows.map(m=>`<div class="community-member" style="display:block"><div style="display:flex;justify-content:space-between;gap:8px"><strong>${label(m.user_id)}</strong><small style="color:var(--muted)">${communityEsc(communityAgo(m.updated_at))}</small></div><div class="community-metrics"><div class="community-metric"><strong>${Number(m.completed_chapters)||0}/${Number(m.total_chapters)||0}</strong><span>Chapters</span></div><div class="community-metric"><strong>${communityEsc(communityFmt(m.today_seconds))}</strong><span>Today</span></div><div class="community-metric"><strong>${communityEsc(communityFmt(m.total_seconds))}</strong><span>Total time</span></div><div class="community-metric"><strong>${Number(m.streak_days)||0}</strong><span>Day streak</span></div></div></div>`);
-  const waiting=memberRows.filter(m=>!sharedIds.has(communitySid(m.user_id))).map(m=>`<div class="community-member"><strong>${label(m.user_id)}</strong><small style="color:var(--muted)">এখনো progress share করেননি</small></div>`);
+  const waiting=memberRows.filter(m=>!sharedIds.has(communitySid(m.user_id))).map(m=>`<div class="community-member"><strong>${label(m.user_id)}</strong><small style="color:var(--muted)">${communityEsc(m.role||"member")} · এখনো progress share করেননি</small></div>`);
   const html=cards.concat(waiting).join("");
-  box.innerHTML=html||'<div class="community-empty">এখনো কেউ study progress share করেনি।</div>';
+  box.innerHTML=html||'<div class="community-empty">এই Community-তে এখনো কোনো member দেখা যাচ্ছে না।</div>';
   const mine=rows.find(r=>communitySame(r.user_id,me));
   if(mine)communityRenderMyProgress(communityComputeProgress(),mine.updated_at,true);
+  else if(communityCurrent)communityRenderMyProgress(communityComputeProgress(),null,communityIsShared(me,id));
 }
 function communityComputeProgress(){
   let completed=0,total=0;
