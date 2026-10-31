@@ -2340,6 +2340,8 @@ function communityInit(){
   communityClient.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>communityApplySession(session),0);});
 }
 function communityResetUI(){
+  communityCurrent=null;
+  communitySelectionToken++;
   const ids={communityChat:'<div class="community-empty">Select a Community to view messages.</div>',communityMembers:'<div class="community-empty">Member progress will appear here.</div>',communityMyProgress:'',communityMyList:'<div class="community-empty">এখনো কোনো Community নেই। নতুন তৈরি করো অথবা invite code দিয়ে join করো।</div>',communityDiscoverList:'<div class="community-empty">Public communities will appear here.</div>'};
   Object.entries(ids).forEach(([id,html])=>{const el=document.getElementById(id);if(el)el.innerHTML=html;});
   const invite=document.getElementById("communityInviteInfo");if(invite){invite.style.display="none";invite.textContent="";}
@@ -2427,7 +2429,10 @@ async function communityJoinByCode(){
 }
 function communityHiddenIdsKey(userId){return "syllabusTrackerLeftCommunities:"+String(userId||"");}
 function communityGetHiddenIds(userId=communityUser?.id){
-  try{return new Set(JSON.parse(localStorage.getItem(communityHiddenIdsKey(userId))||"[]").map(String));}catch(_e){return new Set();}
+  try{
+    const value=JSON.parse(localStorage.getItem(communityHiddenIdsKey(userId))||"[]");
+    return new Set(Array.isArray(value)?value.map(String):[]);
+  }catch(_e){return new Set();}
 }
 function communityRememberLeftCommunity(id,userId=communityUser?.id){
   if(!id||!userId)return;
@@ -2455,17 +2460,24 @@ async function communityLoadMyCommunities(forceRefresh=false){
     // Show only memberships whose Community still exists. If the last member
     // deleted a Community but orphan membership rows remain, hide those rows.
     const hiddenCommunityIds=communityGetHiddenIds(requestedUserId);
-    communityMemberships=(data||[]).filter(m=>m&&m.communities&&m.communities.id&&!hiddenCommunityIds.has(String(m.community_id)));
+    communityMemberships=(data||[]).filter(m=>m&&m.community_id&&m.communities&&m.communities.id&&!hiddenCommunityIds.has(String(m.community_id)));
     communityLoadDiscover();
     if(!communityMemberships.length){if(box)box.innerHTML='<div class="community-empty">এখনো কোনো Community নেই। নতুন তৈরি করো অথবা invite code দিয়ে join করো।</div>';communityResetUI();return;}
     if(box)box.innerHTML=communityMemberships.map(m=>{const c=m.communities||{};return `<div class="community-item"><div><strong>${communityEsc(c.name||"Community")}</strong><small>${communityEsc(m.role||"member")} · ${communityEsc(c.visibility||"private")}</small></div><button class="mini" data-community-select="${communityEsc(c.id||m.community_id)}">Open</button></div>`}).join("");
-    if(!communityCurrent||!communityMemberships.some(m=>m.community_id===communityCurrent.id))await communitySelect(communityMemberships[0].community_id);
+    if(!communityCurrent||!communityMemberships.some(m=>String(m.community_id)===String(communityCurrent.id)))await communitySelect(communityMemberships[0].community_id);
   })();
   try{await communityMembershipLoadPromise;}finally{communityMembershipLoadPromise=null;}
 }
 function communityCleanupRealtime(){if(communityRealtime&&communityClient){communityClient.removeChannel(communityRealtime);}communityRealtime=null;}
 async function communitySelect(id){
   if(!communityClient||!communityUser)return;
+  // A departed Community must not be re-added from a stale/direct membership query.
+  // Joining it again explicitly clears this per-user hidden marker in the join handlers.
+  if(communityGetHiddenIds(communityUser.id).has(String(id))){
+    communityMemberships=communityMemberships.filter(m=>String(m.community_id)!==String(id));
+    await communityLoadMyCommunities(true);
+    return communityStatus("এই Community থেকে তুমি আগে Leave করেছ। আবার যোগ দিতে চাইলে invite code বা public group থেকে Join করো।","error");
+  }
   // The membership list may still be loading immediately after create/join.
   // Recover the requested membership directly before showing an error.
   let member=communityMemberships.find(m=>m.community_id===id);
