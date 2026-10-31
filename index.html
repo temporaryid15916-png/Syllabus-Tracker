@@ -2461,8 +2461,10 @@ async function communitySelect(id){
   document.getElementById("communityRoomTitle").textContent=c.name||"Community";
   document.getElementById("communityRoomDescription").textContent=c.description||"Study together";
   const invite=document.getElementById("communityInviteInfo");
+  // Owners can also leave: the SQL RPC transfers ownership to another member,
+  // or deletes the Community if the owner is the final member.
   const leaveButton=document.querySelector('#communityAppView button[onclick="communityLeave()"]');
-  if(leaveButton){leaveButton.disabled=member.role==="owner";leaveButton.title=member.role==="owner"?"Owner must transfer ownership or delete the Community first":"";}
+  if(leaveButton){leaveButton.disabled=false;leaveButton.title="এই Community থেকে বের হও";}
   if(member.role==="owner"||member.role==="admin"){
     invite.style.display="block";invite.textContent="Invite code loading…";
     const {data:inviteCode}=await communityClient.rpc("get_study_community_invite_code",{p_community_id:id});
@@ -2531,12 +2533,28 @@ async function communitySyncProgress(){
   document.getElementById("communityMyProgress").innerHTML=`<div class="community-metric"><strong>${completed}/${total}</strong><span>Completed</span></div><div class="community-metric"><strong>${communityFmt(todaySeconds)}</strong><span>Today</span></div><div class="community-metric"><strong>${communityFmt(totalSeconds)}</strong><span>Total time</span></div>`;
 }
 async function communityLeave(){
-  if(!communityCurrent||!communityUser)return;
+  if(!communityClient||!communityUser){communityStatus("আগে Login করো।","error");return;}
+  if(!communityCurrent){communityStatus("আগে Your Communities থেকে একটি Community-তে Open চাপো।","error");return;}
   if(!confirm("এই Community থেকে বের হতে চাও?"))return;
-  const id=communityCurrent.id;const {error}=await communityClient.from("community_members").delete().eq("community_id",id).eq("user_id",communityUser.id);
-  if(error)return communityStatus(error.message,"error");
-  communityCleanupRealtime();communityCurrent=null;communityStatus("Community থেকে বের হয়েছ।");await communityLoadMyCommunities();if(!communityMemberships.length)communityResetUI();
+  const id=communityCurrent.id;
+  const button=document.querySelector('#communityAppView button[onclick="communityLeave()"]');
+  if(button){button.disabled=true;button.textContent="Leaving…";}
+  try{
+    const {data,error}=await communityClient.rpc("leave_study_community",{p_community_id:id});
+    if(error)throw error;
+    if(data?.left!==true)throw new Error("Supabase থেকে Leave সফলতার নিশ্চয়তা পাওয়া যায়নি।");
+    communityCleanupRealtime();
+    communityCurrent=null;
+    communityStatus(data.community_deleted?"Community-এর শেষ সদস্য হিসেবে বের হওয়ায় Community-টি মুছে দেওয়া হয়েছে।":"Community থেকে বের হয়েছ।","ok");
+    await communityLoadMyCommunities();
+    if(!communityMemberships.length)communityResetUI();
+  }catch(error){
+    communityStatus("Leave করা যায়নি: "+(error?.message||String(error)),"error");
+  }finally{
+    if(button){button.disabled=false;button.textContent="Leave";}
+  }
 }
+
 document.addEventListener("click",event=>{
   const selectButton=event.target.closest("[data-community-select]");
   if(selectButton){communitySelect(selectButton.dataset.communitySelect);return;}
