@@ -3050,6 +3050,20 @@ function communityRenderMessageList(id,messages){
   }
   box.scrollTop=box.scrollHeight;
 }
+async function communityFetchMessagesFromServer(id){
+  const cid=communitySid(id);
+  // Prefer security-definer RPC (works even when table RLS is wrong).
+  try{
+    const rpc=await communityClient.rpc("get_community_messages",{p_community_id:cid,p_limit:150});
+    if(!rpc.error)return {data:(rpc.data||[]).slice().reverse(),error:null,via:"rpc"};
+  }catch(_e){}
+  const q=await communityClient.from("community_messages")
+    .select("id,community_id,user_id,body,created_at")
+    .eq("community_id",cid)
+    .order("created_at",{ascending:false})
+    .limit(150);
+  return {data:(q.data||[]).slice().reverse(),error:q.error||null,via:"table"};
+}
 async function communityLoadMessages(id){
   const box=communityEl("communityChat");
   if(!box)return;
@@ -3062,21 +3076,14 @@ async function communityLoadMessages(id){
   }else if(communitySame(communityCurrent?.id,id)){
     box.innerHTML='<div class="community-empty">Messages loading…</div>';
   }
-  const cid=communitySid(id);
-  const {data,error}=await communityClient.from("community_messages")
-    .select("id,community_id,user_id,body,created_at")
-    .eq("community_id",cid)
-    .order("created_at",{ascending:false})
-    .limit(150);
+  const {data,error}=await communityFetchMessagesFromServer(id);
   if(!communitySame(communityCurrent?.id,id))return;
   if(error){
-    // Keep cache on screen; surface the real error so RLS issues are visible.
     if(!cached.length)box.innerHTML='<div class="community-empty">Chat load হয়নি: '+communityEsc(communityErrText(error))+'</div>';
-    communityStatus("Chat load হয়নি: "+communityErrText(error),"error");
+    communityStatus("Chat load হয়নি: "+communityErrText(error)+" — Supabase-এ RLS-Fix.sql চালাও।","error");
     return;
   }
-  const serverMsgs=(data||[]).slice().reverse();
-  const merged=communityMergeMessages(cached,serverMsgs);
+  const merged=communityMergeMessages(cached,data||[]);
   await communityFetchNames(merged.map(m=>m.user_id));
   if(!communitySame(communityCurrent?.id,id))return;
   if(uid)communityWriteMsgCache(uid,id,merged);
@@ -3131,17 +3138,15 @@ async function communityPoll(){
   if(typeof currentTab!=="undefined"&&currentTab!=="community")return;
   const id=communityCurrent.id;communityPollTick++;
   try{
-    const cid=communitySid(id);
-    let q=communityClient.from("community_messages")
-      .select("id,community_id,user_id,body,created_at")
-      .eq("community_id",cid)
-      .order("created_at",{ascending:true})
-      .limit(100);
-    if(communityLastMessageAt)q=q.gt("created_at",communityLastMessageAt);
-    const {data,error}=await q;
+    const {data,error}=await communityFetchMessagesFromServer(id);
     if(!error&&data&&data.length&&communitySame(communityCurrent?.id,id)){
-      await communityFetchNames(data.map(m=>m.user_id));
-      if(communitySame(communityCurrent?.id,id))data.forEach(m=>communityAppendMessage(m));
+      const fresh=communityLastMessageAt
+        ? data.filter(m=>m.created_at && Date.parse(m.created_at)>Date.parse(communityLastMessageAt))
+        : data;
+      if(fresh.length){
+        await communityFetchNames(fresh.map(m=>m.user_id));
+        if(communitySame(communityCurrent?.id,id))fresh.forEach(m=>communityAppendMessage(m));
+      }
     }
     // Refresh members/progress often so shared progress becomes visible to others.
     if(communityPollTick%2===0&&communitySame(communityCurrent?.id,id))communityLoadMembers(id,true);
@@ -3153,15 +3158,34 @@ async function communityLoadMembers(id,silent){
   const box=communityEl("communityMembers");if(!box)return;
   if(!silent)box.innerHTML='<div class="community-empty">Members loading…</div>';
   const cid=communitySid(id);
-  const [prog,mem]=await Promise.all([
-    communityClient.from("community_progress")
-      .select("user_id,completed_chapters,total_chapters,today_seconds,total_seconds,streak_days,updated_at")
-      .eq("community_id",cid)
-      .order("updated_at",{ascending:false}),
-    communityClient.from("community_members")
-      .select("user_id,role")
-      .eq("community_id",cid)
-  ]);
+
+  // Prefer security-definer RPCs so every member can see everyone else even if table RLS is wrong.
+  let prog={data:null,error:null}, mem={data:null,error:null};
+  try{
+    const [pr,mr]=await Promise.all([
+      communityClient.rpc("get_community_progress_rows",{p_community_id:cid}),
+      communityClient.rpc("get_community_member_rows",{p_community_id:cid})
+    ]);
+    if(!pr.error)prog={data:pr.data||[],error:null}; else prog={data:null,error:pr.error};
+    if(!mr.error)mem={data:mr.data||[],error:null}; else mem={data:null,error:mr.error};
+  }catch(e){
+    prog={data:null,error:e}; mem={data:null,error:e};
+  }
+  // Fallback to direct table selects if RPCs are missing / fail.
+  if(prog.error||mem.error){
+    const [pt,mt]=await Promise.all([
+      communityClient.from("community_progress")
+        .select("user_id,completed_chapters,total_chapters,today_seconds,total_seconds,streak_days,updated_at")
+        .eq("community_id",cid)
+        .order("updated_at",{ascending:false}),
+      communityClient.from("community_members")
+        .select("user_id,role")
+        .eq("community_id",cid)
+    ]);
+    if(prog.error)prog=pt;
+    if(mem.error)mem=mt;
+  }
+
   if(!communitySame(communityCurrent?.id,id))return;
 
   // Do NOT abort the whole panel if only progress fails — still show members.
@@ -3176,7 +3200,7 @@ async function communityLoadMembers(id,silent){
 
   if(prog.error&&mem.error){
     if(!silent)box.innerHTML='<div class="community-empty">Members/Progress load হয়নি: '+communityEsc(communityErrText(prog.error||mem.error))+'</div>';
-    if(!silent)communityStatus("Members/Progress: "+communityErrText(prog.error||mem.error),"error");
+    if(!silent)communityStatus("Members/Progress: "+communityErrText(prog.error||mem.error)+" — Supabase-এ RLS-Fix.sql চালাও।","error");
     return;
   }
   if(prog.error&&!silent){
