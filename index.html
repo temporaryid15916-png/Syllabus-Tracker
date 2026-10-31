@@ -1489,7 +1489,7 @@ function getAudioContext(){
 
 let swReg=null;
 // App version — bump this string on every deploy so clients can detect updates.
-const APP_BUILD = "2026-10-31-f";
+const APP_BUILD = "2026-10-31-g";
 if("serviceWorker" in navigator){
     // Network-first SW + auto-activate so mobile normal refresh gets the latest HTML.
     navigator.serviceWorker.register("./sw.js?v="+APP_BUILD, {scope:"./", updateViaCache:"none"})
@@ -3280,13 +3280,44 @@ async function communityLoadMembers(id,silent){
   if(!communitySame(communityCurrent?.id,id))return;
 
   // Do NOT abort the whole panel if only progress fails — still show members.
-  const rows=(!prog.error&&prog.data)?prog.data:[];
+  let rows=(!prog.error&&prog.data)?(prog.data.slice()):[];
   let memberRows=(!mem.error&&mem.data)?mem.data:[];
 
   // Always include myself so the list is never mysteriously empty for the current user.
   const me=communityUser?.id;
   if(me && !memberRows.some(m=>communitySame(m.user_id,me))){
     memberRows=[{user_id:me,role:"member"},...memberRows];
+  }
+
+  // Prevent time "jump down" glitch: for ME, never show server values lower than live local.
+  // (Server can lag a few seconds behind pending study seconds.)
+  if(me){
+    const local=communityComputeProgress();
+    const idx=rows.findIndex(r=>communitySame(r.user_id,me));
+    if(idx>=0){
+      const s=rows[idx];
+      rows[idx]={
+        ...s,
+        completed_chapters:Math.max(Number(s.completed_chapters)||0,local.completed),
+        total_chapters:Math.max(Number(s.total_chapters)||0,local.total),
+        today_seconds:Math.max(Number(s.today_seconds)||0,local.todaySeconds),
+        total_seconds:Math.max(Number(s.total_seconds)||0,local.totalSeconds),
+        streak_days:Math.max(Number(s.streak_days)||0,local.streak),
+        updated_at:(typeof pomo!=="undefined"&&pomo.running&&pomo.mode==="focus")
+          ? new Date().toISOString()
+          : (s.updated_at||new Date().toISOString())
+      };
+    }else if(communityIsShared(me,id)){
+      rows=[{
+        user_id:me,
+        completed_chapters:local.completed,
+        total_chapters:local.total,
+        today_seconds:local.todaySeconds,
+        total_seconds:local.totalSeconds,
+        streak_days:local.streak,
+        updated_at:new Date().toISOString()
+      },...rows];
+    }
   }
 
   if(prog.error&&mem.error){
@@ -3317,6 +3348,8 @@ async function communityLoadMembers(id,silent){
   const mine=rows.find(r=>communitySame(r.user_id,me));
   if(mine)communityRenderMyProgress(communityComputeProgress(),mine.updated_at,true);
   else if(communityCurrent)communityRenderMyProgress(communityComputeProgress(),null,communityIsShared(me,id));
+  // Keep own card pinned to live local seconds after any server refresh.
+  try{communityPatchMyMemberCard();}catch(_e){}
 }
 function communityComputeProgress(){
   let completed=0,total=0;
