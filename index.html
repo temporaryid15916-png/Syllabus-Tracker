@@ -1019,7 +1019,7 @@ footer {
           <div id="communityChat" class="community-chat"><div class="community-empty">বাম পাশ থেকে একটি Community নির্বাচন করো।</div></div>
           <div class="community-form"><textarea id="communityMessageInput" class="input" rows="2" maxlength="2000" placeholder="Write a message…" style="resize:vertical"></textarea><div class="row"><span class="sub">Respect other learners. No passwords or private data.</span><button class="btn primary" onclick="communitySendMessage()">Send ↗</button></div></div>
         </div>
-        <div class="card community-card"><h2>Members & study progress</h2><p>শুধু নির্বাচিত Community-র সদস্যদের share করা summary দেখা যাবে।</p><div id="communityMembers" class="community-members"><div class="community-empty">কোনো Community নির্বাচিত হয়নি।</div></div></div>
+        <div class="card community-card"><div class="row" style="flex-wrap:wrap"><h2>Members & study progress</h2><button class="mini" onclick="communityForceRefreshRoom()">↻ Refresh</button></div><p>শুধু নির্বাচিত Community-র সদস্যদের share করা summary দেখা যাবে।</p><div id="communityMembers" class="community-members"><div class="community-empty">কোনো Community নির্বাচিত হয়নি।</div></div></div>
       </div>
     </div>
   </div>
@@ -1186,7 +1186,17 @@ function switchTab(t){
     if(t==="history")renderHistory();
     if(t==="insights")renderInsights();
     try{localStorage.setItem("syllabusActiveTab",t);}catch(e){}
-    if(t==="community" && typeof communityInit==="function" && !communityClient)communityInit();
+    if(t==="community"){
+      if(typeof communityInit==="function" && !communityClient)communityInit();
+      // Force-refresh room data when user opens Community tab (fixes stale members/progress without hard refresh).
+      try{
+        if(communityClient && communityUser && communityCurrent && communityCurrent.id!=null){
+          communityLoadMessages(communityCurrent.id);
+          communityLoadMembers(communityCurrent.id,true);
+          if(!communityPollTimer)communityStartPolling();
+        }
+      }catch(_e){}
+    }
 }
 
 function updateDashboard(){
@@ -1489,7 +1499,7 @@ function getAudioContext(){
 
 let swReg=null;
 // App version — bump this string on every deploy so clients can detect updates.
-const APP_BUILD = "2026-10-31-g";
+const APP_BUILD = "2026-10-31-h";
 if("serviceWorker" in navigator){
     // Network-first SW + auto-activate so mobile normal refresh gets the latest HTML.
     navigator.serviceWorker.register("./sw.js?v="+APP_BUILD, {scope:"./", updateViaCache:"none"})
@@ -3074,6 +3084,23 @@ function communityCleanupRealtime(){
   if(communityRealtime&&communityClient){try{communityClient.removeChannel(communityRealtime);}catch(_e){}}
   communityRealtime=null;communityStopPolling();
 }
+function communityForceRefreshRoom(){
+  if(!communityClient||!communityUser||!communityCurrent||communityCurrent.id==null){
+    communityStatus("আগে একটি Community Open করো।","error");
+    return;
+  }
+  const id=communityCurrent.id;
+  communityStatus("Members ও chat refresh করা হচ্ছে…");
+  Promise.all([
+    communityLoadMessages(id),
+    communityLoadMembers(id,false)
+  ]).then(()=>{
+    if(communitySame(communityCurrent?.id,id))communityStatus("Members ও progress আপডেট হয়েছে।","ok");
+  }).catch(e=>{
+    communityStatus("Refresh ব্যর্থ: "+communityErrText(e),"error");
+  });
+  if(!communityPollTimer)communityStartPolling();
+}
 async function communityLoadInvite(member,token){
   const invite=communityEl("communityInviteInfo");if(!invite)return;
   if(member.role!=="owner"&&member.role!=="admin"){invite.style.display="none";delete invite.dataset.code;return;}
@@ -3123,17 +3150,30 @@ async function communitySelect(id){
   await Promise.all([communityLoadMessages(cid),communityLoadMembers(cid)]);
   if(stale()||!communitySame(communityCurrent?.id,cid))return;
   const filterId=communitySid(cid);
-  communityRealtime=communityClient.channel("community-"+filterId+"-"+Date.now())
+  // Stable-ish channel name (timestamp avoids stale socket reuse; filter still scopes events).
+  communityRealtime=communityClient.channel("community-room-"+filterId+"-"+Date.now())
     .on("postgres_changes",{event:"INSERT",schema:"public",table:"community_messages",filter:"community_id=eq."+filterId},async payload=>{
       const msg=payload.new;if(!msg||!communitySame(communityCurrent?.id,cid))return;
       await communityFetchNames([msg.user_id]);communityAppendMessage(msg);
     })
-    .on("postgres_changes",{event:"*",schema:"public",table:"community_progress",filter:"community_id=eq."+filterId},()=>{if(communitySame(communityCurrent?.id,cid))communityLoadMembers(cid,true);})
-    .on("postgres_changes",{event:"*",schema:"public",table:"community_members",filter:"community_id=eq."+filterId},()=>{if(communitySame(communityCurrent?.id,cid))communityLoadMembers(cid,true);})
+    .on("postgres_changes",{event:"*",schema:"public",table:"community_progress",filter:"community_id=eq."+filterId},()=>{
+      if(communitySame(communityCurrent?.id,cid))communityLoadMembers(cid,true);
+    })
+    .on("postgres_changes",{event:"*",schema:"public",table:"community_members",filter:"community_id=eq."+filterId},()=>{
+      if(communitySame(communityCurrent?.id,cid))communityLoadMembers(cid,true);
+    })
     .subscribe((status)=>{
-      // If realtime is not enabled on the project, polling still covers updates.
-      if(status==="CHANNEL_ERROR"||status==="TIMED_OUT"){
-        console.warn("Community realtime unavailable; using polling fallback. Status:",status);
+      // Realtime often needs tables added to supabase_realtime publication.
+      // Always keep polling as the reliable path for members/progress.
+      if(status==="CHANNEL_ERROR"||status==="TIMED_OUT"||status==="CLOSED"){
+        console.warn("Community realtime unavailable; polling will keep members/progress fresh. Status:",status);
+        if(communitySame(communityCurrent?.id,cid)){
+          communityLoadMembers(cid,true);
+          if(!communityPollTimer)communityStartPolling();
+        }
+      }else if(status==="SUBSCRIBED"){
+        // Immediate pull after subscribe so we don't wait for the next poll tick.
+        if(communitySame(communityCurrent?.id,cid))communityLoadMembers(cid,true);
       }
     });
   communityStartPolling();
@@ -3270,14 +3310,36 @@ async function communitySendMessage(){
   }catch(e){communityStatus(communityErrText(e),"error");}
   finally{communityBusy.send=false;}
 }
-function communityStartPolling(){communityStopPolling();communityPollTick=0;communityPollTimer=setInterval(communityPoll,2000);}
-function communityStopPolling(){if(communityPollTimer)clearInterval(communityPollTimer);communityPollTimer=null;}
+let communityPollInFlight=false;
+function communityStartPolling(){
+  communityStopPolling();
+  communityPollTick=0;
+  communityPollInFlight=false;
+  // Polling is the reliable path when Realtime publication/RLS is incomplete.
+  communityPollTimer=setInterval(communityPoll,2000);
+  // Immediate first tick so members/progress appear without waiting 2s or hard refresh.
+  setTimeout(()=>{try{communityPoll();}catch(_e){}},120);
+}
+function communityStopPolling(){
+  if(communityPollTimer)clearInterval(communityPollTimer);
+  communityPollTimer=null;
+  communityPollInFlight=false;
+}
 async function communityPoll(){
-  // Fallback when Realtime is off: refresh chat + members every few seconds.
-  if(!communityClient||!communityUser||!communityCurrent||document.visibilityState==="hidden")return;
+  // Refresh chat + members/progress on a short interval while Community tab is open.
+  if(!communityClient||!communityUser||!communityCurrent)return;
+  if(document.visibilityState==="hidden")return;
   if(typeof currentTab!=="undefined"&&currentTab!=="community")return;
-  const id=communityCurrent.id;communityPollTick++;
+  if(communityPollInFlight)return;
+  const id=communityCurrent.id;
+  communityPollTick++;
+  communityPollInFlight=true;
   try{
+    // Members/progress first — this is what looked "stuck" until hard refresh.
+    if(communitySame(communityCurrent?.id,id)){
+      await communityLoadMembers(id,true);
+    }
+    if(!communitySame(communityCurrent?.id,id))return;
     const {data,error}=await communityFetchMessagesFromServer(id);
     if(!error&&data&&data.length&&communitySame(communityCurrent?.id,id)){
       const fresh=communityLastMessageAt
@@ -3288,16 +3350,20 @@ async function communityPoll(){
         if(communitySame(communityCurrent?.id,id))fresh.forEach(m=>communityAppendMessage(m));
       }
     }
-    // Refresh members/progress often so shared progress becomes visible to others.
-    if(communitySame(communityCurrent?.id,id))communityLoadMembers(id,true);
-  }catch(_e){}
+  }catch(_e){
+    // Network blip — next interval retries.
+  }finally{
+    communityPollInFlight=false;
+  }
 }
 
 /* ---------- members & progress ---------- */
+let communityMembersLoadToken=0;
 async function communityLoadMembers(id,silent){
   const box=communityEl("communityMembers");if(!box)return;
   if(!silent)box.innerHTML='<div class="community-empty">Members loading…</div>';
   const cid=communitySid(id);
+  const loadToken=++communityMembersLoadToken;
 
   // Prefer security-definer RPCs so every member can see everyone else even if table RLS is wrong.
   let prog={data:null,error:null}, mem={data:null,error:null};
@@ -3382,6 +3448,8 @@ async function communityLoadMembers(id,silent){
   }
 
   await communityFetchNames([...rows.map(r=>r.user_id),...memberRows.map(r=>r.user_id)]);
+  // Drop stale responses so an older slow request cannot overwrite fresher data.
+  if(loadToken!==communityMembersLoadToken)return;
   if(!communitySame(communityCurrent?.id,id))return;
 
   const sharedIds=new Set(rows.map(r=>communitySid(r.user_id)));
@@ -3590,11 +3658,29 @@ if(!window.__communityLiveSync){
   },1000);
 }
 window.addEventListener("online",()=>{
-  try{communityLastAutoAt=0;communityNotifyProgressChanged();}catch(_e){}
+  try{
+    communityLastAutoAt=0;
+    communityNotifyProgressChanged();
+    // Re-pull room data after reconnect so other members' progress appears without hard refresh.
+    if(communityClient&&communityUser&&communityCurrent&&communityCurrent.id!=null&&typeof currentTab!=="undefined"&&currentTab==="community"){
+      communityLoadMembers(communityCurrent.id,true);
+      communityLoadMessages(communityCurrent.id);
+      if(!communityPollTimer)communityStartPolling();
+    }
+  }catch(_e){}
 });
 document.addEventListener("visibilitychange",()=>{
   if(document.visibilityState==="visible"){
-    try{communityLastAutoAt=0;communityNotifyProgressChanged();}catch(_e){}
+    try{
+      communityLastAutoAt=0;
+      communityNotifyProgressChanged();
+      // When returning to the tab, force-refresh members/progress (Realtime often missed events in background).
+      if(communityClient&&communityUser&&communityCurrent&&communityCurrent.id!=null&&typeof currentTab!=="undefined"&&currentTab==="community"){
+        communityLoadMembers(communityCurrent.id,true);
+        communityLoadMessages(communityCurrent.id);
+        if(!communityPollTimer)communityStartPolling();
+      }
+    }catch(_e){}
   }
 });
 
