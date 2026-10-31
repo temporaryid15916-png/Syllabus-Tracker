@@ -3244,38 +3244,93 @@ function communityRenderMyProgress(p,sharedAt,isShared){
   }
 }
 async function communityWriteProgress(row){
-  const r=await communityClient.from("community_progress").upsert(row,{onConflict:"community_id,user_id"});
-  if(!r.error)return r;
-  // The table may lack a unique key for ON CONFLICT: fall back to update-then-insert.
-  const {community_id,user_id,...rest}=row;
-  const u=await communityClient.from("community_progress").update(rest).eq("community_id",community_id).eq("user_id",user_id).select("user_id");
-  if(!u.error&&(u.data||[]).length)return {error:null};
-  if(!u.error){const i=await communityClient.from("community_progress").insert(row);return i.error?{error:i.error}:{error:null};}
-  return r;
+  const cid=communitySid(row.community_id);
+  const uid=communitySid(row.user_id);
+  // 1) Preferred: security-definer RPC (needs Progress-Share-Fix.sql)
+  try{
+    const rpc=await communityClient.rpc("share_community_progress",{
+      p_community_id:cid,
+      p_completed_chapters:Number(row.completed_chapters)||0,
+      p_total_chapters:Number(row.total_chapters)||0,
+      p_today_seconds:Number(row.today_seconds)||0,
+      p_total_seconds:Number(row.total_seconds)||0,
+      p_streak_days:Number(row.streak_days)||0
+    });
+    if(!rpc.error)return {error:null,data:rpc.data,via:"rpc"};
+    // keep rpc error for final fallback message
+    var rpcErr=rpc.error;
+  }catch(e){var rpcErr=e;}
+
+  // 2) Table upsert
+  const payload={
+    community_id:cid,
+    user_id:uid,
+    completed_chapters:Number(row.completed_chapters)||0,
+    total_chapters:Number(row.total_chapters)||0,
+    today_seconds:Number(row.today_seconds)||0,
+    total_seconds:Number(row.total_seconds)||0,
+    streak_days:Number(row.streak_days)||0,
+    updated_at:row.updated_at||new Date().toISOString()
+  };
+  let r=await communityClient.from("community_progress").upsert(payload,{onConflict:"community_id,user_id"}).select("user_id,updated_at");
+  if(!r.error)return {error:null,data:r.data,via:"upsert"};
+
+  // 3) Update then insert
+  const u=await communityClient.from("community_progress").update({
+    completed_chapters:payload.completed_chapters,
+    total_chapters:payload.total_chapters,
+    today_seconds:payload.today_seconds,
+    total_seconds:payload.total_seconds,
+    streak_days:payload.streak_days,
+    updated_at:payload.updated_at
+  }).eq("community_id",cid).eq("user_id",uid).select("user_id");
+  if(!u.error&&(u.data||[]).length)return {error:null,data:u.data,via:"update"};
+
+  const i=await communityClient.from("community_progress").insert(payload).select("user_id,updated_at");
+  if(!i.error)return {error:null,data:i.data,via:"insert"};
+
+  return {error:i.error||u.error||r.error||rpcErr||new Error("Progress write failed"),data:null};
 }
 async function communityPushProgress(cid,silent,refreshUI){
   if(!communityClient||!communityUser)return false;
   const uid=communityUser.id,p=communityComputeProgress();
-  const row={community_id:cid,user_id:uid,completed_chapters:p.completed,total_chapters:p.total,today_seconds:p.todaySeconds,total_seconds:p.totalSeconds,streak_days:p.streak,updated_at:new Date().toISOString()};
+  const row={
+    community_id:communitySid(cid),
+    user_id:uid,
+    completed_chapters:p.completed,
+    total_chapters:p.total,
+    today_seconds:p.todaySeconds,
+    total_seconds:p.totalSeconds,
+    streak_days:p.streak,
+    updated_at:new Date().toISOString()
+  };
   let res=await communityWriteProgress(row);
-  if(res.error&&/foreign key/i.test(res.error.message||"")){await communityEnsureProfile();res=await communityWriteProgress(row);}
+  if(res.error&&/foreign key/i.test(res.error.message||"")){
+    await communityEnsureProfile();
+    res=await communityWriteProgress(row);
+  }
   if(res.error){
-    if(!silent)communityStatus("Progress share হয়নি: "+communityErrText(res.error),"error");else console.warn("Auto progress share failed:",res.error);
+    if(!silent)communityStatus("Progress share হয়নি: "+communityErrText(res.error)+" — Supabase-এ Progress-Share-Fix.sql চালাও।","error");
+    else console.warn("Auto progress share failed:",res.error);
     return false;
   }
   communitySetShared(uid,cid,true);
   if(refreshUI&&communitySame(communityCurrent?.id,cid)){
-    if(!silent)communityStatus("এই Community-র সদস্যদের সঙ্গে progress summary share করা হয়েছে।","ok");
+    if(!silent)communityStatus("✅ Progress share হয়েছে। অন্য member-রা এখন দেখতে পারবে।","ok");
     communityRenderMyProgress(p,row.updated_at,true);
-    communityLoadMembers(cid,true);
+    // Force a non-silent-enough refresh of member cards
+    await communityLoadMembers(cid,true);
   }
   return true;
 }
 async function communitySyncProgress(){
   if(!communityCurrent||!communityUser)return communityStatus("Progress share করার আগে একটি Community নির্বাচন করো।","error");
   if(communityBusy.share)return;communityBusy.share=true;
-  try{await communityPushProgress(communityCurrent.id,false,true);}
-  catch(e){communityStatus("Progress share হয়নি: "+communityErrText(e),"error");}
+  communityStatus("Progress share করা হচ্ছে…");
+  try{
+    const ok=await communityPushProgress(communityCurrent.id,false,true);
+    if(!ok){/* error status already set */}
+  }catch(e){communityStatus("Progress share হয়নি: "+communityErrText(e),"error");}
   finally{communityBusy.share=false;}
 }
 async function communityStopSharing(){
