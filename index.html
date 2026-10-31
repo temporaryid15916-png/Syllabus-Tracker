@@ -2369,6 +2369,9 @@ function checkMidnightChange(){
         flushStudySeconds(true);
         currentDayKey = newDay;
         updateDashboard();
+        // A new calendar day means every shared "Today" value must be refreshed too.
+        // This only syncs communities where the user has enabled progress sharing.
+        notifyCommunity();
         if(currentTab==="history") renderHistory();
     }
 }
@@ -2484,6 +2487,14 @@ function communityAgo(iso){
   const t=Date.parse(iso);if(!t)return "—";
   const s=Math.max(0,Math.round((Date.now()-t)/1000));
   if(s<60)return "এইমাত্র";if(s<3600)return Math.floor(s/60)+" মিনিট আগে";if(s<86400)return Math.floor(s/3600)+" ঘণ্টা আগে";return Math.floor(s/86400)+" দিন আগে";
+}
+// today_seconds belongs to the calendar day on which the row was last updated.
+// After midnight, never present yesterday's saved seconds as today's study time.
+function communityRowTodaySeconds(row){
+  if(!row||!row.updated_at)return 0;
+  const stamp=new Date(row.updated_at);
+  if(Number.isNaN(stamp.getTime())||formatDateKey(stamp)!==today())return 0;
+  return Math.max(0,Math.floor(Number(row.today_seconds)||0));
 }
 
 /* ---------- per-user local storage (selected room, cached list, shared flags) ---------- */
@@ -3415,7 +3426,7 @@ async function communityLoadMembers(id,silent){
         ...s,
         completed_chapters:Math.max(Number(s.completed_chapters)||0,local.completed),
         total_chapters:Math.max(Number(s.total_chapters)||0,local.total),
-        today_seconds:Math.max(Number(s.today_seconds)||0,local.todaySeconds),
+        today_seconds:Math.max(communityRowTodaySeconds(s),local.todaySeconds),
         total_seconds:Math.max(Number(s.total_seconds)||0,local.totalSeconds),
         streak_days:Math.max(Number(s.streak_days)||0,local.streak),
         updated_at:(typeof pomo!=="undefined"&&pomo.running&&pomo.mode==="focus")
@@ -3457,7 +3468,7 @@ async function communityLoadMembers(id,silent){
   const cards=rows.map(m=>{
     const live=communityIsLiveStudying(m.updated_at);
     const liveTag=live?'<span style="color:var(--success);font-weight:900;font-size:10px">● পড়ছে এখন</span>':'';
-    return `<div class="community-member" data-member-uid="${communityEsc(communitySid(m.user_id))}" style="display:block;${live?"border-color:var(--success);background:var(--success-soft);":""}"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><strong>${label(m.user_id)}</strong><small class="member-ago" style="color:var(--muted)">${liveTag||communityEsc(communityAgo(m.updated_at))}</small></div><div class="community-metrics"><div class="community-metric"><strong class="m-ch">${Number(m.completed_chapters)||0}/${Number(m.total_chapters)||0}</strong><span>Chapters</span></div><div class="community-metric"><strong class="m-today">${communityEsc(communityFmt(m.today_seconds))}</strong><span>Today</span></div><div class="community-metric"><strong class="m-total">${communityEsc(communityFmt(m.total_seconds))}</strong><span>Total time</span></div><div class="community-metric"><strong class="m-streak">${Number(m.streak_days)||0}</strong><span>Day streak</span></div></div></div>`;
+    return `<div class="community-member" data-member-uid="${communityEsc(communitySid(m.user_id))}" style="display:block;${live?"border-color:var(--success);background:var(--success-soft);":""}"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><strong>${label(m.user_id)}</strong><small class="member-ago" style="color:var(--muted)">${liveTag||communityEsc(communityAgo(m.updated_at))}</small></div><div class="community-metrics"><div class="community-metric"><strong class="m-ch">${Number(m.completed_chapters)||0}/${Number(m.total_chapters)||0}</strong><span>Chapters</span></div><div class="community-metric"><strong class="m-today">${communityEsc(communityFmt(communitySame(m.user_id,me)?m.today_seconds:communityRowTodaySeconds(m)))}</strong><span>Today</span></div><div class="community-metric"><strong class="m-total">${communityEsc(communityFmt(m.total_seconds))}</strong><span>Total time</span></div><div class="community-metric"><strong class="m-streak">${Number(m.streak_days)||0}</strong><span>Day streak</span></div></div></div>`;
   });
   const waiting=memberRows.filter(m=>!sharedIds.has(communitySid(m.user_id))).map(m=>`<div class="community-member"><strong>${label(m.user_id)}</strong><small style="color:var(--muted)">${communityEsc(m.role||"member")} · এখনো progress share করেননি</small></div>`);
   const html=cards.concat(waiting).join("");
