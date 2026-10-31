@@ -1008,8 +1008,9 @@ footer {
       </div>
       <div class="community-stack">
         <div class="card community-card">
-          <div class="row" style="flex-wrap:wrap"><div><h2 id="communityRoomTitle">Select a Community</h2><p id="communityRoomDescription">Chat and member progress will appear here.</p></div><button class="btn" onclick="communityLeave()">Leave</button></div>
+          <div class="row" style="flex-wrap:wrap"><div><h2 id="communityRoomTitle">Select a Community</h2><p id="communityRoomDescription">Chat and member progress will appear here.</p></div><button type="button" id="communityLeaveButton" class="btn" onclick="communityLeave()">Leave</button></div>
           <div id="communityInviteInfo" class="community-status" style="display:none;margin-top:10px"></div>
+          <div id="communityLeaveStatus" class="community-status" style="display:none;margin-top:10px"></div>
           <div id="communityChat" class="community-chat"><div class="community-empty">বাম পাশ থেকে একটি Community নির্বাচন করো।</div></div>
           <div class="community-form"><textarea id="communityMessageInput" class="input" rows="2" maxlength="2000" placeholder="Write a message…" style="resize:vertical"></textarea><div class="row"><span class="sub">Respect other learners. No passwords or private data.</span><button class="btn primary" onclick="communitySendMessage()">Send ↗</button></div></div>
         </div>
@@ -2533,23 +2534,32 @@ async function communitySyncProgress(){
   document.getElementById("communityMyProgress").innerHTML=`<div class="community-metric"><strong>${completed}/${total}</strong><span>Completed</span></div><div class="community-metric"><strong>${communityFmt(todaySeconds)}</strong><span>Today</span></div><div class="community-metric"><strong>${communityFmt(totalSeconds)}</strong><span>Total time</span></div>`;
 }
 async function communityLeave(){
-  if(!communityClient||!communityUser){communityStatus("আগে Login করো।","error");return;}
-  if(!communityCurrent){communityStatus("আগে Your Communities থেকে একটি Community-তে Open চাপো।","error");return;}
-  if(!confirm("এই Community থেকে বের হতে চাও?"))return;
+  const button=document.getElementById("communityLeaveButton");
+  const status=document.getElementById("communityLeaveStatus");
+  const showLeaveStatus=(message,type="")=>{
+    if(status){status.textContent=message;status.className="community-status"+(type?" "+type:"");status.style.display="block";}
+    communityStatus(message,type);
+  };
+  if(!communityClient||!communityUser){showLeaveStatus("Leave করতে হলে আগে Login করতে হবে।","error");return;}
+  if(!communityCurrent?.id){showLeaveStatus("কোনো Community Open করা নেই। Your Communities থেকে Open চাপো, তারপর Leave করো।","error");return;}
   const id=communityCurrent.id;
-  const button=document.querySelector('#communityAppView button[onclick="communityLeave()"]');
+  if(!window.confirm("এই Community থেকে বের হতে চাও?"))return;
   if(button){button.disabled=true;button.textContent="Leaving…";}
+  showLeaveStatus("Leave request পাঠানো হচ্ছে…");
   try{
-    const {data,error}=await communityClient.rpc("leave_study_community",{p_community_id:id});
+    const rpcPromise=communityClient.rpc("leave_study_community",{p_community_id:id});
+    const timeoutPromise=new Promise((_,reject)=>setTimeout(()=>reject(new Error("Supabase থেকে ১৫ সেকেন্ডের মধ্যে উত্তর আসেনি। Internet ও SQL function পরীক্ষা করো।")),15000));
+    const {data,error}=await Promise.race([rpcPromise,timeoutPromise]);
     if(error)throw error;
-    if(data?.left!==true)throw new Error("Supabase থেকে Leave সফলতার নিশ্চয়তা পাওয়া যায়নি।");
+    if(data?.left!==true)throw new Error("Supabase Leave সফল হয়েছে বলে নিশ্চিত করেনি। RPC function-এর return value পরীক্ষা করতে হবে।");
     communityCleanupRealtime();
     communityCurrent=null;
-    communityStatus(data.community_deleted?"Community-এর শেষ সদস্য হিসেবে বের হওয়ায় Community-টি মুছে দেওয়া হয়েছে।":"Community থেকে বের হয়েছ।","ok");
+    showLeaveStatus(data.community_deleted?"শেষ সদস্য হিসেবে বের হওয়ায় Community-টি মুছে দেওয়া হয়েছে।":"সফলভাবে Community থেকে বের হয়েছ।","ok");
     await communityLoadMyCommunities();
     if(!communityMemberships.length)communityResetUI();
   }catch(error){
-    communityStatus("Leave করা যায়নি: "+(error?.message||String(error)),"error");
+    console.error("Community Leave failed:",error);
+    showLeaveStatus("Leave করা যায়নি: "+(error?.message||String(error)),"error");
   }finally{
     if(button){button.disabled=false;button.textContent="Leave";}
   }
