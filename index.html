@@ -2505,8 +2505,9 @@ function communityClearLeft(u){try{localStorage.removeItem(communityLeftKey(u));
 /* ---------- init / session ---------- */
 function communityAuthRedirectUrl(){
   // Prefer the current page so email confirmation / reset links land back here.
+  // Never include search/hash — leftover auth params would break the next redirect.
   try{
-    if(/^https?:$/.test(location.protocol))return location.origin+location.pathname+(location.search||"");
+    if(/^https?:$/.test(location.protocol))return location.origin+location.pathname;
   }catch(_e){}
   return COMMUNITY_FALLBACK_REDIRECT;
 }
@@ -2533,18 +2534,44 @@ function communityCleanAuthUrl(){
   }catch(_e){}
 }
 async function communityConsumeAuthCallback(){
-  // Handles email-confirmation / recovery links (hash tokens or PKCE ?code=).
+  // Handles email-confirmation / recovery links:
+  // 1) PKCE ?code=  2) ?token_hash=&type=  3) hash access_token (implicit)
   if(!communityClient||!communityHasAuthCallbackInUrl())return null;
   try{
-    // PKCE style: ?code=...
     const params=new URLSearchParams(location.search||"");
+    // Also parse hash query (e.g. #access_token=...&type=signup or #token_hash=...)
+    let hashParams=null;
+    try{
+      const h=String(location.hash||"").replace(/^#/,"");
+      if(h && h.includes("="))hashParams=new URLSearchParams(h);
+    }catch(_e){}
+
+    // 1) PKCE style: ?code=...
     const code=params.get("code");
     if(code && typeof communityClient.auth.exchangeCodeForSession==="function"){
       const {data,error}=await communityClient.auth.exchangeCodeForSession(code);
       if(error)throw error;
-      return data?.session||null;
+      if(data?.session)return data.session;
     }
-    // Implicit / hash style — detectSessionInUrl should already have stored it; re-read.
+
+    // 2) Email OTP / confirmation link: token_hash + type (search or hash)
+    const token_hash=params.get("token_hash")||(hashParams&&hashParams.get("token_hash"));
+    let otpType=params.get("type")||(hashParams&&hashParams.get("type"))||"";
+    if(token_hash){
+      // Supabase uses type=signup | email | recovery | invite | magiclink
+      const allowed=["signup","email","recovery","invite","magiclink","email_change"];
+      if(!allowed.includes(String(otpType).toLowerCase()))otpType="signup";
+      const {data,error}=await communityClient.auth.verifyOtp({
+        token_hash,
+        type:otpType
+      });
+      if(error)throw error;
+      if(data?.session)return data.session;
+    }
+
+    // 3) Implicit / hash tokens — detectSessionInUrl may already have stored them.
+    // Give the client a brief moment, then re-read session.
+    await new Promise(r=>setTimeout(r,50));
     const {data,error}=await communityClient.auth.getSession();
     if(error)throw error;
     return data?.session||null;
@@ -2579,6 +2606,7 @@ function communityInit(){
           if(event==="SIGNED_IN" && communityHasAuthCallbackInUrl()){
             communityStatus("Email confirm হয়েছে। তুমি এখন login অবস্থায় আছো।","ok");
             communityCleanAuthUrl();
+            try{if(typeof switchTab==="function")switchTab("community");}catch(_e){}
           }
           communityApplySession(session);
         }else if(event==="INITIAL_SESSION"){
@@ -2598,9 +2626,10 @@ function communityInit(){
       if(communityHasAuthCallbackInUrl()){
         session=await communityConsumeAuthCallback();
         if(session?.user){
-          communityStatus("Email confirm সফল। Community ব্যবহার করতে পারো।","ok");
+          communityStatus("Email confirm সফল। তুমি এখন login অবস্থায় আছো — Community ব্যবহার করতে পারো।","ok");
           communityCleanAuthUrl();
           communityApplySession(session);
+          try{if(typeof switchTab==="function")switchTab("community");}catch(_e){}
           return;
         }
       }
@@ -2765,13 +2794,33 @@ async function communityResendConfirmation(){
   communityStatus("Confirmation email পাঠানো হচ্ছে…");
   try{
     const redirect=communityAuthRedirectUrl();
-    const {error}=await communityClient.auth.resend({
-      type:"signup",
-      email,
-      options:{emailRedirectTo:redirect}
-    });
-    if(error)communityStatus(communityErrText(error),"error");
-    else communityStatus("Confirmation email পাঠানো হয়েছে (account থাকলে)। Inbox ও Spam চেক করো। Link-এ click করলে automatically login হয়ে যাবে।","ok");
+    // Prefer signup confirmation; if that fails with a type mismatch, try "email".
+    let error=null;
+    let ok=false;
+    for(const t of ["signup","email"]){
+      const r=await communityClient.auth.resend({
+        type:t,
+        email,
+        options:{emailRedirectTo:redirect}
+      });
+      if(!r.error){ok=true;error=null;break;}
+      error=r.error;
+      // Rate limit / already confirmed — no point trying other types.
+      const msg=(r.error.message||"").toLowerCase();
+      if(/rate limit|too many|already confirmed|email.*confirmed|security purposes/i.test(msg))break;
+    }
+    if(error){
+      const msg=communityErrText(error);
+      if(/rate limit|too many|security purposes/i.test(error.message||"")){
+        communityStatus("একটু আগেই email পাঠানো হয়েছে। ৬০ সেকেন্ড অপেক্ষা করে আবার «Resend confirmation» চাপো। Inbox ও Spam দুটোই চেক করো।","error");
+      }else if(/already confirmed|email.*confirmed/i.test(error.message||"")){
+        communityStatus("এই email ইতিমধ্যে confirm হয়ে গেছে। সরাসরি Login করো।","ok");
+      }else{
+        communityStatus(msg,"error");
+      }
+    }else if(ok){
+      communityStatus("নতুন confirmation email পাঠানো হয়েছে। Inbox ও Spam চেক করো। Link-এ click করলে app-এ automatically login হয়ে যাবে — আবার Login চাপার দরকার নেই।","ok");
+    }
   }catch(e){communityStatus(communityErrText(e),"error");}
   finally{communityBusy.resend=false;}
 }
