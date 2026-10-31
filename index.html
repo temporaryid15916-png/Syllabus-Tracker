@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
 <meta name="theme-color" content="#0f172a">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png">
@@ -1485,10 +1488,52 @@ function getAudioContext(){
 });
 
 let swReg=null;
+// App version — bump this string on every deploy so clients can detect updates.
+const APP_BUILD = "2026-10-31-c";
 if("serviceWorker" in navigator){
-    navigator.serviceWorker.register("./sw.js", {scope:"./"})
-        .then(reg=>{swReg=reg;})
+    // Network-first SW + auto-activate so mobile normal refresh gets the latest HTML.
+    navigator.serviceWorker.register("./sw.js?v="+APP_BUILD, {scope:"./", updateViaCache:"none"})
+        .then(async reg=>{
+            swReg=reg;
+            try{await reg.update();}catch(_e){}
+            // If a new worker is waiting, activate it immediately.
+            if(reg.waiting){
+                try{reg.waiting.postMessage({type:"SKIP_WAITING"});}catch(_e){}
+            }
+            reg.addEventListener("updatefound",()=>{
+                const nw=reg.installing;
+                if(!nw)return;
+                nw.addEventListener("statechange",()=>{
+                    if(nw.state==="installed" && navigator.serviceWorker.controller){
+                        try{nw.postMessage({type:"SKIP_WAITING"});}catch(_e){}
+                    }
+                });
+            });
+        })
         .catch(()=>{});
+    // When the new SW takes control, reload once so the fresh HTML/JS is used.
+    let __swRefreshing=false;
+    navigator.serviceWorker.addEventListener("controllerchange",()=>{
+        if(__swRefreshing)return;
+        __swRefreshing=true;
+        try{sessionStorage.setItem("syllabusSwReloaded",APP_BUILD);}catch(_e){}
+        location.reload();
+    });
+    // One-time cache purge when build id changes (runs only after new HTML actually loads).
+    try{
+        const prev=localStorage.getItem("syllabusAppBuild");
+        if(prev && prev!==APP_BUILD){
+            localStorage.setItem("syllabusAppBuild",APP_BUILD);
+            if(window.caches&&caches.keys){
+                caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k)))).catch(()=>{});
+            }
+            navigator.serviceWorker.getRegistrations().then(rs=>{
+                rs.forEach(r=>{try{r.unregister();}catch(_e){}});
+            }).catch(()=>{});
+        }else if(!prev){
+            localStorage.setItem("syllabusAppBuild",APP_BUILD);
+        }
+    }catch(_e){}
 }
 
 function notifySW(type,payload={}){
