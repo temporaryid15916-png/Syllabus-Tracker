@@ -2430,7 +2430,29 @@ async function communityLoadMyCommunities(){
 function communityCleanupRealtime(){if(communityRealtime&&communityClient){communityClient.removeChannel(communityRealtime);}communityRealtime=null;}
 async function communitySelect(id){
   if(!communityClient||!communityUser)return;
-  const member=communityMemberships.find(m=>m.community_id===id);if(!member)return communityStatus("এই Community-র সদস্যপদ পাওয়া যায়নি।","error");
+  // The membership list may still be loading immediately after create/join.
+  // Recover the requested membership directly before showing an error.
+  let member=communityMemberships.find(m=>m.community_id===id);
+  if(!member){
+    const requestedUserId=communityUser.id;
+    const {data,error}=await communityClient
+      .from("community_members")
+      .select("community_id,user_id,role,joined_at,communities(id,name,description,visibility)")
+      .eq("community_id",id)
+      .eq("user_id",requestedUserId)
+      .maybeSingle();
+    if(communityUser?.id!==requestedUserId)return;
+    if(error){communityStatus("Community membership load হয়নি: "+error.message,"error");return;}
+    if(data){
+      member=data;
+      communityMemberships=[data,...communityMemberships.filter(m=>m.community_id!==id)];
+    }else{
+      // Refresh once in case the list query raced the create/join RPC.
+      await communityLoadMyCommunities();
+      member=communityMemberships.find(m=>m.community_id===id);
+      if(!member)return communityStatus("এই Community-তে membership পাওয়া যায়নি। Community তৈরি/যোগদান সফল হয়েছে কি না Refresh করে দেখো।","error");
+    }
+  }
   const token=++communitySelectionToken;
   communityCleanupRealtime();communityCurrent=member.communities||{id};
   const c=communityCurrent;
