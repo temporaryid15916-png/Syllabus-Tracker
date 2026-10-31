@@ -989,7 +989,7 @@ footer {
         <label for="communityDisplayName">Display name (registration only)</label><input id="communityDisplayName" class="input" maxlength="40" placeholder="তোমার নাম">
         <div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn primary" onclick="communitySignIn()">Login</button><button class="btn" onclick="communitySignUp()">Create account</button><button class="btn" onclick="communityResetPassword()">Forgot password?</button></div>
       </div>
-      <p style="margin-top:10px">প্রথমবার account তৈরি করলে email confirmation প্রয়োজন হতে পারে।</p>
+      <p style="margin-top:10px">প্রথমবার account তৈরি করলে email confirmation প্রয়োজন হতে পারে। একই email দিয়ে বারবার Create / Forgot password চাপবে না — Supabase email rate limit আসতে পারে (১–৫ মিনিট অপেক্ষা করো)।</p>
     </div>
   </div>
   <div id="communityAppView" style="display:none">
@@ -2351,6 +2351,26 @@ function communityHideStatus(){const e=communityEl("communityStatus");if(e)e.sty
 function communityEsc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
 function communityErrText(e){
   const m=(e&&e.message)||String(e||"");
+  const status=e&& (e.status||e.statusCode||e.code);
+  // Supabase Auth rate limits (email confirmation / magic link / reset)
+  if(/rate.?limit|email.?rate|over_email_send_rate|too many requests|429/i.test(m) || status===429 || status==="429"){
+    return "Email পাঠানোর limit শেষ হয়ে গেছে। কিছুক্ষণ (সাধারণত ১–৫ মিনিট) অপেক্ষা করে আবার চেষ্টা করো। একই email দিয়ে বারবার Create/Reset চাপবে না।";
+  }
+  if(/user already registered|already been registered|already exists|email address is already/i.test(m)){
+    return "এই email দিয়ে ইতিমধ্যে account আছে। Login করো, অথবা Forgot password দিয়ে reset করো।";
+  }
+  if(/invalid login credentials|invalid credentials|wrong password|email not found/i.test(m)){
+    return "Email অথবা password ভুল। আবার চেক করো। নতুন হলে Create account চাপো।";
+  }
+  if(/email not confirmed|confirm your email|not confirmed/i.test(m)){
+    return "Email এখনো confirm হয়নি। Inbox (ও Spam) চেক করে confirmation link খুলে account confirm করো।";
+  }
+  if(/password|weak|at least|characters|should be/i.test(m) && /password/i.test(m)){
+    return "Password দুর্বল বা নিয়ম মেনে না। অন্তত ৮ অক্ষর ব্যবহার করো।";
+  }
+  if(/signup.?disabled|signups.?not.?allowed/i.test(m)){
+    return "নতুন account তৈরি এখন বন্ধ আছে (Supabase Auth setting)।";
+  }
   if(/row-level security|permission denied/i.test(m))return "অনুমতি পাওয়া যায়নি (Supabase policy/RLS)। "+m;
   if(/foreign key/i.test(m))return "Profile/Community সম্পর্কিত তথ্য পাওয়া যায়নি। Logout করে আবার Login করো। "+m;
   if(/failed to fetch|networkerror|network request/i.test(m))return "Internet connection পরীক্ষা করো। "+m;
@@ -2384,6 +2404,12 @@ function communityIsShared(u,id){try{return !!JSON.parse(localStorage.getItem(co
 function communitySetShared(u,id,on){
   try{const o=JSON.parse(localStorage.getItem(communitySharedKey(u))||"{}")||{};if(on)o[communitySid(id)]=1;else delete o[communitySid(id)];localStorage.setItem(communitySharedKey(u),JSON.stringify(o));}catch(_e){}
 }
+/* Left / departed communities: once left, keep them out of the local list even if the server still has a membership (e.g. RLS/leave RPC issue). Re-join removes the flag. */
+const communityLeftKey=u=>"syllabusTrackerLeftCommunities:"+communitySid(u);
+function communityGetLeft(u){try{return new Set((JSON.parse(localStorage.getItem(communityLeftKey(u))||"[]")||[]).map(communitySid));}catch(_e){return new Set();}}
+function communityAddLeft(u,id){if(id==null||!u)return;const s=communityGetLeft(u);s.add(communitySid(id));try{localStorage.setItem(communityLeftKey(u),JSON.stringify([...s]));}catch(_e){}}
+function communityRemoveLeft(u,id){if(id==null||!u)return;const s=communityGetLeft(u);if(!s.has(communitySid(id)))return;s.delete(communitySid(id));try{localStorage.setItem(communityLeftKey(u),JSON.stringify([...s]));}catch(_e){}}
+function communityClearLeft(u){try{localStorage.removeItem(communityLeftKey(u));}catch(_e){}}
 
 /* ---------- init / session ---------- */
 function communityInit(){
@@ -2448,7 +2474,9 @@ function communityApplySession(session){
   const email=communityEl("communitySignedEmail");if(email)email.textContent=communityUser.email||"Signed in";
   const welcome=communityEl("communityWelcome");if(welcome)welcome.textContent="👋 Welcome to Community";
   // Show the last known list instantly (so a reload never looks empty); the server result replaces it right after.
-  const cached=Object.values(communityReadCache(nextId));
+  // Skip any communities the user already left locally (left-flag), so a reload does not resurrect them.
+  const left=communityGetLeft(nextId);
+  const cached=Object.values(communityReadCache(nextId)).filter(c=>!left.has(communitySid(c.id)));
   if(cached.length){
     communityMemberships=cached.map(c=>({community_id:c.id,role:c.role||"member",joined_at:c.joined_at||null,communities:{id:c.id,name:c.name,description:c.description,visibility:c.visibility}}));
     communityRenderMyList();
@@ -2474,29 +2502,67 @@ async function communitySignIn(){
   if(!communityClient)return communityStatus("Supabase setup সম্পন্ন হয়নি।","error");
   const email=communityEl("communityEmail").value.trim(),password=communityEl("communityPassword").value;
   if(!email||!password)return communityStatus("Email ও password দুটোই দাও।","error");
-  if(communityBusy.signin)return;communityBusy.signin=true;
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return communityStatus("সঠিক email address লিখো।","error");
+  if(communityBusy.signin||communityBusy.signup||communityBusy.reset)return;
+  communityBusy.signin=true;
+  communityStatus("Login করা হচ্ছে…");
   try{
     const {error}=await communityClient.auth.signInWithPassword({email,password});
     if(error)communityStatus(communityErrText(error),"error");
+    // Success is handled by onAuthStateChange → communityApplySession
   }catch(e){communityStatus(communityErrText(e),"error");}
   finally{communityBusy.signin=false;}
 }
 async function communitySignUp(){
   if(!communityClient)return communityStatus("Supabase setup সম্পন্ন হয়নি।","error");
   const email=communityEl("communityEmail").value.trim(),password=communityEl("communityPassword").value,displayName=communityEl("communityDisplayName").value.trim();
-  if(!email||password.length<8)return communityStatus("সঠিক email এবং অন্তত ৮ অক্ষরের password দাও।","error");
-  const redirect=/^https?:$/.test(location.protocol)?location.origin+location.pathname:COMMUNITY_FALLBACK_REDIRECT;
-  const {data,error}=await communityClient.auth.signUp({email,password,options:{emailRedirectTo:redirect,data:{display_name:displayName||email.split("@")[0]}}});
-  if(error)return communityStatus(communityErrText(error),"error");
-  if(data.session)communityStatus("Account তৈরি হয়েছে এবং login সম্পন্ন।","ok");
-  else communityStatus("Account তৈরি হয়েছে। Email confirmation link খুলে account confirm করো।","ok");
+  if(!email)return communityStatus("Email লিখো।","error");
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return communityStatus("সঠিক email address লিখো।","error");
+  if(password.length<8)return communityStatus("Password অন্তত ৮ অক্ষরের হতে হবে।","error");
+  if(communityBusy.signin||communityBusy.signup||communityBusy.reset)return;
+  communityBusy.signup=true;
+  communityStatus("Account তৈরি করা হচ্ছে… একটু অপেক্ষা করো।");
+  try{
+    const redirect=/^https?:$/.test(location.protocol)?location.origin+location.pathname:COMMUNITY_FALLBACK_REDIRECT;
+    const {data,error}=await communityClient.auth.signUp({
+      email,
+      password,
+      options:{
+        emailRedirectTo:redirect,
+        data:{display_name:displayName||email.split("@")[0]}
+      }
+    });
+    if(error){
+      communityStatus(communityErrText(error),"error");
+      return;
+    }
+    if(data.session){
+      communityStatus("Account তৈরি হয়েছে এবং login সম্পন্ন।","ok");
+    }else if(data.user && !data.user.identities?.length){
+      // Supabase sometimes returns a user object with empty identities when the email is already registered
+      // (to avoid email enumeration). Treat it as already registered.
+      communityStatus("এই email দিয়ে ইতিমধ্যে account থাকতে পারে। Login করো, অথবা Forgot password দিয়ে reset করো।","error");
+    }else{
+      communityStatus("Account তৈরি হয়েছে। Inbox (ও Spam folder) চেক করে confirmation link খুলে account confirm করো। তারপর Login করো।","ok");
+    }
+  }catch(e){communityStatus(communityErrText(e),"error");}
+  finally{communityBusy.signup=false;}
 }
 async function communityResetPassword(){
   if(!communityClient)return communityStatus("Supabase setup সম্পন্ন হয়নি।","error");
   const email=communityEl("communityEmail").value.trim();
   if(!email)return communityStatus("Password reset-এর জন্য email লিখো।","error");
-  const {error}=await communityClient.auth.resetPasswordForEmail(email,{redirectTo:location.href.split("#")[0]});
-  communityStatus(error?communityErrText(error):"যদি এই email-এ account থাকে, password reset-এর নির্দেশনা পাঠানো হবে।",error?"error":"ok");
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return communityStatus("সঠিক email address লিখো।","error");
+  if(communityBusy.signin||communityBusy.signup||communityBusy.reset)return;
+  communityBusy.reset=true;
+  communityStatus("Password reset email পাঠানো হচ্ছে…");
+  try{
+    const redirect=/^https?:$/.test(location.protocol)?location.origin+location.pathname:COMMUNITY_FALLBACK_REDIRECT;
+    const {error}=await communityClient.auth.resetPasswordForEmail(email,{redirectTo:redirect});
+    if(error)communityStatus(communityErrText(error),"error");
+    else communityStatus("যদি এই email-এ account থাকে, password reset-এর link পাঠানো হয়েছে। Inbox ও Spam চেক করো। একই email দিয়ে বারবার চাপবে না (rate limit)।","ok");
+  }catch(e){communityStatus(communityErrText(e),"error");}
+  finally{communityBusy.reset=false;}
 }
 async function communitySignOut(){
   communityCleanupRealtime();
@@ -2519,7 +2585,7 @@ function communityRenderMyList(){
 async function communityFetchCommunity(id){
   try{const {data,error}=await communityClient.from("communities").select("id,name,description,visibility").eq("id",id).limit(1);return error?null:(data||[])[0]||null;}catch(_e){return null;}
 }
-async function communityLoadMyCommunities(forceRefresh=false){
+async function communityLoadMyCommunities(forceRefresh=false, allowEmptyClear=false){
   if(!communityClient||!communityUser)return;
   if(communityMembershipLoadPromise){
     if(!forceRefresh)return communityMembershipLoadPromise;
@@ -2549,11 +2615,28 @@ async function communityLoadMyCommunities(forceRefresh=false){
     }
     if(communityUser?.id!==uid)return false;
     const cache=communityReadCache(uid);
-    communityMemberships=rows.map(r=>{
+    const left=communityGetLeft(uid);
+    // Build list from server rows, skip any the user already left locally.
+    let nextList=rows.map(r=>{
       const key=communitySid(r.community_id);
+      if(left.has(key))return null;
       const d=details.get(key)||cache[key]||{name:"Community",description:"",visibility:"private"};
       return {community_id:r.community_id,role:r.role||"member",joined_at:r.joined_at||null,communities:{...d,id:r.community_id}};
-    }).sort((a,b)=>communitySid(b.joined_at).localeCompare(communitySid(a.joined_at)));
+    }).filter(Boolean).sort((a,b)=>communitySid(b.joined_at).localeCompare(communitySid(a.joined_at)));
+    // If server returned nothing but we have a non-empty local cache, keep the cached list
+    // so a reload / create-then-refresh never wipes communities the user just created or joined.
+    // Only "Clean stale list" (allowEmptyClear=true) is allowed to clear the list when server is empty.
+    if(nextList.length===0 && !allowEmptyClear){
+      const fromCache=Object.values(cache).filter(c=>!left.has(communitySid(c.id))).map(c=>({
+        community_id:c.id,role:c.role||"member",joined_at:c.joined_at||null,
+        communities:{id:c.id,name:c.name||"Community",description:c.description||"",visibility:c.visibility||"private"}
+      }));
+      if(fromCache.length){
+        nextList=fromCache;
+        if(!communityMemberships.length)communityStatus("Server-এ list খালি এসেছে; cached Community list দেখানো হচ্ছে। Stale হলে «Clean stale list» চাপো।","ok");
+      }
+    }
+    communityMemberships=nextList;
     communityWriteCache(uid,communityMemberships);
     if(communityCurrent&&!communityMemberships.some(m=>communitySame(m.community_id,communityCurrent.id))){
       // The open room is no longer mine (left from another device, deleted, ...).
@@ -2575,11 +2658,13 @@ async function communityLoadMyCommunities(forceRefresh=false){
   await communitySelect(pick.community_id);
 }
 function communityCleanListedMemberships(){
-  // Never leaves anything: it only re-reads the list from Supabase.
+  // Re-reads the list from Supabase and also clears the local "left" flags so you see the pure server membership list.
+  // This does NOT call Leave on the server — it only refreshes what is shown.
   if(!communityClient||!communityUser){communityStatus("আগে Login করো।","error");return;}
+  communityClearLeft(communityUser.id);
   communityStatus("Supabase থেকে Community list refresh করা হচ্ছে…");
-  communityLoadMyCommunities(true).then(()=>{
-    communityStatus("Community list refresh হয়েছে। কোনো Community থেকে Leave করা হয়নি।","ok");
+  communityLoadMyCommunities(true, true).then(()=>{
+    communityStatus("Community list refresh হয়েছে। Local left-flags clear করা হয়েছে; কোনো Community থেকে Leave করা হয়নি।","ok");
   }).catch(error=>{
     console.error("Community list refresh failed:",error);
     communityStatus("Community list refresh করা যায়নি: "+communityErrText(error),"error");
@@ -2599,7 +2684,11 @@ async function communityCreate(){
     const c=communityFirst(data)||{};
     const newId=c.id??c.community_id??c.community?.id??null;
     communityEl("newCommunityName").value="";communityEl("newCommunityDescription").value="";
-    if(newId!=null){communityCacheOne(communityUser.id,newId,{name,description,visibility,role:"owner"});communityRememberSelected(newId);}
+    if(newId!=null){
+      communityRemoveLeft(communityUser.id,newId);
+      communityCacheOne(communityUser.id,newId,{name,description,visibility,role:"owner"});
+      communityRememberSelected(newId);
+    }
     communityStatus("Community তৈরি হয়েছে। Invite code: "+(c.invite_code||"—"),"ok");
     await communityLoadMyCommunities(true);
     if(newId!=null&&!communitySame(communityCurrent?.id,newId))await communitySelect(newId);
@@ -2618,7 +2707,11 @@ async function communityLoadDiscover(){
   box.innerHTML=available.length?available.map(c=>`<div class="community-item"><div><strong>${communityEsc(c.name)}</strong><small>${communityEsc(c.description||"Public study group")} · ${Number(c.member_count)||0} members</small></div><button class="mini" data-community-join="${communityEsc(c.id)}">Join</button></div>`).join(""):'<div class="community-empty">এখন কোনো নতুন public group পাওয়া যায়নি।</div>';
 }
 async function communityAfterJoin(joinedId,details){
-  if(joinedId!=null){communityCacheOne(communityUser.id,joinedId,{visibility:"private",...(details||{})});communityRememberSelected(joinedId);}
+  if(joinedId!=null){
+    communityRemoveLeft(communityUser.id,joinedId);
+    communityCacheOne(communityUser.id,joinedId,{visibility:"private",...(details||{})});
+    communityRememberSelected(joinedId);
+  }
   await communityLoadMyCommunities(true);
   if(joinedId!=null&&!communitySame(communityCurrent?.id,joinedId))await communitySelect(joinedId);
 }
@@ -2940,6 +3033,7 @@ async function confirmCommunityLeave(){
     if(r.error)throw new Error("Leave-এর পর membership verify করা যায়নি: "+communityErrText(r.error));
     return (r.data||[]).length>0;
   };
+  let serverLeftOk=false, communityDeleted=false, lastErr=null;
   try{
     // 1) Remove my shared progress from this community (best effort, only while I am still a member).
     try{await communityClient.from("community_progress").delete().eq("community_id",id).eq("user_id",uid);}catch(_e){}
@@ -2950,30 +3044,45 @@ async function confirmCommunityLeave(){
       rpcError=r.error;rpcData=communityFirst(r.data);
     }catch(e){rpcError=e;}
     // 3) Never trust the RPC alone: verify in the database, and fall back to deleting only MY membership row.
-    let still=await stillMember();
+    let still=true;
+    try{still=await stillMember();}catch(e){lastErr=e;still=true;}
     if(still){
-      await communityClient.from("community_members").delete().eq("community_id",id).eq("user_id",uid);
-      still=await stillMember();
-      if(still)throw new Error(rpcError?communityErrText(rpcError):"Supabase-এ তোমার membership এখনও আছে। SQL leave function/policy ঠিক করতে হবে (Syllabus-Tracker-Community-Fix.sql দেখো)।");
+      try{
+        await communityClient.from("community_members").delete().eq("community_id",id).eq("user_id",uid);
+        still=await stillMember();
+      }catch(e){lastErr=e;still=true;}
     }
-    // 4) Clean only THIS community from local state.
-    communitySetShared(uid,id,false);communityForgetSelected(id,uid);
-    communityCleanupRealtime();
-    communityCurrent=null;
-    communityMemberships=communityMemberships.filter(m=>!communitySame(m.community_id,id));
-    communityWriteCache(uid,communityMemberships);
-    communityResetRoomUI();
-    communityRenderMyList();
-    await communityLoadMyCommunities(true);   // fresh DB read, then opens another remaining community (if any)
-    showLeaveStatus(rpcData?.community_deleted?"শেষ সদস্য হিসেবে বের হওয়ায় Community-টি মুছে দেওয়া হয়েছে।":"সফলভাবে Community থেকে বের হয়েছ। Your Communities তালিকা আপডেট করা হয়েছে।","ok");
+    if(!still){
+      serverLeftOk=true;
+      communityDeleted=!!rpcData?.community_deleted;
+    }else{
+      lastErr=rpcError||lastErr||new Error("Supabase-এ membership এখনও আছে। SQL leave function/policy ঠিক করতে হবে (Syllabus-Tracker-Community-Fix.sql দেখো)।");
+    }
   }catch(error){
-    console.error("Community Leave failed:",error);
-    showLeaveStatus("Leave করা যায়নি: "+communityErrText(error),"error");
-  }finally{
-    communityBusy.leave=false;
-    if(button){button.disabled=!communityCurrent;button.textContent="Leave";}
-    if(confirmButton){confirmButton.disabled=false;confirmButton.textContent="হ্যাঁ, Leave";}
+    console.error("Community Leave server step failed:",error);
+    lastErr=error;
   }
+  // 4) ALWAYS clean THIS community from local state (left-flag + list + cache).
+  // Even if the server leave failed (RLS / missing RPC), the community will not reappear after reload.
+  // Re-join via invite code / public join clears the left-flag.
+  communityAddLeft(uid,id);
+  communitySetShared(uid,id,false);
+  communityForgetSelected(id,uid);
+  communityCleanupRealtime();
+  communityCurrent=null;
+  communityMemberships=communityMemberships.filter(m=>!communitySame(m.community_id,id));
+  communityWriteCache(uid,communityMemberships);
+  communityResetRoomUI();
+  communityRenderMyList();
+  try{await communityLoadMyCommunities(true);}catch(_e){}
+  if(serverLeftOk){
+    showLeaveStatus(communityDeleted?"শেষ সদস্য হিসেবে বের হওয়ায় Community-টি মুছে দেওয়া হয়েছে।":"সফলভাবে Community থেকে বের হয়েছ। Your Communities তালিকা আপডেট করা হয়েছে।","ok");
+  }else{
+    showLeaveStatus("Community list থেকে সরানো হয়েছে। Server leave পুরোপুরি সফল হয়নি"+(lastErr?": "+communityErrText(lastErr):"")+" — পরে আবার দেখা গেলে «Clean stale list» ব্যবহার করো।","ok");
+  }
+  communityBusy.leave=false;
+  if(button){button.disabled=!communityCurrent;button.textContent="Leave";}
+  if(confirmButton){confirmButton.disabled=false;confirmButton.textContent="হ্যাঁ, Leave";}
 }
 
 document.addEventListener("click",event=>{
