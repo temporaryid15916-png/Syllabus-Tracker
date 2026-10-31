@@ -1489,7 +1489,7 @@ function getAudioContext(){
 
 let swReg=null;
 // App version — bump this string on every deploy so clients can detect updates.
-const APP_BUILD = "2026-10-31-e";
+const APP_BUILD = "2026-10-31-f";
 if("serviceWorker" in navigator){
     // Network-first SW + auto-activate so mobile normal refresh gets the latest HTML.
     navigator.serviceWorker.register("./sw.js?v="+APP_BUILD, {scope:"./", updateViaCache:"none"})
@@ -3309,7 +3309,7 @@ async function communityLoadMembers(id,silent){
   const cards=rows.map(m=>{
     const live=communityIsLiveStudying(m.updated_at);
     const liveTag=live?'<span style="color:var(--success);font-weight:900;font-size:10px">● পড়ছে এখন</span>':'';
-    return `<div class="community-member" style="display:block;${live?"border-color:var(--success);background:var(--success-soft);":""}"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><strong>${label(m.user_id)}</strong><small style="color:var(--muted)">${liveTag||communityEsc(communityAgo(m.updated_at))}</small></div><div class="community-metrics"><div class="community-metric"><strong>${Number(m.completed_chapters)||0}/${Number(m.total_chapters)||0}</strong><span>Chapters</span></div><div class="community-metric"><strong>${communityEsc(communityFmt(m.today_seconds))}</strong><span>Today</span></div><div class="community-metric"><strong>${communityEsc(communityFmt(m.total_seconds))}</strong><span>Total time</span></div><div class="community-metric"><strong>${Number(m.streak_days)||0}</strong><span>Day streak</span></div></div></div>`;
+    return `<div class="community-member" data-member-uid="${communityEsc(communitySid(m.user_id))}" style="display:block;${live?"border-color:var(--success);background:var(--success-soft);":""}"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><strong>${label(m.user_id)}</strong><small class="member-ago" style="color:var(--muted)">${liveTag||communityEsc(communityAgo(m.updated_at))}</small></div><div class="community-metrics"><div class="community-metric"><strong class="m-ch">${Number(m.completed_chapters)||0}/${Number(m.total_chapters)||0}</strong><span>Chapters</span></div><div class="community-metric"><strong class="m-today">${communityEsc(communityFmt(m.today_seconds))}</strong><span>Today</span></div><div class="community-metric"><strong class="m-total">${communityEsc(communityFmt(m.total_seconds))}</strong><span>Total time</span></div><div class="community-metric"><strong class="m-streak">${Number(m.streak_days)||0}</strong><span>Day streak</span></div></div></div>`;
   });
   const waiting=memberRows.filter(m=>!sharedIds.has(communitySid(m.user_id))).map(m=>`<div class="community-member"><strong>${label(m.user_id)}</strong><small style="color:var(--muted)">${communityEsc(m.role||"member")} · এখনো progress share করেননি</small></div>`);
   const html=cards.concat(waiting).join("");
@@ -3439,35 +3439,73 @@ async function communityStopSharing(){
   communityLoadMembers(cid,true);
 }
 // Called by the tracker whenever chapters / study time change. Keeps already-shared summaries fresh (rate-limited).
+function communityPatchMyMemberCard(){
+  // Instantly refresh the "You" card in Members box from local study seconds (no server wait).
+  if(!communityUser||!communityCurrent)return;
+  if(typeof currentTab!=="undefined"&&currentTab!=="community")return;
+  if(!communityIsShared(communityUser.id,communityCurrent.id))return;
+  const p=communityComputeProgress();
+  const uid=communitySid(communityUser.id);
+  const card=document.querySelector('#communityMembers .community-member[data-member-uid="'+CSS.escape(uid)+'"]');
+  if(card){
+    const studying=!!(typeof pomo!=="undefined" && pomo.running && pomo.mode==="focus");
+    card.style.borderColor=studying?"var(--success)":"";
+    card.style.background=studying?"var(--success-soft)":"";
+    const ago=card.querySelector(".member-ago");
+    if(ago)ago.innerHTML=studying?'<span style="color:var(--success);font-weight:900;font-size:10px">● পড়ছে এখন</span>':communityEsc(communityAgo(new Date().toISOString()));
+    const ch=card.querySelector(".m-ch"); if(ch)ch.textContent=p.completed+"/"+p.total;
+    const td=card.querySelector(".m-today"); if(td)td.textContent=communityFmt(p.todaySeconds);
+    const tot=card.querySelector(".m-total"); if(tot)tot.textContent=communityFmt(p.totalSeconds);
+    const st=card.querySelector(".m-streak"); if(st)st.textContent=String(p.streak);
+  }else{
+    // Card missing (first share / empty list) — rebuild from server+local.
+    communityLoadMembers(communityCurrent.id,true);
+  }
+  communityRenderMyProgress(p,new Date().toISOString(),true);
+}
 function communityNotifyProgressChanged(){
   if(!communityClient||!communityUser)return;
   if(!communityMemberships.some(m=>communityIsShared(communityUser.id,m.community_id)))return;
+  // Always paint local member card immediately.
+  try{communityPatchMyMemberCard();}catch(_e){}
   clearTimeout(communityAutoTimer);
   const studying=!!(typeof pomo!=="undefined" && pomo.running && pomo.mode==="focus");
   const since=Date.now()-communityLastAutoAt;
-  const minGap=studying?3000:8000;
-  const wait=since>=minGap?500:Math.max(500,minGap-since);
+  const minGap=studying?2500:8000;
+  const wait=since>=minGap?300:Math.max(300,minGap-since);
   communityAutoTimer=setTimeout(async()=>{
     communityLastAutoAt=Date.now();
     for(const m of communityMemberships.slice()){
       if(!communityUser)break;
       if(communityIsShared(communityUser.id,m.community_id)){
-        const ok=await communityPushProgress(m.community_id,true,communitySame(communityCurrent?.id,m.community_id));
+        const ok=await communityPushProgress(m.community_id,true,false);
         if(!ok){try{localStorage.setItem("syllabusCommunityProgressPending","1");}catch(_e){}}
-        else{try{localStorage.removeItem("syllabusCommunityProgressPending");}catch(_e){}}
+        else{
+          try{localStorage.removeItem("syllabusCommunityProgressPending");}catch(_e){}
+          // After a successful push, refresh members so OTHER users' polls see new numbers;
+          // for this tab we already patched locally.
+          if(communitySame(communityCurrent?.id,m.community_id)){
+            // soft refresh others only (avoid wiping local live numbers mid-second)
+            communityLoadMembers(m.community_id,true).then(()=>{try{communityPatchMyMemberCard();}catch(_e){}});
+          }
+        }
       }
     }
   },wait);
 }
 if(!window.__communityLiveSync){
+  // 1s: local Members box ticks (hours/minutes/seconds) while you study
   window.__communityLiveSync=setInterval(()=>{
     try{
+      if(typeof currentTab!=="undefined"&&currentTab!=="community")return;
+      if(!communityUser||!communityCurrent)return;
+      if(!communityIsShared(communityUser.id,communityCurrent.id))return;
+      communityPatchMyMemberCard();
       if(typeof pomo!=="undefined" && pomo.running && pomo.mode==="focus"){
-        communityLastAutoAt=0;
         communityNotifyProgressChanged();
       }
     }catch(_e){}
-  },4000);
+  },1000);
 }
 window.addEventListener("online",()=>{
   try{communityLastAutoAt=0;communityNotifyProgressChanged();}catch(_e){}
