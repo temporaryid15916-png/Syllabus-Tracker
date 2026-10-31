@@ -2600,6 +2600,7 @@ async function communityLoadMyCommunities(forceRefresh=false, allowEmptyClear=fa
     const mq=await communityClient.from("community_members").select("community_id,role,joined_at").eq("user_id",uid);
     if(communityUser?.id!==uid)return false;
     if(mq.error){
+      // Keep whatever is already on screen / in cache — never wipe on a network/RLS error.
       communityRenderMyList();
       communityStatus("Community list load হয়নি: "+communityErrText(mq.error),"error");
       return false;
@@ -2616,26 +2617,60 @@ async function communityLoadMyCommunities(forceRefresh=false, allowEmptyClear=fa
     if(communityUser?.id!==uid)return false;
     const cache=communityReadCache(uid);
     const left=communityGetLeft(uid);
-    // Build list from server rows, skip any the user already left locally.
-    let nextList=rows.map(r=>{
+
+    // --- MERGE strategy (not replace) ---
+    // Server rows are authoritative when present. Local cache fills any gaps so a
+    // just-created / just-joined community never disappears on reload if the
+    // membership SELECT is briefly empty or partial (RLS, lag, etc.).
+    // allowEmptyClear=true (Clean stale list) uses pure server list only.
+    const byId=new Map();
+
+    // 1) Start from local cache (so create/join survive reload).
+    if(!allowEmptyClear){
+      Object.values(cache).forEach(c=>{
+        const key=communitySid(c.id);
+        if(!key||left.has(key))return;
+        byId.set(key,{
+          community_id:c.id,
+          role:c.role||"member",
+          joined_at:c.joined_at||null,
+          communities:{id:c.id,name:c.name||"Community",description:c.description||"",visibility:c.visibility||"private"}
+        });
+      });
+    }
+
+    // 2) Overlay server rows (server wins on role / joined_at / name when available).
+    rows.forEach(r=>{
       const key=communitySid(r.community_id);
-      if(left.has(key))return null;
-      const d=details.get(key)||cache[key]||{name:"Community",description:"",visibility:"private"};
-      return {community_id:r.community_id,role:r.role||"member",joined_at:r.joined_at||null,communities:{...d,id:r.community_id}};
-    }).filter(Boolean).sort((a,b)=>communitySid(b.joined_at).localeCompare(communitySid(a.joined_at)));
-    // If server returned nothing but we have a non-empty local cache, keep the cached list
-    // so a reload / create-then-refresh never wipes communities the user just created or joined.
-    // Only "Clean stale list" (allowEmptyClear=true) is allowed to clear the list when server is empty.
-    if(nextList.length===0 && !allowEmptyClear){
-      const fromCache=Object.values(cache).filter(c=>!left.has(communitySid(c.id))).map(c=>({
-        community_id:c.id,role:c.role||"member",joined_at:c.joined_at||null,
-        communities:{id:c.id,name:c.name||"Community",description:c.description||"",visibility:c.visibility||"private"}
-      }));
-      if(fromCache.length){
-        nextList=fromCache;
-        if(!communityMemberships.length)communityStatus("Server-এ list খালি এসেছে; cached Community list দেখানো হচ্ছে। Stale হলে «Clean stale list» চাপো।","ok");
+      if(!key||left.has(key))return;
+      const d=details.get(key)||cache[key]||{};
+      byId.set(key,{
+        community_id:r.community_id,
+        role:r.role||"member",
+        joined_at:r.joined_at||null,
+        communities:{
+          id:r.community_id,
+          name:d.name||cache[key]?.name||"Community",
+          description:d.description??cache[key]?.description??"",
+          visibility:d.visibility||cache[key]?.visibility||"private"
+        }
+      });
+    });
+
+    // 3) Pure-server mode for Clean: if server is empty, list becomes empty.
+    if(allowEmptyClear && rows.length===0){
+      byId.clear();
+    }
+
+    let nextList=[...byId.values()].sort((a,b)=>communitySid(b.joined_at||"").localeCompare(communitySid(a.joined_at||"")));
+
+    // Soft notice when we had to fall back entirely to cache.
+    if(rows.length===0 && nextList.length>0 && !allowEmptyClear){
+      if(!communityMemberships.length){
+        communityStatus("Server-এ list খালি এসেছে; cached Community list দেখানো হচ্ছে। Stale হলে «Clean stale list» চাপো।","ok");
       }
     }
+
     communityMemberships=nextList;
     communityWriteCache(uid,communityMemberships);
     if(communityCurrent&&!communityMemberships.some(m=>communitySame(m.community_id,communityCurrent.id))){
@@ -2681,15 +2716,30 @@ async function communityCreate(){
     await communityEnsureProfile();
     const {data,error}=await communityClient.rpc("create_study_community",{p_name:name,p_description:description,p_visibility:visibility});
     if(error)return communityStatus(communityErrText(error),"error");
+    // RPC return shape can vary (object / array / nested). Try several paths.
     const c=communityFirst(data)||{};
-    const newId=c.id??c.community_id??c.community?.id??null;
+    const newId=c.id??c.community_id??c.community?.id??(Array.isArray(data)?data[0]?.id:null)??null;
     communityEl("newCommunityName").value="";communityEl("newCommunityDescription").value="";
     if(newId!=null){
       communityRemoveLeft(communityUser.id,newId);
-      communityCacheOne(communityUser.id,newId,{name,description,visibility,role:"owner"});
+      // Optimistic local entry so the community is visible immediately and survives reload
+      // even if the subsequent SELECT is empty/partial for a moment.
+      const optimistic={
+        community_id:newId,
+        role:"owner",
+        joined_at:new Date().toISOString(),
+        communities:{id:newId,name,description,visibility}
+      };
+      communityMemberships=[optimistic,...communityMemberships.filter(m=>!communitySame(m.community_id,newId))];
+      communityCacheOne(communityUser.id,newId,{name,description,visibility,role:"owner",joined_at:optimistic.joined_at});
       communityRememberSelected(newId);
+      communityWriteCache(communityUser.id,communityMemberships);
+      communityRenderMyList();
+    }else{
+      communityStatus("Community তৈরি হয়েছে, কিন্তু id পাওয়া যায়নি। ↻ Refresh চাপো।","ok");
     }
     communityStatus("Community তৈরি হয়েছে। Invite code: "+(c.invite_code||"—"),"ok");
+    // Enrich from server (merge, never wipe the optimistic entry).
     await communityLoadMyCommunities(true);
     if(newId!=null&&!communitySame(communityCurrent?.id,newId))await communitySelect(newId);
   }catch(e){communityStatus(communityErrText(e),"error");}
@@ -2709,9 +2759,23 @@ async function communityLoadDiscover(){
 async function communityAfterJoin(joinedId,details){
   if(joinedId!=null){
     communityRemoveLeft(communityUser.id,joinedId);
-    communityCacheOne(communityUser.id,joinedId,{visibility:"private",...(details||{})});
+    const name=(details&&details.name)||"Community";
+    const description=(details&&details.description)||"";
+    const visibility=(details&&details.visibility)||"private";
+    // Optimistic local entry so join survives an immediate reload.
+    const optimistic={
+      community_id:joinedId,
+      role:"member",
+      joined_at:new Date().toISOString(),
+      communities:{id:joinedId,name,description,visibility}
+    };
+    communityMemberships=[optimistic,...communityMemberships.filter(m=>!communitySame(m.community_id,joinedId))];
+    communityCacheOne(communityUser.id,joinedId,{name,description,visibility,role:"member",joined_at:optimistic.joined_at});
     communityRememberSelected(joinedId);
+    communityWriteCache(communityUser.id,communityMemberships);
+    communityRenderMyList();
   }
+  // Enrich from server (merge — never wipe the optimistic entry).
   await communityLoadMyCommunities(true);
   if(joinedId!=null&&!communitySame(communityCurrent?.id,joinedId))await communitySelect(joinedId);
 }
