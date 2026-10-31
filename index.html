@@ -987,9 +987,9 @@ footer {
         <label for="communityEmail">Email address</label><input id="communityEmail" class="input" type="email" autocomplete="email" placeholder="you@example.com">
         <label for="communityPassword">Password</label><input id="communityPassword" class="input" type="password" autocomplete="current-password" placeholder="At least 8 characters">
         <label for="communityDisplayName">Display name (registration only)</label><input id="communityDisplayName" class="input" maxlength="40" placeholder="তোমার নাম">
-        <div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn primary" onclick="communitySignIn()">Login</button><button class="btn" onclick="communitySignUp()">Create account</button><button class="btn" onclick="communityResetPassword()">Forgot password?</button></div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn primary" onclick="communitySignIn()">Login</button><button class="btn" onclick="communitySignUp()">Create account</button><button class="btn" onclick="communityResetPassword()">Forgot password?</button><button class="btn" onclick="communityResendConfirmation()">Resend confirmation</button></div>
       </div>
-      <p style="margin-top:10px">প্রথমবার account তৈরি করলে email confirmation প্রয়োজন হতে পারে। একই email দিয়ে বারবার Create / Forgot password চাপবে না — Supabase email rate limit আসতে পারে (১–৫ মিনিট অপেক্ষা করো)।</p>
+      <p style="margin-top:10px">প্রথমবার account তৈরি করলে email-এ confirmation link আসবে। Link-এ click করলে app-এ ঢুকে automatically login হয়ে যাবে — আবার password দিয়ে Login চাপার দরকার নেই। Confirmation email না এলে বা link কাজ না করলে «Resend confirmation» চাপো। একই email দিয়ে বারবার Create / Forgot / Resend চাপবে না (rate limit)।</p>
     </div>
   </div>
   <div id="communityAppView" style="display:none">
@@ -2412,6 +2412,56 @@ function communityRemoveLeft(u,id){if(id==null||!u)return;const s=communityGetLe
 function communityClearLeft(u){try{localStorage.removeItem(communityLeftKey(u));}catch(_e){}}
 
 /* ---------- init / session ---------- */
+function communityAuthRedirectUrl(){
+  // Prefer the current page so email confirmation / reset links land back here.
+  try{
+    if(/^https?:$/.test(location.protocol))return location.origin+location.pathname+(location.search||"");
+  }catch(_e){}
+  return COMMUNITY_FALLBACK_REDIRECT;
+}
+function communityHasAuthCallbackInUrl(){
+  try{
+    const hash=String(location.hash||"");
+    const search=String(location.search||"");
+    if(/access_token=|refresh_token=|type=signup|type=recovery|type=email|type=invite/i.test(hash))return true;
+    if(/[?&]code=/.test(search)||/[?&]token_hash=/.test(search)||/[?&]type=/.test(search))return true;
+  }catch(_e){}
+  return false;
+}
+function communityCleanAuthUrl(){
+  // Remove sensitive tokens from the address bar after session is established.
+  try{
+    if(communityHasAuthCallbackInUrl() && window.history?.replaceState){
+      const clean=location.origin+location.pathname+(location.search?location.search.replace(/([?&])(code|token_hash|type)=[^&]*/g,"$1").replace(/[?&]$/,"").replace(/^\?&/,"?"):"");
+      window.history.replaceState({},document.title,clean.split("?")[0]+(location.hash&&!/access_token|refresh_token|type=/i.test(location.hash)?location.hash:""));
+      // Always strip auth hash tokens.
+      if(/access_token=|refresh_token=|type=/i.test(location.hash||"")){
+        window.history.replaceState({},document.title,location.pathname+location.search);
+      }
+    }
+  }catch(_e){}
+}
+async function communityConsumeAuthCallback(){
+  // Handles email-confirmation / recovery links (hash tokens or PKCE ?code=).
+  if(!communityClient||!communityHasAuthCallbackInUrl())return null;
+  try{
+    // PKCE style: ?code=...
+    const params=new URLSearchParams(location.search||"");
+    const code=params.get("code");
+    if(code && typeof communityClient.auth.exchangeCodeForSession==="function"){
+      const {data,error}=await communityClient.auth.exchangeCodeForSession(code);
+      if(error)throw error;
+      return data?.session||null;
+    }
+    // Implicit / hash style — detectSessionInUrl should already have stored it; re-read.
+    const {data,error}=await communityClient.auth.getSession();
+    if(error)throw error;
+    return data?.session||null;
+  }catch(e){
+    communityStatus("Email confirmation / magic link process হয়নি: "+communityErrText(e),"error");
+    return null;
+  }
+}
 function communityInit(){
   if(communityInitStarted)return;
   communityInitStarted=true;
@@ -2419,18 +2469,58 @@ function communityInit(){
   if(!communityConfigured()){communityStatus("Community backend এখনো configure করা হয়নি। Supabase project URL ও anon key বসিয়ে SQL setup সম্পন্ন করলে Login/Community চালু হবে।");return;}
   try{
     communityClient=window.supabase.createClient(COMMUNITY_SUPABASE_URL,COMMUNITY_SUPABASE_ANON_KEY,{
-      auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+      auth:{
+        persistSession:true,
+        autoRefreshToken:true,
+        detectSessionInUrl:true,
+        flowType:"pkce"
+      }
     });
   }catch(e){communityInitStarted=false;communityStatus("Supabase configuration error: "+e.message,"error");return;}
-  communityClient.auth.getSession().then(({data,error})=>{
-    if(error)communityStatus("Session restore হয়নি: "+error.message,"error");
-    communityApplySession(data?.session||null);
-  }).catch(e=>communityStatus("Login session restore হয়নি: "+(e?.message||e),"error"));
-  const {data}=communityClient.auth.onAuthStateChange((_event,session)=>{
-    // Avoid doing Supabase queries inside the auth callback itself.
-    setTimeout(()=>communityApplySession(session),0);
+
+  // Listen first so email-confirm redirects are not missed.
+  const {data}=communityClient.auth.onAuthStateChange((event,session)=>{
+    // Avoid doing heavy work inside the auth callback itself.
+    setTimeout(()=>{
+      if(event==="SIGNED_IN" || event==="TOKEN_REFRESHED" || event==="USER_UPDATED" || event==="INITIAL_SESSION"){
+        if(session?.user){
+          // Email confirmation links land here as SIGNED_IN — user is already logged in.
+          if(event==="SIGNED_IN" && communityHasAuthCallbackInUrl()){
+            communityStatus("Email confirm হয়েছে। তুমি এখন login অবস্থায় আছো।","ok");
+            communityCleanAuthUrl();
+          }
+          communityApplySession(session);
+        }else if(event==="INITIAL_SESSION"){
+          communityApplySession(null);
+        }
+      }else if(event==="SIGNED_OUT"){
+        communityApplySession(null);
+      }
+    },0);
   });
   communityAuthSubscription=data?.subscription||null;
+
+  // Explicitly consume confirmation / recovery tokens from the URL, then fall back to stored session.
+  (async()=>{
+    try{
+      let session=null;
+      if(communityHasAuthCallbackInUrl()){
+        session=await communityConsumeAuthCallback();
+        if(session?.user){
+          communityStatus("Email confirm সফল। Community ব্যবহার করতে পারো।","ok");
+          communityCleanAuthUrl();
+          communityApplySession(session);
+          return;
+        }
+      }
+      const {data,error}=await communityClient.auth.getSession();
+      if(error)communityStatus("Session restore হয়নি: "+error.message,"error");
+      communityApplySession(data?.session||null);
+    }catch(e){
+      communityStatus("Login session restore হয়নি: "+(e?.message||e),"error");
+      communityApplySession(null);
+    }
+  })();
 }
 function communityWireInputs(){
   const pw=communityEl("communityPassword");
@@ -2503,13 +2593,23 @@ async function communitySignIn(){
   const email=communityEl("communityEmail").value.trim(),password=communityEl("communityPassword").value;
   if(!email||!password)return communityStatus("Email ও password দুটোই দাও।","error");
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return communityStatus("সঠিক email address লিখো।","error");
-  if(communityBusy.signin||communityBusy.signup||communityBusy.reset)return;
+  if(communityBusy.signin||communityBusy.signup||communityBusy.reset||communityBusy.resend)return;
   communityBusy.signin=true;
   communityStatus("Login করা হচ্ছে…");
   try{
-    const {error}=await communityClient.auth.signInWithPassword({email,password});
-    if(error)communityStatus(communityErrText(error),"error");
+    const {data,error}=await communityClient.auth.signInWithPassword({email,password});
+    if(error){
+      const msg=communityErrText(error);
+      // Guide the user to resend confirmation instead of looping on Login.
+      if(/not confirmed|confirm your email|email not confirmed/i.test(error.message||"")){
+        communityStatus(msg+" নিচের «Resend confirmation» চাপো, নতুন link থেকে confirm করো। Confirm হলে automatically login হয়ে যাবে — আবার Login চাপার দরকার নেই।","error");
+      }else{
+        communityStatus(msg,"error");
+      }
+      return;
+    }
     // Success is handled by onAuthStateChange → communityApplySession
+    if(data?.session)communityApplySession(data.session);
   }catch(e){communityStatus(communityErrText(e),"error");}
   finally{communityBusy.signin=false;}
 }
@@ -2519,11 +2619,11 @@ async function communitySignUp(){
   if(!email)return communityStatus("Email লিখো।","error");
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return communityStatus("সঠিক email address লিখো।","error");
   if(password.length<8)return communityStatus("Password অন্তত ৮ অক্ষরের হতে হবে।","error");
-  if(communityBusy.signin||communityBusy.signup||communityBusy.reset)return;
+  if(communityBusy.signin||communityBusy.signup||communityBusy.reset||communityBusy.resend)return;
   communityBusy.signup=true;
   communityStatus("Account তৈরি করা হচ্ছে… একটু অপেক্ষা করো।");
   try{
-    const redirect=/^https?:$/.test(location.protocol)?location.origin+location.pathname:COMMUNITY_FALLBACK_REDIRECT;
+    const redirect=communityAuthRedirectUrl();
     const {data,error}=await communityClient.auth.signUp({
       email,
       password,
@@ -2538,12 +2638,12 @@ async function communitySignUp(){
     }
     if(data.session){
       communityStatus("Account তৈরি হয়েছে এবং login সম্পন্ন।","ok");
-    }else if(data.user && !data.user.identities?.length){
-      // Supabase sometimes returns a user object with empty identities when the email is already registered
-      // (to avoid email enumeration). Treat it as already registered.
-      communityStatus("এই email দিয়ে ইতিমধ্যে account থাকতে পারে। Login করো, অথবা Forgot password দিয়ে reset করো।","error");
+      communityApplySession(data.session);
+    }else if(data.user && Array.isArray(data.user.identities) && data.user.identities.length===0){
+      // Supabase returns empty identities when the email is already registered (anti-enumeration).
+      communityStatus("এই email দিয়ে ইতিমধ্যে account থাকতে পারে। Login করো, অথবা «Resend confirmation» / Forgot password ব্যবহার করো।","error");
     }else{
-      communityStatus("Account তৈরি হয়েছে। Inbox (ও Spam folder) চেক করে confirmation link খুলে account confirm করো। তারপর Login করো।","ok");
+      communityStatus("Account তৈরি হয়েছে। Inbox (ও Spam) চেক করে confirmation link-এ click করো। Link খুললে app-এ automatically login হয়ে যাবে — আলাদা করে Login চাপার দরকার নেই।","ok");
     }
   }catch(e){communityStatus(communityErrText(e),"error");}
   finally{communityBusy.signup=false;}
@@ -2553,16 +2653,36 @@ async function communityResetPassword(){
   const email=communityEl("communityEmail").value.trim();
   if(!email)return communityStatus("Password reset-এর জন্য email লিখো।","error");
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return communityStatus("সঠিক email address লিখো।","error");
-  if(communityBusy.signin||communityBusy.signup||communityBusy.reset)return;
+  if(communityBusy.signin||communityBusy.signup||communityBusy.reset||communityBusy.resend)return;
   communityBusy.reset=true;
   communityStatus("Password reset email পাঠানো হচ্ছে…");
   try{
-    const redirect=/^https?:$/.test(location.protocol)?location.origin+location.pathname:COMMUNITY_FALLBACK_REDIRECT;
+    const redirect=communityAuthRedirectUrl();
     const {error}=await communityClient.auth.resetPasswordForEmail(email,{redirectTo:redirect});
     if(error)communityStatus(communityErrText(error),"error");
     else communityStatus("যদি এই email-এ account থাকে, password reset-এর link পাঠানো হয়েছে। Inbox ও Spam চেক করো। একই email দিয়ে বারবার চাপবে না (rate limit)।","ok");
   }catch(e){communityStatus(communityErrText(e),"error");}
   finally{communityBusy.reset=false;}
+}
+async function communityResendConfirmation(){
+  if(!communityClient)return communityStatus("Supabase setup সম্পন্ন হয়নি।","error");
+  const email=communityEl("communityEmail").value.trim();
+  if(!email)return communityStatus("Confirmation পাঠাতে email লিখো।","error");
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return communityStatus("সঠিক email address লিখো।","error");
+  if(communityBusy.signin||communityBusy.signup||communityBusy.reset||communityBusy.resend)return;
+  communityBusy.resend=true;
+  communityStatus("Confirmation email পাঠানো হচ্ছে…");
+  try{
+    const redirect=communityAuthRedirectUrl();
+    const {error}=await communityClient.auth.resend({
+      type:"signup",
+      email,
+      options:{emailRedirectTo:redirect}
+    });
+    if(error)communityStatus(communityErrText(error),"error");
+    else communityStatus("Confirmation email পাঠানো হয়েছে (account থাকলে)। Inbox ও Spam চেক করো। Link-এ click করলে automatically login হয়ে যাবে।","ok");
+  }catch(e){communityStatus(communityErrText(e),"error");}
+  finally{communityBusy.resend=false;}
 }
 async function communitySignOut(){
   communityCleanupRealtime();
