@@ -1,5 +1,5 @@
 /* Syllabus Tracker service worker — network-first for pages so normal mobile refresh gets latest HTML */
-const CACHE = "syllabus-static-v2026-10-31-e";
+const CACHE = "syllabus-static-v2026-10-31-f";
 const STATIC = ["./","./icon-192.png","./manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
