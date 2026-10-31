@@ -1021,6 +1021,18 @@ footer {
 </section>
 </main>
 
+<div id="communityLeaveConfirmModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="communityLeaveConfirmTitle">
+  <div class="card modalbox" style="text-align:center;max-width:420px">
+    <div style="font-size:34px">🚪</div>
+    <h3 id="communityLeaveConfirmTitle" style="margin-top:6px">Community থেকে বের হবে?</h3>
+    <p id="communityLeaveConfirmText" class="sub" style="margin:8px 0 16px">তুমি কি এই Community থেকে বের হতে চাও?</p>
+    <div class="modal-actions" style="justify-content:center">
+      <button type="button" class="btn" onclick="closeCommunityLeaveConfirm()">Cancel</button>
+      <button type="button" id="communityLeaveConfirmButton" class="btn danger" onclick="confirmCommunityLeave()">হ্যাঁ, Leave</button>
+    </div>
+  </div>
+</div>
+
 <div id="pomoFloatingTimer" class="pomo-floating" onclick="openPomodoro()"></div>
 
 <!-- Pomodoro Overlay -->
@@ -2411,9 +2423,13 @@ async function communityJoinByCode(){
   communityStatus("Community-তে join করা হয়েছে।","ok");
   await communityLoadMyCommunities();if(data?.id)await communitySelect(data.id);
 }
-async function communityLoadMyCommunities(){
+async function communityLoadMyCommunities(forceRefresh=false){
   if(!communityClient||!communityUser)return;
-  if(communityMembershipLoadPromise)return communityMembershipLoadPromise;
+  if(communityMembershipLoadPromise){
+    if(!forceRefresh)return communityMembershipLoadPromise;
+    try{await communityMembershipLoadPromise;}catch(_e){}
+    if(!communityClient||!communityUser)return;
+  }
   const requestedUserId=communityUser.id;
   communityMembershipLoadPromise=(async()=>{
     const box=document.getElementById("communityMyList");if(box)box.innerHTML='<div class="community-empty">Loading…</div>';
@@ -2533,8 +2549,11 @@ async function communitySyncProgress(){
   communityStatus("এই Community-র সদস্যদের সঙ্গে progress summary share করা হয়েছে।","ok");await communityLoadMembers(communityCurrent.id);
   document.getElementById("communityMyProgress").innerHTML=`<div class="community-metric"><strong>${completed}/${total}</strong><span>Completed</span></div><div class="community-metric"><strong>${communityFmt(todaySeconds)}</strong><span>Today</span></div><div class="community-metric"><strong>${communityFmt(totalSeconds)}</strong><span>Total time</span></div>`;
 }
-async function communityLeave(){
-  const button=document.getElementById("communityLeaveButton");
+function closeCommunityLeaveConfirm(){
+  const modal=document.getElementById("communityLeaveConfirmModal");
+  if(modal)modal.classList.remove("show");
+}
+function communityLeave(){
   const status=document.getElementById("communityLeaveStatus");
   const showLeaveStatus=(message,type="")=>{
     if(status){status.textContent=message;status.className="community-status"+(type?" "+type:"");status.style.display="block";}
@@ -2542,9 +2561,28 @@ async function communityLeave(){
   };
   if(!communityClient||!communityUser){showLeaveStatus("Leave করতে হলে আগে Login করতে হবে।","error");return;}
   if(!communityCurrent?.id){showLeaveStatus("কোনো Community Open করা নেই। Your Communities থেকে Open চাপো, তারপর Leave করো।","error");return;}
+  const currentMembership=communityMemberships.find(m=>m.community_id===communityCurrent.id);
+  const isLastMember=communityMemberships.length===1 && !!currentMembership && currentMembership.role==="owner";
+  const text=document.getElementById("communityLeaveConfirmText");
+  if(text)text.textContent=isLastMember
+    ? "তুমি এই Community-র শেষ সদস্য। Leave করলে Community-টি স্থায়ীভাবে মুছে যাবে। তুমি কি নিশ্চিত?"
+    : "তুমি কি এই Community থেকে বের হতে চাও?";
+  const modal=document.getElementById("communityLeaveConfirmModal");
+  if(modal)modal.classList.add("show");
+}
+async function confirmCommunityLeave(){
+  const button=document.getElementById("communityLeaveButton");
+  const confirmButton=document.getElementById("communityLeaveConfirmButton");
+  const status=document.getElementById("communityLeaveStatus");
+  const showLeaveStatus=(message,type="")=>{
+    if(status){status.textContent=message;status.className="community-status"+(type?" "+type:"");status.style.display="block";}
+    communityStatus(message,type);
+  };
+  if(!communityClient||!communityUser||!communityCurrent?.id){closeCommunityLeaveConfirm();showLeaveStatus("কোনো Community Open করা নেই। Your Communities থেকে Open চাপো, তারপর Leave করো।","error");return;}
   const id=communityCurrent.id;
-  if(!window.confirm("এই Community থেকে বের হতে চাও?"))return;
+  closeCommunityLeaveConfirm();
   if(button){button.disabled=true;button.textContent="Leaving…";}
+  if(confirmButton){confirmButton.disabled=true;confirmButton.textContent="অপেক্ষা করো…";}
   showLeaveStatus("Leave request পাঠানো হচ্ছে…");
   try{
     const rpcPromise=communityClient.rpc("leave_study_community",{p_community_id:id});
@@ -2554,14 +2592,20 @@ async function communityLeave(){
     if(data?.left!==true)throw new Error("Supabase Leave সফল হয়েছে বলে নিশ্চিত করেনি। RPC function-এর return value পরীক্ষা করতে হবে।");
     communityCleanupRealtime();
     communityCurrent=null;
-    showLeaveStatus(data.community_deleted?"শেষ সদস্য হিসেবে বের হওয়ায় Community-টি মুছে দেওয়া হয়েছে।":"সফলভাবে Community থেকে বের হয়েছ।","ok");
-    await communityLoadMyCommunities();
-    if(!communityMemberships.length)communityResetUI();
+    // Force a fresh database read; do not reuse an older in-flight membership list.
+    await communityLoadMyCommunities(true);
+    if(!communityMemberships.length){
+      communityResetUI();
+      const list=document.getElementById("communityMyList");
+      if(list)list.innerHTML='<div class="community-empty">এখনো কোনো Community নেই। নতুন তৈরি করো অথবা invite code দিয়ে join করো।</div>';
+    }
+    showLeaveStatus(data.community_deleted?"শেষ সদস্য হিসেবে বের হওয়ায় Community-টি মুছে দেওয়া হয়েছে। Your Communities তালিকা আপডেট করা হয়েছে।":"সফলভাবে Community থেকে বের হয়েছ। Your Communities তালিকা আপডেট করা হয়েছে।","ok");
   }catch(error){
     console.error("Community Leave failed:",error);
     showLeaveStatus("Leave করা যায়নি: "+(error?.message||String(error)),"error");
   }finally{
     if(button){button.disabled=false;button.textContent="Leave";}
+    if(confirmButton){confirmButton.disabled=false;confirmButton.textContent="হ্যাঁ, Leave";}
   }
 }
 
