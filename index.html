@@ -3498,7 +3498,7 @@ function communityComputeProgress(){
 }
 function communityRenderMyProgress(p,sharedAt,isShared){
   const box=communityEl("communityMyProgress"),info=communityEl("communityShareInfo");
-  if(box)box.innerHTML=`<div class="community-metric"><strong>${p.completed}/${p.total}</strong><span>Completed</span></div><div class="community-metric"><strong>${communityEsc(communityFmt(p.todaySeconds))}</strong><span>Today</span></div><div class="community-metric"><strong>${communityEsc(communityFmt(p.totalSeconds))}</strong><span>Total time</span></div>`;
+    if(box)box.innerHTML=`<div class="community-metric"><strong>${p.completed}/${p.total}</strong><span>Completed</span></div><div class="community-metric"><strong>${communityEsc(communityFmt(p.todaySeconds))}</strong><span>Today</span></div>`;
   if(info){
     if(!communityCurrent)info.textContent="";
     else if(isShared)info.textContent="✅ এই Community-তে share করা আছে"+(sharedAt?" · শেষ update: "+communityAgo(sharedAt):"")+" · progress নিজে থেকে update হবে।";
