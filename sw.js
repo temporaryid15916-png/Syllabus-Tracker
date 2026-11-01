@@ -1,79 +1,108 @@
-/* Syllabus Tracker service worker — network-first for pages so normal mobile refresh gets latest HTML */
-const CACHE = "syllabus-static-v2026-10-31-f";
-const STATIC = ["./","./icon-192.png","./manifest.webmanifest"];
 
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(STATIC).catch(() => {})).then(() => self.skipWaiting())
-  );
+/* Syllabus Tracker service worker — network-first, versioned cache. */
+const params = new URL(self.location.href).searchParams;
+const BUILD = params.get('v') || '2026-11-01-cachefix-a';
+const CACHE_NAME = `syllabus-tracker-${BUILD}`;
+const APP_SHELL = ['./', './index.html', './manifest.webmanifest'];
+
+self.addEventListener('install', event => {
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    await Promise.all(APP_SHELL.map(async path => {
+      try {
+        const response = await fetch(path, { cache: 'no-store' });
+        if (response.ok) await cache.put(path, response.clone());
+      } catch (_) {}
+    }));
+    await self.skipWaiting();
+  })());
 });
 
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))
-    ).then(() => self.clients.claim())
-  );
+self.addEventListener('activate', event => {
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys
+      .filter(key =>
+        key.startsWith('syllabus-tracker-') &&
+        key !== CACHE_NAME
+      )
+      .map(key => caches.delete(key)));
+    await self.clients.claim();
+  })());
 });
 
-self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "SKIP_WAITING") self.skipWaiting();
+self.addEventListener('message', event => {
+  if (event.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
-self.addEventListener("fetch", (event) => {
-  const req = event.request;
-  if (req.method !== "GET") return;
+self.addEventListener('fetch', event => {
+  const request = event.request;
+  if (request.method !== 'GET') return;
 
-  const url = new URL(req.url);
-  // Always network-first for HTML / navigation so refresh gets the newest app.
-  const isNav = req.mode === "navigate" || (req.headers.get("accept") || "").includes("text/html");
-  const isAppShell =
-    url.pathname.endsWith(".html") ||
-    url.pathname.endsWith("/") ||
-    /Syllabus-Tracker\/?$/i.test(url.pathname);
+  const url = new URL(request.url);
 
-  if (isNav || isAppShell) {
-    event.respondWith(
-      fetch(req)
-        .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
-          return res;
-        })
-        .catch(() => caches.match(req).then((r) => r || caches.match("./")))
-    );
+  // Never intercept requests to other origins.
+  if (url.origin !== self.location.origin) return;
+
+  const isNavigation = request.mode === 'navigate';
+  const isHtml =
+    /\.html?$/i.test(url.pathname) ||
+    url.pathname.endsWith('/');
+
+  if (isNavigation || isHtml) {
+    event.respondWith((async () => {
+      const cache = await caches.open(CACHE_NAME);
+
+      try {
+        const fresh = await fetch(request, {
+          cache: 'no-store'
+        });
+
+        if (fresh && fresh.ok) {
+          await cache.put(request, fresh.clone());
+
+          if (
+            url.pathname.endsWith('/') ||
+            url.pathname.endsWith('/index.html')
+          ) {
+            await cache.put('./', fresh.clone());
+            await cache.put('./index.html', fresh.clone());
+          }
+        }
+
+        return fresh;
+      } catch (_) {
+        return (
+          await cache.match(request) ||
+          await cache.match('./index.html') ||
+          Response.error()
+        );
+      }
+    })());
+
     return;
   }
 
-  // Other assets: cache-first, then network
-  event.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) return cached;
-      return fetch(req).then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
-        return res;
-      }).catch(() => cached);
-    })
-  );
-});
+  event.respondWith((async () => {
+    const cache = await caches.open(CACHE_NAME);
 
-// Pomodoro notification messages from the page
-self.addEventListener("message", (event) => {
-  const data = event.data || {};
-  if (data.type === "POMODORO_UPDATE" && data.payload) {
-    const p = data.payload;
-    self.registration.showNotification(p.title || "Pomodoro", {
-      body: p.body || "",
-      tag: "syllabus-pomodoro",
-      renotify: true,
-      vibrate: [200, 100, 200]
-    }).catch(() => {});
-  }
-  if (data.type === "POMODORO_STOP") {
-    self.registration.getNotifications({ tag: "syllabus-pomodoro" })
-      .then((list) => list.forEach((n) => n.close()))
-      .catch(() => {});
-  }
-  if (data.type === "SKIP_WAITING") self.skipWaiting();
+    try {
+      const fresh = await fetch(request, {
+        cache: 'no-store'
+      });
+
+      if (fresh && fresh.ok) {
+        await cache.put(request, fresh.clone());
+      }
+
+      return fresh;
+    } catch (_) {
+      return (
+        await cache.match(request) ||
+        Response.error()
+      );
+    }
+  })());
 });
