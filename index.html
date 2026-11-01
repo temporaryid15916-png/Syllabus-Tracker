@@ -3254,7 +3254,7 @@ async function communityLoadMessages(id){
   if(!communitySame(communityCurrent?.id,id))return;
   if(error){
     if(!cached.length)box.innerHTML='<div class="community-empty">Chat load হয়নি: '+communityEsc(communityErrText(error))+'</div>';
-    communityStatus("Chat load হয়নি: "+communityErrText(error)+" — Supabase-এ RLS-Fix.sql চালাও।","error");
+    communityStatus("Chat load হয়নি: "+communityErrText(error)+" — Supabase-এ Community-Member-Visibility-Fix.sql চালাও।","error");
     return;
   }
   const merged=communityMergeMessages(cached,data||[]);
@@ -3359,7 +3359,7 @@ async function communityLoadMembers(id,silent){
   const cid=communitySid(id);
   const loadToken=++communityMembersLoadToken;
 
-  // Prefer security-definer RPCs so every member can see everyone else even if table RLS is wrong.
+  // All Community members have equal permissions: show the full member list and all shared progress via SECURITY DEFINER RPCs.
   let prog={data:null,error:null}, mem={data:null,error:null};
   try{
     const [pr,mr]=await Promise.all([
@@ -3431,14 +3431,14 @@ async function communityLoadMembers(id,silent){
 
   if(prog.error&&mem.error){
     if(!silent)box.innerHTML='<div class="community-empty">Members/Progress load হয়নি: '+communityEsc(communityErrText(prog.error||mem.error))+'</div>';
-    if(!silent)communityStatus("Members/Progress: "+communityErrText(prog.error||mem.error)+" — Supabase-এ RLS-Fix.sql চালাও।","error");
+    if(!silent)communityStatus("Members/Progress: "+communityErrText(prog.error||mem.error)+" — Supabase-এ Community-Member-Visibility-Fix.sql চালাও।","error");
     return;
   }
   if(prog.error&&!silent){
     communityStatus("Progress load আংশিক ব্যর্থ: "+communityErrText(prog.error)+" — member list তবু দেখানো হচ্ছে।","error");
   }
   if(mem.error&&!silent){
-    communityStatus("Member list load আংশিক ব্যর্থ: "+communityErrText(mem.error),"error");
+    communityStatus("Member list load আংশিক ব্যর্থ: "+communityErrText(mem.error)+" — Supabase-এ Community-Member-Visibility-Fix.sql চালাও।","error");
   }
 
   await communityFetchNames([...rows.map(r=>r.user_id),...memberRows.map(r=>r.user_id)]);
@@ -3579,7 +3579,7 @@ async function communityPushProgress(cid,silent,refreshUI,forceShare=false){
   if(!communityIsShared(uid,cid)&&!forceShare)return true;
   communitySetShared(uid,cid,true);
   if(refreshUI&&communitySame(communityCurrent?.id,cid)){
-    if(!silent)communityStatus("✅ Progress share হয়েছে। Admin-রা এখন দেখতে পারবে।","ok");
+    if(!silent)communityStatus("✅ Progress share হয়েছে। Community-র সব member এখন দেখতে পারবে।","ok");
     communityRenderMyProgress(p,row.updated_at,true);
     await communityLoadMembers(cid,true);
   }
