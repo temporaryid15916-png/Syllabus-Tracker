@@ -3406,6 +3406,17 @@ async function communityLoadMembers(id,silent){
     memberRows=[{user_id:me,role:"member"},...memberRows];
   }
 
+    // If progress was last updated on a previous local calendar day, treat today_seconds as 0.
+  // (Server does not auto-reset at midnight; clients push the new day value when online.)
+  const progressIsFromToday=(iso)=>{
+    if(!iso)return false;
+    try{return formatDateKey(new Date(iso))===today();}catch(_e){return false;}
+  };
+  rows=rows.map(s=>({
+    ...s,
+    today_seconds:progressIsFromToday(s.updated_at)?(Number(s.today_seconds)||0):0
+  }));
+
   // Prevent time "jump down" glitch: for ME, never show server values lower than live local.
   // (Server can lag a few seconds behind pending study seconds.)
   if(me){
@@ -3417,7 +3428,8 @@ async function communityLoadMembers(id,silent){
         ...s,
         completed_chapters:Math.max(Number(s.completed_chapters)||0,local.completed),
         total_chapters:Math.max(Number(s.total_chapters)||0,local.total),
-        today_seconds:Math.max(Number(s.today_seconds)||0,local.todaySeconds),
+        // After midnight local.todaySeconds is 0; do not keep yesterday's server value via Math.max.
+        today_seconds:Math.max(progressIsFromToday(s.updated_at)?(Number(s.today_seconds)||0):0,local.todaySeconds),
         total_seconds:Math.max(Number(s.total_seconds)||0,local.totalSeconds),
         streak_days:Math.max(Number(s.streak_days)||0,local.streak),
         updated_at:(typeof pomo!=="undefined"&&pomo.running&&pomo.mode==="focus")
