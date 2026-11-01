@@ -3471,13 +3471,53 @@ async function communityLoadMembers(id,silent){
   const canSeeAllProgress=true;
   const sharedIds=new Set(rows.map(r=>communitySid(r.user_id)));
   const label=uid=>communityEsc(communityName(uid))+(communitySame(uid,me)?" (You)":"");
-  const cards=rows.map(m=>{
+    const cards=rows.map(m=>{
     const live=communityIsLiveStudying(m.updated_at);
-    const liveTag=live?'<span style="color:var(--success);font-weight:900;font-size:10px">● পড়ছে এখন</span>':'';
-    
+    const completed=Math.max(0,Number(m.completed_chapters)||0);
+    const total=Math.max(0,Number(m.total_chapters)||0);
+    const pct=total>0?Math.min(100,completed/total*100):0;
+    const pctText=pct.toFixed(2);
 
-  return `<div class="community-member" data-member-uid="${communityEsc(communitySid(m.user_id))}" style="display:block;${live?"border-color:var(--success);background:var(--success-soft);":""}"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:8px"><strong>${label(m.user_id)}</strong><small class="member-ago" style="color:var(--muted)">${liveTag||communityEsc(communityAgo(m.updated_at))}</small></div><div class="community-metrics" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px"><div class="community-metric" style="min-width:0"><strong class="m-ch">${Number(m.completed_chapters)||0}/${Number(m.total_chapters)||0}</strong><span>Completed Chapters · Overall Progress</span><div style="font-size:12px;margin-top:5px"><strong class="m-percent">${Math.round((Number(m.completed_chapters)||0)/Math.max(1,Number(m.total_chapters)||0)*100)}%</strong></div><div style="height:5px;background:var(--border);border-radius:5px;overflow:hidden;margin-top:5px"><div class="m-progress-bar" style="height:100%;width:${Math.min(100,Math.round((Number(m.completed_chapters)||0)/Math.max(1,Number(m.total_chapters)||0)*100))}%;background:var(--primary);border-radius:5px"></div></div></div><div class="community-metric" style="min-width:0"><strong class="m-today">${communityEsc(communityFmt(m.today_seconds))}</strong><span>Today</span></div></div></div>`;
-});
+    const liveTag=live
+      ? '<span style="color:#22f76b;font-weight:900;font-size:12px">● এখনই</span>'
+      : communityEsc(communityAgo(m.updated_at));
+
+    return `
+      <div class="community-member community-member-premium ${live?'is-live':''}"
+           data-member-uid="${communityEsc(communitySid(m.user_id))}">
+
+        <div class="member-card-heading">
+          <strong>${label(m.user_id)}</strong>
+          <small class="member-ago">${liveTag}</small>
+        </div>
+
+        <div class="member-card-body">
+          <div class="member-progress-panel">
+            <div class="member-progress-ring"
+                 style="--ring-progress:${pct*3.6}deg">
+              <span class="m-percent">${pctText}%</span>
+            </div>
+
+            <div class="member-progress-details">
+              <strong class="m-ch">${completed}/${total}</strong>
+              <span>Completed Chapters</span>
+              <div class="member-progress-track">
+                <div class="m-progress-bar"
+                     style="width:${pct}%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="member-today-panel">
+            <div class="member-clock-icon">◷</div>
+            <div class="member-today-details">
+              <strong class="m-today">${communityEsc(communityFmt(m.today_seconds))}</strong>
+              <span>Today</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  });
     
   const waiting=memberRows.filter(m=>!sharedIds.has(communitySid(m.user_id))).map(m=>`<div class="community-member"><strong>${label(m.user_id)}</strong><small style="color:var(--muted)">${communityEsc(m.role||"member")} · এখনো progress share করেননি</small></div>`);
   const html=cards.concat(waiting).join("");
