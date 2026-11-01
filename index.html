@@ -2364,6 +2364,14 @@ function checkMidnightChange(){
         currentDayKey = newDay;
         updateDashboard();
         if(currentTab==="history") renderHistory();
+        // Push shared community progress so today_seconds resets on server for other members.
+        try{notifyCommunity();}catch(_e){}
+        // Refresh community members panel so everyone's Today shows 0 when updated_at is yesterday.
+        try{
+          if(typeof communityCurrent!=="undefined"&&communityCurrent?.id!=null&&typeof communityLoadMembers==="function"){
+            communityLoadMembers(communityCurrent.id,true);
+          }
+        }catch(_e){}
     }
 }
 
