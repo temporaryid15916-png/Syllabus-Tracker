@@ -3857,11 +3857,12 @@ function communityPatchMyMemberCard(){
     card.style.background=studying?"var(--success-soft)":"";
     const ago=card.querySelector(".member-ago");
     if(ago)ago.innerHTML=studying?'<span style="color:var(--success);font-weight:900;font-size:10px">● পড়ছে এখন</span>':communityEsc(communityAgo(new Date().toISOString()));
-        const ch=card.querySelector(".m-ch");
+        
+    const ch=card.querySelector(".m-ch");
     if(ch)ch.textContent=p.completed+"/"+p.total;
 
-    const pct=p.total>0
-      ?Math.max(0,Math.min(100,p.completed/p.total*100))
+    const pct=Number(p.total)>0
+      ?Math.max(0,Math.min(100,(Number(p.completed)||0)/Number(p.total)*100))
       :0;
 
     const percent=card.querySelector(".m-percent");
@@ -3872,10 +3873,16 @@ function communityPatchMyMemberCard(){
 
     const progressBar=card.querySelector(".m-progress-bar");
     if(progressBar)progressBar.style.width=pct+"%";
-        // Keep the displayed percentage and progress bar synchronized with chapter changes.
-    const pct=Math.max(0,Math.min(100,Math.round((Number(p.completed)||0)/Math.max(1,Number(p.total)||0)*100)));
-    const percent=card.querySelector(".m-percent"); if(percent)percent.textContent=pct+"%";
-    const progressBar=card.querySelector(".m-progress-bar"); if(progressBar)progressBar.style.width=pct+"%";
+
+    const td=card.querySelector(".m-today");
+    if(td)td.textContent=communityFmt(p.todaySeconds);
+
+    const tot=card.querySelector(".m-total");
+    if(tot)tot.textContent=communityFmt(p.totalSeconds);
+
+    const st=card.querySelector(".m-streak");
+    if(st)st.textContent=String(p.streak);
+
     const td=card.querySelector(".m-today"); if(td)td.textContent=communityFmt(p.todaySeconds);
     const tot=card.querySelector(".m-total"); if(tot)tot.textContent=communityFmt(p.totalSeconds);
     const st=card.querySelector(".m-streak"); if(st)st.textContent=String(p.streak);
