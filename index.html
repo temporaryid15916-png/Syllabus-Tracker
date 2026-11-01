@@ -3883,9 +3883,6 @@ function communityPatchMyMemberCard(){
     const st=card.querySelector(".m-streak");
     if(st)st.textContent=String(p.streak);
 
-    const td=card.querySelector(".m-today"); if(td)td.textContent=communityFmt(p.todaySeconds);
-    const tot=card.querySelector(".m-total"); if(tot)tot.textContent=communityFmt(p.totalSeconds);
-    const st=card.querySelector(".m-streak"); if(st)st.textContent=String(p.streak);
   }else{
     // Card missing (first share / empty list) — rebuild from server+local.
     communityLoadMembers(communityCurrent.id,true);
