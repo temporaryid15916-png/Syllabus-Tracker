@@ -1688,9 +1688,9 @@ if("serviceWorker" in navigator){
     });
     // Ask the browser to check for a newer worker whenever the page returns.
     // The worker script URL is versioned by APP_BUILD, so a deployment installs a new worker.
-    window.addEventListener("pageshow",()=>{if(swReg)swReg.update().catch(()=>{});});
+   window.addEventListener("pageshow",()=>{try{if(swReg&&typeof swReg.update==="function")swReg.update().catch(()=>{});}catch(e){}});
     document.addEventListener("visibilitychange",()=>{
-        if(document.visibilityState==="visible" && swReg)swReg.update().catch(()=>{});
+        try{if(document.visibilityState==="visible"&&swReg&&typeof swReg.update==="function")swReg.update().catch(()=>{});}catch(e){}
     });
     // Record the active build only. Do not unregister all workers or delete caches
     // from the page: doing so races with SW activation and can leave stale content.
