@@ -2500,25 +2500,6 @@ function pomoTick(){
         addStudySeconds(pomo.book, pomo.chapter, activeSecondsPassed);
         flushStudySeconds(false);
     }
-```[cite: 1]
-
----
-
-### ২. Dwitiyo Poribortan (`visibilitychange` event listener)
-
-**Eta kete ba delete kore dao (Tomar file-er je ongsho-ta replace korbe):**
-```javascript
-document.addEventListener("visibilitychange",()=>{
-    checkMidnightChange();
-    if(document.visibilityState === "hidden"){
-        flushStudySeconds(true);
-        if(pomo.running) savePomoState();
-    }
-    if(pomo.running && document.visibilityState==="visible"){
-        pomoTick();
-    }
-});
-
     // Save timer state periodically (every 3 seconds) instead of 2x/sec
     if(now - lastPomoStateSave > 3000){
         lastPomoStateSave = now;
