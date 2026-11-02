@@ -1999,7 +1999,7 @@ function getAudioContext(){
 
 let swReg=null;
 // App version — bump this string on every deploy so clients can detect updates.
-const APP_BUILD = "2026-11-01-cachefix-a";
+const APP_BUILD = "2026-11-02-pomo-background-fix-a";
 if("serviceWorker" in navigator){
     // Network-first SW + auto-activate so mobile normal refresh gets the latest HTML.
     navigator.serviceWorker.register("./sw.js?v="+APP_BUILD, {scope:"./", updateViaCache:"none"})
@@ -2380,73 +2380,80 @@ function savePomoState(){
 
 function restorePomoState(){
     try{
-        const st=JSON.parse(localStorage.getItem("syllabusPomoState")||"null");
-        if(!st)return;
+        const st = JSON.parse(localStorage.getItem("syllabusPomoState") || "null");
+        if(!st) return;
 
-        if(BOOKS[st.book])pomo.book=st.book;
-        else pomo.book="";
+        pomo.book = BOOKS[st.book] ? st.book : "";
+        pomo.chapter = (pomo.book && BOOKS[pomo.book]?.[Number(st.chapter)-1]) ? Number(st.chapter) : null;
+        if(Number.isFinite(Number(st.focus))) pomo.focus = Math.round(Math.max(1, Math.min(240, Number(st.focus))));
+        if(Number.isFinite(Number(st.break))) pomo.break = Math.round(Math.max(1, Math.min(60, Number(st.break))));
+        if(Number.isFinite(st.session)) pomo.session = Math.max(1, Number(st.session));
 
-        if(pomo.book && BOOKS[pomo.book]?.[Number(st.chapter)-1])pomo.chapter=Number(st.chapter);
-        else pomo.chapter=null;
+        pomo.started = !!st.started;
+        pomo.awaitingNext = !!st.awaitingNext;
+        pomo.mode = st.mode === "break" ? "break" : "focus";
+        pomo.remaining = Math.max(0, Math.round(Number(st.remaining) || 0));
+        pomo.end = Number(st.end) || 0;
+        pomo.running = false;
+        pomo.timer = null;
 
-        if(Number.isFinite(Number(st.focus)))pomo.focus=Math.round(Math.max(1,Math.min(240,Number(st.focus))));
-        if(Number.isFinite(Number(st.break)))pomo.break=Math.round(Math.max(1,Math.min(60,Number(st.break))));
-        if(Number.isFinite(st.session))pomo.session=Math.max(1,Number(st.session));
+        const focusInput = document.getElementById("pomoCustomFocus");
+        const breakInput = document.getElementById("pomoCustomBreak");
+        if(focusInput) focusInput.value = pomo.focus;
+        if(breakInput) breakInput.value = pomo.break;
 
-        pomo.started=!!st.started;
-        pomo.awaitingNext=!!st.awaitingNext;
-        pomo.mode=st.mode==="break"?"break":"focus";
-        pomo.remaining=Math.max(0,Math.round(Number(st.remaining)||0));
-        pomo.end=Number(st.end)||0;
+        if(st.running && pomo.end > 0 && pomo.book && pomo.chapter){
+            const now = Date.now();
+            let phaseEnd = pomo.end;
+            let mode = pomo.mode;
+            let session = pomo.session;
+            const savedLastTick = Math.max(0, Number(st.lastTick) || (phaseEnd - pomo.remaining * 1000));
+            const durationFor = m => (m === "focus" ? pomo.focus : pomo.break) * 60000;
+            const phaseStart = Math.max(savedLastTick, phaseEnd - durationFor(mode));
 
-        const focusInput=document.getElementById("pomoCustomFocus");
-        const breakInput=document.getElementById("pomoCustomBreak");
-        if(focusInput)focusInput.value=pomo.focus;
-        if(breakInput)breakInput.value=pomo.break;
+            // Recover the remainder of the phase that was active when the app closed.
+            if(mode === "focus"){
+                recordRecoveredFocusTime(phaseStart, Math.min(now, phaseEnd), pomo.book, pomo.chapter);
+            }
 
-        if(st.running && pomo.end>0 && pomo.book && pomo.chapter){
-            const now=Date.now();
-            if(now < pomo.end){
-                // Session is still active
-                pomo.remaining=Math.max(0,Math.ceil((pomo.end-now)/1000));
-                pomo.running=true;
-                pomo.started=true;
-                lastTick=now;
-                pomo.timer=setInterval(pomoTick,500);
-
-                const bSelect=document.getElementById("pomoBookSelect");
-                const cSelect=document.getElementById("pomoChapterSelect");
-                if(bSelect)bSelect.disabled=true;
-                if(cSelect)cSelect.disabled=true;
-            } else {
-                // The saved phase expired while the page was closed. Advance once,
-                // but leave the next phase paused until the user presses Start.
-                pomo.running=false;
-                pomo.timer=null;
-                pomo.started=true;
-                pomo.awaitingNext=false;
-                if(pomo.mode==="focus"){
-                    pomo.mode="break";
-                    pomo.remaining=pomo.break*60;
-                }else{
-                    pomo.mode="focus";
-                    pomo.session++;
-                    pomo.remaining=pomo.focus*60;
+            // If the phone suspended the page past one or more phase boundaries,
+            // advance through those phases using absolute timestamps, not setInterval.
+            let guard = 0;
+            while(phaseEnd <= now && guard++ < 1000){
+                mode = mode === "focus" ? "break" : "focus";
+                if(mode === "focus") session++;
+                const nextEnd = phaseEnd + durationFor(mode);
+                if(mode === "focus"){
+                    recordRecoveredFocusTime(phaseEnd, Math.min(now, nextEnd), pomo.book, pomo.chapter);
                 }
-                pomo.end=0;
-                lastTick=Date.now();
-                const bSelect=document.getElementById("pomoBookSelect");
-                const cSelect=document.getElementById("pomoChapterSelect");
-                if(bSelect)bSelect.disabled=true;
-                if(cSelect)cSelect.disabled=true;
-                clearBackgroundPomodoroNotification();
-                savePomoState();
-}
+                phaseEnd = nextEnd;
+            }
+
+            pomo.mode = mode;
+            pomo.session = session;
+            pomo.end = phaseEnd;
+            pomo.remaining = Math.max(0, Math.ceil((phaseEnd - now) / 1000));
+            pomo.running = true;
+            pomo.started = true;
+            pomo.awaitingNext = false;
+            lastTick = now;
+            clearInterval(pomo.timer);
+            pomo.timer = setInterval(pomoTick, 500);
+
+            const bSelect = document.getElementById("pomoBookSelect");
+            const cSelect = document.getElementById("pomoChapterSelect");
+            if(bSelect) bSelect.disabled = true;
+            if(cSelect) cSelect.disabled = true;
+            savePomoState();
         }else{
-            pomo.running=false;
-            pomo.timer=null;
+            pomo.running = false;
+            pomo.timer = null;
+            lastTick = Date.now();
         }
-    }catch(e){}
+        updatePomoDisplay();
+    }catch(e){
+        console.error("Could not restore Pomodoro state:", e);
+    }
 }
 
 function togglePomodoroPlay(){
@@ -2503,6 +2510,7 @@ function pomoTick(){
     // Save timer state periodically (every 3 seconds) instead of 2x/sec
     if(now - lastPomoStateSave > 3000){
         lastPomoStateSave = now;
+        flushStudySeconds(true);
         savePomoState();
     }
 
@@ -2628,6 +2636,34 @@ function addStudySeconds(b,c,sec){
     if(!b || !c || sec <= 0) return;
     if(pendingStudySeconds <= 0) pendingStudyDay = today();
     pendingStudySeconds += sec;
+}
+
+// Recover Focus time missed while the browser was suspended or the page was reloaded.
+// Split recovered seconds at local midnight so each day's history stays accurate.
+function recordRecoveredFocusTime(startMs, endMs, book, chapter){
+    if(!book || !chapter || !Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs) return;
+    let cursor = startMs;
+    const ck = chKey(book, chapter);
+    while(cursor < endMs){
+        const dayStart = new Date(cursor);
+        const nextMidnight = new Date(dayStart);
+        nextMidnight.setHours(24, 0, 0, 0);
+        const segmentEnd = Math.min(endMs, nextMidnight.getTime());
+        const seconds = Math.max(0, (segmentEnd - cursor) / 1000);
+        if(seconds > 0){
+            const dayKey = formatDateKey(new Date(cursor));
+            history[dayKey] ??= {totalSeconds:0,sessions:0,byBook:{},byChapter:{}};
+            history[dayKey].totalSeconds = (Number(history[dayKey].totalSeconds) || 0) + seconds;
+            history[dayKey].byBook ??= {};
+            history[dayKey].byChapter ??= {};
+            history[dayKey].byBook[book] = (Number(history[dayKey].byBook[book]) || 0) + seconds;
+            history[dayKey].byChapter[ck] = (Number(history[dayKey].byChapter[ck]) || 0) + seconds;
+        }
+        cursor = segmentEnd;
+    }
+    save(KEY.history, history);
+    updateDashboard();
+    notifyCommunity();
 }
 
 function flushStudySeconds(force = false){
