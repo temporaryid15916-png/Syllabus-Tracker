@@ -2486,17 +2486,38 @@ function togglePomodoroPlay(){
 }
 
 function pomoTick(){
-    const now=Date.now();
-    const prevTick = lastTick;
+    const now = Date.now();
+    
+    let activeSecondsPassed = 0;
+    if (lastTick > 0) {
+        activeSecondsPassed = Math.max(0, (Math.min(now, pomo.end) - Math.max(lastTick, 0)) / 1000);
+    }
     lastTick = now;
-
-    const activeSecondsPassed = Math.max(0, (Math.min(now, pomo.end) - Math.max(prevTick, 0)) / 1000);
+    
     pomo.remaining = Math.max(0, Math.ceil((pomo.end - now) / 1000));
 
-    if(pomo.mode==="focus" && activeSecondsPassed>0 && pomo.book && pomo.chapter){
+    if(pomo.mode==="focus" && activeSecondsPassed > 0 && pomo.book && pomo.chapter){
         addStudySeconds(pomo.book, pomo.chapter, activeSecondsPassed);
         flushStudySeconds(false);
     }
+```[cite: 1]
+
+---
+
+### ২. Dwitiyo Poribortan (`visibilitychange` event listener)
+
+**Eta kete ba delete kore dao (Tomar file-er je ongsho-ta replace korbe):**
+```javascript
+document.addEventListener("visibilitychange",()=>{
+    checkMidnightChange();
+    if(document.visibilityState === "hidden"){
+        flushStudySeconds(true);
+        if(pomo.running) savePomoState();
+    }
+    if(pomo.running && document.visibilityState==="visible"){
+        pomoTick();
+    }
+});
 
     // Save timer state periodically (every 3 seconds) instead of 2x/sec
     if(now - lastPomoStateSave > 3000){
