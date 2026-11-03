@@ -2791,13 +2791,19 @@ function skipPomodoro(){
         clearInterval(pomo.timer);
         pomo.timer=setInterval(pomoTick, 500);
         toast(`☕ Skipped to break (${pomo.break}m)`);
-    } else {
+        } else {
         pomo.mode="focus";
         pomo.session++;
         pomo.remaining=pomo.focus*60;
-        pomo.running=false;
-        pomo.awaitingNext=true;
-        toast("🍅 Skipped break — click Start for next session");
+        pomo.running=true;
+        pomo.started=true;
+        pomo.awaitingNext=false;
+        lastTick=Date.now();
+        pomo.end=Date.now()+pomo.remaining*1000;
+        clearInterval(pomo.timer);
+        pomo.timer=setInterval(pomoTick,500);
+        toast("🍅 Skipped break — next focus started");
+        updateBackgroundPomodoroNotification(true);
     }
     savePomoState();
     updatePomoDisplay();
