@@ -2517,18 +2517,19 @@ function restorePomoState(){
                         clearInterval(pomo.timer);
                         pomo.timer = setInterval(pomoTick, 500);
                         toast("☕ Focus completed — break is active!");
-                    } else {
-                        // Both focus and break finished while closed. Stop cleanly. Do NOT add ghost sessions!
+                                        } else {
+                        // Both focus and break finished while closed → auto-start next focus
                         pomo.mode = "focus";
                         pomo.session = session + 1;
                         pomo.remaining = pomo.focus * 60;
-                        pomo.running = false;
+                        pomo.running = true;
                         pomo.started = true;
-                        pomo.awaitingNext = true;
-                        pomo.end = 0;
-                        pomo.timer = null;
+                        pomo.awaitingNext = false;
                         lastTick = now;
-                        toast("🎉 Focus session & break finished!");
+                        pomo.end = now + pomo.remaining * 1000;
+                        clearInterval(pomo.timer);
+                        pomo.timer = setInterval(pomoTick, 500);
+                        toast("🍅 Next focus session started!");
                     }
                 }
             } else {
