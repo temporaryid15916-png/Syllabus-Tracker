@@ -2580,50 +2580,75 @@ function pomoTick(){
     }
 }
 
+
 function handlePomoFinish(){
     playAlertSound();
 
     const chName = BOOKS[pomo.book]?.[pomo.chapter-1] || `Chapter ${pomo.chapter}`;
+
     clearInterval(pomo.timer);
     pomo.timer = null;
     clearBackgroundPomodoroNotification();
 
     const bSelect = document.getElementById("pomoBookSelect");
     const cSelect = document.getElementById("pomoChapterSelect");
+
     if(bSelect) bSelect.disabled = true;
     if(cSelect) cSelect.disabled = true;
 
     if(pomo.mode === "focus"){
-        // Focus session finished: immediately & automatically start break!
-        sendSysNotification("🎉 Focus Complete!", `Finished studying ${pomo.book} • ${chName}. Break starting!`);
+
+        // Focus finished: Automatically start break.
+        sendSysNotification(
+            "🎉 Focus Complete!",
+            `Finished studying ${pomo.book} • ${chName}. Break starting!`
+        );
+
         toast(`☕ Focus complete — ${pomo.break}m break started!`);
+
         pomo.mode = "break";
         pomo.remaining = pomo.break * 60;
         pomo.running = true;
         pomo.started = true;
         pomo.awaitingNext = false;
+
         lastTick = Date.now();
         pomo.end = Date.now() + pomo.remaining * 1000;
-        clearInterval(pomo.timer);
+
         pomo.timer = setInterval(pomoTick, 500);
+
         updateBackgroundPomodoroNotification(true);
         savePomoState();
         updatePomoDisplay();
+
     } else {
-        // Break finished: notify user and stop. Do NOT auto-start focus unattended!
-        sendSysNotification("⏰ Break Finished!", "Ready to start the next focus session.");
-        toast("🍅 Break complete — click Start for next session!");
+
+        // Break finished: Automatically start next focus session.
+        sendSysNotification(
+            "⏰ Break Finished!",
+            "Your next focus session is starting now!"
+        );
+
+        toast("🍅 Break complete — next focus session started!");
+
         pomo.mode = "focus";
         pomo.session++;
         pomo.remaining = pomo.focus * 60;
-        pomo.running = false;
+        pomo.running = true;
         pomo.started = true;
-        pomo.awaitingNext = true;
-        pomo.end = 0;
+        pomo.awaitingNext = false;
+
+        lastTick = Date.now();
+        pomo.end = Date.now() + pomo.remaining * 1000;
+
+        pomo.timer = setInterval(pomoTick, 500);
+
+        updateBackgroundPomodoroNotification(true);
         savePomoState();
         updatePomoDisplay();
     }
 }
+
 
 function resetPomodoro(){
     clearInterval(pomo.timer);
