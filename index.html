@@ -2058,15 +2058,24 @@ function notifySW(type,payload={}){
     }catch(e){}
 }
 
+// Absolute icon URLs so the notification bar shows your app icon (not a letter "T").
+function pomoNotifIconUrl(file){
+    try{ return new URL(file, location.href).href; }catch(_e){ return file; }
+}
+
 // System notification bar (works when app is backgrounded). Prefer SW registration.showNotification.
 async function showSystemNotification(title, body, opts={}){
     if(!("Notification" in window) || Notification.permission!=="granted") return false;
+    const icon = pomoNotifIconUrl("./icon-192.png");
     const options={
         body: body||"",
         tag: opts.tag || "syllabus-pomodoro",
         renotify: opts.renotify===true,
         silent: opts.silent!==false,
         requireInteraction: !!opts.requireInteraction,
+        icon: icon,
+        badge: icon,
+        image: undefined,
         data: opts.data || {source:"pomodoro"}
     };
     try{
@@ -2077,7 +2086,6 @@ async function showSystemNotification(title, body, opts={}){
         }
     }catch(e){}
     try{
-        // Fallback (mainly desktop). Same tag replaces previous.
         const n = new Notification(title, options);
         if(opts.autoCloseMs){
             setTimeout(()=>{ try{n.close();}catch(_e){} }, opts.autoCloseMs);
