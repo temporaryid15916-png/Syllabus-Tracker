@@ -2545,18 +2545,19 @@ function restorePomoState(){
                     lastTick = now;
                     clearInterval(pomo.timer);
                     pomo.timer = setInterval(pomoTick, 500);
-                } else {
-                    // Break finished while closed. Stop and wait for user to start next focus session!
+                                } else {
+                    // Break finished while closed → auto-start next focus session
                     pomo.mode = "focus";
                     pomo.session = session + 1;
                     pomo.remaining = pomo.focus * 60;
-                    pomo.running = false;
+                    pomo.running = true;
                     pomo.started = true;
-                    pomo.awaitingNext = true;
-                    pomo.end = 0;
-                    pomo.timer = null;
+                    pomo.awaitingNext = false;
                     lastTick = now;
-                    toast("⏰ Break finished — click Start when ready!");
+                    pomo.end = now + pomo.remaining * 1000;
+                    clearInterval(pomo.timer);
+                    pomo.timer = setInterval(pomoTick, 500);
+                    toast("🍅 Break finished — next focus started!");
                 }
             }
 
