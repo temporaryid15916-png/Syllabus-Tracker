@@ -22,13 +22,25 @@ function formatPomoTime(remaining) {
   return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
 }
 
+function pomoSwIconUrl() {
+  try {
+    // Same folder as this service worker / index.html
+    return new URL('icon-192.png', self.registration.scope).href;
+  } catch (_) {
+    return './icon-192.png';
+  }
+}
+
 async function showPomoNotification(title, body, silent) {
   try {
+    const icon = pomoSwIconUrl();
     await self.registration.showNotification(title, {
       body: body || '',
       tag: 'syllabus-pomodoro',
       renotify: !silent,
       silent: !!silent,
+      icon: icon,
+      badge: icon,
       data: { source: 'pomodoro' }
     });
   } catch (_) {}
