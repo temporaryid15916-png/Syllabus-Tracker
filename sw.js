@@ -1,9 +1,70 @@
-
 /* Syllabus Tracker service worker — network-first, versioned cache. */
 const params = new URL(self.location.href).searchParams;
-const BUILD = params.get('v') || '2026-11-03-bugfix-a';
+const BUILD = params.get('v') || '2026-11-03-notif-live-a';
 const CACHE_NAME = `syllabus-tracker-${BUILD}`;
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest'];
+
+let pomoSync = null;
+let pomoSyncTimer = null;
+
+function clearPomoSync() {
+  if (pomoSyncTimer) {
+    clearInterval(pomoSyncTimer);
+    pomoSyncTimer = null;
+  }
+  pomoSync = null;
+}
+
+function formatPomoTime(remaining) {
+  const r = Math.max(0, Math.floor(remaining));
+  const m = Math.floor(r / 60);
+  const s = r % 60;
+  return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+
+async function showPomoNotification(title, body, silent) {
+  try {
+    await self.registration.showNotification(title, {
+      body: body || '',
+      tag: 'syllabus-pomodoro',
+      renotify: !silent,
+      silent: !!silent,
+      data: { source: 'pomodoro' }
+    });
+  } catch (_) {}
+}
+
+function tickPomoSync() {
+  if (!pomoSync || !pomoSync.end) return;
+  const remaining = Math.max(0, Math.ceil((pomoSync.end - Date.now()) / 1000));
+  const timeStr = formatPomoTime(remaining);
+  const isFocus = pomoSync.mode !== 'break';
+  const title = (isFocus ? (pomoSync.titleFocus || '🍅 Focus') : (pomoSync.titleBreak || '☕ Break')) + ' · ' + timeStr;
+  let body = pomoSync.bodyBase || '';
+  if (!body) {
+    body = (isFocus ? 'Focus session' : 'Break') +
+      (pomoSync.book ? ' • ' + pomoSync.book : '') +
+      (pomoSync.chapterName ? ' · ' + pomoSync.chapterName : '') +
+      (pomoSync.session ? ' · Session ' + pomoSync.session : '');
+  }
+  showPomoNotification(title, body, true);
+  if (remaining <= 0) {
+    // Page handles phase transition; stop ticking until the next POMODORO_SYNC.
+    if (pomoSyncTimer) {
+      clearInterval(pomoSyncTimer);
+      pomoSyncTimer = null;
+    }
+  }
+}
+
+function startPomoSync(payload) {
+  pomoSync = payload || null;
+  if (!pomoSync || !pomoSync.end) return;
+  tickPomoSync();
+  if (pomoSyncTimer) clearInterval(pomoSyncTimer);
+  // 1s countdown in the notification bar while the browser allows the worker to run.
+  pomoSyncTimer = setInterval(tickPomoSync, 1000);
+}
 
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
@@ -37,23 +98,23 @@ self.addEventListener('message', event => {
     self.skipWaiting();
     return;
   }
-  // Pomodoro background notification updates from the page
+
+  if (data.type === 'POMODORO_SYNC') {
+    startPomoSync(data.payload || data);
+    return;
+  }
+
   if (data.type === 'POMODORO_UPDATE') {
     const payload = data.payload || {};
     const title = payload.title || 'Pomodoro';
     const body = payload.body || '';
-    event.waitUntil(
-      self.registration.showNotification(title, {
-        body,
-        tag: 'syllabus-pomodoro',
-        renotify: true,
-        silent: false,
-        data: { source: 'pomodoro' }
-      }).catch(() => {})
-    );
+    const silent = payload.silent !== false;
+    event.waitUntil(showPomoNotification(title, body, silent));
     return;
   }
+
   if (data.type === 'POMODORO_STOP') {
+    clearPomoSync();
     event.waitUntil(
       self.registration.getNotifications({ tag: 'syllabus-pomodoro' })
         .then(list => Promise.all(list.map(n => n.close())))
