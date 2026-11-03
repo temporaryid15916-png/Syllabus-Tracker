@@ -2923,10 +2923,11 @@ document.addEventListener("visibilitychange",()=>{
                         pomo.started = true;
                         pomo.awaitingNext = false;
                         lastTick = now;
-                        clearInterval(pomo.timer);
+                                                clearInterval(pomo.timer);
                         pomo.timer = setInterval(pomoTick, 500);
                         playAlertSound();
                         toast(`☕ Focus complete — ${fmt(pomo.remaining)} break remaining`);
+                        updateBackgroundPomodoroNotification(true);
                                        } else {
                         // Both focus and break finished while in background → auto-start next focus
                         pomo.mode = "focus";
