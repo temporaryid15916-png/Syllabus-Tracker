@@ -2788,9 +2788,10 @@ function skipPomodoro(){
         pomo.awaitingNext=false;
         lastTick=Date.now();
         pomo.end=Date.now() + pomo.remaining*1000;
-        clearInterval(pomo.timer);
+               clearInterval(pomo.timer);
         pomo.timer=setInterval(pomoTick, 500);
         toast(`☕ Skipped to break (${pomo.break}m)`);
+        updateBackgroundPomodoroNotification(true);
         } else {
         pomo.mode="focus";
         pomo.session++;
