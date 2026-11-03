@@ -2015,7 +2015,7 @@ function getAudioContext(fromGesture){
 
 let swReg=null;
 // App version — bump this string on every deploy so clients can detect updates.
-const APP_BUILD = "2026-11-03-notif-live-a";
+const APP_BUILD = "2026-11-03-notif-bar-b";
 if("serviceWorker" in navigator){
     // Network-first SW + auto-activate so mobile normal refresh gets the latest HTML.
     navigator.serviceWorker.register("./sw.js?v="+APP_BUILD, {scope:"./", updateViaCache:"none"})
@@ -2057,11 +2057,50 @@ if("serviceWorker" in navigator){
 }
 
 function notifySW(type,payload={}){
-    if(!swReg) return;
     try{
-        if(swReg.active) swReg.active.postMessage({type,payload});
-        else navigator.serviceWorker.ready.then(reg=>reg.active?.postMessage({type,payload})).catch(()=>{});
+        const msg={type,payload};
+        if(swReg?.active){
+            swReg.active.postMessage(msg);
+            return;
+        }
+        if(navigator.serviceWorker?.controller){
+            navigator.serviceWorker.controller.postMessage(msg);
+            return;
+        }
+        navigator.serviceWorker?.ready?.then(reg=>{
+            if(reg.active) reg.active.postMessage(msg);
+        }).catch(()=>{});
     }catch(e){}
+}
+
+// System notification bar (works when app is backgrounded). Prefer SW registration.showNotification.
+async function showSystemNotification(title, body, opts={}){
+    if(!("Notification" in window) || Notification.permission!=="granted") return false;
+    const options={
+        body: body||"",
+        tag: opts.tag || "syllabus-pomodoro",
+        renotify: opts.renotify===true,
+        silent: opts.silent!==false,
+        requireInteraction: !!opts.requireInteraction,
+        data: opts.data || {source:"pomodoro"}
+    };
+    try{
+        const reg = swReg || (navigator.serviceWorker ? await navigator.serviceWorker.ready : null);
+        if(reg && typeof reg.showNotification==="function"){
+            await reg.showNotification(title, options);
+            return true;
+        }
+    }catch(e){}
+    try{
+        // Fallback (mainly desktop). Same tag replaces previous.
+        const n = new Notification(title, options);
+        if(opts.autoCloseMs){
+            setTimeout(()=>{ try{n.close();}catch(_e){} }, opts.autoCloseMs);
+        }
+        return true;
+    }catch(e){
+        return false;
+    }
 }
 
 function openPomodoroFor(b,c){
@@ -2123,23 +2162,49 @@ async function togglePomodoroAlert(){
     getAudioContext(true);
     if(!("Notification" in window)){
         toast("🔔 In-app alert is active");
-        openAlertEnabledModal("In-App Alert Active","Your Pomodoro will use the audio alarm when the timer finishes.");
-        updateAlertUI();
-        return;
-    }
-
-    if(Notification.permission==="granted"){
-        toast("🔔 Alert is already enabled");
+        openAlertEnabledModal("In-App Alert Active","Your Pomodoro will use the audio alarm when the timer finishes. This browser has no system notification API.");
         updateAlertUI();
         return;
     }
 
     try {
-        const perm=await Notification.requestPermission();
+        let perm = Notification.permission;
+        if(perm!=="granted"){
+            perm = await Notification.requestPermission();
+        }
         if(perm==="granted"){
-            sendSysNotification("🔔 Syllabus Tracker Alerts Enabled","Pomodoro completion alerts are now enabled.");
-            toast("🔔 Device alert enabled");
-            openAlertEnabledModal("Device Notifications Enabled","You will receive a Pomodoro notification when a session finishes. Keep browser notifications allowed on your phone.");
+            // Wait for SW so the test notification goes to the system notification bar.
+            try{
+                if(navigator.serviceWorker){
+                    const reg = await navigator.serviceWorker.ready;
+                    swReg = reg;
+                }
+            }catch(_e){}
+
+            const ok = await showSystemNotification(
+                "🔔 Syllabus Tracker",
+                "Device notifications are on. When a Pomodoro runs, the timer will show here even if you leave the app.",
+                { silent:false, renotify:true, requireInteraction:false, autoCloseMs:8000 }
+            );
+            if(ok){
+                toast("🔔 System notification enabled — check notification bar");
+                openAlertEnabledModal(
+                    "Device Notifications Enabled",
+                    "A test notification was sent to your notification bar. When Pomodoro is running, Focus/Break countdown will appear there if you leave the app. Keep Chrome/browser notifications allowed in phone settings."
+                );
+            }else{
+                toast("🔔 Permission on, but system notification failed");
+                openAlertEnabledModal(
+                    "Permission Granted",
+                    "Browser allowed notifications, but showing one failed. On Android: Settings → Apps → Chrome → Notifications = On. Also try Add to Home Screen for this site."
+                );
+            }
+        }else if(perm==="denied"){
+            toast("🔔 Notifications blocked");
+            openAlertEnabledModal(
+                "Notifications Blocked",
+                "Browser blocked notifications. On Android: site lock icon → Permissions → Notifications → Allow. Or phone Settings → Apps → Browser → Notifications. In-app sound still works."
+            );
         }else{
             toast("🔔 In-app alert active (permission: "+perm+")");
             openAlertEnabledModal("In-App Alert Active","Browser notifications were not enabled, but the in-app audio alarm remains available.");
@@ -2151,31 +2216,13 @@ async function togglePomodoroAlert(){
 }
 
 function sendSysNotification(title,body){
-    if(!("Notification" in window)||Notification.permission!=="granted")return;
-    const show=reg=>{
-        try{
-            if(reg?.showNotification){
-                reg.showNotification(title,{
-                    body,
-                    tag:"syllabus-pomodoro",
-                    renotify:true,
-                    vibrate:[300,150,300]
-                }).catch(()=>tryDirectNotif(title,body));
-                return;
-            }
-        }catch(e){}
-        tryDirectNotif(title,body);
-    };
-    if(swReg)show(swReg);
-    else if(navigator.serviceWorker?.ready)navigator.serviceWorker.ready.then(show).catch(()=>tryDirectNotif(title,body));
-    else tryDirectNotif(title,body);
+    showSystemNotification(title, body, { silent:false, renotify:true, requireInteraction:false });
 }
 
 function updateBackgroundPomodoroNotification(force=false){
     if(!pomo.running || !("Notification" in window) || Notification.permission!=="granted")return;
     const now=Date.now();
-    // Background: update often so notification-bar countdown stays live.
-    // Foreground: slower rate is enough.
+    // While backgrounded, refresh at least every second; in foreground every 5s is enough.
     const minGap = document.visibilityState === "hidden" ? 1000 : 5000;
     if(!force && now-lastBgNotificationAt<minGap)return;
     lastBgNotificationAt=now;
@@ -2193,7 +2240,10 @@ function updateBackgroundPomodoroNotification(force=false){
         (chName ? " · "+chName : "") +
         " · Session "+(pomo.session||1);
 
-    // Service worker keeps ticking the notification even when the tab is backgrounded.
+    // 1) Direct system notification from the page (reliable on Android Chrome).
+    showSystemNotification(title, bodyBase, { silent:true, renotify:false });
+
+    // 2) Ask SW to keep ticking while the tab is suspended.
     notifySW("POMODORO_SYNC",{
         end: pomo.end || (now + remaining*1000),
         mode: pomo.mode,
@@ -2204,20 +2254,20 @@ function updateBackgroundPomodoroNotification(force=false){
         chapterName: chName,
         session: pomo.session||1
     });
-    notifySW("POMODORO_UPDATE",{ title, body: bodyBase, silent:true });
 }
 
 function clearBackgroundPomodoroNotification(){
     notifySW("POMODORO_STOP");
-}
-
-function tryDirectNotif(title,body){
-    try {
-        new Notification(title,{
-            body:body,
-            icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🍅</text></svg>'
-        });
-    }catch(e){}
+    // Also close any page-created notification with the same tag via SW if possible.
+    try{
+        const close=async()=>{
+            const reg = swReg || (navigator.serviceWorker && await navigator.serviceWorker.ready);
+            if(!reg?.getNotifications) return;
+            const list = await reg.getNotifications({ tag:"syllabus-pomodoro" });
+            list.forEach(n=>{ try{n.close();}catch(_e){} });
+        };
+        close();
+    }catch(_e){}
 }
 
 function playAlertSound(){
