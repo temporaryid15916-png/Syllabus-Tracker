@@ -2407,38 +2407,86 @@ function restorePomoState(){
             let phaseEnd = pomo.end;
             let mode = pomo.mode;
             let session = pomo.session;
-            const savedLastTick = Math.max(0, Number(st.lastTick) || (phaseEnd - pomo.remaining * 1000));
             const durationFor = m => (m === "focus" ? pomo.focus : pomo.break) * 60000;
+            const savedLastTick = Math.max(0, Number(st.lastTick) || (phaseEnd - pomo.remaining * 1000));
             const phaseStart = Math.max(savedLastTick, phaseEnd - durationFor(mode));
 
-            // Recover the remainder of the phase that was active when the app closed.
             if(mode === "focus"){
-                recordRecoveredFocusTime(phaseStart, Math.min(now, phaseEnd), pomo.book, pomo.chapter);
-            }
-
-            // If the phone suspended the page past one or more phase boundaries,
-            // advance through those phases using absolute timestamps, not setInterval.
-            let guard = 0;
-            while(phaseEnd <= now && guard++ < 1000){
-                mode = mode === "focus" ? "break" : "focus";
-                if(mode === "focus") session++;
-                const nextEnd = phaseEnd + durationFor(mode);
-                if(mode === "focus"){
-                    recordRecoveredFocusTime(phaseEnd, Math.min(now, nextEnd), pomo.book, pomo.chapter);
+                // Recover focus time strictly for this session up to phaseEnd
+                if(phaseEnd > phaseStart){
+                    recordRecoveredFocusTime(phaseStart, Math.min(now, phaseEnd), pomo.book, pomo.chapter);
                 }
-                phaseEnd = nextEnd;
-            }
 
-            pomo.mode = mode;
-            pomo.session = session;
-            pomo.end = phaseEnd;
-            pomo.remaining = Math.max(0, Math.ceil((phaseEnd - now) / 1000));
-            pomo.running = true;
-            pomo.started = true;
-            pomo.awaitingNext = false;
-            lastTick = now;
-            clearInterval(pomo.timer);
-            pomo.timer = setInterval(pomoTick, 500);
+                if(now < phaseEnd){
+                    // Focus session still ongoing
+                    pomo.mode = "focus";
+                    pomo.session = session;
+                    pomo.end = phaseEnd;
+                    pomo.remaining = Math.max(0, Math.ceil((phaseEnd - now) / 1000));
+                    pomo.running = true;
+                    pomo.started = true;
+                    pomo.awaitingNext = false;
+                    lastTick = now;
+                    clearInterval(pomo.timer);
+                    pomo.timer = setInterval(pomoTick, 500);
+                } else {
+                    // Focus session finished while app was closed. Automatically transition to break!
+                    const breakEnd = phaseEnd + durationFor("break");
+                    if(now < breakEnd){
+                        // Break is currently active!
+                        pomo.mode = "break";
+                        pomo.session = session;
+                        pomo.end = breakEnd;
+                        pomo.remaining = Math.max(0, Math.ceil((breakEnd - now) / 1000));
+                        pomo.running = true;
+                        pomo.started = true;
+                        pomo.awaitingNext = false;
+                        lastTick = now;
+                        clearInterval(pomo.timer);
+                        pomo.timer = setInterval(pomoTick, 500);
+                        toast("☕ Focus completed — break is active!");
+                    } else {
+                        // Both focus and break finished while closed. Stop cleanly. Do NOT add ghost sessions!
+                        pomo.mode = "focus";
+                        pomo.session = session + 1;
+                        pomo.remaining = pomo.focus * 60;
+                        pomo.running = false;
+                        pomo.started = true;
+                        pomo.awaitingNext = true;
+                        pomo.end = 0;
+                        pomo.timer = null;
+                        lastTick = now;
+                        toast("🎉 Focus session & break finished!");
+                    }
+                }
+            } else {
+                // Was in break mode
+                if(now < phaseEnd){
+                    // Break is still active
+                    pomo.mode = "break";
+                    pomo.session = session;
+                    pomo.end = phaseEnd;
+                    pomo.remaining = Math.max(0, Math.ceil((phaseEnd - now) / 1000));
+                    pomo.running = true;
+                    pomo.started = true;
+                    pomo.awaitingNext = false;
+                    lastTick = now;
+                    clearInterval(pomo.timer);
+                    pomo.timer = setInterval(pomoTick, 500);
+                } else {
+                    // Break finished while closed. Stop and wait for user to start next focus session!
+                    pomo.mode = "focus";
+                    pomo.session = session + 1;
+                    pomo.remaining = pomo.focus * 60;
+                    pomo.running = false;
+                    pomo.started = true;
+                    pomo.awaitingNext = true;
+                    pomo.end = 0;
+                    pomo.timer = null;
+                    lastTick = now;
+                    toast("⏰ Break finished — click Start when ready!");
+                }
+            }
 
             const bSelect = document.getElementById("pomoBookSelect");
             const cSelect = document.getElementById("pomoChapterSelect");
@@ -2514,7 +2562,7 @@ function pomoTick(){
         savePomoState();
     }
 
-   updatePomoDisplay();
+    updatePomoDisplay();
     updateDashboard();
 
     // Redraw the history graph at most once per second.
@@ -2538,41 +2586,21 @@ function handlePomoFinish(){
     const chName = BOOKS[pomo.book]?.[pomo.chapter-1] || `Chapter ${pomo.chapter}`;
     clearInterval(pomo.timer);
     pomo.timer = null;
-    pomo.running = false;
-    pomo.started = true;
-    pomo.awaitingNext = true;
-    pomo.end = 0;
-
-    // Switch to the next phase, then auto-start it after a short beat (sound/toast first).
-    if(pomo.mode === "focus"){
-        sendSysNotification("🎉 Focus Complete!", `Finished studying ${pomo.book} • ${chName}. Starting ${pomo.break}m break.`);
-        toast(`☕ Focus complete — break starting…`);
-        pomo.mode = "break";
-        pomo.remaining = pomo.break * 60;
-    } else {
-        sendSysNotification("⏰ Break Finished!", "Starting the next focus session.");
-        toast("🍅 Break complete — focus starting…");
-        pomo.mode = "focus";
-        pomo.session++;
-        pomo.remaining = pomo.focus * 60;
-    }
+    clearBackgroundPomodoroNotification();
 
     const bSelect = document.getElementById("pomoBookSelect");
     const cSelect = document.getElementById("pomoChapterSelect");
-    if(bSelect) bSelect.disabled = !!pomo.book;
-    if(cSelect) cSelect.disabled = !!pomo.book;
-    clearBackgroundPomodoroNotification();
-    savePomoState();
-    updatePomoDisplay();
+    if(bSelect) bSelect.disabled = true;
+    if(cSelect) cSelect.disabled = true;
 
-    // Auto-start next phase (focus → break → focus …) unless user already paused/reset.
-    clearTimeout(window.__pomoAutoNext);
-    window.__pomoAutoNext = setTimeout(()=>{
-        if(!pomo.book || !pomo.chapter)return;
-        if(pomo.running)return;
-        if(!pomo.started)return; // reset was pressed
-        // Start the prepared phase
+    if(pomo.mode === "focus"){
+        // Focus session finished: immediately & automatically start break!
+        sendSysNotification("🎉 Focus Complete!", `Finished studying ${pomo.book} • ${chName}. Break starting!`);
+        toast(`☕ Focus complete — ${pomo.break}m break started!`);
+        pomo.mode = "break";
+        pomo.remaining = pomo.break * 60;
         pomo.running = true;
+        pomo.started = true;
         pomo.awaitingNext = false;
         lastTick = Date.now();
         pomo.end = Date.now() + pomo.remaining * 1000;
@@ -2581,12 +2609,23 @@ function handlePomoFinish(){
         updateBackgroundPomodoroNotification(true);
         savePomoState();
         updatePomoDisplay();
-        playAlertSound();
-    }, 900);
+    } else {
+        // Break finished: notify user and stop. Do NOT auto-start focus unattended!
+        sendSysNotification("⏰ Break Finished!", "Ready to start the next focus session.");
+        toast("🍅 Break complete — click Start for next session!");
+        pomo.mode = "focus";
+        pomo.session++;
+        pomo.remaining = pomo.focus * 60;
+        pomo.running = false;
+        pomo.started = true;
+        pomo.awaitingNext = true;
+        pomo.end = 0;
+        savePomoState();
+        updatePomoDisplay();
+    }
 }
 
 function resetPomodoro(){
-    clearTimeout(window.__pomoAutoNext);
     clearInterval(pomo.timer);
     pomo.timer=null;
     pomo.running=false;
@@ -2617,15 +2656,28 @@ function skipPomodoro(){
     }
     clearInterval(pomo.timer);
     pomo.running=false;
+    pomo.end=0;
     flushStudySeconds(true);
     clearBackgroundPomodoroNotification();
     if(pomo.mode==="focus"){
+        // Immediately switch to break and automatically run break
         pomo.mode="break";
         pomo.remaining=pomo.break*60;
+        pomo.running=true;
+        pomo.started=true;
+        pomo.awaitingNext=false;
+        lastTick=Date.now();
+        pomo.end=Date.now() + pomo.remaining*1000;
+        clearInterval(pomo.timer);
+        pomo.timer=setInterval(pomoTick, 500);
+        toast(`☕ Skipped to break (${pomo.break}m)`);
     } else {
         pomo.mode="focus";
         pomo.session++;
         pomo.remaining=pomo.focus*60;
+        pomo.running=false;
+        pomo.awaitingNext=true;
+        toast("🍅 Skipped break — click Start for next session");
     }
     savePomoState();
     updatePomoDisplay();
@@ -2644,11 +2696,13 @@ function recordRecoveredFocusTime(startMs, endMs, book, chapter){
     if(!book || !chapter || !Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs) return;
     let cursor = startMs;
     const ck = chKey(book, chapter);
-    while(cursor < endMs){
+    let guard = 0;
+    while(cursor < endMs && guard++ < 100){
         const dayStart = new Date(cursor);
         const nextMidnight = new Date(dayStart);
         nextMidnight.setHours(24, 0, 0, 0);
-        const segmentEnd = Math.min(endMs, nextMidnight.getTime());
+        const nextMidMs = nextMidnight.getTime();
+        const segmentEnd = Math.min(endMs, nextMidMs > cursor ? nextMidMs : cursor + 86400000);
         const seconds = Math.max(0, (segmentEnd - cursor) / 1000);
         if(seconds > 0){
             const dayKey = formatDateKey(new Date(cursor));
@@ -2659,7 +2713,7 @@ function recordRecoveredFocusTime(startMs, endMs, book, chapter){
             history[dayKey].byBook[book] = (Number(history[dayKey].byBook[book]) || 0) + seconds;
             history[dayKey].byChapter[ck] = (Number(history[dayKey].byChapter[ck]) || 0) + seconds;
         }
-        cursor = segmentEnd;
+        cursor = (segmentEnd > cursor) ? segmentEnd : cursor + 86400000;
     }
     save(KEY.history, history);
     updateDashboard();
@@ -2692,13 +2746,85 @@ document.addEventListener("visibilitychange",()=>{
         flushStudySeconds(true);
         if(pomo.running) savePomoState();
     }
-    if(pomo.running && document.visibilityState==="visible"){
-        pomoTick();
+    if(document.visibilityState==="visible"){
+        if(pomo.running && pomo.end > 0){
+            const now = Date.now();
+            if(now >= pomo.end){
+                if(pomo.mode === "focus"){
+                    // Focus ended while in background. Credit strictly this focus session.
+                    let activeSecondsPassed = 0;
+                    if(lastTick > 0){
+                        activeSecondsPassed = Math.max(0, (pomo.end - Math.max(lastTick, 0)) / 1000);
+                    }
+                    if(activeSecondsPassed > 0 && pomo.book && pomo.chapter){
+                        addStudySeconds(pomo.book, pomo.chapter, activeSecondsPassed);
+                    }
+                    flushStudySeconds(true);
+
+                    const breakEnd = pomo.end + pomo.break * 60 * 1000;
+                    if(now < breakEnd){
+                        // Break is currently active!
+                        pomo.mode = "break";
+                        pomo.end = breakEnd;
+                        pomo.remaining = Math.max(0, Math.ceil((breakEnd - now) / 1000));
+                        pomo.running = true;
+                        pomo.started = true;
+                        pomo.awaitingNext = false;
+                        lastTick = now;
+                        clearInterval(pomo.timer);
+                        pomo.timer = setInterval(pomoTick, 500);
+                        playAlertSound();
+                        toast(`☕ Focus complete — ${fmt(pomo.remaining)} break remaining`);
+                    } else {
+                        // Both focus and break finished while in background. Stop cleanly!
+                        pomo.mode = "focus";
+                        pomo.session++;
+                        pomo.remaining = pomo.focus * 60;
+                        pomo.running = false;
+                        pomo.started = true;
+                        pomo.awaitingNext = true;
+                        pomo.end = 0;
+                        clearInterval(pomo.timer);
+                        pomo.timer = null;
+                        clearBackgroundPomodoroNotification();
+                        playAlertSound();
+                        toast("🎉 Focus session & break finished!");
+                    }
+                    savePomoState();
+                    updatePomoDisplay();
+                    updateDashboard();
+                    return;
+                } else {
+                    // Break ended while in background. Stop and await next focus session!
+                    pomo.mode = "focus";
+                    pomo.session++;
+                    pomo.remaining = pomo.focus * 60;
+                    pomo.running = false;
+                    pomo.started = true;
+                    pomo.awaitingNext = true;
+                    pomo.end = 0;
+                    clearInterval(pomo.timer);
+                    pomo.timer = null;
+                    clearBackgroundPomodoroNotification();
+                    playAlertSound();
+                    toast("⏰ Break finished — click Start when ready!");
+                    savePomoState();
+                    updatePomoDisplay();
+                    updateDashboard();
+                    return;
+                }
+            } else {
+                pomoTick();
+            }
+        }
     }
 });
 
 window.addEventListener("focus",()=>{
     checkMidnightChange();
+    if(pomo.running && pomo.end > 0 && Date.now() >= pomo.end){
+        document.dispatchEvent(new Event("visibilitychange"));
+    }
 });
 
 // Study History
@@ -2711,7 +2837,15 @@ function setGraphPeriod(p){
 
 function groupedHistory(){
     const out={};
-    Object.entries(history).forEach(([d,v])=>{
+    const tDay = today();
+    const allHistory = {...history};
+    if(pendingStudySeconds > 0){
+        allHistory[tDay] = {
+            ...(allHistory[tDay] || {}),
+            totalSeconds: (Number(allHistory[tDay]?.totalSeconds) || 0) + Math.round(pendingStudySeconds)
+        };
+    }
+    Object.entries(allHistory).forEach(([d,v])=>{
         let key=d;
         if(graphPeriod==="weekly"){
             let parts = d.split('-').map(Number);
