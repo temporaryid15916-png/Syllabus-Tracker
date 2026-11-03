@@ -2940,20 +2940,21 @@ document.addEventListener("visibilitychange",()=>{
                     updatePomoDisplay();
                     updateDashboard();
                     return;
-                } else {
-                    // Break ended while in background. Stop and await next focus session!
+                                } else {
+                    // Break ended while in background → auto-start next focus
                     pomo.mode = "focus";
                     pomo.session++;
                     pomo.remaining = pomo.focus * 60;
-                    pomo.running = false;
+                    pomo.running = true;
                     pomo.started = true;
-                    pomo.awaitingNext = true;
-                    pomo.end = 0;
+                    pomo.awaitingNext = false;
+                    lastTick = Date.now();
+                    pomo.end = Date.now() + pomo.remaining * 1000;
                     clearInterval(pomo.timer);
-                    pomo.timer = null;
-                    clearBackgroundPomodoroNotification();
+                    pomo.timer = setInterval(pomoTick, 500);
                     playAlertSound();
-                    toast("⏰ Break finished — click Start when ready!");
+                    toast("🍅 Break finished — next focus started!");
+                    updateBackgroundPomodoroNotification(true);
                     savePomoState();
                     updatePomoDisplay();
                     updateDashboard();
