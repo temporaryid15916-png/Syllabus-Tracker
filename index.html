@@ -1623,7 +1623,8 @@ const KEY = {
     progress:"syllabusTracker",theme:"syllabusTheme",last:"syllabusLastChapter",collapsed:"syllabusCollapsed",history:"pomodoroDailyHistory",exams:"studentExamPlanner",goal:"dailyStudyGoal"
 };
 
-const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){try{console.warn("localStorage save failed",k,e);}catch(_e){}return false;}};
 
 let progress=load(KEY.progress,{}),last=load(KEY.last,null),collapsed=load(KEY.collapsed,{}),history=load(KEY.history,{}),exams=load(KEY.exams,[]);
 let goal=Number(localStorage.getItem(KEY.goal));
@@ -1811,7 +1812,7 @@ function renderSyllabus(){
 
 function chapterHTML(b,c,name){
     const s=progress[chKey(b,c)]||"not-started",cls=s==="complete"?"complete":s==="in-progress"?"in-progress":"",text=s==="complete"?"✓ Complete":s==="in-progress"?"🟡 In Progress":"⚪ Not Started";
-    return `<div id="ch_${slug(b)}_${c}" class="chapter ${cls}"><div class="num">${String(c).padStart(2,"0")}</div><div class="chapter-main"><div class="chapter-name">${name}</div><div class="chapter-status">${text}</div></div><div class="tools"><button class="mini" onclick='openPomodoroFor(${JSON.stringify(b)},${c})'>🍅 Focus</button><button class="mini status ${cls}" onclick='toggleChapterStatus(${JSON.stringify(b)},${c})'>${text}</button></div></div>`;
+    return `<div id="ch_${slug(b)}_${c}" class="chapter ${cls}"><div class="num">${String(c).padStart(2,"0")}</div><div class="chapter-main"><div class="chapter-name">${esc(name)}</div><div class="chapter-status">${text}</div></div><div class="tools"><button class="mini" onclick='openPomodoroFor(${JSON.stringify(b)},${c})'>🍅 Focus</button><button class="mini status ${cls}" onclick='toggleChapterStatus(${JSON.stringify(b)},${c})'>${text}</button></div></div>`;
 }
 
 function toggleChapterStatus(b,c){
@@ -1856,7 +1857,7 @@ function renderExams(){
         let p=fmtPct(raw);
         const d=document.createElement("div");
         d.className="card exam";
-        d.innerHTML=`<div class="row"><div><h3>${esc(e.name)}</h3><div class="date">📅 ${e.date||""}</div></div><span class="filter">${(e.chapters||[]).length} chapters</span></div><div style="margin:10px 0 4px;font-size:11px;font-weight:800;display:flex;justify-content:space-between"><span>Preparation</span><strong style="color:var(--primary)">${done}/${chapters.length} (${p})</strong></div><div class="progress"><div class="fill" style="width:${raw}%"></div></div><div class="exam-actions"><button class="btn primary" onclick='openExamDetail(${JSON.stringify(e.id)})'>View Chapters</button><button class="btn" onclick='editExam(${JSON.stringify(e.id)})'>Edit</button><button class="btn" style="color:var(--danger)" onclick='openDeleteExamModal(${JSON.stringify(e.id)})'>Delete</button></div>`;
+        d.innerHTML=`<div class="row"><div><h3>${esc(e.name)}</h3><div class="date">📅 ${esc(e.date||"")}</div></div><span class="filter">${(e.chapters||[]).length} chapters</span></div><div style="margin:10px 0 4px;font-size:11px;font-weight:800;display:flex;justify-content:space-between"><span>Preparation</span><strong style="color:var(--primary)">${done}/${chapters.length} (${p})</strong></div><div class="progress"><div class="fill" style="width:${raw}%"></div></div><div class="exam-actions"><button class="btn primary" onclick='openExamDetail(${JSON.stringify(e.id)})'>View Chapters</button><button class="btn" onclick='editExam(${JSON.stringify(e.id)})'>Edit</button><button class="btn" style="color:var(--danger)" onclick='openDeleteExamModal(${JSON.stringify(e.id)})'>Delete</button></div>`;
         box.appendChild(d);
     });
 }
@@ -1874,7 +1875,7 @@ function renderExamDetail(){
     document.getElementById("examListView").style.display="none";
     const v=document.getElementById("examDetailView");
     v.style.display="block";
-    v.innerHTML=`<div class="card section"><button class="filter" onclick="closeExamDetail()">← Back</button><div class="row" style="margin-top:10px"><div><h2>${esc(e.name)}</h2><p>📅 ${e.date}</p></div><div style="text-align:right"><b style="font-size:26px;color:var(--primary)">${p}</b><p>${done} / ${chapters.length} completed</p></div></div><div class="progress" style="margin:12px 0"><div class="fill" style="width:${raw}%"></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn primary" onclick="startPomodoroForExam()">🍅 Study Next Chapter</button><button class="btn" onclick='editExam(${JSON.stringify(e.id)})'>✏️ Edit</button><button class="btn" style="color:var(--danger)" onclick='openDeleteExamModal(${JSON.stringify(e.id)})'>🗑️ Delete</button></div></div><div class="card section"><h2>Exam Chapters</h2><p>Synced with your main syllabus.</p><div class="list">${chapters.map(c=>{let d=progress[chKey(c.book,c.chapter)]==="complete",n=BOOKS[c.book]?.[c.chapter-1];if(!n)return "";return `<div class="chapter ${d?"complete":""}"><button class="mini ${d?"status complete":""}" onclick='toggleExamChapterDone(${JSON.stringify(c.book)},${c.chapter})'>${d?"✓":"○"}</button><div class="chapter-main"><div class="chapter-name">${n}</div><div class="chapter-status">${c.book} · Chapter ${c.chapter}</div></div><button class="mini" onclick='openPomodoroFor(${JSON.stringify(c.book)},${c.chapter})'>🍅 Study</button></div>`}).join("")}</div></div>`;
+    v.innerHTML=`<div class="card section"><button class="filter" onclick="closeExamDetail()">← Back</button><div class="row" style="margin-top:10px"><div><h2>${esc(e.name)}</h2><p>📅 ${esc(e.date||"")}</p></div><div style="text-align:right"><b style="font-size:26px;color:var(--primary)">${p}</b><p>${done} / ${chapters.length} completed</p></div></div><div class="progress" style="margin:12px 0"><div class="fill" style="width:${raw}%"></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn primary" onclick="startPomodoroForExam()">🍅 Study Next Chapter</button><button class="btn" onclick='editExam(${JSON.stringify(e.id)})'>✏️ Edit</button><button class="btn" style="color:var(--danger)" onclick='openDeleteExamModal(${JSON.stringify(e.id)})'>🗑️ Delete</button></div></div><div class="card section"><h2>Exam Chapters</h2><p>Synced with your main syllabus.</p><div class="list">${chapters.map(c=>{let d=progress[chKey(c.book,c.chapter)]==="complete",n=BOOKS[c.book]?.[c.chapter-1];if(!n)return "";return `<div class="chapter ${d?"complete":""}"><button class="mini ${d?"status complete":""}" onclick='toggleExamChapterDone(${JSON.stringify(c.book)},${c.chapter})'>${d?"✓":"○"}</button><div class="chapter-main"><div class="chapter-name">${esc(n)}</div><div class="chapter-status">${c.book} · Chapter ${c.chapter}</div></div><button class="mini" onclick='openPomodoroFor(${JSON.stringify(c.book)},${c.chapter})'>🍅 Study</button></div>`}).join("")}</div></div>`;
 }
 
 function openExamModal(){
@@ -1973,6 +1974,8 @@ let lastTick = Date.now();
 let lastBgNotificationAt = 0;
 let pendingStudySeconds = 0;
 let pendingStudyDay = today();
+let pendingStudyBook = "";
+let pendingStudyChapter = null;
 let lastPomoStateSave = 0;
 let lastHistoryRenderAt = 0;
 let lastDashboardTickAt = 0;
@@ -1999,7 +2002,7 @@ function getAudioContext(){
 
 let swReg=null;
 // App version — bump this string on every deploy so clients can detect updates.
-const APP_BUILD = "2026-11-02-pomo-background-fix-a";
+const APP_BUILD = "2026-11-03-bugfix-a";
 if("serviceWorker" in navigator){
     // Network-first SW + auto-activate so mobile normal refresh gets the latest HTML.
     navigator.serviceWorker.register("./sw.js?v="+APP_BUILD, {scope:"./", updateViaCache:"none"})
@@ -2563,7 +2566,11 @@ function pomoTick(){
     }
 
     updatePomoDisplay();
-    updateDashboard();
+    // Avoid rewriting the whole dashboard 2x/sec (battery + jank on mobile).
+    if(now - lastDashboardTickAt >= 1000){
+        lastDashboardTickAt = now;
+        updateDashboard();
+    }
 
     // Redraw the history graph at most once per second.
     if(currentTab === "history" && now-lastHistoryRenderAt>=1000){
@@ -2597,6 +2604,12 @@ function handlePomoFinish(){
     if(cSelect) cSelect.disabled = true;
 
     if(pomo.mode === "focus"){
+        try{
+            const d = today();
+            history[d]??={totalSeconds:0,sessions:0,byBook:{},byChapter:{}};
+            history[d].sessions = (Number(history[d].sessions)||0) + 1;
+            save(KEY.history, history);
+        }catch(_e){}
 
         // Focus finished: Automatically start break.
         sendSysNotification(
@@ -2711,7 +2724,15 @@ function skipPomodoro(){
 // Memory buffer to eliminate battery drain & excessive localStorage I/O
 function addStudySeconds(b,c,sec){
     if(!b || !c || sec <= 0) return;
-    if(pendingStudySeconds <= 0) pendingStudyDay = today();
+    // If buffer holds time for a different chapter, flush it first so credits stay accurate.
+    if(pendingStudySeconds > 0 && (pendingStudyBook !== b || pendingStudyChapter !== c)){
+        flushStudySeconds(true);
+    }
+    if(pendingStudySeconds <= 0){
+        pendingStudyDay = today();
+        pendingStudyBook = b;
+        pendingStudyChapter = c;
+    }
     pendingStudySeconds += sec;
 }
 
@@ -2731,12 +2752,15 @@ function recordRecoveredFocusTime(startMs, endMs, book, chapter){
         const seconds = Math.max(0, (segmentEnd - cursor) / 1000);
         if(seconds > 0){
             const dayKey = formatDateKey(new Date(cursor));
-            history[dayKey] ??= {totalSeconds:0,sessions:0,byBook:{},byChapter:{}};
-            history[dayKey].totalSeconds = (Number(history[dayKey].totalSeconds) || 0) + seconds;
-            history[dayKey].byBook ??= {};
-            history[dayKey].byChapter ??= {};
-            history[dayKey].byBook[book] = (Number(history[dayKey].byBook[book]) || 0) + seconds;
-            history[dayKey].byChapter[ck] = (Number(history[dayKey].byChapter[ck]) || 0) + seconds;
+            const addSec = Math.round(seconds);
+            if(addSec > 0){
+                history[dayKey] ??= {totalSeconds:0,sessions:0,byBook:{},byChapter:{}};
+                history[dayKey].totalSeconds = (Number(history[dayKey].totalSeconds) || 0) + addSec;
+                history[dayKey].byBook ??= {};
+                history[dayKey].byChapter ??= {};
+                history[dayKey].byBook[book] = (Number(history[dayKey].byBook[book]) || 0) + addSec;
+                history[dayKey].byChapter[ck] = (Number(history[dayKey].byChapter[ck]) || 0) + addSec;
+            }
         }
         cursor = (segmentEnd > cursor) ? segmentEnd : cursor + 86400000;
     }
@@ -2746,20 +2770,32 @@ function recordRecoveredFocusTime(startMs, endMs, book, chapter){
 }
 
 function flushStudySeconds(force = false){
-    if(pendingStudySeconds <= 0 || !pomo.book || !pomo.chapter) return;
+    const book = pendingStudyBook || pomo.book;
+    const chapter = pendingStudyChapter || pomo.chapter;
+    if(pendingStudySeconds <= 0 || !book || !chapter) return;
     if(!force && pendingStudySeconds < 3) return;
 
     const d=pendingStudyDay||today();
+    const secs = Math.round(pendingStudySeconds);
+    if(secs <= 0){
+        pendingStudySeconds = 0;
+        pendingStudyBook = "";
+        pendingStudyChapter = null;
+        pendingStudyDay = today();
+        return;
+    }
     history[d]??={totalSeconds:0,sessions:0,byBook:{},byChapter:{}};
     history[d].totalSeconds=Number(history[d].totalSeconds)||0;
     history[d].byBook??={};
     history[d].byChapter??={};
-    history[d].totalSeconds += pendingStudySeconds;
-    history[d].byBook[pomo.book] = (history[d].byBook[pomo.book] || 0) + pendingStudySeconds;
-    const ck = chKey(pomo.book, pomo.chapter);
-    history[d].byChapter[ck] = (history[d].byChapter[ck] || 0) + pendingStudySeconds;
+    history[d].totalSeconds += secs;
+    history[d].byBook[book] = (history[d].byBook[book] || 0) + secs;
+    const ck = chKey(book, chapter);
+    history[d].byChapter[ck] = (history[d].byChapter[ck] || 0) + secs;
 
     pendingStudySeconds = 0;
+    pendingStudyBook = "";
+    pendingStudyChapter = null;
     pendingStudyDay = today();
     save(KEY.history, history);
     updateDashboard();
@@ -3019,6 +3055,8 @@ function closeClearHistoryModal(){document.getElementById("clearHistoryModal").c
 function confirmClearStudyHistory(){
     history={};
     pendingStudySeconds=0;
+    pendingStudyBook="";
+    pendingStudyChapter=null;
     pendingStudyDay=today();
     save(KEY.history,history);
     closeClearHistoryModal();
@@ -3085,6 +3123,25 @@ function scheduleMidnightRefresh(){
 
 setInterval(checkMidnightChange, 30000);
 scheduleMidnightRefresh();
+
+
+document.addEventListener("keydown", (e) => {
+    if(e.key !== "Escape") return;
+    const leave = document.getElementById("communityLeaveConfirmModal");
+    if(leave && leave.classList.contains("show")){ closeCommunityLeaveConfirm(); return; }
+    const modals = ["clearHistoryModal","resetDailyGoalModal","alertEnabledModal","deleteExamModal","resetModal","examModal"];
+    for(const id of modals){
+        const m = document.getElementById(id);
+        if(m && m.classList.contains("show")){
+            m.classList.remove("show");
+            if(id === "deleteExamModal") pendingExamDeleteId = null;
+            if(id === "examModal"){ try{ editingExam = null; }catch(_e){} }
+            return;
+        }
+    }
+    const pomoOv = document.getElementById("pomodoroOverlay");
+    if(pomoOv && pomoOv.classList.contains("show")) closePomodoro();
+});
 
 function init(){
     const sel=document.getElementById("bookSelectFilter");
