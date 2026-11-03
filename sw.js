@@ -1,6 +1,6 @@
 /* Syllabus Tracker service worker — network-first, versioned cache. */
 const params = new URL(self.location.href).searchParams;
-const BUILD = params.get('v') || '2026-11-03-notif-live-a';
+const BUILD = params.get('v') || '2026-11-03-notif-bar-b';
 const CACHE_NAME = `syllabus-tracker-${BUILD}`;
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest'];
 
