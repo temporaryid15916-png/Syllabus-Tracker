@@ -1981,13 +1981,26 @@ let lastHistoryRenderAt = 0;
 let lastDashboardTickAt = 0;
 
 let audioCtx = null;
-function getAudioContext(){
+let audioUnlocked = false;
+function getAudioContext(fromGesture){
     try {
+        // Avoid the "AudioContext was not allowed to start" warning by only
+        // creating/resuming after a real user gesture (or once already unlocked).
+        if(fromGesture) audioUnlocked = true;
+        if(!audioUnlocked){
+            try{
+                if(navigator.userActivation && navigator.userActivation.hasBeenActive){
+                    audioUnlocked = true;
+                }
+            }catch(_e){}
+        }
+        if(!audioUnlocked) return null;
+
         if(!audioCtx){
             const AC=window.AudioContext||window.webkitAudioContext;
-            if(AC)audioCtx=new AC();
+            if(AC) audioCtx=new AC();
         }
-        if(audioCtx&&audioCtx.state==='suspended'){
+        if(audioCtx && audioCtx.state==="suspended"){
             const p=audioCtx.resume();
             if(p&&typeof p.catch==="function")p.catch(()=>{});
         }
@@ -1997,12 +2010,12 @@ function getAudioContext(){
 
 // Unlock Web Audio during a real user gesture so completion sounds can play later.
 ["pointerdown","keydown","touchstart"].forEach(type=>{
-    document.addEventListener(type,()=>{ getAudioContext(); },{passive:true});
+    document.addEventListener(type,()=>{ getAudioContext(true); },{passive:true});
 });
 
 let swReg=null;
 // App version — bump this string on every deploy so clients can detect updates.
-const APP_BUILD = "2026-11-03-bugfix-a";
+const APP_BUILD = "2026-11-03-notif-live-a";
 if("serviceWorker" in navigator){
     // Network-first SW + auto-activate so mobile normal refresh gets the latest HTML.
     navigator.serviceWorker.register("./sw.js?v="+APP_BUILD, {scope:"./", updateViaCache:"none"})
@@ -2064,7 +2077,7 @@ function openPomodoroFor(b,c){
 }
 
 function openPomodoro(){
-    getAudioContext();
+    getAudioContext(true);
     document.getElementById("pomodoroOverlay").classList.add("show");
     populatePomoPickers();
     updatePomoDisplay();
@@ -2107,7 +2120,7 @@ function closeAlertEnabledModal(){
 }
 
 async function togglePomodoroAlert(){
-    getAudioContext();
+    getAudioContext(true);
     if(!("Notification" in window)){
         toast("🔔 In-app alert is active");
         openAlertEnabledModal("In-App Alert Active","Your Pomodoro will use the audio alarm when the timer finishes.");
@@ -2161,16 +2174,37 @@ function sendSysNotification(title,body){
 function updateBackgroundPomodoroNotification(force=false){
     if(!pomo.running || !("Notification" in window) || Notification.permission!=="granted")return;
     const now=Date.now();
-    if(!force && now-lastBgNotificationAt<15000)return;
+    // Background: update often so notification-bar countdown stays live.
+    // Foreground: slower rate is enough.
+    const minGap = document.visibilityState === "hidden" ? 1000 : 5000;
+    if(!force && now-lastBgNotificationAt<minGap)return;
     lastBgNotificationAt=now;
-    const m=Math.floor(pomo.remaining/60),s=pomo.remaining%60;
+
+    const remaining = (pomo.end > 0)
+        ? Math.max(0, Math.ceil((pomo.end - now) / 1000))
+        : Math.max(0, Math.round(Number(pomo.remaining)||0));
+    const m=Math.floor(remaining/60),s=remaining%60;
     const timeStr=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
     const bookTitle = pomo.book || "Focus";
     const chName = (pomo.book && pomo.chapter && BOOKS[pomo.book]?.[pomo.chapter-1]) ? BOOKS[pomo.book][pomo.chapter-1] : "";
-    notifySW("POMODORO_UPDATE",{
-        title:pomo.mode==="focus"?"🍅 Pomodoro Focus":"☕ Pomodoro Break",
-        body:`${timeStr} remaining • ${bookTitle}${chName ? ' · ' + chName : ''}`
+    const title = (pomo.mode==="focus" ? "🍅 Focus · " : "☕ Break · ") + timeStr;
+    const bodyBase = (pomo.mode==="focus" ? "Focus session" : "Break") +
+        (bookTitle ? " • "+bookTitle : "") +
+        (chName ? " · "+chName : "") +
+        " · Session "+(pomo.session||1);
+
+    // Service worker keeps ticking the notification even when the tab is backgrounded.
+    notifySW("POMODORO_SYNC",{
+        end: pomo.end || (now + remaining*1000),
+        mode: pomo.mode,
+        titleFocus: "🍅 Focus",
+        titleBreak: "☕ Break",
+        bodyBase,
+        book: bookTitle,
+        chapterName: chName,
+        session: pomo.session||1
     });
+    notifySW("POMODORO_UPDATE",{ title, body: bodyBase, silent:true });
 }
 
 function clearBackgroundPomodoroNotification(){
@@ -2189,7 +2223,7 @@ function tryDirectNotif(title,body){
 function playAlertSound(){
     // Web Audio chime (works after any prior user gesture unlocked the context)
     try {
-        const ctx=getAudioContext();
+        const ctx=getAudioContext(false);
         if(ctx){
             const kick=()=>{
                 try{
@@ -2508,7 +2542,7 @@ function restorePomoState(){
 }
 
 function togglePomodoroPlay(){
-    getAudioContext();
+    getAudioContext(true);
 
     if(!pomo.book || !pomo.chapter || !BOOKS[pomo.book]?.[pomo.chapter-1]){
         toast("⚠️ Please select a subject and chapter first!");
@@ -2535,6 +2569,17 @@ function togglePomodoroPlay(){
 
         clearInterval(pomo.timer);
         pomo.timer = setInterval(pomoTick, 500);
+
+        // Ask once (non-blocking) so notification-bar countdown can show outside the app.
+        try{
+            if("Notification" in window && Notification.permission==="default" && !window.__pomoNotifPrompted){
+                window.__pomoNotifPrompted = true;
+                Notification.requestPermission().then(p=>{
+                    updateAlertUI();
+                    if(p==="granted") updateBackgroundPomodoroNotification(true);
+                }).catch(()=>{});
+            }
+        }catch(_e){}
 
         updateBackgroundPomodoroNotification(true);
     }
@@ -2805,7 +2850,10 @@ document.addEventListener("visibilitychange",()=>{
     checkMidnightChange();
     if(document.visibilityState === "hidden"){
         flushStudySeconds(true);
-        if(pomo.running) savePomoState();
+        if(pomo.running){
+            savePomoState();
+            updateBackgroundPomodoroNotification(true);
+        }
     }
     if(document.visibilityState==="visible"){
         if(pomo.running && pomo.end > 0){
