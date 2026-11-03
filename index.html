@@ -1981,21 +1981,11 @@ let lastHistoryRenderAt = 0;
 let lastDashboardTickAt = 0;
 
 let audioCtx = null;
-let audioUnlocked = false;
 function getAudioContext(fromGesture){
     try {
-        // Avoid the "AudioContext was not allowed to start" warning by only
-        // creating/resuming after a real user gesture (or once already unlocked).
-        if(fromGesture) audioUnlocked = true;
-        if(!audioUnlocked){
-            try{
-                if(navigator.userActivation && navigator.userActivation.hasBeenActive){
-                    audioUnlocked = true;
-                }
-            }catch(_e){}
-        }
-        if(!audioUnlocked) return null;
-
+        // Only create/resume AudioContext inside a real click/tap handler.
+        // Creating it from passive listeners or later timers causes the Chrome warning.
+        if(!fromGesture) return audioCtx;
         if(!audioCtx){
             const AC=window.AudioContext||window.webkitAudioContext;
             if(AC) audioCtx=new AC();
@@ -2007,11 +1997,6 @@ function getAudioContext(fromGesture){
     }catch(e){}
     return audioCtx;
 }
-
-// Unlock Web Audio during a real user gesture so completion sounds can play later.
-["pointerdown","keydown","touchstart"].forEach(type=>{
-    document.addEventListener(type,()=>{ getAudioContext(true); },{passive:true});
-});
 
 let swReg=null;
 // App version — bump this string on every deploy so clients can detect updates.
