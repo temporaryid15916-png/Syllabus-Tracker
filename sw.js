@@ -1,7 +1,7 @@
 
 /* Syllabus Tracker service worker — network-first, versioned cache. */
 const params = new URL(self.location.href).searchParams;
-const BUILD = params.get('v') || '2026-11-01-cachefix-a';
+const BUILD = params.get('v') || '2026-11-03-bugfix-a';
 const CACHE_NAME = `syllabus-tracker-${BUILD}`;
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest'];
 
@@ -32,9 +32,50 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('message', event => {
-  if (event.data?.type === 'SKIP_WAITING') {
+  const data = event.data || {};
+  if (data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+    return;
   }
+  // Pomodoro background notification updates from the page
+  if (data.type === 'POMODORO_UPDATE') {
+    const payload = data.payload || {};
+    const title = payload.title || 'Pomodoro';
+    const body = payload.body || '';
+    event.waitUntil(
+      self.registration.showNotification(title, {
+        body,
+        tag: 'syllabus-pomodoro',
+        renotify: true,
+        silent: false,
+        data: { source: 'pomodoro' }
+      }).catch(() => {})
+    );
+    return;
+  }
+  if (data.type === 'POMODORO_STOP') {
+    event.waitUntil(
+      self.registration.getNotifications({ tag: 'syllabus-pomodoro' })
+        .then(list => Promise.all(list.map(n => n.close())))
+        .catch(() => {})
+    );
+  }
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil((async () => {
+    const clientsList = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    for (const client of clientsList) {
+      if ('focus' in client) {
+        await client.focus();
+        return;
+      }
+    }
+    if (self.clients.openWindow) {
+      await self.clients.openWindow('./index.html');
+    }
+  })());
 });
 
 self.addEventListener('fetch', event => {
