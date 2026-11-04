@@ -3166,15 +3166,24 @@ function confirmClearStudyHistory(){
 }
 
 // Insights
-function renderInsights(){
-    const q=[];
-    for(const b of Object.keys(BOOKS))for(let c=1;c<=BOOKS[b].length;c++)if(progress[chKey(b,c)]==="in-progress"&&q.length<6)q.push({book:b,chapter:c,tag:"In Progress"});
-    if(q.length<6)for(const b of Object.keys(BOOKS))for(let c=1;c<=BOOKS[b].length;c++)if(!progress[chKey(b,c)]&&q.length<6)q.push({book:b,chapter:c,tag:"Up Next"});
-    document.getElementById("smartQueueList").innerHTML=q.map(x=>`<div class="queue"><div class="tag">${x.tag}</div><h4>${BOOKS[x.book][x.chapter-1]}</h4><p>${x.book} · Ch ${x.chapter}</p><button class="mini" style="margin-top:7px" onclick='openPomodoroFor(${JSON.stringify(x.book)},${x.chapter})'>🍅 Study</button></div>`).join("")||`<div class="queue">🎉 Everything is complete!</div>`;
-    let done=Object.values(progress).filter(x=>x==="complete").length;
-    const badges=[["🌱","First Step","Complete 1 chapter",done>=1],["📚","Bookworm","Complete 10 chapters",done>=10],["🚀","Halfway","Complete 38 chapters",done>=38],["🏆","Master","Complete 75 chapters",done>=75]];
-    document.getElementById("badgeGrid").innerHTML=badges.map(b=>`<div class="badge ${b[3]?"":"locked"}"><div class="icon">${b[0]}</div><b>${b[1]}</b><p>${b[2]}</p></div>`).join("");
-}
+let done=Object.values(progress).filter(x=>x==="complete").length;
+const badges=[
+    ["🌱","First Step","Complete 1 chapter",done>=1],
+    ["✨","Spark","Complete 3 chapters",done>=3],
+    ["🔥","Getting Started","Complete 5 chapters",done>=5],
+    ["📘","Early Bird","Complete 8 chapters",done>=8],
+    ["📚","Bookworm","Complete 10 chapters",done>=10],
+    ["🎯","Focused","Complete 15 chapters",done>=15],
+    ["📖","Dedicated Learner","Complete 20 chapters",done>=20],
+    ["⚡","Momentum","Complete 25 chapters",done>=25],
+    ["🚀","Halfway There","Complete 38 chapters",done>=38],
+    ["💪","Strong Progress","Complete 45 chapters",done>=45],
+    ["🏅","High Achiever","Complete 50 chapters",done>=50],
+    ["⭐","Almost There","Complete 60 chapters",done>=60],
+    ["💎","Elite","Complete 68 chapters",done>=68],
+    ["🏆","Syllabus Master","Complete all 75 chapters",done>=75]
+];
+document.getElementById("badgeGrid").innerHTML=badges.map(b=>`<div class="badge ${b[3]?"":"locked"}"><div class="icon">${b[0]}</div><b>${b[1]}</b><p>${b[2]}</p></div>`).join("");
 
 function openResetModal(){document.getElementById("resetModal").classList.add("show");}
 function closeResetModal(){document.getElementById("resetModal").classList.remove("show");}
