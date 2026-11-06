@@ -1732,7 +1732,16 @@ function updateDashboard(){
     }
     document.getElementById("quickStreak").textContent=streak+(streak===1?" day":" days");
     document.getElementById("quickGoal").textContent=fmtPct(goalVal);
-    document.getElementById("quickExams").textContent=exams.filter(e=>e.date>=today()).length;
+    const upcoming=exams.filter(e=>e.date>=today());
+let daysLeftText="";
+if(upcoming.length){
+  const nearest=upcoming.map(e=>{
+    const d1=new Date(today()+"T00:00:00"),d2=new Date(e.date+"T00:00:00");
+    return Math.max(0,Math.round((d2-d1)/86400000));
+  }).sort((a,b)=>a-b)[0];
+  daysLeftText=` (${nearest}d left)`;
+}
+document.getElementById("quickExams").textContent=upcoming.length+daysLeftText;
     updateContinue();
 }
 
