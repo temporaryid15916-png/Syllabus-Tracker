@@ -2096,7 +2096,11 @@ function chapterHTML(b,c,name){
 function toggleChapterStatus(b,c){
     const k=chKey(b,c),s=progress[k]||"not-started";
     if(s==="not-started"){progress[k]="in-progress";toast("🟡 In Progress");}
-    else if(s==="in-progress"){progress[k]="complete";toast("🟢 Complete!");}
+    else if(s==="in-progress"){
+      progress[k]="complete";
+      toast("🟢 Complete!");
+      try{ offerTodoSyncOnChapterComplete(b,c); }catch(_e){}
+    }
     else {delete progress[k];toast("⚪ Not Started");}
     last={book:b,chapter:c};
     save(KEY.progress,progress);
