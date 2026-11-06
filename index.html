@@ -1462,6 +1462,64 @@ footer {
   <div id="examDetailView" style="display:none"></div>
 </section>
 
+<!-- To-Do List Tab -->
+<section id="todoPanel" class="panel">
+  <div class="card section" style="margin-bottom:12px">
+    <div class="row" style="flex-wrap:wrap;gap:8px;margin-bottom:12px">
+      <div>
+        <h2 style="font-size:17px">📋 To-Do List</h2>
+        <p class="sub">Daily tasks, multi-day plans & progress tracking</p>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn primary" onclick="openTodoModal()">＋ Add Task</button>
+        <button class="btn" onclick="openMultiDayPlanModal()">📅 Multi-Day Plan</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid4" style="margin-bottom:12px">
+      <div class="stat"><div class="label">Total</div><div id="todoStatTotal" class="value">0</div><div class="sub">All tasks</div></div>
+      <div class="stat"><div class="label">Completed</div><div id="todoStatDone" class="value" style="color:var(--success)">0</div><div class="sub">Finished</div></div>
+      <div class="stat"><div class="label">Pending</div><div id="todoStatPending" class="value" style="color:var(--warning)">0</div><div class="sub">Not done</div></div>
+      <div class="stat"><div class="label">Overdue</div><div id="todoStatOverdue" class="value" style="color:var(--danger)">0</div><div class="sub">Past due</div></div>
+    </div>
+    <div class="progress" style="height:8px;margin-bottom:4px"><div id="todoOverallFill" class="fill"></div></div>
+    <div style="font-size:11px;color:var(--muted);text-align:right;margin-bottom:10px"><span id="todoStatPct">0.00%</span> complete</div>
+
+    <!-- Filters -->
+    <div class="filters" style="margin-bottom:0">
+      <span class="label">View:</span>
+      <button class="filter active" data-todoview="today" onclick="setTodoView('today')">Today</button>
+      <button class="filter" data-todoview="week" onclick="setTodoView('week')">This Week</button>
+      <button class="filter" data-todoview="all" onclick="setTodoView('all')">All</button>
+      <button class="filter" data-todoview="history" onclick="setTodoView('history')">History</button>
+      <span class="spacer"></span>
+      <select id="todoPriorityFilter" class="select" style="width:auto;min-width:110px;padding:6px 10px" onchange="setTodoPriorityFilter(this.value)">
+        <option value="all">All Priority</option>
+        <option value="high">🔴 High</option>
+        <option value="medium">🟡 Medium</option>
+        <option value="low">🟢 Low</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Weekly Calendar strip -->
+  <div id="todoWeekStrip" class="card section" style="padding:12px;margin-bottom:12px;display:none">
+    <div class="row" style="margin-bottom:8px">
+      <h2 style="font-size:14px">📅 Weekly Calendar</h2>
+      <div style="display:flex;gap:4px">
+        <button class="mini" onclick="todoWeekShift(-7)">← Prev</button>
+        <button class="mini" onclick="todoWeekShift(0)">Today</button>
+        <button class="mini" onclick="todoWeekShift(7)">Next →</button>
+      </div>
+    </div>
+    <div id="todoWeekDays" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px"></div>
+  </div>
+
+  <!-- Task list -->
+  <div id="todoTaskList" class="subjects"></div>
+</section>
+    
 <!-- Study History Tab -->
 <section id="historyPanel" class="panel">
   <div class="card section"><div class="row" style="margin-bottom:10px"><div><h2>📊 Study Time Graph</h2><p>Focus time grouped by day, week, or month.</p></div><div><button id="btnGraphDaily" class="filter active" onclick="setGraphPeriod('daily')">Daily</button><button id="btnGraphWeekly" class="filter" onclick="setGraphPeriod('weekly')">Weekly</button><button id="btnGraphMonthly" class="filter" onclick="setGraphPeriod('monthly')">Monthly</button></div></div><div class="canvaswrap"><canvas id="historyCanvas" width="1000" height="250"></canvas></div></div>
