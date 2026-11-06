@@ -1897,6 +1897,16 @@ function notifyCommunity(){try{if(typeof communityNotifyProgressChanged==="funct
 
 let currentTab="syllabus",search="",bookFilter="all",statusFilter="all",selectedExam=null,editingExam=null,graphPeriod="daily",pendingExamDeleteId=null;
 
+let todos = load(KEY.todos, []);
+if (!Array.isArray(todos)) todos = [];
+let todoPlans = load(KEY.todoPlans, []);
+if (!Array.isArray(todoPlans)) todoPlans = [];
+let todoView = "today";
+let todoPriorityFilter = "all";
+let todoWeekOffset = 0;
+let editingTodoId = null;
+let pendingTodoChapterSync = null;
+    
 const formatDateKey = (d = new Date()) => {
     const dt = d instanceof Date ? d : new Date(d);
     const year = dt.getFullYear();
