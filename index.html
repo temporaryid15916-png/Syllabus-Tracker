@@ -1862,7 +1862,9 @@ function renderExams(){
         let p=fmtPct(raw);
         const d=document.createElement("div");
         d.className="card exam";
-        d.innerHTML=`<div class="row"><div><h3>${esc(e.name)}</h3><div class="date">📅 ${esc(e.date||"")}</div></div><span class="filter">${(e.chapters||[]).length} chapters</span></div><div style="margin:10px 0 4px;font-size:11px;font-weight:800;display:flex;justify-content:space-between"><span>Preparation</span><strong style="color:var(--primary)">${done}/${chapters.length} (${p})</strong></div><div class="progress"><div class="fill" style="width:${raw}%"></div></div><div class="exam-actions"><button class="btn primary" onclick='openExamDetail(${JSON.stringify(e.id)})'>View Chapters</button><button class="btn" onclick='editExam(${JSON.stringify(e.id)})'>Edit</button><button class="btn" style="color:var(--danger)" onclick='openDeleteExamModal(${JSON.stringify(e.id)})'>Delete</button></div>`;
+        const daysLeft=e.date?(Math.max(0,Math.round((new Date(e.date+"T00:00:00")-new Date(today()+"T00:00:00"))/86400000))):null;
+const daysText=daysLeft!=null?` · ${daysLeft}d left`:"";
+d.innerHTML=`<div class="row"><div><h3>${esc(e.name)}</h3><div class="date">📅 ${esc(e.date||"")}${daysText}</div></div><span class="filter">${(e.chapters||[]).length} chapters</span></div><div style="margin:10px 0 4px;font-size:11px;font-weight:800;display:flex;justify-content:space-between"><span>Preparation</span><strong style="color:var(--primary)">${done}/${chapters.length} (${p})</strong></div><div class="progress"><div class="fill" style="width:${raw}%"></div></div><div class="exam-actions"><button class="btn primary" onclick='openExamDetail(${JSON.stringify(e.id)})'>View Chapters</button><button class="btn" onclick='editExam(${JSON.stringify(e.id)})'>Edit</button><button class="btn" style="color:var(--danger)" onclick='openDeleteExamModal(${JSON.stringify(e.id)})'>Delete</button></div>`;
         box.appendChild(d);
     });
 }
