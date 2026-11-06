@@ -4089,8 +4089,10 @@ function saveMultiDayPlan(){
   if(!checked.length) return toast("অন্তত একটা chapter বেছে নাও");
 
   const days = [];
-  let cur = new Date(start+"T00:00:00");
-  const last = new Date(end+"T00:00:00");
+  const [sY, sM, sD] = start.split('-').map(Number);
+  const [eY, eM, eD] = end.split('-').map(Number);
+  let cur = new Date(sY, sM - 1, sD);
+  const last = new Date(eY, eM - 1, eD);
   while(cur <= last){
     days.push(formatDateKey(cur));
     cur.setDate(cur.getDate()+1);
