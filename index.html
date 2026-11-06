@@ -3825,37 +3825,59 @@ function saveTodoFromModal(){
 
 function editTodo(id){ openTodoModal(id); }
 
+let pendingTodoDeleteId = null;
+let pendingTodoRescheduleId = null;
+
 function deleteTodo(id){
-  if(!confirm("এই task মুছে ফেলবে?")) return;
-  todos = todos.filter(t=>t.id!==id);
+  const t = todos.find(x=>x.id===id);
+  pendingTodoDeleteId = id;
+  const msg = document.getElementById("todoDeleteMsg");
+  if(msg) msg.textContent = t ? `"${t.title}" মুছে ফেলবে? এটা আর ফেরত আনা যাবে না।` : "এই task মুছে ফেলবে?";
+  document.getElementById("todoDeleteModal").classList.add("show");
+}
+
+function closeTodoDeleteModal(){
+  pendingTodoDeleteId = null;
+  document.getElementById("todoDeleteModal").classList.remove("show");
+}
+
+function confirmTodoDelete(){
+  if(!pendingTodoDeleteId) return;
+  todos = todos.filter(t=>t.id!==pendingTodoDeleteId);
   todoSave();
+  closeTodoDeleteModal();
   todoUpdateStats();
   renderTodoList();
   toast("🗑️ Task deleted");
 }
 
-function toggleTodoComplete(id){
-  const t = todos.find(x=>x.id===id);
-  if(!t) return;
-  t.status = t.status==="complete" ? "pending" : "complete";
-  t.updatedAt = new Date().toISOString();
-  if(t.status==="complete") t.completedAt = new Date().toISOString();
-  else delete t.completedAt;
-  todoSave();
-  todoUpdateStats();
-  renderTodoList();
-  toast(t.status==="complete" ? "🟢 Task complete" : "⚪ Task reopened");
-}
-
 function rescheduleTodo(id){
   const t = todos.find(x=>x.id===id);
   if(!t) return;
-  const next = prompt("নতুন date (YYYY-MM-DD):", t.date || today());
-  if(!next) return;
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(next)) return toast("সঠিক date দাও (YYYY-MM-DD)");
+  pendingTodoRescheduleId = id;
+  const input = document.getElementById("todoRescheduleDate");
+  if(input) input.value = t.date || today();
+  document.getElementById("todoRescheduleModal").classList.add("show");
+}
+
+function closeTodoRescheduleModal(){
+  pendingTodoRescheduleId = null;
+  document.getElementById("todoRescheduleModal").classList.remove("show");
+}
+
+function confirmTodoReschedule(){
+  if(!pendingTodoRescheduleId) return;
+  const t = todos.find(x=>x.id===pendingTodoRescheduleId);
+  const next = document.getElementById("todoRescheduleDate")?.value;
+  if(!t) return closeTodoRescheduleModal();
+  if(!next || !/^\d{4}-\d{2}-\d{2}$/.test(next)){
+    toast("সঠিক date বেছে নাও");
+    return;
+  }
   t.date = next;
   t.updatedAt = new Date().toISOString();
   todoSave();
+  closeTodoRescheduleModal();
   todoUpdateStats();
   renderTodoList();
   toast("📅 Rescheduled to "+next);
