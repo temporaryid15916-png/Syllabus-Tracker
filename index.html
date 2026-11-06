@@ -3538,7 +3538,409 @@ document.addEventListener("keydown", (e) => {
     const pomoOv = document.getElementById("pomodoroOverlay");
     if(pomoOv && pomoOv.classList.contains("show")) closePomodoro();
 });
+/* ========== TO-DO LIST MODULE ========== */
+function todoSave(){ save(KEY.todos, todos); }
+function todoPlanSave(){ save(KEY.todoPlans, todoPlans); }
 
+function todoIsOverdue(t){
+  if(!t || t.status==="complete") return false;
+  const d = t.date || "";
+  return d && d < today();
+}
+
+function todoUpdateStats(){
+  const list = todos || [];
+  const total = list.length;
+  const done = list.filter(t=>t.status==="complete").length;
+  const pending = list.filter(t=>t.status!=="complete").length;
+  const overdue = list.filter(t=>todoIsOverdue(t)).length;
+  const pct = total ? (done/total*100) : 0;
+  const el = id => document.getElementById(id);
+  if(el("todoStatTotal")) el("todoStatTotal").textContent = total;
+  if(el("todoStatDone")) el("todoStatDone").textContent = done;
+  if(el("todoStatPending")) el("todoStatPending").textContent = pending;
+  if(el("todoStatOverdue")) el("todoStatOverdue").textContent = overdue;
+  if(el("todoStatPct")) el("todoStatPct").textContent = fmtPct(pct);
+  if(el("todoOverallFill")) el("todoOverallFill").style.width = pct + "%";
+}
+
+function setTodoView(v){
+  todoView = v;
+  document.querySelectorAll("[data-todoview]").forEach(x=>x.classList.toggle("active", x.dataset.todoview===v));
+  const strip = document.getElementById("todoWeekStrip");
+  if(strip) strip.style.display = (v==="week") ? "block" : "none";
+  if(v==="week") renderTodoWeekStrip();
+  renderTodoList();
+}
+
+function setTodoPriorityFilter(v){
+  todoPriorityFilter = v || "all";
+  renderTodoList();
+}
+
+function todoWeekShift(delta){
+  if(delta===0) todoWeekOffset = 0;
+  else todoWeekOffset += delta;
+  renderTodoWeekStrip();
+  renderTodoList();
+}
+
+function getTodoWeekStart(){
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() - d.getDay() + todoWeekOffset);
+  return d;
+}
+
+function renderTodoWeekStrip(){
+  const box = document.getElementById("todoWeekDays");
+  if(!box) return;
+  const start = getTodoWeekStart();
+  const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  let html = "";
+  for(let i=0;i<7;i++){
+    const dt = new Date(start);
+    dt.setDate(start.getDate()+i);
+    const key = formatDateKey(dt);
+    const count = todos.filter(t=>t.date===key && t.status!=="complete").length;
+    const isToday = key === today();
+    html += `<div class="todo-week-day${isToday?" active":""}${count?" has-tasks":""}" onclick="todoJumpToDate('${key}')">
+      <div style="font-size:10px;color:var(--muted)">${days[i]}</div>
+      <div class="dnum">${dt.getDate()}</div>
+      <div class="dcount">${count?count+" task":"—"}</div>
+    </div>`;
+  }
+  box.innerHTML = html;
+}
+
+function todoJumpToDate(dateKey){
+  todoView = "all";
+  document.querySelectorAll("[data-todoview]").forEach(x=>x.classList.toggle("active", x.dataset.todoview==="all"));
+  const strip = document.getElementById("todoWeekStrip");
+  if(strip) strip.style.display = "none";
+  window.__todoJumpDate = dateKey;
+  renderTodoList();
+  toast("📅 Showing tasks for "+dateKey);
+}
+
+function getFilteredTodos(){
+  let list = [...(todos||[])];
+  if(todoPriorityFilter!=="all") list = list.filter(t=>t.priority===todoPriorityFilter);
+
+  if(window.__todoJumpDate){
+    list = list.filter(t=>t.date===window.__todoJumpDate);
+    return list.sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+  }
+
+  if(todoView==="today"){
+    list = list.filter(t=>t.date===today() || (todoIsOverdue(t) && t.status!=="complete"));
+  } else if(todoView==="week"){
+    const start = getTodoWeekStart();
+    const end = new Date(start);
+    end.setDate(start.getDate()+6);
+    const a = formatDateKey(start), b = formatDateKey(end);
+    list = list.filter(t=>{
+      const d = t.date || "";
+      return d>=a && d<=b;
+    });
+  } else if(todoView==="history"){
+    list = list.filter(t=>t.status==="complete" || (t.date && t.date < today()));
+  }
+
+  const pri = {high:0, medium:1, low:2};
+  return list.sort((a,b)=>{
+    if((a.status==="complete")!==(b.status==="complete")) return a.status==="complete"?1:-1;
+    const dc = (a.date||"").localeCompare(b.date||"");
+    if(dc) return dc;
+    return (pri[a.priority]??1) - (pri[b.priority]??1);
+  });
+}
+
+function renderTodo(){
+  window.__todoJumpDate = null;
+  todoUpdateStats();
+  if(todoView==="week") renderTodoWeekStrip();
+  renderTodoList();
+  todoFillBookSelects();
+}
+
+function renderTodoList(){
+  const box = document.getElementById("todoTaskList");
+  if(!box) return;
+  const list = getFilteredTodos();
+  if(!list.length){
+    box.innerHTML = `<div class="card section" style="text-align:center"><p>কোনো task নেই। ＋ Add Task বা Multi-Day Plan দিয়ে শুরু করো।</p></div>`;
+    return;
+  }
+  box.innerHTML = list.map(t=>{
+    const overdue = todoIsOverdue(t);
+    const done = t.status==="complete";
+    const chName = (t.book && t.chapter && BOOKS[t.book]?.[t.chapter-1]) ? BOOKS[t.book][t.chapter-1] : "";
+    const subLine = [t.book, chName ? `Ch ${t.chapter}: ${chName}` : "", t.date].filter(Boolean).join(" · ");
+    const priLabel = t.priority==="high"?"🔴 High":t.priority==="medium"?"🟡 Medium":"🟢 Low";
+    return `<div class="todo-task ${done?"done":""} ${overdue?"overdue":""}" data-todo-id="${esc(t.id)}">
+      <button class="todo-check" onclick="toggleTodoComplete('${esc(t.id)}')" title="Toggle complete">${done?"✓":""}</button>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px">
+          <strong style="font-size:13px;${done?"text-decoration:line-through":""}">${esc(t.title)}</strong>
+          <span class="todo-pri ${esc(t.priority||"medium")}">${priLabel}</span>
+          ${overdue && !done ? `<span style="font-size:10px;color:var(--danger);font-weight:700">Overdue</span>` : ""}
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">${esc(subLine)}</div>
+        ${t.notes ? `<div style="font-size:11px;margin-top:3px;color:var(--muted)">${esc(t.notes)}</div>` : ""}
+      </div>
+      <div class="tools" style="flex-wrap:wrap">
+        ${t.book && t.chapter ? `<button class="mini" onclick='openPomodoroFor(${JSON.stringify(t.book)},${Number(t.chapter)})'>🍅 Focus</button>` : ""}
+        <button class="mini" onclick="editTodo('${esc(t.id)}')">Edit</button>
+        <button class="mini" onclick="rescheduleTodo('${esc(t.id)}')">Reschedule</button>
+        <button class="mini" style="color:var(--danger)" onclick="deleteTodo('${esc(t.id)}')">Delete</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function todoFillBookSelects(){
+  const mk = (selId, withEmpty) => {
+    const s = document.getElementById(selId);
+    if(!s) return;
+    const cur = s.value;
+    let h = withEmpty ? `<option value="">— None —</option>` : "";
+    h += Object.keys(BOOKS).map(b=>`<option value="${esc(b)}">${esc(b)}</option>`).join("");
+    s.innerHTML = h;
+    if(cur && [...s.options].some(o=>o.value===cur)) s.value = cur;
+  };
+  mk("todoInputBook", true);
+  mk("todoMultiBook", false);
+  todoFillChapters();
+  todoMultiFillChapters();
+}
+
+function todoFillChapters(){
+  const book = document.getElementById("todoInputBook")?.value || "";
+  const s = document.getElementById("todoInputChapter");
+  if(!s) return;
+  if(!book || !BOOKS[book]){
+    s.innerHTML = `<option value="">— None —</option>`;
+    return;
+  }
+  s.innerHTML = `<option value="">— None —</option>` + BOOKS[book].map((n,i)=>`<option value="${i+1}">${i+1}. ${esc(n)}</option>`).join("");
+}
+
+function todoMultiFillChapters(){
+  const book = document.getElementById("todoMultiBook")?.value || "";
+  const box = document.getElementById("todoMultiChapterPicker");
+  if(!box) return;
+  if(!book || !BOOKS[book]){
+    box.innerHTML = `<div class="sub">Subject বেছে নাও</div>`;
+    return;
+  }
+  box.innerHTML = BOOKS[book].map((n,i)=>`<label style="display:flex;gap:6px;align-items:center;font-size:11.5px;padding:3px 0"><input type="checkbox" data-ch="${i+1}"><span>${i+1}. ${esc(n)}</span></label>`).join("");
+}
+
+function openTodoModal(editId){
+  editingTodoId = editId || null;
+  document.getElementById("todoModalTitle").textContent = editId ? "Edit Task" : "Add Task";
+  todoFillBookSelects();
+  const t = editId ? todos.find(x=>x.id===editId) : null;
+  document.getElementById("todoInputTitle").value = t?.title || "";
+  document.getElementById("todoInputDate").value = t?.date || today();
+  document.getElementById("todoInputPriority").value = t?.priority || "medium";
+  document.getElementById("todoInputNotes").value = t?.notes || "";
+  if(t?.book){
+    document.getElementById("todoInputBook").value = t.book;
+    todoFillChapters();
+    if(t.chapter) document.getElementById("todoInputChapter").value = String(t.chapter);
+  } else {
+    document.getElementById("todoInputBook").value = "";
+    todoFillChapters();
+  }
+  document.getElementById("todoModal").classList.add("show");
+}
+
+function closeTodoModal(){
+  document.getElementById("todoModal").classList.remove("show");
+  editingTodoId = null;
+}
+
+function saveTodoFromModal(){
+  const title = document.getElementById("todoInputTitle").value.trim();
+  const date = document.getElementById("todoInputDate").value;
+  const priority = document.getElementById("todoInputPriority").value || "medium";
+  const book = document.getElementById("todoInputBook").value || "";
+  const chapter = Number(document.getElementById("todoInputChapter").value) || null;
+  const notes = document.getElementById("todoInputNotes").value.trim();
+  if(!title) return toast("Task title দাও");
+  if(!date) return toast("Date বেছে নাও");
+  if(editingTodoId){
+    const t = todos.find(x=>x.id===editingTodoId);
+    if(t){
+      t.title = title; t.date = date; t.priority = priority;
+      t.book = book || null; t.chapter = chapter; t.notes = notes;
+      t.updatedAt = new Date().toISOString();
+    }
+    toast("✏️ Task updated");
+  } else {
+    todos.push({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2,7),
+      title, date, priority,
+      book: book || null,
+      chapter: chapter || null,
+      notes,
+      status: "pending",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    });
+    toast("✅ Task added");
+  }
+  todoSave();
+  closeTodoModal();
+  todoUpdateStats();
+  if(currentTab==="todo") renderTodoList();
+}
+
+function editTodo(id){ openTodoModal(id); }
+
+function deleteTodo(id){
+  if(!confirm("এই task মুছে ফেলবে?")) return;
+  todos = todos.filter(t=>t.id!==id);
+  todoSave();
+  todoUpdateStats();
+  renderTodoList();
+  toast("🗑️ Task deleted");
+}
+
+function toggleTodoComplete(id){
+  const t = todos.find(x=>x.id===id);
+  if(!t) return;
+  t.status = t.status==="complete" ? "pending" : "complete";
+  t.updatedAt = new Date().toISOString();
+  if(t.status==="complete") t.completedAt = new Date().toISOString();
+  else delete t.completedAt;
+  todoSave();
+  todoUpdateStats();
+  renderTodoList();
+  toast(t.status==="complete" ? "🟢 Task complete" : "⚪ Task reopened");
+}
+
+function rescheduleTodo(id){
+  const t = todos.find(x=>x.id===id);
+  if(!t) return;
+  const next = prompt("নতুন date (YYYY-MM-DD):", t.date || today());
+  if(!next) return;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(next)) return toast("সঠিক date দাও (YYYY-MM-DD)");
+  t.date = next;
+  t.updatedAt = new Date().toISOString();
+  todoSave();
+  todoUpdateStats();
+  renderTodoList();
+  toast("📅 Rescheduled to "+next);
+}
+
+function openMultiDayPlanModal(){
+  todoFillBookSelects();
+  document.getElementById("todoMultiName").value = "";
+  document.getElementById("todoMultiStart").value = today();
+  const end = new Date(); end.setDate(end.getDate()+6);
+  document.getElementById("todoMultiEnd").value = formatDateKey(end);
+  document.getElementById("todoMultiPriority").value = "medium";
+  document.getElementById("todoMultiNote").value = "";
+  const firstBook = Object.keys(BOOKS)[0];
+  if(firstBook){
+    document.getElementById("todoMultiBook").value = firstBook;
+    todoMultiFillChapters();
+  }
+  document.getElementById("todoMultiModal").classList.add("show");
+}
+
+function closeMultiDayPlanModal(){
+  document.getElementById("todoMultiModal").classList.remove("show");
+}
+
+function saveMultiDayPlan(){
+  const name = document.getElementById("todoMultiName").value.trim();
+  const start = document.getElementById("todoMultiStart").value;
+  const end = document.getElementById("todoMultiEnd").value;
+  const book = document.getElementById("todoMultiBook").value;
+  const priority = document.getElementById("todoMultiPriority").value || "medium";
+  const note = document.getElementById("todoMultiNote").value.trim();
+  if(!name) return toast("Plan name দাও");
+  if(!start || !end) return toast("Start ও End date দাও");
+  if(end < start) return toast("End date Start-এর পরে হতে হবে");
+  if(!book || !BOOKS[book]) return toast("Subject বেছে নাও");
+  const checked = [...document.querySelectorAll("#todoMultiChapterPicker input:checked")].map(x=>Number(x.dataset.ch));
+  if(!checked.length) return toast("অন্তত একটা chapter বেছে নাও");
+
+  const days = [];
+  let cur = new Date(start+"T00:00:00");
+  const last = new Date(end+"T00:00:00");
+  while(cur <= last){
+    days.push(formatDateKey(cur));
+    cur.setDate(cur.getDate()+1);
+  }
+  if(!days.length) return toast("Valid date range দাও");
+
+  const planId = Date.now().toString(36);
+  todoPlans.push({ id: planId, name, start, end, book, chapters: checked, createdAt: new Date().toISOString() });
+  todoPlanSave();
+
+  checked.forEach((ch, idx)=>{
+    const date = days[idx % days.length];
+    const chName = BOOKS[book][ch-1] || ("Chapter "+ch);
+    todos.push({
+      id: planId + "-" + ch + "-" + idx,
+      title: `${name}: ${chName}`,
+      date,
+      priority,
+      book,
+      chapter: ch,
+      notes: note || `Multi-day plan · Day target`,
+      status: "pending",
+      planId,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    });
+  });
+  todoSave();
+  closeMultiDayPlanModal();
+  todoUpdateStats();
+  if(currentTab==="todo"){ setTodoView("all"); renderTodoList(); }
+  toast(`📅 Plan created · ${checked.length} tasks across ${days.length} days`);
+}
+
+function offerTodoSyncOnChapterComplete(book, chapter){
+  const openTasks = todos.filter(t=>
+    t.status!=="complete" &&
+    t.book===book &&
+    Number(t.chapter)===Number(chapter)
+  );
+  if(!openTasks.length) return;
+  pendingTodoChapterSync = { book, chapter, taskIds: openTasks.map(t=>t.id) };
+  const msg = document.getElementById("todoChapterSyncMsg");
+  const chName = BOOKS[book]?.[chapter-1] || ("Chapter "+chapter);
+  if(msg) msg.textContent = `"${chName}" (${book}) complete হয়েছে। সংশ্লিষ্ট ${openTasks.length}টা open task-ও complete করে দেবে?`;
+  document.getElementById("todoChapterSyncModal").classList.add("show");
+}
+
+function closeTodoChapterSyncModal(yes){
+  document.getElementById("todoChapterSyncModal").classList.remove("show");
+  if(yes && pendingTodoChapterSync){
+    const ids = new Set(pendingTodoChapterSync.taskIds);
+    let n = 0;
+    todos.forEach(t=>{
+      if(ids.has(t.id) && t.status!=="complete"){
+        t.status = "complete";
+        t.completedAt = new Date().toISOString();
+        t.updatedAt = new Date().toISOString();
+        n++;
+      }
+    });
+    todoSave();
+    todoUpdateStats();
+    if(currentTab==="todo") renderTodoList();
+    toast(`📋 ${n} related task(s) marked complete`);
+  }
+  pendingTodoChapterSync = null;
+}
 function init(){
     const sel=document.getElementById("bookSelectFilter");
     sel.innerHTML=`<option value="all">📚 All Subjects</option>`+Object.keys(BOOKS).map(b=>`<option>${b}</option>`).join("");
