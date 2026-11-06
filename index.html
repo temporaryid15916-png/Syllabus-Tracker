@@ -1954,6 +1954,7 @@ function switchTab(t){
     if(t==="exams")renderExams();
     if(t==="history")renderHistory();
     if(t==="insights")renderInsights();
+    if(t==="todo")renderTodo();
     try{localStorage.setItem("syllabusActiveTab",t);}catch(e){}
     if(t==="community"){
       if(typeof communityInit==="function" && !communityClient)communityInit();
