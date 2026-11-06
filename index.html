@@ -3879,11 +3879,7 @@ function openMultiDayPlanModal(){
   document.getElementById("todoMultiEnd").value = formatDateKey(end);
   document.getElementById("todoMultiPriority").value = "medium";
   document.getElementById("todoMultiNote").value = "";
-  const firstBook = Object.keys(BOOKS)[0];
-  if(firstBook){
-    document.getElementById("todoMultiBook").value = firstBook;
-    todoMultiFillChapters();
-  }
+  todoMultiFillChapters();
   document.getElementById("todoMultiModal").classList.add("show");
 }
 
