@@ -3891,14 +3891,17 @@ function saveMultiDayPlan(){
   const name = document.getElementById("todoMultiName").value.trim();
   const start = document.getElementById("todoMultiStart").value;
   const end = document.getElementById("todoMultiEnd").value;
-  const book = document.getElementById("todoMultiBook").value;
   const priority = document.getElementById("todoMultiPriority").value || "medium";
   const note = document.getElementById("todoMultiNote").value.trim();
   if(!name) return toast("Plan name দাও");
   if(!start || !end) return toast("Start ও End date দাও");
   if(end < start) return toast("End date Start-এর পরে হতে হবে");
-  if(!book || !BOOKS[book]) return toast("Subject বেছে নাও");
-  const checked = [...document.querySelectorAll("#todoMultiChapterPicker input:checked")].map(x=>Number(x.dataset.ch));
+
+  const checked = [...document.querySelectorAll("#todoMultiChapterPicker input:checked")].map(x=>({
+    book: x.dataset.book,
+    chapter: Number(x.dataset.ch)
+  })).filter(x=>x.book && BOOKS[x.book] && x.chapter);
+
   if(!checked.length) return toast("অন্তত একটা chapter বেছে নাও");
 
   const days = [];
@@ -3911,19 +3914,26 @@ function saveMultiDayPlan(){
   if(!days.length) return toast("Valid date range দাও");
 
   const planId = Date.now().toString(36);
-  todoPlans.push({ id: planId, name, start, end, book, chapters: checked, createdAt: new Date().toISOString() });
+  todoPlans.push({
+    id: planId,
+    name,
+    start,
+    end,
+    items: checked,
+    createdAt: new Date().toISOString()
+  });
   todoPlanSave();
 
-  checked.forEach((ch, idx)=>{
+  checked.forEach((item, idx)=>{
     const date = days[idx % days.length];
-    const chName = BOOKS[book][ch-1] || ("Chapter "+ch);
+    const chName = BOOKS[item.book]?.[item.chapter-1] || ("Chapter "+item.chapter);
     todos.push({
-      id: planId + "-" + ch + "-" + idx,
-      title: `${name}: ${chName}`,
+      id: planId + "-" + idx + "-" + item.chapter,
+      title: `${name}: ${item.book} · ${chName}`,
       date,
       priority,
-      book,
-      chapter: ch,
+      book: item.book,
+      chapter: item.chapter,
       notes: note || `Multi-day plan · Day target`,
       status: "pending",
       planId,
@@ -3935,7 +3945,7 @@ function saveMultiDayPlan(){
   closeMultiDayPlanModal();
   todoUpdateStats();
   if(currentTab==="todo"){ setTodoView("all"); renderTodoList(); }
-  toast(`📅 Plan created · ${checked.length} tasks across ${days.length} days`);
+  toast(`📅 Plan created · ${checked.length} tasks · ${days.length} days`);
 }
 
 function offerTodoSyncOnChapterComplete(book, chapter){
