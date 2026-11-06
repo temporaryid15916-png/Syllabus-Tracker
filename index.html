@@ -3719,17 +3719,12 @@ function renderTodoList(){
 }
 
 function todoFillBookSelects(){
-  const mk = (selId, withEmpty) => {
-    const s = document.getElementById(selId);
-    if(!s) return;
+  const s = document.getElementById("todoInputBook");
+  if(s){
     const cur = s.value;
-    let h = withEmpty ? `<option value="">— None —</option>` : "";
-    h += Object.keys(BOOKS).map(b=>`<option value="${esc(b)}">${esc(b)}</option>`).join("");
-    s.innerHTML = h;
+    s.innerHTML = `<option value="">— None —</option>` + Object.keys(BOOKS).map(b=>`<option value="${esc(b)}">${esc(b)}</option>`).join("");
     if(cur && [...s.options].some(o=>o.value===cur)) s.value = cur;
-  };
-  mk("todoInputBook", true);
-  mk("todoMultiBook", false);
+  }
   todoFillChapters();
   todoMultiFillChapters();
 }
