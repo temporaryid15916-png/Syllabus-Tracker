@@ -1809,23 +1809,17 @@ footer {
           <input id="todoMultiEnd" class="input" type="date">
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <div>
-          <label class="label">Subject</label>
-          <select id="todoMultiBook" class="select" onchange="todoMultiFillChapters()"></select>
-        </div>
-        <div>
-          <label class="label">Default priority</label>
-          <select id="todoMultiPriority" class="select">
-            <option value="high">🔴 High</option>
-            <option value="medium" selected>🟡 Medium</option>
-            <option value="low">🟢 Low</option>
-          </select>
-        </div>
+            <div>
+        <label class="label">Default priority</label>
+        <select id="todoMultiPriority" class="select">
+          <option value="high">🔴 High</option>
+          <option value="medium" selected>🟡 Medium</option>
+          <option value="low">🟢 Low</option>
+        </select>
       </div>
       <div>
-        <label class="label">Chapters to include (select multiple)</label>
-        <div id="todoMultiChapterPicker" style="max-height:180px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:7px;background:var(--soft);margin-top:4px"></div>
+        <label class="label">Subjects & Chapters (একাধিক বই থেকে বেছে নাও)</label>
+        <div id="todoMultiChapterPicker" style="max-height:220px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:7px;background:var(--soft);margin-top:4px"></div>
       </div>
       <div>
         <label class="label">Daily target note (optional)</label>
