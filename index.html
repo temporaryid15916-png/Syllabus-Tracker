@@ -3746,14 +3746,13 @@ function todoFillChapters(){
 }
 
 function todoMultiFillChapters(){
-  const book = document.getElementById("todoMultiBook")?.value || "";
   const box = document.getElementById("todoMultiChapterPicker");
   if(!box) return;
-  if(!book || !BOOKS[book]){
-    box.innerHTML = `<div class="sub">Subject বেছে নাও</div>`;
-    return;
-  }
-  box.innerHTML = BOOKS[book].map((n,i)=>`<label style="display:flex;gap:6px;align-items:center;font-size:11.5px;padding:3px 0"><input type="checkbox" data-ch="${i+1}"><span>${i+1}. ${esc(n)}</span></label>`).join("");
+  box.innerHTML = Object.entries(BOOKS).map(([b, arr])=>{
+    const icon = (typeof ICONS!=="undefined" && ICONS[b]) ? ICONS[b]+" " : "";
+    return `<div style="font-size:11px;font-weight:800;color:var(--primary);margin:8px 0 4px">${icon}${esc(b)}</div>` +
+      arr.map((n,i)=>`<label style="display:flex;gap:6px;align-items:center;font-size:11.5px;padding:2px 0 2px 4px"><input type="checkbox" data-book="${esc(b)}" data-ch="${i+1}"><span>${i+1}. ${esc(n)}</span></label>`).join("");
+  }).join("");
 }
 
 function openTodoModal(editId){
