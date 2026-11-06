@@ -1404,6 +1404,100 @@ footer {
         font-size: 12px;
     }
 }
+/* To-Do List extras */
+.todo-task {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: all .15s ease;
+}
+.todo-task:hover {
+  border-color: color-mix(in srgb, var(--primary) 40%, var(--border));
+  box-shadow: 0 3px 10px rgba(79,70,229,.07);
+}
+.todo-task.done {
+  opacity: .72;
+  background: var(--success-soft);
+  border-color: color-mix(in srgb, var(--success) 28%, var(--border));
+}
+.todo-task.overdue:not(.done) {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--border));
+  background: color-mix(in srgb, var(--danger) 6%, var(--card));
+}
+.todo-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  border: 2px solid var(--border);
+  background: var(--soft);
+  flex: none;
+  margin-top: 1px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all .14s;
+}
+.todo-task.done .todo-check {
+  background: linear-gradient(135deg,#059669,#10b981);
+  border-color: transparent;
+  color: #fff;
+}
+.todo-pri {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 99px;
+}
+.todo-pri.high {
+  background: color-mix(in srgb, var(--danger) 15%, var(--soft));
+  color: var(--danger);
+}
+.todo-pri.medium {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+.todo-pri.low {
+  background: var(--success-soft);
+  color: var(--success);
+}
+.todo-week-day {
+  text-align: center;
+  padding: 8px 4px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--soft);
+  cursor: pointer;
+  min-height: 64px;
+}
+.todo-week-day.active {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+.todo-week-day .dnum {
+  font-size: 14px;
+  font-weight: 750;
+}
+.todo-week-day .dcount {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.todo-week-day.has-tasks .dcount {
+  color: var(--primary);
+  font-weight: 700;
+}
+@media (max-width: 560px) {
+  #todoWeekDays {
+    grid-template-columns: repeat(7, minmax(0,1fr)) !important;
+    gap: 4px !important;
+    font-size: 10px !important;
+  }
+}    
 </style>
 </head>
 <body>
