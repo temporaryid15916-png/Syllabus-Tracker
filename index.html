@@ -3237,11 +3237,14 @@ function resetPomodoro(){
 
     const bSelect=document.getElementById("pomoBookSelect");
     const cSelect=document.getElementById("pomoChapterSelect");
-    if(bSelect)bSelect.disabled=false;
-    if(cSelect)cSelect.disabled=!pomo.book;
+    if(bSelect){ bSelect.disabled=false; bSelect.value=""; }
+    if(cSelect){ cSelect.disabled=true; cSelect.innerHTML=`<option value="" selected disabled>-- Select Chapter --</option>`; }
+    pomo.book="";
+    pomo.chapter=null;
 
     savePomoState();
     updatePomoDisplay();
+    populatePomoPickers();
     toast("↺ Pomodoro reset");
 }
 
