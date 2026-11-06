@@ -1851,7 +1851,32 @@ footer {
     </div>
   </div>
 </div>
-    
+<!-- To-Do Delete Confirm -->
+<div id="todoDeleteModal" class="modal">
+  <div class="card modalbox" style="text-align:center;max-width:400px">
+    <div style="font-size:33px">⚠️</div>
+    <h3 style="margin-top:6px">Task মুছে ফেলবে?</h3>
+    <p id="todoDeleteMsg" class="sub" style="margin:8px 0 14px">এই কাজটি আর ফেরত আনা যাবে না।</p>
+    <div class="modal-actions" style="justify-content:center">
+      <button class="btn" onclick="closeTodoDeleteModal()">Cancel</button>
+      <button class="btn danger" onclick="confirmTodoDelete()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- To-Do Reschedule -->
+<div id="todoRescheduleModal" class="modal">
+  <div class="card modalbox" style="text-align:center;max-width:400px">
+    <div style="font-size:33px">📅</div>
+    <h3 style="margin-top:6px">Reschedule Task</h3>
+    <p class="sub" style="margin:8px 0 12px">নতুন তারিখ বেছে নাও</p>
+    <input id="todoRescheduleDate" class="input" type="date" style="max-width:220px;margin:0 auto;display:block">
+    <div class="modal-actions" style="justify-content:center;margin-top:14px">
+      <button class="btn" onclick="closeTodoRescheduleModal()">Cancel</button>
+      <button class="btn primary" onclick="confirmTodoReschedule()">Save Date</button>
+    </div>
+  </div>
+</div>    
 <div id="toast" class="toast"></div>
 
 <footer>
@@ -3525,7 +3550,7 @@ document.addEventListener("keydown", (e) => {
     if(e.key !== "Escape") return;
     const leave = document.getElementById("communityLeaveConfirmModal");
     if(leave && leave.classList.contains("show")){ closeCommunityLeaveConfirm(); return; }
-    const modals = ["clearHistoryModal","resetDailyGoalModal","alertEnabledModal","deleteExamModal","resetModal","examModal","todoModal","todoMultiModal","todoChapterSyncModal"];
+    const modals = ["clearHistoryModal","resetDailyGoalModal","alertEnabledModal","deleteExamModal","resetModal","examModal","todoModal","todoMultiModal","todoChapterSyncModal","todoDeleteModal","todoRescheduleModal"];
     for(const id of modals){
         const m = document.getElementById(id);
         if(m && m.classList.contains("show")){
