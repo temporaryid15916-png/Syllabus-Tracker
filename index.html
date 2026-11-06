@@ -3896,17 +3896,21 @@ function renderTodo(){
 function renderTodoList(){
   const box = document.getElementById("todoTaskList");
   if(!box) return;
+
   const list = getFilteredTodos();
+
   if(!list.length){
     box.innerHTML = `<div class="card section" style="text-align:center"><p>কোনো task নেই। ＋ Add Task বা Multi-Day Plan দিয়ে শুরু করো।</p></div>`;
     return;
   }
+
   box.innerHTML = list.map(t=>{
     const overdue = todoIsOverdue(t);
     const done = t.status==="complete";
     const chName = (t.book && t.chapter && BOOKS[t.book]?.[t.chapter-1]) ? BOOKS[t.book][t.chapter-1] : "";
     const subLine = [t.book, chName ? `Ch ${t.chapter}: ${chName}` : "", t.date].filter(Boolean).join(" · ");
     const priLabel = t.priority==="high"?"🔴 High":t.priority==="medium"?"🟡 Medium":"🟢 Low";
+
     return `<div class="todo-task ${done?"done":""} ${overdue?"overdue":""}" data-todo-id="${esc(t.id)}">
       <button class="todo-check" onclick="toggleTodoComplete('${esc(t.id)}')" title="Toggle complete">${done?"✓":""}</button>
       <div style="flex:1;min-width:0">
@@ -3926,6 +3930,27 @@ function renderTodoList(){
       </div>
     </div>`;
   }).join("");
+}
+
+function toggleTodoComplete(id){
+  const task = todos.find(t=>t.id===id);
+  if(!task) return;
+
+  if(task.status==="complete"){
+    task.status="pending";
+    delete task.completedAt;
+  }else{
+    task.status="complete";
+    task.completedAt=new Date().toISOString();
+  }
+
+  task.updatedAt=new Date().toISOString();
+
+  todoSave();
+  todoUpdateStats();
+  renderTodoList();
+
+  toast(task.status==="complete" ? "✅ Task completed" : "↩️ Task reopened");
 }
 
 function todoFillBookSelects(){
