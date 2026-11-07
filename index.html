@@ -2740,25 +2740,34 @@ function clearBackgroundPomodoroNotification(){
 }
 
 function playAlertSound(){
-    // Web Audio chime (works after any prior user gesture unlocked the context)
+    // Louder, longer multi-beep chime when focus/break ends (before auto-start)
     try {
         const ctx=getAudioContext(false);
         if(ctx){
             const kick=()=>{
                 try{
                     const now=ctx.currentTime;
-                    [523.25, 659.25, 783.99, 1046.5].forEach((freq,i)=>{
+                    // Three strong beeps + a final higher tone
+                    const notes = [
+                        {f:880,  t:0.00, d:0.28},
+                        {f:880,  t:0.35, d:0.28},
+                        {f:880,  t:0.70, d:0.28},
+                        {f:1174.66, t:1.10, d:0.55}
+                    ];
+                    notes.forEach(n=>{
                         const osc=ctx.createOscillator();
                         const gain=ctx.createGain();
-                        osc.type="sine";
-                        osc.frequency.setValueAtTime(freq,now+i*0.15);
-                        gain.gain.setValueAtTime(0.0001,now+i*0.15);
-                        gain.gain.linearRampToValueAtTime(0.45,now+i*0.15+0.03);
-                        gain.gain.exponentialRampToValueAtTime(0.0001,now+i*0.15+0.85);
+                        osc.type="square"; // brighter / more piercing than sine
+                        osc.frequency.setValueAtTime(n.f, now+n.t);
+                        // Louder peak (~0.85), still safe for speakers
+                        gain.gain.setValueAtTime(0.0001, now+n.t);
+                        gain.gain.linearRampToValueAtTime(0.85, now+n.t+0.02);
+                        gain.gain.linearRampToValueAtTime(0.55, now+n.t+n.d*0.55);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, now+n.t+n.d);
                         osc.connect(gain);
                         gain.connect(ctx.destination);
-                        osc.start(now+i*0.15);
-                        osc.stop(now+i*0.15+0.9);
+                        osc.start(now+n.t);
+                        osc.stop(now+n.t+n.d+0.05);
                     });
                 }catch(_e){}
             };
@@ -2767,15 +2776,15 @@ function playAlertSound(){
             }else kick();
         }
     }catch(e){}
-    // HTMLAudio fallback for mobile browsers that block oscillators when backgrounded
+    // HTMLAudio fallback (full volume) for mobile / background cases
     try{
         const a=new Audio("data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleXR+g5OPmY+HfXqBe5CWko+Jg4B9f4mQlZKNiIN+foKMlJOPi4aBf4KJlJSQjIeDgIGHkpSRjYeDgIGJlJWSjYeDgIGJlJWSjYeDgIGJlJWSjYeDgA==");
-        a.volume=0.85;
+        a.volume=1.0;
         const p=a.play();
         if(p&&typeof p.catch==="function")p.catch(()=>{});
     }catch(e){}
     if(navigator.vibrate){
-        try{navigator.vibrate([400,200,400,200,400]);}catch(e){}
+        try{navigator.vibrate([500,120,500,120,500,120,700]);}catch(e){}
     }
 }
 
