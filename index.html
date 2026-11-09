@@ -5583,8 +5583,9 @@ async function communitySyncProgress(){
 async function communityStopSharing(){
   if(!communityCurrent||!communityUser)return communityStatus("আগে একটি Community নির্বাচন করো।","error");
   const cid=communityCurrent.id,uid=communityUser.id,key=communityProgressWriteKey(uid,cid);
-  // Disable auto-sync first so no newly scheduled timer can re-share the data.
+    // Disable auto-sync first so no newly scheduled timer can re-share the data.
   communitySetShared(uid,cid,false);
+  communityClearCursor(uid,cid);
   clearTimeout(communityAutoTimer);
   communityRenderMyProgress(communityComputeProgress(),null,false);
   communityStatus("Progress sharing বন্ধ করা হচ্ছে…");
