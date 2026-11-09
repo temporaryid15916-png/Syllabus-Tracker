@@ -4348,8 +4348,11 @@ function communityWriteCache(u,list){
 }
 function communityCacheOne(u,id,d){if(id==null||!u)return;const o=communityReadCache(u);o[communitySid(id)]={...(o[communitySid(id)]||{}),...(d||{}),id};communityWriteCacheObj(u,o);}
 const communitySharedKey=u=>"syllabusTrackerSharedProgress:"+communitySid(u);
+const communityCursorKey=u=>"syllabusTrackerShareCursor:"+communitySid(u);
 // Server-confirmed shared communities (same account, any device). localStorage is only a cache.
 const communityServerShared=new Set();
+// After a successful push: baseline so THIS device can show laptop+mobile live while studying.
+const communityLiveBaseline={};
 function communityIsShared(u,id){
   const key=communitySid(id);
   if(communityServerShared.has(key)) return true;
@@ -4358,12 +4361,41 @@ function communityIsShared(u,id){
 function communitySetShared(u,id,on){
   const key=communitySid(id);
   if(on) communityServerShared.add(key);
-  else communityServerShared.delete(key);
+  else{
+    communityServerShared.delete(key);
+    delete communityLiveBaseline[key];
+  }
   try{
     const o=JSON.parse(localStorage.getItem(communitySharedKey(u))||"{}")||{};
     if(on) o[key]=1; else delete o[key];
     localStorage.setItem(communitySharedKey(u),JSON.stringify(o));
   }catch(_e){}
+}
+function communityGetCursor(u,cid){
+  try{
+    const o=JSON.parse(localStorage.getItem(communityCursorKey(u))||"{}")||{};
+    return o[communitySid(cid)]||null;
+  }catch(_e){return null;}
+}
+function communitySetCursor(u,cid,localToday,localTotal){
+  try{
+    const o=JSON.parse(localStorage.getItem(communityCursorKey(u))||"{}")||{};
+    o[communitySid(cid)]={
+      day:today(),
+      localToday:Number(localToday)||0,
+      localTotal:Number(localTotal)||0,
+      at:Date.now()
+    };
+    localStorage.setItem(communityCursorKey(u),JSON.stringify(o));
+  }catch(_e){}
+}
+function communityClearCursor(u,cid){
+  try{
+    const o=JSON.parse(localStorage.getItem(communityCursorKey(u))||"{}")||{};
+    delete o[communitySid(cid)];
+    localStorage.setItem(communityCursorKey(u),JSON.stringify(o));
+  }catch(_e){}
+  delete communityLiveBaseline[communitySid(cid)];
 }
 /* Left / departed communities: once left, keep them out of the local list even if the server still has a membership (e.g. RLS/leave RPC issue). Re-join removes the flag. */
 const communityLeftKey=u=>"syllabusTrackerLeftCommunities:"+communitySid(u);
