@@ -5614,7 +5614,8 @@ async function communityStopSharing(){
         return;
       }
     }
-    communitySetShared(uid,cid,false);
+        communitySetShared(uid,cid,false);
+    communityClearCursor(uid,cid);
     communityRenderMyProgress(communityComputeProgress(),null,false);
     communityStatus("এই Community-তে তোমার progress sharing বন্ধ। আবার Share চাপা পর্যন্ত আর update হবে না।","ok");
     await communityLoadMembers(cid,true);
