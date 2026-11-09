@@ -4348,54 +4348,9 @@ function communityWriteCache(u,list){
 }
 function communityCacheOne(u,id,d){if(id==null||!u)return;const o=communityReadCache(u);o[communitySid(id)]={...(o[communitySid(id)]||{}),...(d||{}),id};communityWriteCacheObj(u,o);}
 const communitySharedKey=u=>"syllabusTrackerSharedProgress:"+communitySid(u);
-const communityCursorKey=u=>"syllabusTrackerShareCursor:"+communitySid(u);
-// Server-confirmed shared communities (same account, any device). localStorage is only a cache.
-const communityServerShared=new Set();
-// After a successful push: baseline so THIS device can show laptop+mobile live while studying.
-const communityLiveBaseline={};
-function communityIsShared(u,id){
-  const key=communitySid(id);
-  if(communityServerShared.has(key)) return true;
-  try{return !!JSON.parse(localStorage.getItem(communitySharedKey(u))||"{}")[key];}catch(_e){return false;}
-}
+function communityIsShared(u,id){try{return !!JSON.parse(localStorage.getItem(communitySharedKey(u))||"{}")[communitySid(id)];}catch(_e){return false;}}
 function communitySetShared(u,id,on){
-  const key=communitySid(id);
-  if(on) communityServerShared.add(key);
-  else{
-    communityServerShared.delete(key);
-    delete communityLiveBaseline[key];
-  }
-  try{
-    const o=JSON.parse(localStorage.getItem(communitySharedKey(u))||"{}")||{};
-    if(on) o[key]=1; else delete o[key];
-    localStorage.setItem(communitySharedKey(u),JSON.stringify(o));
-  }catch(_e){}
-}
-function communityGetCursor(u,cid){
-  try{
-    const o=JSON.parse(localStorage.getItem(communityCursorKey(u))||"{}")||{};
-    return o[communitySid(cid)]||null;
-  }catch(_e){return null;}
-}
-function communitySetCursor(u,cid,localToday,localTotal){
-  try{
-    const o=JSON.parse(localStorage.getItem(communityCursorKey(u))||"{}")||{};
-    o[communitySid(cid)]={
-      day:today(),
-      localToday:Number(localToday)||0,
-      localTotal:Number(localTotal)||0,
-      at:Date.now()
-    };
-    localStorage.setItem(communityCursorKey(u),JSON.stringify(o));
-  }catch(_e){}
-}
-function communityClearCursor(u,cid){
-  try{
-    const o=JSON.parse(localStorage.getItem(communityCursorKey(u))||"{}")||{};
-    delete o[communitySid(cid)];
-    localStorage.setItem(communityCursorKey(u),JSON.stringify(o));
-  }catch(_e){}
-  delete communityLiveBaseline[communitySid(cid)];
+  try{const o=JSON.parse(localStorage.getItem(communitySharedKey(u))||"{}")||{};if(on)o[communitySid(id)]=1;else delete o[communitySid(id)];localStorage.setItem(communitySharedKey(u),JSON.stringify(o));}catch(_e){}
 }
 /* Left / departed communities: once left, keep them out of the local list even if the server still has a membership (e.g. RLS/leave RPC issue). Re-join removes the flag. */
 const communityLeftKey=u=>"syllabusTrackerLeftCommunities:"+communitySid(u);
@@ -5412,35 +5367,21 @@ async function communityLoadMembers(id,silent){
   const waiting=memberRows.filter(m=>!sharedIds.has(communitySid(m.user_id))).map(m=>`<div class="community-member"><strong>${label(m.user_id)}</strong><small style="color:var(--muted)">${communityEsc(m.role||"member")} · এখনো progress share করেননি</small></div>`);
   const html=cards.concat(waiting).join("");
   box.innerHTML=html||'<div class="community-empty">এই Community-তে এখনো কোনো member দেখা যাচ্ছে না।</div>';
-    const mine=rows.find(r=>communitySame(r.user_id,me));
-  if(mine){
-    // Server already has my progress → mark shared on THIS device so timer auto-syncs
-    // even if localStorage flag was missing (second phone / cleared storage).
-    if(me) communitySetShared(me,id,true);
-    communityRenderMyProgress(communityComputeProgress(),mine.updated_at,true);
-  }else if(communityCurrent){
-    communityRenderMyProgress(communityComputeProgress(),null,communityIsShared(me,id));
-  }
+  const mine=rows.find(r=>communitySame(r.user_id,me));
+  if(mine)communityRenderMyProgress(communityComputeProgress(),mine.updated_at,true);
+  else if(communityCurrent)communityRenderMyProgress(communityComputeProgress(),null,communityIsShared(me,id));
   // Keep own card pinned to live local seconds after any server refresh.
   try{communityPatchMyMemberCard();}catch(_e){}
 }
 function communityComputeProgress(){
   let completed=0,total=0;
-  Object.entries(BOOKS).forEach(([b,a])=>{
-    total+=a.length;
-    a.forEach((_,i)=>{if(progress[chKey(b,i+1)]==="complete")completed++;});
-  });
+  Object.entries(BOOKS).forEach(([b,a])=>{total+=a.length;a.forEach((_,i)=>{if(progress[chKey(b,i+1)]==="complete")completed++;});});
   const pending=Math.round(Number(pendingStudySeconds)||0);
+  // Seconds are stored as fractions in the tracker; the database columns are integers, so always round.
   const todaySeconds=Math.round(Number(history[today()]?.totalSeconds||0))+pending;
   const totalSeconds=Math.round(Object.values(history).reduce((n,d)=>n+Number(d?.totalSeconds||0),0))+pending;
-  let streak=0;
-  let cur=new Date();
-  if(todaySeconds<=0) cur.setDate(cur.getDate()-1);
-  while((formatDateKey(cur)===today()?todaySeconds:Number(history[formatDateKey(cur)]?.totalSeconds||0))>0){
-    streak++;
-    cur.setDate(cur.getDate()-1);
-    if(streak>1000) break;
-  }
+  let cur=new Date(),streak=0;if(todaySeconds<=0)cur.setDate(cur.getDate()-1);
+  while((formatDateKey(cur)===today()?todaySeconds:Number(history[formatDateKey(cur)]?.totalSeconds||0))>0){streak++;cur.setDate(cur.getDate()-1);if(streak>1000)break;}
   return {completed,total,todaySeconds,totalSeconds,streak};
 }
 function communityRenderMyProgress(p,sharedAt,isShared){
@@ -5505,78 +5446,20 @@ function communityProgressWriteKey(uid,cid){return communitySid(uid)+"|"+communi
 async function communityPushProgress(cid,silent,refreshUI,forceShare=false){
   if(!communityClient||!communityUser)return false;
   const uid=communityUser.id,key=communityProgressWriteKey(uid,cid);
-  // Auto-sync only if already shared (local cache OR server-confirmed). Manual Share uses forceShare=true.
+  // Auto-sync may update only a community where sharing is currently enabled.
+  // Manual Share explicitly opts in via forceShare=true.
   if(!forceShare&&!communityIsShared(uid,cid))return false;
-
-  // 1) Latest server row (so we ADD this device's new seconds, not overwrite)
-  let serverRow=null;
-  try{
-    const cidStr=communitySid(cid);
-    let got=null;
-    try{
-      const rpc=await communityClient.rpc("get_community_progress_rows",{p_community_id:cidStr});
-      if(!rpc.error&&Array.isArray(rpc.data)){
-        got=(rpc.data||[]).find(r=>communitySame(r.user_id,uid))||null;
-      }
-    }catch(_e){}
-    if(!got){
-      const q=await communityClient.from("community_progress")
-        .select("user_id,completed_chapters,total_chapters,today_seconds,total_seconds,streak_days,updated_at")
-        .eq("community_id",cidStr)
-        .eq("user_id",uid)
-        .limit(1);
-      if(!q.error) got=(q.data||[])[0]||null;
-    }
-    serverRow=got;
-  }catch(_e){}
-
-  if(serverRow) communitySetShared(uid,cid,true);
-
-  // 2) This device's local totals only
-  const local=communityComputeProgress();
-  const cursor=communityGetCursor(uid,cid);
-
-  const serverCompleted=Math.max(0,Number(serverRow?.completed_chapters)||0);
-  const serverTotalCh=Math.max(0,Number(serverRow?.total_chapters)||0);
-  const serverTotalSec=Math.max(0,Number(serverRow?.total_seconds)||0);
-  const serverStreak=Math.max(0,Number(serverRow?.streak_days)||0);
-  let serverToday=0;
-  try{
-    if(serverRow?.updated_at && formatDateKey(new Date(serverRow.updated_at))===today()){
-      serverToday=Math.max(0,Number(serverRow.today_seconds)||0);
-    }
-  }catch(_e){}
-
-  // 3) Delta = seconds studied on THIS device since last successful push from THIS device
-  let deltaToday=0, deltaTotal=0;
-  if(cursor){
-    const prevToday=(cursor.day===today()) ? (Number(cursor.localToday)||0) : 0;
-    const prevTotal=Number(cursor.localTotal)||0;
-    deltaToday=Math.max(0, local.todaySeconds - prevToday);
-    deltaTotal=Math.max(0, local.totalSeconds - prevTotal);
-  }else{
-    // First push from this browser profile → all local time is new contribution
-    deltaToday=Math.max(0, local.todaySeconds);
-    deltaTotal=Math.max(0, local.totalSeconds);
-  }
-
-  const todaySeconds=serverToday + deltaToday;
-  const totalSeconds=serverTotalSec + deltaTotal;
-  const completed=Math.max(local.completed, serverCompleted);
-  const totalCh=Math.max(local.total, serverTotalCh);
-  const streak=Math.max(local.streak, serverStreak);
-
+  const p=communityComputeProgress();
   const row={
     community_id:communitySid(cid),
     user_id:uid,
-    completed_chapters:completed,
-    total_chapters:totalCh,
-    today_seconds:todaySeconds,
-    total_seconds:totalSeconds,
-    streak_days:streak,
+    completed_chapters:p.completed,
+    total_chapters:p.total,
+    today_seconds:p.todaySeconds,
+    total_seconds:p.totalSeconds,
+    streak_days:p.streak,
     updated_at:new Date().toISOString()
   };
-
   const task=(async()=>{
     let res=await communityWriteProgress(row);
     if(res.error&&/foreign key/i.test(res.error.message||"")){
@@ -5588,26 +5471,18 @@ async function communityPushProgress(cid,silent,refreshUI,forceShare=false){
   communityProgressWriteTasks.set(key,task);
   let res;
   try{res=await task;}finally{if(communityProgressWriteTasks.get(key)===task)communityProgressWriteTasks.delete(key);}
-
+  // If the user stopped sharing while this request was in flight, don't restore
+  // the local shared flag; communityStopSharing() waits for this write then deletes it.
   if(res.error){
     if(!silent)communityStatus("Progress share হয়নি: "+communityErrText(res.error)+" — Supabase-এ Community-Progress-Visibility-Fix.sql চালাও।","error");
     else console.warn("Auto progress share failed:",res.error);
     return false;
   }
-
-  // Cursor + live baseline (for correct combined display on this device)
-  communitySetCursor(uid,cid, local.todaySeconds, local.totalSeconds);
-  communityLiveBaseline[communitySid(cid)]={
-    pushedToday:todaySeconds,
-    pushedTotal:totalSeconds,
-    cursorToday:local.todaySeconds,
-    cursorTotal:local.totalSeconds
-  };
+  if(!communityIsShared(uid,cid)&&!forceShare)return true;
   communitySetShared(uid,cid,true);
-
   if(refreshUI&&communitySame(communityCurrent?.id,cid)){
-    if(!silent)communityStatus("✅ Progress share হয়েছে।","ok");
-    communityRenderMyProgress({completed,total:totalCh,todaySeconds,totalSeconds,streak}, row.updated_at, true);
+    if(!silent)communityStatus("✅ Progress share হয়েছে। Community-র সব member এখন দেখতে পারবে।","ok");
+    communityRenderMyProgress(p,row.updated_at,true);
     await communityLoadMembers(cid,true);
   }
   return true;
@@ -5625,9 +5500,8 @@ async function communitySyncProgress(){
 async function communityStopSharing(){
   if(!communityCurrent||!communityUser)return communityStatus("আগে একটি Community নির্বাচন করো।","error");
   const cid=communityCurrent.id,uid=communityUser.id,key=communityProgressWriteKey(uid,cid);
-    // Disable auto-sync first so no newly scheduled timer can re-share the data.
+  // Disable auto-sync first so no newly scheduled timer can re-share the data.
   communitySetShared(uid,cid,false);
-  communityClearCursor(uid,cid);
   clearTimeout(communityAutoTimer);
   communityRenderMyProgress(communityComputeProgress(),null,false);
   communityStatus("Progress sharing বন্ধ করা হচ্ছে…");
@@ -5656,8 +5530,7 @@ async function communityStopSharing(){
         return;
       }
     }
-        communitySetShared(uid,cid,false);
-    communityClearCursor(uid,cid);
+    communitySetShared(uid,cid,false);
     communityRenderMyProgress(communityComputeProgress(),null,false);
     communityStatus("এই Community-তে তোমার progress sharing বন্ধ। আবার Share চাপা পর্যন্ত আর update হবে না।","ok");
     await communityLoadMembers(cid,true);
@@ -5667,19 +5540,11 @@ async function communityStopSharing(){
 }
 // Called by the tracker whenever chapters / study time change. Keeps already-shared summaries fresh (rate-limited).
 function communityPatchMyMemberCard(){
+  // Instantly refresh the "You" card in Members box from local study seconds (no server wait).
   if(!communityUser||!communityCurrent)return;
   if(typeof currentTab!=="undefined"&&currentTab!=="community")return;
   if(!communityIsShared(communityUser.id,communityCurrent.id))return;
   const p=communityComputeProgress();
-  const cidKey=communitySid(communityCurrent.id);
-  const base=communityLiveBaseline[cidKey];
-  // Show combined (server baseline + new local delta), not only this device's local clock
-  let todaySec=p.todaySeconds;
-  let totalSec=p.totalSeconds;
-  if(base){
-    todaySec=(Number(base.pushedToday)||0)+Math.max(0, p.todaySeconds-(Number(base.cursorToday)||0));
-    totalSec=(Number(base.pushedTotal)||0)+Math.max(0, p.totalSeconds-(Number(base.cursorTotal)||0));
-  }
   const uid=communitySid(communityUser.id);
   const card=document.querySelector('#communityMembers .community-member[data-member-uid="'+CSS.escape(uid)+'"]');
   if(card){
@@ -5688,7 +5553,7 @@ function communityPatchMyMemberCard(){
     card.style.background=studying?"var(--success-soft)":"";
     const ago=card.querySelector(".member-ago");
     if(ago)ago.innerHTML=studying?'<span style="color:var(--success);font-weight:900;font-size:10px">● পড়ছে এখন</span>':communityEsc(communityAgo(new Date().toISOString()));
-
+        
     const ch=card.querySelector(".m-ch");
     if(ch)ch.textContent=p.completed+"/"+p.total;
 
@@ -5706,17 +5571,19 @@ function communityPatchMyMemberCard(){
     if(progressBar)progressBar.style.width=pct+"%";
 
     const td=card.querySelector(".m-today");
-    if(td)td.textContent=communityFmt(todaySec);
+    if(td)td.textContent=communityFmt(p.todaySeconds);
 
     const tot=card.querySelector(".m-total");
-    if(tot)tot.textContent=communityFmt(totalSec);
+    if(tot)tot.textContent=communityFmt(p.totalSeconds);
 
     const st=card.querySelector(".m-streak");
     if(st)st.textContent=String(p.streak);
+
   }else{
+    // Card missing (first share / empty list) — rebuild from server+local.
     communityLoadMembers(communityCurrent.id,true);
   }
-  communityRenderMyProgress({completed:p.completed,total:p.total,todaySeconds:todaySec,totalSeconds:totalSec,streak:p.streak}, new Date().toISOString(), true);
+  communityRenderMyProgress(p,new Date().toISOString(),true);
 }
 function communityNotifyProgressChanged(){
   if(!communityClient||!communityUser)return;
