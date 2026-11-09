@@ -5380,9 +5380,15 @@ async function communityLoadMembers(id,silent){
   const waiting=memberRows.filter(m=>!sharedIds.has(communitySid(m.user_id))).map(m=>`<div class="community-member"><strong>${label(m.user_id)}</strong><small style="color:var(--muted)">${communityEsc(m.role||"member")} · এখনো progress share করেননি</small></div>`);
   const html=cards.concat(waiting).join("");
   box.innerHTML=html||'<div class="community-empty">এই Community-তে এখনো কোনো member দেখা যাচ্ছে না।</div>';
-  const mine=rows.find(r=>communitySame(r.user_id,me));
-  if(mine)communityRenderMyProgress(communityComputeProgress(),mine.updated_at,true);
-  else if(communityCurrent)communityRenderMyProgress(communityComputeProgress(),null,communityIsShared(me,id));
+    const mine=rows.find(r=>communitySame(r.user_id,me));
+  if(mine){
+    // Server already has my progress → mark shared on THIS device so timer auto-syncs
+    // even if localStorage flag was missing (second phone / cleared storage).
+    if(me) communitySetShared(me,id,true);
+    communityRenderMyProgress(communityComputeProgress(mine),mine.updated_at,true);
+  }else if(communityCurrent){
+    communityRenderMyProgress(communityComputeProgress(),null,communityIsShared(me,id));
+  }
   // Keep own card pinned to live local seconds after any server refresh.
   try{communityPatchMyMemberCard();}catch(_e){}
 }
