@@ -5625,11 +5625,19 @@ async function communityStopSharing(){
 }
 // Called by the tracker whenever chapters / study time change. Keeps already-shared summaries fresh (rate-limited).
 function communityPatchMyMemberCard(){
-  // Instantly refresh the "You" card in Members box from local study seconds (no server wait).
   if(!communityUser||!communityCurrent)return;
   if(typeof currentTab!=="undefined"&&currentTab!=="community")return;
   if(!communityIsShared(communityUser.id,communityCurrent.id))return;
   const p=communityComputeProgress();
+  const cidKey=communitySid(communityCurrent.id);
+  const base=communityLiveBaseline[cidKey];
+  // Show combined (server baseline + new local delta), not only this device's local clock
+  let todaySec=p.todaySeconds;
+  let totalSec=p.totalSeconds;
+  if(base){
+    todaySec=(Number(base.pushedToday)||0)+Math.max(0, p.todaySeconds-(Number(base.cursorToday)||0));
+    totalSec=(Number(base.pushedTotal)||0)+Math.max(0, p.totalSeconds-(Number(base.cursorTotal)||0));
+  }
   const uid=communitySid(communityUser.id);
   const card=document.querySelector('#communityMembers .community-member[data-member-uid="'+CSS.escape(uid)+'"]');
   if(card){
@@ -5638,7 +5646,7 @@ function communityPatchMyMemberCard(){
     card.style.background=studying?"var(--success-soft)":"";
     const ago=card.querySelector(".member-ago");
     if(ago)ago.innerHTML=studying?'<span style="color:var(--success);font-weight:900;font-size:10px">● পড়ছে এখন</span>':communityEsc(communityAgo(new Date().toISOString()));
-        
+
     const ch=card.querySelector(".m-ch");
     if(ch)ch.textContent=p.completed+"/"+p.total;
 
@@ -5656,19 +5664,17 @@ function communityPatchMyMemberCard(){
     if(progressBar)progressBar.style.width=pct+"%";
 
     const td=card.querySelector(".m-today");
-    if(td)td.textContent=communityFmt(p.todaySeconds);
+    if(td)td.textContent=communityFmt(todaySec);
 
     const tot=card.querySelector(".m-total");
-    if(tot)tot.textContent=communityFmt(p.totalSeconds);
+    if(tot)tot.textContent=communityFmt(totalSec);
 
     const st=card.querySelector(".m-streak");
     if(st)st.textContent=String(p.streak);
-
   }else{
-    // Card missing (first share / empty list) — rebuild from server+local.
     communityLoadMembers(communityCurrent.id,true);
   }
-  communityRenderMyProgress(p,new Date().toISOString(),true);
+  communityRenderMyProgress({completed:p.completed,total:p.total,todaySeconds:todaySec,totalSeconds:totalSec,streak:p.streak}, new Date().toISOString(), true);
 }
 function communityNotifyProgressChanged(){
   if(!communityClient||!communityUser)return;
