@@ -5424,15 +5424,15 @@ async function communityLoadMembers(id,silent){
   // Keep own card pinned to live local seconds after any server refresh.
   try{communityPatchMyMemberCard();}catch(_e){}
 }
-function communityComputeProgress(serverRow=null){
+function communityComputeProgress(){
   let completed=0,total=0;
   Object.entries(BOOKS).forEach(([b,a])=>{
     total+=a.length;
     a.forEach((_,i)=>{if(progress[chKey(b,i+1)]==="complete")completed++;});
   });
   const pending=Math.round(Number(pendingStudySeconds)||0);
-  let todaySeconds=Math.round(Number(history[today()]?.totalSeconds||0))+pending;
-  let totalSeconds=Math.round(Object.values(history).reduce((n,d)=>n+Number(d?.totalSeconds||0),0))+pending;
+  const todaySeconds=Math.round(Number(history[today()]?.totalSeconds||0))+pending;
+  const totalSeconds=Math.round(Object.values(history).reduce((n,d)=>n+Number(d?.totalSeconds||0),0))+pending;
   let streak=0;
   let cur=new Date();
   if(todaySeconds<=0) cur.setDate(cur.getDate()-1);
@@ -5440,25 +5440,6 @@ function communityComputeProgress(serverRow=null){
     streak++;
     cur.setDate(cur.getDate()-1);
     if(streak>1000) break;
-  }
-
-  // Cross-device merge: never push values lower than what server already has for this account.
-  if(serverRow){
-    const srvCompleted=Math.max(0,Number(serverRow.completed_chapters)||0);
-    const srvTotalCh=Math.max(0,Number(serverRow.total_chapters)||0);
-    const srvTotalSec=Math.max(0,Number(serverRow.total_seconds)||0);
-    const srvStreak=Math.max(0,Number(serverRow.streak_days)||0);
-    completed=Math.max(completed,srvCompleted);
-    total=Math.max(total,srvTotalCh);
-    totalSeconds=Math.max(totalSeconds,srvTotalSec);
-    streak=Math.max(streak,srvStreak);
-
-    // today_seconds only merge if server row is from the same local calendar day
-    try{
-      if(serverRow.updated_at && formatDateKey(new Date(serverRow.updated_at))===today()){
-        todaySeconds=Math.max(todaySeconds,Math.max(0,Number(serverRow.today_seconds)||0));
-      }
-    }catch(_e){}
   }
   return {completed,total,todaySeconds,totalSeconds,streak};
 }
