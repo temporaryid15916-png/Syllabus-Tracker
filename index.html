@@ -5364,7 +5364,7 @@ async function communityLoadMembers(id,silent){
       </div>`;
   });
     
-  const waiting=memberRows.filter(m=>!sharedIds.has(communitySid(m.user_id))).map(m=>`<div class="community-member"><strong>${label(m.user_id)}</strong><small style="color:var(--muted)">${communityEsc(m.role||" (member)")} · এখনো progress share করেননি</small></div>`);
+  const waiting=memberRows.filter(m=>!sharedIds.has(communitySid(m.user_id))).map(m=>`<div class="community-member"><strong>${label(m.user_id)}</strong><small style="color:var(--muted)">${communityEsc(m.role||"member")} · এখনো progress share করেননি</small></div>`);
   const html=cards.concat(waiting).join("");
   box.innerHTML=html||'<div class="community-empty">এই Community-তে এখনো কোনো member দেখা যাচ্ছে না।</div>';
   const mine=rows.find(r=>communitySame(r.user_id,me));
