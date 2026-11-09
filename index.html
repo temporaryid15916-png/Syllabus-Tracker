@@ -5417,7 +5417,7 @@ async function communityLoadMembers(id,silent){
     // Server already has my progress → mark shared on THIS device so timer auto-syncs
     // even if localStorage flag was missing (second phone / cleared storage).
     if(me) communitySetShared(me,id,true);
-    communityRenderMyProgress(communityComputeProgress(mine),mine.updated_at,true);
+    communityRenderMyProgress(communityComputeProgress(),mine.updated_at,true);
   }else if(communityCurrent){
     communityRenderMyProgress(communityComputeProgress(),null,communityIsShared(me,id));
   }
