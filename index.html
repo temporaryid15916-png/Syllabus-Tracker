@@ -5486,10 +5486,36 @@ function communityProgressWriteKey(uid,cid){return communitySid(uid)+"|"+communi
 async function communityPushProgress(cid,silent,refreshUI,forceShare=false){
   if(!communityClient||!communityUser)return false;
   const uid=communityUser.id,key=communityProgressWriteKey(uid,cid);
-  // Auto-sync may update only a community where sharing is currently enabled.
-  // Manual Share explicitly opts in via forceShare=true.
+  // Auto-sync only if this community is already shared (local cache OR server-confirmed).
+  // Manual Share uses forceShare=true.
   if(!forceShare&&!communityIsShared(uid,cid))return false;
-  const p=communityComputeProgress();
+
+  // Fetch existing server row first so multi-device totals merge instead of overwrite.
+  let serverRow=null;
+  try{
+    const cidStr=communitySid(cid);
+    let got=null;
+    try{
+      const rpc=await communityClient.rpc("get_community_progress_rows",{p_community_id:cidStr});
+      if(!rpc.error&&Array.isArray(rpc.data)){
+        got=(rpc.data||[]).find(r=>communitySame(r.user_id,uid))||null;
+      }
+    }catch(_e){}
+    if(!got){
+      const q=await communityClient.from("community_progress")
+        .select("user_id,completed_chapters,total_chapters,today_seconds,total_seconds,streak_days,updated_at")
+        .eq("community_id",cidStr)
+        .eq("user_id",uid)
+        .limit(1);
+      if(!q.error) got=(q.data||[])[0]||null;
+    }
+    serverRow=got;
+  }catch(_e){}
+
+  // If server already has my row, treat as shared on this device too (cross-device fix).
+  if(serverRow) communitySetShared(uid,cid,true);
+
+  const p=communityComputeProgress(serverRow);
   const row={
     community_id:communitySid(cid),
     user_id:uid,
@@ -5511,8 +5537,6 @@ async function communityPushProgress(cid,silent,refreshUI,forceShare=false){
   communityProgressWriteTasks.set(key,task);
   let res;
   try{res=await task;}finally{if(communityProgressWriteTasks.get(key)===task)communityProgressWriteTasks.delete(key);}
-  // If the user stopped sharing while this request was in flight, don't restore
-  // the local shared flag; communityStopSharing() waits for this write then deletes it.
   if(res.error){
     if(!silent)communityStatus("Progress share হয়নি: "+communityErrText(res.error)+" — Supabase-এ Community-Progress-Visibility-Fix.sql চালাও।","error");
     else console.warn("Auto progress share failed:",res.error);
