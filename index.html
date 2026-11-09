@@ -4348,9 +4348,22 @@ function communityWriteCache(u,list){
 }
 function communityCacheOne(u,id,d){if(id==null||!u)return;const o=communityReadCache(u);o[communitySid(id)]={...(o[communitySid(id)]||{}),...(d||{}),id};communityWriteCacheObj(u,o);}
 const communitySharedKey=u=>"syllabusTrackerSharedProgress:"+communitySid(u);
-function communityIsShared(u,id){try{return !!JSON.parse(localStorage.getItem(communitySharedKey(u))||"{}")[communitySid(id)];}catch(_e){return false;}}
+// Server-confirmed shared communities (same account, any device). localStorage is only a cache.
+const communityServerShared=new Set();
+function communityIsShared(u,id){
+  const key=communitySid(id);
+  if(communityServerShared.has(key)) return true;
+  try{return !!JSON.parse(localStorage.getItem(communitySharedKey(u))||"{}")[key];}catch(_e){return false;}
+}
 function communitySetShared(u,id,on){
-  try{const o=JSON.parse(localStorage.getItem(communitySharedKey(u))||"{}")||{};if(on)o[communitySid(id)]=1;else delete o[communitySid(id)];localStorage.setItem(communitySharedKey(u),JSON.stringify(o));}catch(_e){}
+  const key=communitySid(id);
+  if(on) communityServerShared.add(key);
+  else communityServerShared.delete(key);
+  try{
+    const o=JSON.parse(localStorage.getItem(communitySharedKey(u))||"{}")||{};
+    if(on) o[key]=1; else delete o[key];
+    localStorage.setItem(communitySharedKey(u),JSON.stringify(o));
+  }catch(_e){}
 }
 /* Left / departed communities: once left, keep them out of the local list even if the server still has a membership (e.g. RLS/leave RPC issue). Re-join removes the flag. */
 const communityLeftKey=u=>"syllabusTrackerLeftCommunities:"+communitySid(u);
