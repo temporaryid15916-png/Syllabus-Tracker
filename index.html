@@ -4020,8 +4020,8 @@ function renderTodoWeekStrip(){
     const key = formatDateKey(dt);
     const count = todos.filter(t=>t.date===key && t.status!=="complete").length;
     const isToday = key === today();
-    html += `<div class="todo-week-day${isToday?" active":""}${count?" has-tasks":""}" onclick="todoJumpToDate('${key}')">
-      <div style="font-size:10px;color:var(--muted)">${days[i]}</div>
+       html += `<div class="todo-week-day${isToday?" active":""}${count?" has-tasks":""}" onclick="todoJumpToDate('${key}')">
+      <div class="dname">${days[i]}</div>
       <div class="dnum">${dt.getDate()}</div>
       <div class="dcount">${count?count+" task":"—"}</div>
     </div>`;
