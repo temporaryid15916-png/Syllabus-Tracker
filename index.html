@@ -1687,14 +1687,6 @@ footer {
   }
 }
 
-/* Focus Mode */
-body.focus-mode .topbar,
-body.focus-mode .tabs,
-body.focus-mode footer,
-body.focus-mode .quick,
-body.focus-mode .grid4,
-body.focus-mode #continueCard { opacity: 0.15; pointer-events: none; }
-body.focus-mode .pomo { background: rgba(2,6,23,.95); }
 
 /* ========== Premium Chapter Pickers (Exam + To-Do) ========== */
 .chapter-picker {
@@ -2319,7 +2311,6 @@ const KEY = {
     weeklyGoal:"syllabusWeeklyGoal",
     achievements:"syllabusAchievements",
     revisionInterval:"syllabusRevisionInterval",
-    focusPrefs:"syllabusFocusPrefs"
 };
 
 const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
@@ -2359,8 +2350,6 @@ let achievements = load(KEY.achievements, {});
 if (!achievements || typeof achievements !== "object" || Array.isArray(achievements)) achievements = {};
 let revisionIntervalDays = Number(localStorage.getItem(KEY.revisionInterval));
 if (!revisionIntervalDays || isNaN(revisionIntervalDays) || revisionIntervalDays < 1) revisionIntervalDays = 7;
-let focusPrefs = load(KEY.focusPrefs, { hideNav: true, dimUI: true });
-if (!focusPrefs || typeof focusPrefs !== "object") focusPrefs = { hideNav: true, dimUI: true };
     
 const formatDateKey = (d = new Date()) => {
     const dt = d instanceof Date ? d : new Date(d);
@@ -2951,7 +2940,7 @@ async function togglePomodoroAlert(){
                 toast("🔔 System notification enabled — check notification bar");
                 openAlertEnabledModal(
                     "Device Notifications Enabled",
-                    "A test notification was sent to your notification bar. When Pomodoro is running, Focus/Break countdown will appear there if you leave the app. Keep Chrome/browser notifications allowed in phone settings."
+                    "A test notification was sent to your notification bar. When Pomodoro is running/Break countdown will appear there if you leave the app. Keep Chrome/browser notifications allowed in phone settings."
                 );
             }else{
                 toast("🔔 Permission on, but system notification failed");
@@ -4548,7 +4537,7 @@ function closeTodoChapterSyncModal(yes){
   pendingTodoChapterSync = null;
 }
 
-/* ========== NEW FEATURES: Notes, Revision, Reports, Heatmap, Goals, Catch-up, Focus ========== */
+/* ========== NEW FEATURES: Notes, Revision, Reports, Heatmap, Goals, Catch-up ========== */
 const noteKey = (b,c) => b + "__" + c;
 let revFilter = "upcoming";
 let reportPeriod = "weekly";
@@ -4898,28 +4887,6 @@ function checkAchievements(){
   if(streak>=7) achievements.streak7 = true;
   saveAchievements();
 }
-
-/* Focus Mode — distraction-free wrapper around existing Pomodoro */
-function enterFocusMode(){
-  document.body.classList.add("focus-mode");
-  openPomodoro();
-  toast("🎯 Focus Mode on");
-}
-function exitFocusMode(){
-  document.body.classList.remove("focus-mode");
-}
-// Add Focus Mode button next to Pomodoro header if missing
-(function ensureFocusBtn(){
-  const header = document.querySelector(".header-actions");
-  if(header && !document.getElementById("focusModeBtn")){
-    const btn = document.createElement("button");
-    btn.id = "focusModeBtn";
-    btn.className = "btn";
-    btn.textContent = "🎯 Focus";
-    btn.onclick = enterFocusMode;
-    header.insertBefore(btn, header.firstChild);
-  }
-})();
 
 function init(){
     const sel=document.getElementById("bookSelectFilter");
