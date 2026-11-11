@@ -1687,6 +1687,15 @@ footer {
   }
 }
 
+/* Focus Mode */
+body.focus-mode .topbar,
+body.focus-mode .tabs,
+body.focus-mode footer,
+body.focus-mode .quick,
+body.focus-mode .grid4,
+body.focus-mode #continueCard { opacity: 0.15; pointer-events: none; }
+body.focus-mode .pomo { background: rgba(2,6,23,.95); }
+
 /* ========== Premium Chapter Pickers (Exam + To-Do) ========== */
 .chapter-picker {
   max-height: 270px;
@@ -1871,6 +1880,9 @@ footer {
   <button class="tab" data-tab="todo" onclick="switchTab('todo')">📋 To-Do List</button>
   <button class="tab" data-tab="history" onclick="switchTab('history')">📊 Study History</button>
   <button class="tab" data-tab="insights" onclick="switchTab('insights')">💡 Insights</button>
+  <button class="tab" data-tab="notes" onclick="switchTab('notes')">📝 Notes</button>
+  <button class="tab" data-tab="revision" onclick="switchTab('revision')">🔄 Revision</button>
+  <button class="tab" data-tab="reports" onclick="switchTab('reports')">📈 Reports</button>
   <button class="tab" data-tab="community" onclick="switchTab('community')">👥 Community</button>
 </nav>
 
@@ -1959,8 +1971,76 @@ footer {
 <section id="insightsPanel" class="panel">
   <div class="card section" style="background:linear-gradient(135deg,var(--primary-soft),var(--card))"><h2>🧠 Today's Focus Queue</h2><p>In-progress chapters first, then the next unfinished chapters.</p><div id="smartQueueList" class="insights-grid"></div></div>
   <div class="card section"><h2>🏆 Milestones & Achievements</h2><p>Unlock badges as you complete chapters.</p><div id="badgeGrid" class="insights-grid"></div></div>
+  <div class="card section"><h2>📊 Subject Performance</h2><p>Completion % and study-time distribution from your actual progress data.</p><div id="subjectPerfList" class="list"></div></div>
+  <div class="card section"><h2>🎯 Goals</h2><p>Daily & weekly study targets (minutes).</p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px">
+      <div><label class="label">Daily (min)</label><input id="dailyGoalInput2" class="input" style="width:90px" type="number" min="10" max="1440"></div>
+      <div><label class="label">Weekly (min)</label><input id="weeklyGoalInput" class="input" style="width:90px" type="number" min="30" max="10080"></div>
+      <button class="btn primary" onclick="saveGoalsFromInsights()">Save Goals</button>
+    </div>
+    <div id="goalsStatus" class="sub" style="margin-top:8px"></div>
+  </div>
 </section>
 
+<!-- Notes Tab -->
+<section id="notesPanel" class="panel">
+  <div class="card section">
+    <div class="row" style="margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <div><h2 style="font-size:17px;margin:0">📝 Personal Notes</h2><p class="sub">Subject & chapter notes — saved automatically</p></div>
+      <button class="btn primary" onclick="openNoteModal()">＋ New Note</button>
+    </div>
+    <div class="toolbar-top" style="margin-bottom:12px">
+      <select id="notesBookFilter" class="select" onchange="renderNotes()"></select>
+    </div>
+    <div id="notesList" class="list"></div>
+  </div>
+</section>
+
+<!-- Revision Tab -->
+<section id="revisionPanel" class="panel">
+  <div class="card section">
+    <div class="row" style="margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <div><h2 style="font-size:17px;margin:0">🔄 Revision Manager</h2><p class="sub">Mark chapters for revision and track due dates</p></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn primary" onclick="openRevisionModal()">＋ Mark for Revision</button>
+        <button class="btn" onclick="openRevisionIntervalModal()">⚙️ Interval</button>
+      </div>
+    </div>
+    <div class="filters" style="margin-bottom:12px">
+      <button class="filter active" data-revfilter="upcoming" onclick="setRevFilter('upcoming')">Upcoming</button>
+      <button class="filter" data-revfilter="overdue" onclick="setRevFilter('overdue')">Overdue</button>
+      <button class="filter" data-revfilter="all" onclick="setRevFilter('all')">All</button>
+      <button class="filter" data-revfilter="done" onclick="setRevFilter('done')">Done</button>
+    </div>
+    <div id="revisionList" class="list"></div>
+  </div>
+</section>
+
+<!-- Reports Tab (Heatmap + Weekly/Monthly) -->
+<section id="reportsPanel" class="panel">
+  <div class="card section">
+    <h2>🔥 Study Activity Heatmap</h2>
+    <p class="sub">GitHub-style view of daily study time (uses existing Pomodoro history)</p>
+    <div id="heatmapContainer" style="overflow-x:auto;margin-top:12px"></div>
+    <div id="heatmapDetail" class="sub" style="margin-top:8px">Click a day for details</div>
+  </div>
+  <div class="card section">
+    <div class="row" style="margin-bottom:10px;flex-wrap:wrap;gap:8px">
+      <div><h2>📈 Weekly & Monthly Reports</h2><p class="sub">Accurate totals from your study history and progress</p></div>
+      <div>
+        <button class="filter active" id="btnReportWeekly" onclick="setReportPeriod('weekly')">Weekly</button>
+        <button class="filter" id="btnReportMonthly" onclick="setReportPeriod('monthly')">Monthly</button>
+      </div>
+    </div>
+    <div id="reportSummary" class="grid4" style="margin-bottom:12px"></div>
+    <div id="reportSubjectList" class="list"></div>
+  </div>
+  <div class="card section">
+    <h2>⚡ Smart Catch-up</h2>
+    <p class="sub">Missed or overdue tasks from your To-Do list (never auto-deletes)</p>
+    <div id="catchupList" class="list"></div>
+  </div>
+</section>
 
 <!-- Community Tab: independent module; existing tracker panels remain unchanged -->
 <section id="communityPanel" class="panel">
@@ -2232,7 +2312,14 @@ const ICONS = {
 
 const KEY = {
     progress:"syllabusTracker",theme:"syllabusTheme",last:"syllabusLastChapter",collapsed:"syllabusCollapsed",history:"pomodoroDailyHistory",exams:"studentExamPlanner",goal:"dailyStudyGoal",
-    todos:"syllabusTodos", todoPlans:"syllabusTodoPlans"
+    todos:"syllabusTodos", todoPlans:"syllabusTodoPlans",
+    // New feature keys (never overwrite existing keys or formats)
+    notes:"syllabusNotes",
+    revisions:"syllabusRevisions",
+    weeklyGoal:"syllabusWeeklyGoal",
+    achievements:"syllabusAchievements",
+    revisionInterval:"syllabusRevisionInterval",
+    focusPrefs:"syllabusFocusPrefs"
 };
 
 const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
@@ -2260,6 +2347,20 @@ let todoPriorityFilter = "all";
 let todoWeekOffset = 0;
 let editingTodoId = null;
 let pendingTodoChapterSync = null;
+
+// New feature data (safe defaults, never overwrite existing user data)
+let notes = load(KEY.notes, {});
+if (!notes || typeof notes !== "object" || Array.isArray(notes)) notes = {};
+let revisions = load(KEY.revisions, {});
+if (!revisions || typeof revisions !== "object" || Array.isArray(revisions)) revisions = {};
+let weeklyGoal = Number(localStorage.getItem(KEY.weeklyGoal));
+if (!weeklyGoal || isNaN(weeklyGoal) || weeklyGoal < 30) weeklyGoal = 600; // default 10 hours/week
+let achievements = load(KEY.achievements, {});
+if (!achievements || typeof achievements !== "object" || Array.isArray(achievements)) achievements = {};
+let revisionIntervalDays = Number(localStorage.getItem(KEY.revisionInterval));
+if (!revisionIntervalDays || isNaN(revisionIntervalDays) || revisionIntervalDays < 1) revisionIntervalDays = 7;
+let focusPrefs = load(KEY.focusPrefs, { hideNav: true, dimUI: true });
+if (!focusPrefs || typeof focusPrefs !== "object") focusPrefs = { hideNav: true, dimUI: true };
     
 const formatDateKey = (d = new Date()) => {
     const dt = d instanceof Date ? d : new Date(d);
@@ -2309,6 +2410,9 @@ function switchTab(t){
     if(t==="history")renderHistory();
     if(t==="insights")renderInsights();
     if(t==="todo")renderTodo();
+    if(t==="notes")renderNotes();
+    if(t==="revision")renderRevision();
+    if(t==="reports")renderReports();
     try{localStorage.setItem("syllabusActiveTab",t);}catch(e){}
     if(t==="community"){
       if(typeof communityInit==="function" && !communityClient)communityInit();
@@ -3888,6 +3992,23 @@ function renderInsights() {
             `).join("");
         }
     }
+    // Extended features (safe — only adds UI)
+    try{ renderSubjectPerformance(); }catch(_e){}
+    try{
+      const dIn = document.getElementById("dailyGoalInput2");
+      const wIn = document.getElementById("weeklyGoalInput");
+      if(dIn) dIn.value = goal;
+      if(wIn) wIn.value = weeklyGoal;
+      const st = document.getElementById("goalsStatus");
+      if(st){
+        const todaySec = Number(history[today()]?.totalSeconds||0) + Math.round(pendingStudySeconds||0);
+        let weekSec = 0; const d = new Date();
+        for(let i=0;i<7;i++){ weekSec += Number(history[formatDateKey(d)]?.totalSeconds||0); d.setDate(d.getDate()-1); }
+        weekSec += Math.round(pendingStudySeconds||0);
+        st.textContent = `Today: ${fmt(todaySec)} / ${goal}m · Week: ${fmt(weekSec)} / ${weeklyGoal}m`;
+      }
+      checkAchievements();
+    }catch(_e){}
 }
 function openResetModal(){document.getElementById("resetModal").classList.add("show");}
 function closeResetModal(){document.getElementById("resetModal").classList.remove("show");}
@@ -4426,6 +4547,380 @@ function closeTodoChapterSyncModal(yes){
   }
   pendingTodoChapterSync = null;
 }
+
+/* ========== NEW FEATURES: Notes, Revision, Reports, Heatmap, Goals, Catch-up, Focus ========== */
+const noteKey = (b,c) => b + "__" + c;
+let revFilter = "upcoming";
+let reportPeriod = "weekly";
+let editingNoteId = null;
+
+function saveNotes(){ save(KEY.notes, notes); }
+function saveRevisions(){ save(KEY.revisions, revisions); }
+function saveAchievements(){ save(KEY.achievements, achievements); }
+
+function renderNotes(){
+  const box = document.getElementById("notesList");
+  if(!box) return;
+  const sel = document.getElementById("notesBookFilter");
+  if(sel && !sel.options.length){
+    sel.innerHTML = `<option value="all">📚 All Subjects</option>` + Object.keys(BOOKS).map(b=>`<option value="${esc(b)}">${esc(b)}</option>`).join("");
+  }
+  const filter = sel ? sel.value : "all";
+  const entries = Object.entries(notes).filter(([k,n])=>{
+    if(!n || !n.text) return false;
+    if(filter==="all") return true;
+    return n.book === filter;
+  }).sort((a,b)=>(b[1].updatedAt||"").localeCompare(a[1].updatedAt||""));
+  if(!entries.length){
+    box.innerHTML = `<div class="community-empty">কোনো note নেই। ＋ New Note চাপো।</div>`;
+    return;
+  }
+  box.innerHTML = entries.map(([id,n])=>{
+    const chName = (n.book && n.chapter && BOOKS[n.book]?.[n.chapter-1]) ? BOOKS[n.book][n.chapter-1] : "";
+    return `<div class="listrow" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px 0">
+      <div class="row"><strong>${esc(n.title||"Untitled")}</strong>
+        <div style="display:flex;gap:5px"><button class="mini" onclick="editNote('${esc(id)}')">Edit</button>
+        <button class="mini" style="color:var(--danger)" onclick="deleteNote('${esc(id)}')">Delete</button></div>
+      </div>
+      <div class="sub">${esc(n.book||"")} ${chName? " · Ch "+n.chapter+": "+esc(chName):""}</div>
+      <div style="font-size:12.5px;white-space:pre-wrap;margin-top:4px">${esc(n.text)}</div>
+    </div>`;
+  }).join("");
+}
+
+function openNoteModal(id){
+  editingNoteId = id || null;
+  if(!document.getElementById("noteModal")){
+    const m = document.createElement("div");
+    m.id = "noteModal";
+    m.className = "modal";
+    m.innerHTML = `<div class="card modalbox">
+      <h3 id="noteModalTitle">New Note</h3>
+      <div style="display:grid;gap:9px;margin-top:12px">
+        <input id="noteInputTitle" class="input" maxlength="100" placeholder="Note title">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <select id="noteInputBook" class="select" onchange="noteFillChapters()"></select>
+          <select id="noteInputChapter" class="select"></select>
+        </div>
+        <textarea id="noteInputText" class="input" rows="5" maxlength="4000" placeholder="Write your note…" style="resize:vertical"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeNoteModal()">Cancel</button>
+        <button class="btn primary" onclick="saveNoteFromModal()">Save Note</button>
+      </div>
+    </div>`;
+    document.body.appendChild(m);
+  }
+  const books = document.getElementById("noteInputBook");
+  books.innerHTML = `<option value="">— Subject —</option>` + Object.keys(BOOKS).map(b=>`<option value="${esc(b)}">${esc(b)}</option>`).join("");
+  const n = id ? notes[id] : null;
+  document.getElementById("noteModalTitle").textContent = id ? "Edit Note" : "New Note";
+  document.getElementById("noteInputTitle").value = n?.title || "";
+  document.getElementById("noteInputText").value = n?.text || "";
+  if(n?.book){ books.value = n.book; noteFillChapters(); if(n.chapter) document.getElementById("noteInputChapter").value = String(n.chapter); }
+  else { noteFillChapters(); }
+  document.getElementById("noteModal").classList.add("show");
+}
+function noteFillChapters(){
+  const book = document.getElementById("noteInputBook")?.value || "";
+  const s = document.getElementById("noteInputChapter");
+  if(!s) return;
+  if(!book || !BOOKS[book]){ s.innerHTML = `<option value="">— Chapter —</option>`; return; }
+  s.innerHTML = `<option value="">— Chapter —</option>` + BOOKS[book].map((nm,i)=>`<option value="${i+1}">${i+1}. ${esc(nm)}</option>`).join("");
+}
+function closeNoteModal(){ document.getElementById("noteModal")?.classList.remove("show"); editingNoteId = null; }
+function saveNoteFromModal(){
+  const title = document.getElementById("noteInputTitle").value.trim();
+  const text = document.getElementById("noteInputText").value.trim();
+  const book = document.getElementById("noteInputBook").value || "";
+  const chapter = Number(document.getElementById("noteInputChapter").value) || null;
+  if(!text) return toast("Note লিখো");
+  const id = editingNoteId || (Date.now().toString(36) + Math.random().toString(36).slice(2,6));
+  notes[id] = { title: title || "Note", text, book: book||null, chapter, updatedAt: new Date().toISOString(), createdAt: notes[id]?.createdAt || new Date().toISOString() };
+  saveNotes();
+  closeNoteModal();
+  renderNotes();
+  toast("📝 Note saved");
+}
+function editNote(id){ openNoteModal(id); }
+function deleteNote(id){
+  if(!notes[id]) return;
+  delete notes[id];
+  saveNotes();
+  renderNotes();
+  toast("🗑️ Note deleted");
+}
+
+function setRevFilter(f){
+  revFilter = f;
+  document.querySelectorAll("[data-revfilter]").forEach(x=>x.classList.toggle("active", x.dataset.revfilter===f));
+  renderRevision();
+}
+function renderRevision(){
+  const box = document.getElementById("revisionList");
+  if(!box) return;
+  const todayK = today();
+  const items = Object.entries(revisions).map(([k,r])=>({key:k, ...r})).filter(r=>r && r.book);
+  let list = items;
+  if(revFilter==="upcoming") list = items.filter(r=>r.status!=="done" && r.dueDate >= todayK);
+  else if(revFilter==="overdue") list = items.filter(r=>r.status!=="done" && r.dueDate < todayK);
+  else if(revFilter==="done") list = items.filter(r=>r.status==="done");
+  list.sort((a,b)=>(a.dueDate||"").localeCompare(b.dueDate||""));
+  if(!list.length){
+    box.innerHTML = `<div class="community-empty">No revisions in this view.</div>`;
+    return;
+  }
+  box.innerHTML = list.map(r=>{
+    const chName = BOOKS[r.book]?.[r.chapter-1] || "";
+    const overdue = r.status!=="done" && r.dueDate < todayK;
+    return `<div class="listrow" style="align-items:flex-start">
+      <div><strong>${esc(chName)}</strong><div class="sub">${esc(r.book)} · Due ${esc(r.dueDate)}${overdue?' · <span style="color:var(--danger)">Overdue</span>':''}</div></div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        ${r.status!=="done"?`<button class="mini" onclick="markRevisionDone('${esc(r.key)}')">✓ Done</button>`:""}
+        <button class="mini" onclick="rescheduleRevision('${esc(r.key)}')">Reschedule</button>
+        <button class="mini" style="color:var(--danger)" onclick="removeRevision('${esc(r.key)}')">Remove</button>
+        <button class="mini" onclick='openPomodoroFor(${JSON.stringify(r.book)},${r.chapter})'>🍅 Study</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+function openRevisionModal(){
+  if(!document.getElementById("revisionModal")){
+    const m = document.createElement("div");
+    m.id = "revisionModal";
+    m.className = "modal";
+    m.innerHTML = `<div class="card modalbox">
+      <h3>Mark for Revision</h3>
+      <div style="display:grid;gap:9px;margin-top:12px">
+        <select id="revInputBook" class="select" onchange="revFillChapters()"></select>
+        <select id="revInputChapter" class="select"></select>
+        <input id="revInputDate" class="input" type="date">
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="document.getElementById('revisionModal').classList.remove('show')">Cancel</button>
+        <button class="btn primary" onclick="saveRevisionFromModal()">Save</button>
+      </div>
+    </div>`;
+    document.body.appendChild(m);
+  }
+  const books = document.getElementById("revInputBook");
+  books.innerHTML = Object.keys(BOOKS).map(b=>`<option value="${esc(b)}">${esc(b)}</option>`).join("");
+  revFillChapters();
+  const d = new Date(); d.setDate(d.getDate() + revisionIntervalDays);
+  document.getElementById("revInputDate").value = formatDateKey(d);
+  document.getElementById("revisionModal").classList.add("show");
+}
+function revFillChapters(){
+  const book = document.getElementById("revInputBook")?.value;
+  const s = document.getElementById("revInputChapter");
+  if(!s || !book) return;
+  s.innerHTML = BOOKS[book].map((n,i)=>`<option value="${i+1}">${i+1}. ${esc(n)}</option>`).join("");
+}
+function saveRevisionFromModal(){
+  const book = document.getElementById("revInputBook").value;
+  const chapter = Number(document.getElementById("revInputChapter").value);
+  const dueDate = document.getElementById("revInputDate").value;
+  if(!book || !chapter || !dueDate) return toast("সব field পূরণ করো");
+  const k = chKey(book, chapter);
+  revisions[k] = { book, chapter, dueDate, status: "pending", createdAt: new Date().toISOString() };
+  saveRevisions();
+  document.getElementById("revisionModal").classList.remove("show");
+  renderRevision();
+  toast("🔄 Marked for revision");
+}
+function markRevisionDone(k){
+  if(revisions[k]){ revisions[k].status = "done"; revisions[k].doneAt = new Date().toISOString(); saveRevisions(); renderRevision(); toast("✓ Revision done"); }
+}
+function removeRevision(k){ delete revisions[k]; saveRevisions(); renderRevision(); toast("Removed"); }
+function rescheduleRevision(k){
+  if(!revisions[k]) return;
+  const d = new Date(); d.setDate(d.getDate() + revisionIntervalDays);
+  revisions[k].dueDate = formatDateKey(d);
+  revisions[k].status = "pending";
+  saveRevisions();
+  renderRevision();
+  toast("📅 Rescheduled");
+}
+function openRevisionIntervalModal(){
+  const v = prompt("Revision interval (days)", String(revisionIntervalDays));
+  if(v==null) return;
+  const n = Number(v);
+  if(!n || n<1 || n>90) return toast("1–90 days দাও");
+  revisionIntervalDays = n;
+  localStorage.setItem(KEY.revisionInterval, String(n));
+  toast("Interval set to "+n+" days");
+}
+
+function renderHeatmap(){
+  const box = document.getElementById("heatmapContainer");
+  if(!box) return;
+  const year = new Date().getFullYear();
+  const start = new Date(year, 0, 1);
+  const end = new Date(year, 11, 31);
+  // Build weeks
+  let html = `<div style="display:flex;gap:3px;align-items:flex-start;font-size:10px">`;
+  let cur = new Date(start);
+  // Align to Sunday
+  while(cur.getDay() !== 0) cur.setDate(cur.getDate()-1);
+  const maxSec = Math.max(1, ...Object.values(history).map(h=>Number(h?.totalSeconds||0)));
+  while(cur <= end || cur.getDay() !== 0){
+    if(cur.getDay()===0) html += `<div style="display:flex;flex-direction:column;gap:3px">`;
+    const key = formatDateKey(cur);
+    const sec = Number(history[key]?.totalSeconds||0);
+    const level = sec<=0 ? 0 : sec < maxSec*0.25 ? 1 : sec < maxSec*0.5 ? 2 : sec < maxSec*0.75 ? 3 : 4;
+    const colors = ["var(--soft)","#c7d2fe","#818cf8","#4f46e5","#312e81"];
+    const inYear = cur.getFullYear()===year;
+    html += `<div title="${key}: ${fmt(sec)}" data-heat="${key}" onclick="showHeatDetail('${key}')" style="width:12px;height:12px;border-radius:2px;background:${inYear?colors[level]:'transparent'};cursor:pointer"></div>`;
+    if(cur.getDay()===6) html += `</div>`;
+    cur.setDate(cur.getDate()+1);
+    if(cur > end && cur.getDay()===0) break;
+  }
+  html += `</div>`;
+  box.innerHTML = html;
+}
+function showHeatDetail(key){
+  const el = document.getElementById("heatmapDetail");
+  if(!el) return;
+  const h = history[key];
+  if(!h || !h.totalSeconds){ el.textContent = key + " — No study recorded"; return; }
+  const books = Object.entries(h.byBook||{}).map(([b,s])=>`${b}: ${fmt(s)}`).join(" · ");
+  el.textContent = `${key} — ${fmt(h.totalSeconds)} total · ${h.sessions||0} sessions` + (books? " · "+books : "");
+}
+
+function setReportPeriod(p){
+  reportPeriod = p;
+  document.getElementById("btnReportWeekly")?.classList.toggle("active", p==="weekly");
+  document.getElementById("btnReportMonthly")?.classList.toggle("active", p==="monthly");
+  renderReports();
+}
+function renderReports(){
+  renderHeatmap();
+  const sumBox = document.getElementById("reportSummary");
+  const subBox = document.getElementById("reportSubjectList");
+  const catchBox = document.getElementById("catchupList");
+  if(!sumBox) return;
+
+  const now = new Date();
+  let from;
+  if(reportPeriod==="weekly"){
+    from = new Date(now); from.setDate(from.getDate() - 6);
+  } else {
+    from = new Date(now.getFullYear(), now.getMonth(), 1);
+  }
+  const fromKey = formatDateKey(from);
+  let totalSec = 0, daysActive = 0, sessions = 0;
+  const byBook = {};
+  Object.entries(history).forEach(([k,h])=>{
+    if(k >= fromKey && k <= today()){
+      const s = Number(h.totalSeconds||0);
+      if(s>0){ totalSec += s; daysActive++; sessions += Number(h.sessions||0); }
+      Object.entries(h.byBook||{}).forEach(([b,bs])=>{ byBook[b] = (byBook[b]||0) + Number(bs||0); });
+    }
+  });
+  // Syllabus progress snapshot
+  let done=0, total=0;
+  Object.entries(BOOKS).forEach(([b,arr])=>{ total+=arr.length; arr.forEach((_,i)=>{ if(progress[chKey(b,i+1)]==="complete") done++; }); });
+  // Tasks completed in period
+  const tasksDone = todos.filter(t=>t.status==="complete" && t.completedAt && formatDateKey(new Date(t.completedAt)) >= fromKey).length;
+
+  sumBox.innerHTML = `
+    <div class="stat"><div class="label">Study Time</div><div class="value">${fmt(totalSec)}</div><div class="sub">${reportPeriod}</div></div>
+    <div class="stat"><div class="label">Active Days</div><div class="value">${daysActive}</div><div class="sub">days studied</div></div>
+    <div class="stat"><div class="label">Tasks Done</div><div class="value" style="color:var(--success)">${tasksDone}</div><div class="sub">completed</div></div>
+    <div class="stat"><div class="label">Syllabus</div><div class="value" style="color:var(--primary)">${fmtPct(total?done/total*100:0)}</div><div class="sub">${done}/${total} chapters</div></div>`;
+
+  if(subBox){
+    const sorted = Object.entries(byBook).sort((a,b)=>b[1]-a[1]);
+    subBox.innerHTML = sorted.length ? sorted.map(([b,s])=>`<div class="listrow"><span>${esc(b)}</span><strong>${fmt(s)}</strong></div>`).join("") : `<div class="community-empty">No subject study time in this period.</div>`;
+  }
+
+  // Smart Catch-up: overdue / pending past tasks
+  if(catchBox){
+    const overdue = todos.filter(t=>t.status!=="complete" && t.date && t.date < today()).sort((a,b)=>a.date.localeCompare(b.date));
+    if(!overdue.length){
+      catchBox.innerHTML = `<div class="community-empty">No overdue tasks — great job!</div>`;
+    } else {
+      catchBox.innerHTML = overdue.slice(0,12).map(t=>`<div class="listrow">
+        <div><strong>${esc(t.title)}</strong><div class="sub">Due ${esc(t.date)} · ${esc(t.priority||"medium")}</div></div>
+        <div style="display:flex;gap:5px">
+          <button class="mini" onclick="rescheduleTodo('${esc(t.id)}')">Reschedule</button>
+          <button class="mini" onclick="toggleTodoComplete('${esc(t.id)}')">✓ Done</button>
+        </div>
+      </div>`).join("");
+    }
+  }
+}
+
+function saveGoalsFromInsights(){
+  const d = Number(document.getElementById("dailyGoalInput2")?.value);
+  const w = Number(document.getElementById("weeklyGoalInput")?.value);
+  if(d && d>=10){ goal = d; localStorage.setItem(KEY.goal, String(goal)); }
+  if(w && w>=30){ weeklyGoal = w; localStorage.setItem(KEY.weeklyGoal, String(weeklyGoal)); }
+  updateDashboard();
+  renderInsights();
+  toast("🎯 Goals saved");
+}
+
+function renderSubjectPerformance(){
+  const box = document.getElementById("subjectPerfList");
+  if(!box) return;
+  // Aggregate study time by book from history
+  const timeByBook = {};
+  Object.values(history).forEach(h=>{
+    Object.entries(h.byBook||{}).forEach(([b,s])=>{ timeByBook[b] = (timeByBook[b]||0) + Number(s||0); });
+  });
+  const rows = Object.entries(BOOKS).map(([b,arr])=>{
+    let done=0;
+    arr.forEach((_,i)=>{ if(progress[chKey(b,i+1)]==="complete") done++; });
+    const pct = arr.length ? (done/arr.length*100) : 0;
+    return { book:b, done, total:arr.length, pct, time: timeByBook[b]||0 };
+  }).sort((a,b)=>a.pct-b.pct);
+  box.innerHTML = rows.map(r=>`<div class="listrow">
+    <div><strong>${esc(r.book)}</strong><div class="sub">${r.done}/${r.total} chapters · ${fmt(r.time)} studied</div>
+      <div class="progress" style="height:5px;margin-top:4px"><div class="fill" style="width:${r.pct}%"></div></div>
+    </div>
+    <strong style="color:${r.pct<30?'var(--danger)':r.pct<70?'var(--warning)':'var(--success)'}">${fmtPct(r.pct)}</strong>
+  </div>`).join("");
+}
+
+function checkAchievements(){
+  let done=0,total=0;
+  Object.entries(BOOKS).forEach(([b,arr])=>{ total+=arr.length; arr.forEach((_,i)=>{ if(progress[chKey(b,i+1)]==="complete") done++; }); });
+  if(done>=1) achievements.first = true;
+  if(done>=10) achievements.ten = true;
+  if(total && done/total >= 0.5) achievements.half = true;
+  const todaySec = Number(history[today()]?.totalSeconds||0);
+  if(todaySec >= 3600) achievements.hour = true;
+  // streak
+  let cur=new Date(), streak=0;
+  if(todaySec<=0) cur.setDate(cur.getDate()-1);
+  while(Number(history[formatDateKey(cur)]?.totalSeconds||0)>0){ streak++; cur.setDate(cur.getDate()-1); if(streak>100) break; }
+  if(streak>=7) achievements.streak7 = true;
+  saveAchievements();
+}
+
+/* Focus Mode — distraction-free wrapper around existing Pomodoro */
+function enterFocusMode(){
+  document.body.classList.add("focus-mode");
+  openPomodoro();
+  toast("🎯 Focus Mode on");
+}
+function exitFocusMode(){
+  document.body.classList.remove("focus-mode");
+}
+// Add Focus Mode button next to Pomodoro header if missing
+(function ensureFocusBtn(){
+  const header = document.querySelector(".header-actions");
+  if(header && !document.getElementById("focusModeBtn")){
+    const btn = document.createElement("button");
+    btn.id = "focusModeBtn";
+    btn.className = "btn";
+    btn.textContent = "🎯 Focus";
+    btn.onclick = enterFocusMode;
+    header.insertBefore(btn, header.firstChild);
+  }
+})();
+
 function init(){
     const sel=document.getElementById("bookSelectFilter");
     sel.innerHTML=`<option value="all">📚 All Subjects</option>`+Object.keys(BOOKS).map(b=>`<option>${b}</option>`).join("");
