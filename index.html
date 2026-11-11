@@ -14,46 +14,56 @@
 <script>try{if(localStorage.getItem("syllabusTheme")==="dark")document.documentElement.classList.add("dark");}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-    --bg: #f1f5f9;
+    --bg: #f8fafc;
     --card: #ffffff;
-    --soft: #e8eef6;
+    --soft: #f1f5f9;
     --text: #0f172a;
     --muted: #64748b;
     --border: #e2e8f0;
     --primary: #4f46e5;
+    --primary-hover: #4338ca;
     --primary-soft: #e0e7ff;
     --success: #059669;
     --success-soft: #d1fae5;
     --warning: #d97706;
     --warning-soft: #fef3c7;
     --danger: #e11d48;
+    --danger-soft: #ffe4e6;
     --purple: #7c3aed;
-    --shadow: 0 2px 12px -2px rgba(15,23,42,.07);
-    --shadow-lg: 0 12px 32px -8px rgba(15,23,42,.12);
-    --radius: 16px;
-    --radius-sm: 12px;
+    --sidebar-width: 260px;
+    --sidebar-collapsed: 72px;
+    --header-height: 60px;
+    --shadow: 0 1px 3px rgba(15,23,42,.06), 0 1px 2px rgba(15,23,42,.04);
+    --shadow-md: 0 4px 12px -2px rgba(15,23,42,.08);
+    --shadow-lg: 0 12px 28px -6px rgba(15,23,42,.12);
+    --radius: 14px;
+    --radius-sm: 10px;
+    --radius-xs: 8px;
 }
 
 html.dark, body.dark {
-    --bg: #070b14;
-    --card: #0f172a;
-    --soft: #1a2438;
+    --bg: #0a0f1a;
+    --card: #111827;
+    --soft: #1a2332;
     --text: #f1f5f9;
     --muted: #94a3b8;
-    --border: #1e2a3f;
+    --border: #1e293b;
     --primary: #818cf8;
+    --primary-hover: #a5b4fc;
     --primary-soft: #1e1b4b;
     --success: #34d399;
     --success-soft: #064e3b;
     --warning: #fbbf24;
     --warning-soft: #422006;
     --danger: #fb7185;
+    --danger-soft: #4c0519;
     --purple: #a78bfa;
-    --shadow: 0 2px 12px -2px rgba(0,0,0,.35);
-    --shadow-lg: 0 14px 36px -8px rgba(0,0,0,.5);
+    --shadow: 0 1px 3px rgba(0,0,0,.3);
+    --shadow-md: 0 4px 14px -2px rgba(0,0,0,.4);
+    --shadow-lg: 0 14px 32px -6px rgba(0,0,0,.5);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1833,11 +1843,281 @@ footer {
   background: var(--card);
 }
 
+/* ========== PREMIUM SIDEBAR LAYOUT ========== */
+body {
+  font-family: "Inter", "Plus Jakarta Sans", "Hind Siliguri", system-ui, -apple-system, sans-serif;
+}
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-width);
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  transition: width .22s ease, transform .22s ease;
+  box-shadow: var(--shadow);
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.sidebar-brand .brand-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  font-size: 18px;
+  box-shadow: 0 4px 14px rgba(79,70,229,.35);
+  flex-shrink: 0;
+}
+
+.sidebar-brand h1 {
+  font-size: 15.5px;
+  font-weight: 750;
+  letter-spacing: -.02em;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding: 12px 12px 6px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s ease;
+  border: 0;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.nav-item:hover {
+  background: var(--soft);
+  color: var(--text);
+}
+
+.nav-item.active {
+  background: linear-gradient(135deg, #4f46e5, #4338ca);
+  color: #fff;
+  box-shadow: 0 3px 12px rgba(79,70,229,.28);
+}
+
+.nav-item .nav-icon {
+  width: 22px;
+  text-align: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.sidebar-footer {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.main-area {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  transition: margin-left .22s ease;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border-bottom: 1px solid var(--border);
+  height: var(--header-height);
+}
+
+.topbar-inner {
+  max-width: 1200px;
+  width: 100%;
+  margin: auto;
+  padding: 0 20px;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar .brand { display: none; }
+
+.mobile-menu-btn {
+  display: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--soft);
+  border: 1px solid var(--border);
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--text);
+}
+
+.container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px 20px 48px;
+  flex: 1;
+}
+
+/* Hide old horizontal tabs on desktop when sidebar is present */
+.app-shell .tabs { display: none; }
+
+/* Mobile bottom nav + overlay sidebar */
+@media (max-width: 900px) {
+  .sidebar {
+    transform: translateX(-100%);
+    width: min(280px, 85vw);
+    box-shadow: var(--shadow-lg);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .main-area { margin-left: 0; }
+  .topbar .brand { display: flex; }
+  .mobile-menu-btn { display: grid; }
+  .app-shell .tabs {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 150;
+    margin: 0;
+    border-radius: 0;
+    border: 0;
+    border-top: 1px solid var(--border);
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+    background: var(--card);
+    box-shadow: 0 -4px 20px rgba(0,0,0,.08);
+    overflow-x: auto;
+    gap: 2px;
+  }
+  .app-shell .tabs .tab {
+    flex: 1;
+    min-width: 64px;
+    padding: 8px 6px;
+    font-size: 10.5px;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .container { padding: 14px 12px 90px; }
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(2,6,23,.55);
+    z-index: 190;
+    backdrop-filter: blur(4px);
+  }
+  .sidebar-overlay.show { display: block; }
+}
+
+/* Premium card polish */
+.stat, .card {
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.stat:hover, .quick .card:hover, .subject:hover, .exam:hover, .queue:hover, .badge:hover {
+  box-shadow: var(--shadow-md);
+}
+.btn.primary {
+  background: linear-gradient(135deg, #4f46e5, #4338ca);
+}
+.btn.primary:hover { filter: brightness(1.07); }
+
 </style>
 </head>
 <body>
+<div class="app-shell">
+<aside class="sidebar" id="appSidebar">
+  <div class="sidebar-brand" onclick="switchTab('syllabus')">
+    <div class="brand-icon">📚</div>
+    <h1>Syllabus Tracker</h1>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Study</div>
+    <button class="nav-item active" data-tab="syllabus" onclick="switchTab('syllabus')"><span class="nav-icon">📚</span><span>Syllabus</span></button>
+    <button class="nav-item" data-tab="todo" onclick="switchTab('todo')"><span class="nav-icon">✅</span><span>To-Do</span></button>
+    <button class="nav-item" data-tab="exams" onclick="switchTab('exams')"><span class="nav-icon">🎯</span><span>Exam Planner</span></button>
+    <button class="nav-item" data-tab="notes" onclick="switchTab('notes')"><span class="nav-icon">📝</span><span>Notes</span></button>
+    <button class="nav-item" data-tab="revision" onclick="switchTab('revision')"><span class="nav-icon">🔄</span><span>Revision</span></button>
+    <div class="nav-section-label">Analytics</div>
+    <button class="nav-item" data-tab="history" onclick="switchTab('history')"><span class="nav-icon">📊</span><span>History</span></button>
+    <button class="nav-item" data-tab="insights" onclick="switchTab('insights')"><span class="nav-icon">💡</span><span>Insights</span></button>
+    <button class="nav-item" data-tab="reports" onclick="switchTab('reports')"><span class="nav-icon">📈</span><span>Reports</span></button>
+    <div class="nav-section-label">Social</div>
+    <button class="nav-item" data-tab="community" onclick="switchTab('community')"><span class="nav-icon">👥</span><span>Community</span></button>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="btn danger" style="width:100%" onclick="openPomodoro()">🍅 Pomodoro</button>
+    <button id="themeBtnSidebar" class="btn" style="width:100%" onclick="toggleTheme()">🌙 Dark Mode</button>
+  </div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="main-area">
 <header class="topbar"><div class="topbar-inner">
-  <div class="brand" onclick="switchTab('syllabus')"><div class="brand-icon">📚</div><h1>Syllabus Tracker</h1></div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <button class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+    <div class="brand" onclick="switchTab('syllabus')"><div class="brand-icon">📚</div><h1>Syllabus Tracker</h1></div>
+  </div>
   <div class="header-actions">
     <button id="pomoHeaderBtn" class="btn danger" onclick="openPomodoro()">🍅 Pomodoro</button>
     <button id="themeBtn" class="btn" onclick="toggleTheme()">🌙 Dark</button>
@@ -2080,6 +2360,8 @@ footer {
   </div>
 </section>
 </main>
+</div><!-- /.main-area -->
+</div><!-- /.app-shell -->
 
 <div id="communityLeaveConfirmModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="communityLeaveConfirmTitle">
   <div class="card modalbox" style="text-align:center;max-width:420px">
@@ -2382,7 +2664,11 @@ function toast(t){
 function applyTheme(d){
     document.documentElement.classList.toggle("dark",d);
     document.body.classList.toggle("dark",d);
-    document.getElementById("themeBtn").textContent=d?"☀️ Light":"🌙 Dark";
+    const label=d?"☀️ Light":"🌙 Dark";
+    const btn=document.getElementById("themeBtn");
+    if(btn)btn.textContent=label;
+    const btnSide=document.getElementById("themeBtnSidebar");
+    if(btnSide)btnSide.textContent=d?"☀️ Light Mode":"🌙 Dark Mode";
     localStorage.setItem(KEY.theme,d?"dark":"light");
     if(currentTab==="history")drawGraph();
 }
@@ -2394,6 +2680,7 @@ function toggleTheme(){
 function switchTab(t){
     currentTab=t;
     document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===t));
+    document.querySelectorAll(".nav-item").forEach(x=>x.classList.toggle("active",x.dataset.tab===t));
     document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===t+"Panel"));
     if(t==="exams")renderExams();
     if(t==="history")renderHistory();
@@ -2414,6 +2701,22 @@ function switchTab(t){
         }
       }catch(_e){}
     }
+    // Close mobile sidebar after navigation
+    try{closeSidebar();}catch(_e){}
+}
+
+function toggleSidebar(){
+  const sb=document.getElementById("appSidebar");
+  const ov=document.getElementById("sidebarOverlay");
+  if(!sb)return;
+  sb.classList.toggle("open");
+  if(ov)ov.classList.toggle("show",sb.classList.contains("open"));
+}
+function closeSidebar(){
+  const sb=document.getElementById("appSidebar");
+  const ov=document.getElementById("sidebarOverlay");
+  if(sb)sb.classList.remove("open");
+  if(ov)ov.classList.remove("show");
 }
 
 function updateDashboard(){
