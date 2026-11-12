@@ -2287,6 +2287,33 @@ footer {
     </div>
   </div>
 </div>    
+<!-- Note Delete Confirm (in-app, no browser prompt) -->
+<div id="noteDeleteModal" class="modal">
+  <div class="card modalbox" style="text-align:center;max-width:400px">
+    <div style="font-size:33px">⚠️</div>
+    <h3 style="margin-top:6px">Note মুছে ফেলবে?</h3>
+    <p id="noteDeleteMsg" class="sub" style="margin:8px 0 14px">এই note আর ফেরত আনা যাবে না।</p>
+    <div class="modal-actions" style="justify-content:center">
+      <button class="btn" onclick="closeNoteDeleteModal()">Cancel</button>
+      <button class="btn danger" onclick="confirmNoteDelete()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Revision Interval (in-app, no browser prompt / no site name) -->
+<div id="revisionIntervalModal" class="modal">
+  <div class="card modalbox" style="text-align:center;max-width:400px">
+    <div style="font-size:33px">⚙️</div>
+    <h3 style="margin-top:6px">Revision Interval</h3>
+    <p class="sub" style="margin:8px 0 12px">কত দিন পর পর revision মনে করাবে (1–90)</p>
+    <input id="revisionIntervalInput" class="input" type="number" min="1" max="90" step="1" style="max-width:140px;margin:0 auto;display:block;text-align:center">
+    <div class="modal-actions" style="justify-content:center;margin-top:14px">
+      <button class="btn" onclick="closeRevisionIntervalModal()">Cancel</button>
+      <button class="btn primary" onclick="confirmRevisionInterval()">Save</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <footer>
