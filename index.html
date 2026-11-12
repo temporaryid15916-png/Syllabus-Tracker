@@ -4087,7 +4087,7 @@ document.addEventListener("keydown", (e) => {
     if(e.key !== "Escape") return;
     const leave = document.getElementById("communityLeaveConfirmModal");
     if(leave && leave.classList.contains("show")){ closeCommunityLeaveConfirm(); return; }
-    const modals = ["clearHistoryModal","resetDailyGoalModal","alertEnabledModal","deleteExamModal","resetModal","examModal","todoModal","todoMultiModal","todoChapterSyncModal","todoDeleteModal","todoRescheduleModal"];
+    const modals = ["clearHistoryModal","resetDailyGoalModal","alertEnabledModal","deleteExamModal","resetModal","examModal","todoModal","todoMultiModal","todoChapterSyncModal","todoDeleteModal","todoRescheduleModal","noteDeleteModal","revisionIntervalModal","noteModal","revisionModal"];
     for(const id of modals){
         const m = document.getElementById(id);
         if(m && m.classList.contains("show")){
