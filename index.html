@@ -940,6 +940,7 @@ footer {
     position: fixed;
     right: 16px;
     bottom: 16px;
+    left: auto;
     z-index: 850;
     display: none;
     align-items: center;
@@ -952,9 +953,17 @@ footer {
     color: var(--text);
     font-size: 12.5px;
     font-weight: 700;
-    cursor: pointer;
+    cursor: grab;
     user-select: none;
+    touch-action: none;
     backdrop-filter: blur(16px);
+}
+.pomo-floating:active { cursor: grabbing; }
+.pomo-floating.dragging {
+    cursor: grabbing;
+    transition: none !important;
+    animation: none !important;
+    opacity: .95;
 }
 
 .pomo-floating.show { display: flex; }
