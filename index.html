@@ -4578,6 +4578,7 @@ const noteKey = (b,c) => b + "__" + c;
 let revFilter = "upcoming";
 let reportPeriod = "weekly";
 let editingNoteId = null;
+let pendingNoteDeleteId = null;
 
 function saveNotes(){ save(KEY.notes, notes); }
 function saveRevisions(){ save(KEY.revisions, revisions); }
@@ -4587,12 +4588,15 @@ function renderNotes(){
   const box = document.getElementById("notesList");
   if(!box) return;
   const sel = document.getElementById("notesBookFilter");
-  if(sel && !sel.options.length){
+  if(sel){
+    const prev = sel.value || "all";
     sel.innerHTML = `<option value="all">📚 All Subjects</option>` + Object.keys(BOOKS).map(b=>`<option value="${esc(b)}">${esc(b)}</option>`).join("");
+    if([...sel.options].some(o=>o.value===prev)) sel.value = prev;
+    else sel.value = "all";
   }
   const filter = sel ? sel.value : "all";
-  const entries = Object.entries(notes).filter(([k,n])=>{
-    if(!n || !n.text) return false;
+  const entries = Object.entries(notes || {}).filter(([k,n])=>{
+    if(!n || (!n.text && !n.title)) return false;
     if(filter==="all") return true;
     return n.book === filter;
   }).sort((a,b)=>(b[1].updatedAt||"").localeCompare(a[1].updatedAt||""));
@@ -4602,13 +4606,15 @@ function renderNotes(){
   }
   box.innerHTML = entries.map(([id,n])=>{
     const chName = (n.book && n.chapter && BOOKS[n.book]?.[n.chapter-1]) ? BOOKS[n.book][n.chapter-1] : "";
-    return `<div class="listrow" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px 0">
+    return `<div class="listrow" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px 0" data-note-id="${esc(id)}">
       <div class="row"><strong>${esc(n.title||"Untitled")}</strong>
-        <div style="display:flex;gap:5px"><button class="mini" onclick="editNote('${esc(id)}')">Edit</button>
-        <button class="mini" style="color:var(--danger)" onclick="deleteNote('${esc(id)}')">Delete</button></div>
+        <div style="display:flex;gap:5px">
+          <button class="mini" data-note-edit="${esc(id)}">Edit</button>
+          <button class="mini" style="color:var(--danger)" data-note-delete="${esc(id)}">Delete</button>
+        </div>
       </div>
       <div class="sub">${esc(n.book||"")} ${chName? " · Ch "+n.chapter+": "+esc(chName):""}</div>
-      <div style="font-size:12.5px;white-space:pre-wrap;margin-top:4px">${esc(n.text)}</div>
+      <div style="font-size:12.5px;white-space:pre-wrap;margin-top:4px">${esc(n.text||"")}</div>
     </div>`;
   }).join("");
 }
@@ -4659,9 +4665,16 @@ function saveNoteFromModal(){
   const text = document.getElementById("noteInputText").value.trim();
   const book = document.getElementById("noteInputBook").value || "";
   const chapter = Number(document.getElementById("noteInputChapter").value) || null;
-  if(!text) return toast("Note লিখো");
+  if(!text && !title) return toast("Note লিখো বা title দাও");
   const id = editingNoteId || (Date.now().toString(36) + Math.random().toString(36).slice(2,6));
-  notes[id] = { title: title || "Note", text, book: book||null, chapter, updatedAt: new Date().toISOString(), createdAt: notes[id]?.createdAt || new Date().toISOString() };
+  notes[id] = {
+    title: title || "Note",
+    text: text || "",
+    book: book||null,
+    chapter: chapter || null,
+    updatedAt: new Date().toISOString(),
+    createdAt: (notes[id] && notes[id].createdAt) || new Date().toISOString()
+  };
   saveNotes();
   closeNoteModal();
   renderNotes();
@@ -4669,11 +4682,26 @@ function saveNoteFromModal(){
 }
 function editNote(id){ openNoteModal(id); }
 function deleteNote(id){
-  if(!notes[id]) return;
-  delete notes[id];
-  saveNotes();
-  renderNotes();
-  toast("🗑️ Note deleted");
+  if(!id || !notes[id]) return;
+  pendingNoteDeleteId = id;
+  const title = notes[id].title || "Untitled";
+  const msg = document.getElementById("noteDeleteMsg");
+  if(msg) msg.textContent = `"${title}" মুছে ফেলবে? আর ফেরত আনা যাবে না।`;
+  document.getElementById("noteDeleteModal")?.classList.add("show");
+}
+function closeNoteDeleteModal(){
+  document.getElementById("noteDeleteModal")?.classList.remove("show");
+  pendingNoteDeleteId = null;
+}
+function confirmNoteDelete(){
+  const id = pendingNoteDeleteId;
+  if(id && notes[id]){
+    delete notes[id];
+    saveNotes();
+    renderNotes();
+    toast("🗑️ Note deleted");
+  }
+  closeNoteDeleteModal();
 }
 
 function setRevFilter(f){
@@ -4685,26 +4713,27 @@ function renderRevision(){
   const box = document.getElementById("revisionList");
   if(!box) return;
   const todayK = today();
-  const items = Object.entries(revisions).map(([k,r])=>({key:k, ...r})).filter(r=>r && r.book);
+  const items = Object.entries(revisions || {}).map(([k,r])=>({key:k, ...r})).filter(r=>r && r.book);
   let list = items;
   if(revFilter==="upcoming") list = items.filter(r=>r.status!=="done" && r.dueDate >= todayK);
   else if(revFilter==="overdue") list = items.filter(r=>r.status!=="done" && r.dueDate < todayK);
   else if(revFilter==="done") list = items.filter(r=>r.status==="done");
   list.sort((a,b)=>(a.dueDate||"").localeCompare(b.dueDate||""));
   if(!list.length){
-    box.innerHTML = `<div class="community-empty">No revisions in this view.</div>`;
+    box.innerHTML = `<div class="community-empty">No revisions in this view. ＋ Mark for Revision চাপো।</div>`;
     return;
   }
   box.innerHTML = list.map(r=>{
     const chName = BOOKS[r.book]?.[r.chapter-1] || "";
     const overdue = r.status!=="done" && r.dueDate < todayK;
-    return `<div class="listrow" style="align-items:flex-start">
-      <div><strong>${esc(chName)}</strong><div class="sub">${esc(r.book)} · Due ${esc(r.dueDate)}${overdue?' · <span style="color:var(--danger)">Overdue</span>':''}</div></div>
+    const kAttr = esc(r.key);
+    return `<div class="listrow" style="align-items:flex-start" data-rev-key="${kAttr}">
+      <div><strong>${esc(chName)}</strong><div class="sub">${esc(r.book)} · Due ${esc(r.dueDate||"")}${overdue?' · <span style="color:var(--danger)">Overdue</span>':''}</div></div>
       <div style="display:flex;gap:5px;flex-wrap:wrap">
-        ${r.status!=="done"?`<button class="mini" onclick="markRevisionDone('${esc(r.key)}')">✓ Done</button>`:""}
-        <button class="mini" onclick="rescheduleRevision('${esc(r.key)}')">Reschedule</button>
-        <button class="mini" style="color:var(--danger)" onclick="removeRevision('${esc(r.key)}')">Remove</button>
-        <button class="mini" onclick='openPomodoroFor(${JSON.stringify(r.book)},${r.chapter})'>🍅 Study</button>
+        ${r.status!=="done"?`<button class="mini" data-rev-done="${kAttr}">✓ Done</button>`:""}
+        <button class="mini" data-rev-reschedule="${kAttr}">Reschedule</button>
+        <button class="mini" style="color:var(--danger)" data-rev-remove="${kAttr}">Remove</button>
+        <button class="mini" onclick='openPomodoroFor(${JSON.stringify(r.book)},${Number(r.chapter)||0})'>🍅 Study</button>
       </div>
     </div>`;
   }).join("");
@@ -4739,7 +4768,7 @@ function revFillChapters(){
   const book = document.getElementById("revInputBook")?.value;
   const s = document.getElementById("revInputChapter");
   if(!s || !book) return;
-  s.innerHTML = BOOKS[book].map((n,i)=>`<option value="${i+1}">${i+1}. ${esc(n)}</option>`).join("");
+  s.innerHTML = (BOOKS[book]||[]).map((n,i)=>`<option value="${i+1}">${i+1}. ${esc(n)}</option>`).join("");
 }
 function saveRevisionFromModal(){
   const book = document.getElementById("revInputBook").value;
@@ -4756,7 +4785,7 @@ function saveRevisionFromModal(){
 function markRevisionDone(k){
   if(revisions[k]){ revisions[k].status = "done"; revisions[k].doneAt = new Date().toISOString(); saveRevisions(); renderRevision(); toast("✓ Revision done"); }
 }
-function removeRevision(k){ delete revisions[k]; saveRevisions(); renderRevision(); toast("Removed"); }
+function removeRevision(k){ if(revisions[k]){ delete revisions[k]; saveRevisions(); renderRevision(); toast("Removed"); } }
 function rescheduleRevision(k){
   if(!revisions[k]) return;
   const d = new Date(); d.setDate(d.getDate() + revisionIntervalDays);
@@ -4767,12 +4796,19 @@ function rescheduleRevision(k){
   toast("📅 Rescheduled");
 }
 function openRevisionIntervalModal(){
-  const v = prompt("Revision interval (days)", String(revisionIntervalDays));
-  if(v==null) return;
-  const n = Number(v);
+  const inp = document.getElementById("revisionIntervalInput");
+  if(inp) inp.value = String(revisionIntervalDays || 7);
+  document.getElementById("revisionIntervalModal")?.classList.add("show");
+}
+function closeRevisionIntervalModal(){
+  document.getElementById("revisionIntervalModal")?.classList.remove("show");
+}
+function confirmRevisionInterval(){
+  const n = Number(document.getElementById("revisionIntervalInput")?.value);
   if(!n || n<1 || n>90) return toast("1–90 days দাও");
   revisionIntervalDays = n;
   localStorage.setItem(KEY.revisionInterval, String(n));
+  closeRevisionIntervalModal();
   toast("Interval set to "+n+" days");
 }
 
@@ -4782,12 +4818,11 @@ function renderHeatmap(){
   const year = new Date().getFullYear();
   const start = new Date(year, 0, 1);
   const end = new Date(year, 11, 31);
-  // Build weeks
   let html = `<div style="display:flex;gap:3px;align-items:flex-start;font-size:10px">`;
   let cur = new Date(start);
-  // Align to Sunday
   while(cur.getDay() !== 0) cur.setDate(cur.getDate()-1);
-  const maxSec = Math.max(1, ...Object.values(history).map(h=>Number(h?.totalSeconds||0)));
+  const vals = Object.values(history || {}).map(h=>Number(h?.totalSeconds||0));
+  const maxSec = Math.max(1, ...(vals.length ? vals : [0]));
   while(cur <= end || cur.getDay() !== 0){
     if(cur.getDay()===0) html += `<div style="display:flex;flex-direction:column;gap:3px">`;
     const key = formatDateKey(cur);
@@ -4795,7 +4830,7 @@ function renderHeatmap(){
     const level = sec<=0 ? 0 : sec < maxSec*0.25 ? 1 : sec < maxSec*0.5 ? 2 : sec < maxSec*0.75 ? 3 : 4;
     const colors = ["var(--soft)","#c7d2fe","#818cf8","#4f46e5","#312e81"];
     const inYear = cur.getFullYear()===year;
-    html += `<div title="${key}: ${fmt(sec)}" data-heat="${key}" onclick="showHeatDetail('${key}')" style="width:12px;height:12px;border-radius:2px;background:${inYear?colors[level]:'transparent'};cursor:pointer"></div>`;
+    html += `<div title="${key}: ${fmt(sec)}" data-heat="${key}" style="width:12px;height:12px;border-radius:2px;background:${inYear?colors[level]:'transparent'};cursor:pointer"></div>`;
     if(cur.getDay()===6) html += `</div>`;
     cur.setDate(cur.getDate()+1);
     if(cur > end && cur.getDay()===0) break;
@@ -4835,18 +4870,16 @@ function renderReports(){
   const fromKey = formatDateKey(from);
   let totalSec = 0, daysActive = 0, sessions = 0;
   const byBook = {};
-  Object.entries(history).forEach(([k,h])=>{
+  Object.entries(history || {}).forEach(([k,h])=>{
     if(k >= fromKey && k <= today()){
       const s = Number(h.totalSeconds||0);
       if(s>0){ totalSec += s; daysActive++; sessions += Number(h.sessions||0); }
       Object.entries(h.byBook||{}).forEach(([b,bs])=>{ byBook[b] = (byBook[b]||0) + Number(bs||0); });
     }
   });
-  // Syllabus progress snapshot
   let done=0, total=0;
   Object.entries(BOOKS).forEach(([b,arr])=>{ total+=arr.length; arr.forEach((_,i)=>{ if(progress[chKey(b,i+1)]==="complete") done++; }); });
-  // Tasks completed in period
-  const tasksDone = todos.filter(t=>t.status==="complete" && t.completedAt && formatDateKey(new Date(t.completedAt)) >= fromKey).length;
+  const tasksDone = (todos||[]).filter(t=>t.status==="complete" && t.completedAt && formatDateKey(new Date(t.completedAt)) >= fromKey).length;
 
   sumBox.innerHTML = `
     <div class="stat"><div class="label">Study Time</div><div class="value">${fmt(totalSec)}</div><div class="sub">${reportPeriod}</div></div>
@@ -4859,17 +4892,16 @@ function renderReports(){
     subBox.innerHTML = sorted.length ? sorted.map(([b,s])=>`<div class="listrow"><span>${esc(b)}</span><strong>${fmt(s)}</strong></div>`).join("") : `<div class="community-empty">No subject study time in this period.</div>`;
   }
 
-  // Smart Catch-up: overdue / pending past tasks
   if(catchBox){
-    const overdue = todos.filter(t=>t.status!=="complete" && t.date && t.date < today()).sort((a,b)=>a.date.localeCompare(b.date));
+    const overdue = (todos||[]).filter(t=>t.status!=="complete" && t.date && t.date < today()).sort((a,b)=>a.date.localeCompare(b.date));
     if(!overdue.length){
       catchBox.innerHTML = `<div class="community-empty">No overdue tasks — great job!</div>`;
     } else {
       catchBox.innerHTML = overdue.slice(0,12).map(t=>`<div class="listrow">
         <div><strong>${esc(t.title)}</strong><div class="sub">Due ${esc(t.date)} · ${esc(t.priority||"medium")}</div></div>
         <div style="display:flex;gap:5px">
-          <button class="mini" onclick="rescheduleTodo('${esc(t.id)}')">Reschedule</button>
-          <button class="mini" onclick="toggleTodoComplete('${esc(t.id)}')">✓ Done</button>
+          <button class="mini" data-todo-reschedule="${esc(t.id)}">Reschedule</button>
+          <button class="mini" data-todo-done="${esc(t.id)}">✓ Done</button>
         </div>
       </div>`).join("");
     }
@@ -4889,9 +4921,8 @@ function saveGoalsFromInsights(){
 function renderSubjectPerformance(){
   const box = document.getElementById("subjectPerfList");
   if(!box) return;
-  // Aggregate study time by book from history
   const timeByBook = {};
-  Object.values(history).forEach(h=>{
+  Object.values(history || {}).forEach(h=>{
     Object.entries(h.byBook||{}).forEach(([b,s])=>{ timeByBook[b] = (timeByBook[b]||0) + Number(s||0); });
   });
   const rows = Object.entries(BOOKS).map(([b,arr])=>{
@@ -4916,13 +4947,162 @@ function checkAchievements(){
   if(total && done/total >= 0.5) achievements.half = true;
   const todaySec = Number(history[today()]?.totalSeconds||0);
   if(todaySec >= 3600) achievements.hour = true;
-  // streak
   let cur=new Date(), streak=0;
   if(todaySec<=0) cur.setDate(cur.getDate()-1);
   while(Number(history[formatDateKey(cur)]?.totalSeconds||0)>0){ streak++; cur.setDate(cur.getDate()-1); if(streak>100) break; }
   if(streak>=7) achievements.streak7 = true;
   saveAchievements();
 }
+
+/* ---- Floating Pomodoro: drag only left / right edges ---- */
+(function initPomoFloatingDrag(){
+  const EDGE = 16;
+  let drag = null;
+
+  function el(){ return document.getElementById("pomoFloatingTimer"); }
+
+  function loadPos(){
+    try{
+      const raw = localStorage.getItem("syllabusPomoFloatPos");
+      if(!raw) return null;
+      const p = JSON.parse(raw);
+      if(p && (p.side==="left"||p.side==="right") && Number.isFinite(Number(p.bottom))) return { side:p.side, bottom:Number(p.bottom) };
+    }catch(_e){}
+    return null;
+  }
+  function savePos(side, bottom){
+    try{ localStorage.setItem("syllabusPomoFloatPos", JSON.stringify({ side, bottom })); }catch(_e){}
+  }
+  function applyPos(side, bottom){
+    const f = el(); if(!f) return;
+    const h = f.offsetHeight || 44;
+    const maxBottom = Math.max(EDGE, window.innerHeight - h - EDGE);
+    bottom = Math.min(maxBottom, Math.max(EDGE, bottom));
+    f.style.top = "auto";
+    f.style.bottom = bottom + "px";
+    if(side === "left"){
+      f.style.left = EDGE + "px";
+      f.style.right = "auto";
+    } else {
+      f.style.right = EDGE + "px";
+      f.style.left = "auto";
+    }
+    savePos(side, bottom);
+  }
+  function restore(){
+    const p = loadPos();
+    if(p) applyPos(p.side, p.bottom);
+  }
+  function sideFromX(clientX, width){
+    return clientX < width / 2 ? "left" : "right";
+  }
+
+  document.addEventListener("pointerdown", (e)=>{
+    const f = el();
+    if(!f || !f.classList.contains("show")) return;
+    if(e.target !== f && !f.contains(e.target)) return;
+    if(e.button != null && e.button !== 0) return;
+    const rect = f.getBoundingClientRect();
+    drag = {
+      id: e.pointerId,
+      startX: e.clientX,
+      startY: e.clientY,
+      origLeft: rect.left,
+      origTop: rect.top,
+      width: rect.width,
+      height: rect.height,
+      moved: false
+    };
+    try{ f.setPointerCapture(e.pointerId); }catch(_e){}
+    f.classList.add("dragging");
+    e.preventDefault();
+  }, { passive: false });
+
+  document.addEventListener("pointermove", (e)=>{
+    if(!drag || e.pointerId !== drag.id) return;
+    const f = el(); if(!f) return;
+    const dx = e.clientX - drag.startX;
+    const dy = e.clientY - drag.startY;
+    if(Math.abs(dx) > 4 || Math.abs(dy) > 4) drag.moved = true;
+    if(!drag.moved) return;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    let left = drag.origLeft + dx;
+    let top = drag.origTop + dy;
+    top = Math.min(h - drag.height - EDGE, Math.max(EDGE, top));
+    const side = sideFromX(left + drag.width / 2, w);
+    f.style.top = top + "px";
+    f.style.bottom = "auto";
+    if(side === "left"){
+      f.style.left = EDGE + "px";
+      f.style.right = "auto";
+    } else {
+      f.style.right = EDGE + "px";
+      f.style.left = "auto";
+    }
+    e.preventDefault();
+  }, { passive: false });
+
+  function endDrag(e){
+    if(!drag || (e && e.pointerId !== drag.id)) return;
+    const f = el();
+    const wasMoved = drag.moved;
+    if(f){
+      f.classList.remove("dragging");
+      try{ if(e) f.releasePointerCapture(drag.id); }catch(_e){}
+      if(wasMoved){
+        const rect = f.getBoundingClientRect();
+        const side = sideFromX(rect.left + rect.width / 2, window.innerWidth);
+        const bottom = window.innerHeight - rect.bottom;
+        applyPos(side, bottom);
+      }
+    }
+    const open = !wasMoved;
+    drag = null;
+    if(open) openPomodoro();
+  }
+  document.addEventListener("pointerup", endDrag);
+  document.addEventListener("pointercancel", endDrag);
+
+  window.addEventListener("resize", ()=>{
+    const p = loadPos();
+    if(p) applyPos(p.side, p.bottom);
+  });
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", restore);
+  } else restore();
+  const obs = new MutationObserver(()=>{
+    const f = el();
+    if(f && f.classList.contains("show")) restore();
+  });
+  document.addEventListener("DOMContentLoaded", ()=>{
+    const f = el();
+    if(f) obs.observe(f, { attributes:true, attributeFilter:["class"] });
+  });
+})();
+
+/* Delegated clicks for notes / revision / reports */
+document.addEventListener("click", (ev)=>{
+  const t = ev.target.closest("[data-note-edit],[data-note-delete],[data-rev-done],[data-rev-reschedule],[data-rev-remove],[data-heat],[data-todo-reschedule],[data-todo-done]");
+  if(!t) return;
+  if(t.hasAttribute("data-note-edit")){ editNote(t.getAttribute("data-note-edit")); return; }
+  if(t.hasAttribute("data-note-delete")){ deleteNote(t.getAttribute("data-note-delete")); return; }
+  if(t.hasAttribute("data-rev-done")){ markRevisionDone(t.getAttribute("data-rev-done")); return; }
+  if(t.hasAttribute("data-rev-reschedule")){ rescheduleRevision(t.getAttribute("data-rev-reschedule")); return; }
+  if(t.hasAttribute("data-rev-remove")){ removeRevision(t.getAttribute("data-rev-remove")); return; }
+  if(t.hasAttribute("data-heat")){ showHeatDetail(t.getAttribute("data-heat")); return; }
+  if(t.hasAttribute("data-todo-reschedule")){
+    const id = t.getAttribute("data-todo-reschedule");
+    if(typeof rescheduleTodo === "function") rescheduleTodo(id);
+    return;
+  }
+  if(t.hasAttribute("data-todo-done")){
+    const id = t.getAttribute("data-todo-done");
+    if(typeof toggleTodoComplete === "function") toggleTodoComplete(id);
+    return;
+  }
+});
 
 function init(){
     const sel=document.getElementById("bookSelectFilter");
