@@ -788,51 +788,325 @@ html.dark .subject-icon {
     margin-top: 16px;
 }
 
-/* ========== POMODORO ========== */
+/* ========== POMODORO (premium) ========== */
 .pomo {
     position: fixed;
     inset: 0;
     z-index: 900;
     display: none;
+    align-items: stretch;
+    justify-content: center;
+    padding: 0;
+    background:
+      radial-gradient(ellipse 90% 60% at 50% -10%, rgba(124,58,237,.35), transparent 55%),
+      radial-gradient(ellipse 70% 50% at 80% 80%, rgba(79,70,229,.2), transparent 50%),
+      linear-gradient(160deg, #0b1024 0%, #15122e 45%, #0a0b14 100%);
+    backdrop-filter: blur(18px);
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.pomo.show { display: flex; }
+.pomo.pomo-fullscreen { padding: 0; }
+.pomo-shell {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 16px 14px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 100%;
+    box-sizing: border-box;
+}
+.pomo-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.pomo-title-block h2 {
+    font-size: clamp(20px, 4vw, 28px);
+    font-weight: 800;
+    color: #f8fafc;
+    letter-spacing: -.03em;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.pomo-title-block p {
+    color: #a5b4fc;
+    font-size: 12.5px;
+    margin-top: 4px;
+}
+.pomo-top-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.pomo-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(165,180,252,.25);
+    color: #e0e7ff;
+    font-size: 11.5px;
+    font-weight: 700;
+}
+.pomo-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.2fr) minmax(0, 0.95fr);
+    gap: 14px;
+    align-items: stretch;
+}
+.pomo-card {
+    background: rgba(18, 20, 40, .78);
+    border: 1px solid rgba(129,140,248,.22);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 12px 40px rgba(0,0,0,.35);
+    color: #e2e8f0;
+    min-width: 0;
+}
+.pomo-card h3 {
+    font-size: 13.5px;
+    font-weight: 750;
+    margin: 0 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #f1f5f9;
+}
+.pomo-center {
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 14px;
-    background: rgba(2,6,23,.9);
-    backdrop-filter: blur(16px);
-}
-
-.pomo.show { display: flex; }
-
-.pomo-box {
-    width: 100%;
-    max-width: 480px;
-    max-height: 92vh;
-    max-height: 92dvh;
-    overflow: auto;
     text-align: center;
-    padding: 24px;
+    gap: 10px;
+    padding: 20px 14px 18px;
+}
+.pomo-ring {
+    --pomo-pct: 0;
+    width: min(240px, 58vw);
+    height: min(240px, 58vw);
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(15,18,35,.95) 58%, transparent 59%),
+      conic-gradient(#818cf8 calc(var(--pomo-pct) * 1%), rgba(99,102,241,.15) 0);
+    display: grid;
+    place-items: center;
     position: relative;
-    border-radius: 20px;
+    box-shadow: 0 0 40px rgba(99,102,241,.35), inset 0 0 24px rgba(99,102,241,.12);
 }
-
+.pomo-ring::after {
+    content: "";
+    position: absolute;
+    inset: 10px;
+    border-radius: 50%;
+    border: 1px solid rgba(165,180,252,.15);
+    pointer-events: none;
+}
+.pomo-ring-inner {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 12px;
+}
 .pomo-clock {
-    font-size: clamp(48px, 13vw, 80px);
+    font-size: clamp(36px, 9vw, 52px);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-weight: 750;
+    font-weight: 800;
     letter-spacing: -.04em;
-    margin: 12px 0;
-    background: linear-gradient(135deg, var(--text) 30%, var(--muted));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    margin: 4px 0 2px;
+    color: #fff;
+    background: none;
+    -webkit-text-fill-color: #fff;
 }
-
+.pomo-mode-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: #a5b4fc;
+}
+.pomo-encourage {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+.pomo-topic {
+    font-size: 13px;
+    font-weight: 700;
+    color: #c7d2fe;
+    min-height: 18px;
+}
 .pomo-controls {
     display: flex;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
     flex-wrap: wrap;
-    margin-top: 14px;
+    margin-top: 6px;
+}
+.pomo-controls .btn {
+    min-width: 44px;
+}
+.pomo-start-main {
+    min-width: 120px !important;
+    padding: 12px 22px !important;
+    border-radius: 999px !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+}
+.pomo-setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(148,163,184,.12);
+    font-size: 12.5px;
+}
+.pomo-setting-row:last-child { border-bottom: 0; }
+.pomo-setting-row label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #cbd5e1;
+    font-weight: 600;
+}
+.pomo-setting-row input.select,
+.pomo-setting-row select.select,
+.pomo-setting-row input.input {
+    width: 88px;
+    background: rgba(15,23,42,.55);
+    border-color: rgba(129,140,248,.25);
+    color: #e2e8f0;
+    padding: 6px 8px;
+    text-align: center;
+}
+.pomo-pickers {
+    display: grid;
+    gap: 8px;
+    margin-top: 4px;
+}
+.pomo-pickers .label { color: #94a3b8; }
+.pomo-pickers .select {
+    background: rgba(15,23,42,.55);
+    border-color: rgba(129,140,248,.25);
+    color: #e2e8f0;
+}
+.pomo-stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.pomo-stat-tile {
+    background: rgba(15,23,42,.5);
+    border: 1px solid rgba(129,140,248,.18);
+    border-radius: 14px;
+    padding: 12px;
+    text-align: left;
+}
+.pomo-stat-tile .k { font-size: 10.5px; color: #94a3b8; font-weight: 700; }
+.pomo-stat-tile .v { font-size: 18px; font-weight: 800; color: #f8fafc; margin-top: 4px; letter-spacing: -.02em; }
+.pomo-side-ring {
+    --side-pct: 0;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(18,20,40,.98) 56%, transparent 57%),
+      conic-gradient(#818cf8 calc(var(--side-pct) * 1%), rgba(99,102,241,.15) 0);
+    display: grid;
+    place-items: center;
+    flex: none;
+}
+.pomo-side-ring span { font-size: 12px; font-weight: 800; color: #e0e7ff; }
+.pomo-progress-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.pomo-week-mini {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    height: 64px;
+    margin-top: 8px;
+}
+.pomo-week-mini .b {
+    flex: 1;
+    min-width: 0;
+    border-radius: 5px 5px 2px 2px;
+    background: linear-gradient(180deg, #a5b4fc, #6366f1);
+    min-height: 4px;
+}
+.pomo-week-mini .lbl {
+    font-size: 9px;
+    color: #94a3b8;
+    text-align: center;
+    margin-top: 3px;
+}
+.pomo-timeline {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+.pomo-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(148,163,184,.25);
+    border: 2px solid transparent;
+}
+.pomo-dot.done { background: #34d399; }
+.pomo-dot.now { background: #818cf8; box-shadow: 0 0 0 3px rgba(129,140,248,.35); }
+.pomo-bottom {
+    display: grid;
+    grid-template-columns: 1.1fr 1.2fr 0.9fr;
+    gap: 12px;
+}
+.pomo-motivation {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(145deg, rgba(79,70,229,.35), rgba(18,20,40,.8));
+}
+.pomo-motivation .big {
+    font-size: 16px;
+    font-weight: 800;
+    color: #f8fafc;
+}
+.pomo-motivation .subm {
+    font-size: 12px;
+    color: #c7d2fe;
+    margin-top: 4px;
+}
+.pomo-box { display: none; } /* legacy class kept for safety */
+html:not(.dark) .pomo {
+  /* overlay stays dark-themed for focus; readable on light app theme */
+}
+
+@media (max-width: 960px) {
+  .pomo-grid { grid-template-columns: 1fr; }
+  .pomo-bottom { grid-template-columns: 1fr; }
+  .pomo-center { order: -1; }
+}
+@media (max-width: 560px) {
+  .pomo-shell { padding: 12px 10px 22px; }
+  .pomo-ring { width: min(200px, 70vw); height: min(200px, 70vw); }
+  .pomo-clock { font-size: 36px; }
+  .pomo-stat-grid { grid-template-columns: 1fr 1fr; }
+  .pomo-top-actions .pomo-chip { font-size: 11px; padding: 6px 10px; }
 }
 
 /* ========== HISTORY & INSIGHTS ========== */
@@ -2080,8 +2354,9 @@ html.dark .dash-achieve { background: linear-gradient(145deg, #052e24, var(--car
 <section id="dashHome" class="dash-home">
   <div class="dash-welcome">
     <div>
-      <h2 id="welcomeGreeting" class="dash-hello">Welcome back</h2>
+      <h2 id="welcomeGreeting" class="dash-hello" style="cursor:pointer" title="Tap to set your name" onclick="editUserName()">Welcome back</h2>
       <p id="welcomeHint" class="dash-motto">Keep going! Your hard work will pay off.</p>
+      <button type="button" class="mini" style="margin-top:6px" onclick="editUserName()">✏️ Set your name</button>
     </div>
     <div id="welcomeDate" class="dash-date-pill">—</div>
   </div>
@@ -2401,54 +2676,123 @@ html.dark .dash-achieve { background: linear-gradient(145deg, #052e24, var(--car
 
 <div id="pomoFloatingTimer" class="pomo-floating" role="button" aria-label="Open Pomodoro" title="Drag left/right · Tap to open"></div>
 
-<!-- Pomodoro Overlay -->
-<div id="pomodoroOverlay" class="pomo"><div class="card pomo-box">
-  <div class="row" style="align-items:center">
-    <b id="pomoSessionTag" style="font-size:12px;color:var(--primary)">🍅 Focus · Session 1</b>
-    <div style="display:flex;gap:6px;align-items:center">
-      <button id="pomoAlertBtn" class="btn" style="padding:4px 9px;font-size:11px;font-weight:800;border-color:var(--warning);color:var(--warning)" onclick="togglePomodoroAlert()">🔔 Enable Alert</button>
-      <button class="filter" onclick="closePomodoro()">✕ Close</button>
+<!-- Pomodoro Overlay (premium) — same IDs / logic as before -->
+<div id="pomodoroOverlay" class="pomo" role="dialog" aria-label="Pomodoro Timer">
+  <div class="pomo-shell">
+    <div class="pomo-top">
+      <div class="pomo-title-block">
+        <h2>⏱️ Pomodoro Timer</h2>
+        <p>একাগ্রতার সাথে পড়ুন, সফলতা অর্জন করুন!</p>
+      </div>
+      <div class="pomo-top-actions">
+        <span class="pomo-chip" id="pomoSessionTag">🍅 Focus · Session 1</span>
+        <span class="pomo-chip" id="pomoGoalChip">🎯 আজকের লক্ষ্য</span>
+        <button id="pomoAlertBtn" class="btn" style="padding:7px 10px;font-size:11px;font-weight:800;border-color:rgba(251,191,36,.5);color:#fbbf24;background:rgba(0,0,0,.25)" onclick="togglePomodoroAlert()">🔔 Enable Alert</button>
+        <button class="btn" style="padding:7px 10px;background:rgba(255,255,255,.08);color:#e2e8f0;border-color:rgba(148,163,184,.3)" onclick="togglePomoFullscreen()" title="Fullscreen">⛶ Full</button>
+        <button class="btn" style="padding:7px 10px;background:rgba(255,255,255,.08);color:#e2e8f0;border-color:rgba(148,163,184,.3)" onclick="closePomodoro()">✕ Close</button>
+      </div>
     </div>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px;text-align:left">
-    <div>
-      <label class="label">Book</label>
-      <select id="pomoBookSelect" class="select" onchange="handlePomoBookChange(this.value)"></select>
-    </div>
-    <div>
-      <label class="label">Chapter</label>
-      <select id="pomoChapterSelect" class="select" onchange="handlePomoChapterChange(this.value)"></select>
-    </div>
-  </div>
-  <div id="pomoCurrentTopic" style="font-size:13px;font-weight:850;color:var(--muted);margin-top:10px;min-height:18px">Please select a subject and chapter</div>
-  <div id="pomoClock" class="pomo-clock">25:00</div>
-  <div class="progress" style="max-width:350px;margin:auto"><div id="pomoProgressFill" class="fill"></div></div>
-  
-  <div class="pomo-controls">
-    <button id="pomoStartBtn" class="btn danger" onclick="togglePomodoroPlay()">▶ Start</button>
-    <button class="btn" onclick="resetPomodoro()">↺ Reset</button>
-    <button class="btn" onclick="skipPomodoro()">⏭ Skip</button>
-  </div>
 
-  <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border)">
-    <div style="font-size:11.5px;font-weight:750;color:var(--muted);margin-bottom:6px">Custom Session Duration</div>
-    <div style="display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap">
-      <span class="label">Focus:</span>
-      <input id="pomoCustomFocus" class="input" style="width:58px;padding:5px;text-align:center" type="number" min="1" max="240" step="1" value="25">
-      <span class="label">min · Short:</span>
-      <input id="pomoCustomBreak" class="input" style="width:52px;padding:5px;text-align:center" type="number" min="1" max="60" step="1" value="5">
-      <span class="label">min · Long:</span>
-      <input id="pomoCustomLongBreak" class="input" style="width:52px;padding:5px;text-align:center" type="number" min="1" max="60" step="1" value="15">
-      <span class="label">min</span>
+    <div class="pomo-grid">
+      <!-- Left: settings -->
+      <div class="pomo-card">
+        <h3>⚙️ Session Settings</h3>
+        <div class="pomo-setting-row">
+          <label>🍅 Focus Time</label>
+          <input id="pomoCustomFocus" class="input" type="number" min="1" max="240" step="1" value="25">
+        </div>
+        <div class="pomo-setting-row">
+          <label>☕ Short Break</label>
+          <input id="pomoCustomBreak" class="input" type="number" min="1" max="60" step="1" value="5">
+        </div>
+        <div class="pomo-setting-row">
+          <label>🌿 Long Break</label>
+          <input id="pomoCustomLongBreak" class="input" type="number" min="1" max="60" step="1" value="15">
+        </div>
+        <div class="pomo-setting-row">
+          <label>🔁 Sessions / Cycle</label>
+          <input id="pomoCustomCycles" class="input" type="number" min="1" max="12" step="1" value="4">
+        </div>
+        <div style="margin-top:10px">
+          <button class="btn primary" style="width:100%" onclick="applyCustomPomoTime()">✓ Apply Settings</button>
+        </div>
+        <div class="pomo-pickers" style="margin-top:14px">
+          <div>
+            <label class="label">Book</label>
+            <select id="pomoBookSelect" class="select" onchange="handlePomoBookChange(this.value)"></select>
+          </div>
+          <div>
+            <label class="label">Chapter</label>
+            <select id="pomoChapterSelect" class="select" onchange="handlePomoChapterChange(this.value)"></select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center: clock -->
+      <div class="pomo-card pomo-center">
+        <div id="pomoRing" class="pomo-ring" style="--pomo-pct:0">
+          <div class="pomo-ring-inner">
+            <div class="pomo-mode-label" id="pomoModeLabel">FOCUS SESSION</div>
+            <div id="pomoClock" class="pomo-clock">25:00</div>
+            <div class="pomo-encourage" id="pomoEncourage">You can do it! 🚀</div>
+          </div>
+        </div>
+        <div id="pomoCurrentTopic" class="pomo-topic">Please select a subject and chapter</div>
+        <!-- hidden progress fill kept for JS compatibility -->
+        <div class="progress" style="display:none;max-width:350px;margin:auto"><div id="pomoProgressFill" class="fill"></div></div>
+        <div class="pomo-controls">
+          <button id="pomoStartBtn" class="btn primary pomo-start-main" onclick="togglePomodoroPlay()">▶ Start</button>
+          <button class="btn" style="background:rgba(255,255,255,.08);color:#e2e8f0;border-color:rgba(148,163,184,.3)" onclick="resetPomodoro()" title="Reset">↺</button>
+          <button class="btn" style="background:rgba(255,255,255,.08);color:#e2e8f0;border-color:rgba(148,163,184,.3)" onclick="skipPomodoro()" title="Skip">⏭</button>
+        </div>
+        <div style="width:100%;margin-top:8px">
+          <div style="font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:6px">Session cycle</div>
+          <div id="pomoTimeline" class="pomo-timeline"></div>
+        </div>
+      </div>
+
+      <!-- Right: session progress -->
+      <div class="pomo-card">
+        <h3>📊 Session Progress</h3>
+        <div class="pomo-progress-head">
+          <div id="pomoSideRing" class="pomo-side-ring" style="--side-pct:0"><span id="pomoSideRingText">0%</span></div>
+          <div>
+            <div style="font-size:20px;font-weight:800;color:#f8fafc" id="pomoSessionsToday">0</div>
+            <div style="font-size:11px;color:#94a3b8">Sessions today</div>
+            <div style="font-size:12px;color:#a5b4fc;margin-top:4px" id="pomoStudyToday">0m study</div>
+          </div>
+        </div>
+        <div class="pomo-stat-grid">
+          <div class="pomo-stat-tile"><div class="k">🎯 Daily goal</div><div class="v" id="pomoGoalPct">0%</div></div>
+          <div class="pomo-stat-tile"><div class="k">🔥 Streak</div><div class="v" id="pomoStreakStat">0</div></div>
+        </div>
+        <div style="margin-top:12px;font-size:11px;font-weight:700;color:#94a3b8">This week</div>
+        <div id="pomoWeekBars" class="pomo-week-mini"></div>
+      </div>
     </div>
-    <div style="display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px">
-      <span class="label">Long break after</span>
-      <input id="pomoCustomCycles" class="input" style="width:48px;padding:5px;text-align:center" type="number" min="1" max="12" step="1" value="4">
-      <span class="label">focus sessions</span>
-      <button class="btn primary" style="padding:6px 10px;font-size:11.5px" onclick="applyCustomPomoTime()">Apply</button>
+
+    <div class="pomo-bottom">
+      <div class="pomo-card">
+        <h3>🏆 Today's Stats</h3>
+        <div class="pomo-stat-grid">
+          <div class="pomo-stat-tile"><div class="k">⏱️ Study time</div><div class="v" id="pomoStatTime">0m</div></div>
+          <div class="pomo-stat-tile"><div class="k">🍅 Sessions</div><div class="v" id="pomoStatSessions">0</div></div>
+          <div class="pomo-stat-tile"><div class="k">🎯 Goal</div><div class="v" id="pomoStatGoal">0%</div></div>
+          <div class="pomo-stat-tile"><div class="k">🔥 Streak</div><div class="v" id="pomoStatStreak">0</div></div>
+        </div>
+      </div>
+      <div class="pomo-card pomo-motivation">
+        <div class="big">Stay Focused!</div>
+        <div class="subm">Your hard work will pay off 💜</div>
+        <div class="subm" style="margin-top:10px" id="pomoMotivationExtra">Select a chapter and press Start.</div>
+      </div>
+      <div class="pomo-card" style="display:flex;flex-direction:column;justify-content:center;gap:8px">
+        <div style="font-size:12px;color:#94a3b8;font-weight:700">Tips</div>
+        <div style="font-size:12.5px;color:#e2e8f0;line-height:1.45">Focus sessions auto-start the next break. Long break runs every cycle. Sound & alerts work as before.</div>
+      </div>
     </div>
   </div>
-</div></div>
+</div>
 
 <!-- Modals -->
 <div id="clearHistoryModal" class="modal"><div class="card modalbox" style="text-align:center;max-width:420px"><div style="font-size:33px">⚠️</div><h3>Clear Study History?</h3><p class="sub" style="margin:8px 0 14px">Are you sure you want to clear all logged study focus sessions? Your syllabus progress and exam plans remain safe.</p><div class="modal-actions" style="justify-content:center"><button class="btn" onclick="closeClearHistoryModal()">Cancel</button><button class="btn danger" onclick="confirmClearStudyHistory()">Yes, Clear</button></div></div></div>
@@ -2796,6 +3140,20 @@ function goToSection(tab){
   switchTab(tab, { scroll: true });
 }
 
+function editUserName(){
+  let cur="";
+  try{ cur=(localStorage.getItem("syllabusUserName")||"").trim(); }catch(_e){}
+  const next=prompt("তোমার নাম লিখো (dashboard greeting-এ দেখাবে):\nLeave empty to clear.", cur);
+  if(next===null) return;
+  const cleaned=String(next).trim().slice(0,32);
+  try{
+    if(cleaned) localStorage.setItem("syllabusUserName", cleaned);
+    else localStorage.removeItem("syllabusUserName");
+  }catch(_e){}
+  try{ updateDashboard(); }catch(_e){}
+  try{ if(typeof toast==="function") toast(cleaned ? ("Name saved: "+cleaned) : "Name cleared"); }catch(_e){}
+}
+
 function updateDashboard(){
     let total=0,done=0,inp=0;
     Object.entries(BOOKS).forEach(([b,arr])=>{
@@ -2853,12 +3211,14 @@ function updateDashboard(){
       setTxt("quickExamSub", "None scheduled");
     }
 
-    // Welcome greeting
+    // Welcome greeting (optional saved name)
     try{
       const hour=new Date().getHours();
       const greet=hour<12?"Good morning":hour<17?"Good afternoon":hour<21?"Good evening":"Good night";
+      let uname="";
+      try{ uname=(localStorage.getItem("syllabusUserName")||"").trim(); }catch(_e){}
       const gEl=document.getElementById("welcomeGreeting");
-      if(gEl) gEl.textContent=greet+" 👋";
+      if(gEl) gEl.textContent = uname ? (greet+", "+uname+" 👋") : (greet+" 👋");
       const dEl=document.getElementById("welcomeDate");
       if(dEl) dEl.textContent=new Date().toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"});
       const hEl=document.getElementById("welcomeHint");
@@ -3378,12 +3738,52 @@ function openPomodoroFor(b,c){
 
 function openPomodoro(){
     getAudioContext(true);
-    document.getElementById("pomodoroOverlay").classList.add("show");
+    const ov=document.getElementById("pomodoroOverlay");
+    if(ov) ov.classList.add("show");
+    try{ document.body.style.overflow="hidden"; }catch(_e){}
     populatePomoPickers();
     updatePomoDisplay();
     updateAlertUI();
 }
-function closePomodoro(){document.getElementById("pomodoroOverlay").classList.remove("show");}
+function closePomodoro(){
+    const ov=document.getElementById("pomodoroOverlay");
+    if(ov){
+      ov.classList.remove("show");
+      ov.classList.remove("pomo-fullscreen");
+    }
+    try{ document.body.style.overflow=""; }catch(_e){}
+    try{
+      if(document.fullscreenElement) document.exitFullscreen();
+    }catch(_e){}
+}
+function togglePomoFullscreen(){
+    const ov=document.getElementById("pomodoroOverlay");
+    if(!ov) return;
+    const goFull=()=>{
+      ov.classList.add("pomo-fullscreen");
+      try{
+        if(ov.requestFullscreen) ov.requestFullscreen();
+        else if(ov.webkitRequestFullscreen) ov.webkitRequestFullscreen();
+      }catch(_e){}
+    };
+    const exitFull=()=>{
+      ov.classList.remove("pomo-fullscreen");
+      try{
+        if(document.fullscreenElement) document.exitFullscreen();
+        else if(document.webkitFullscreenElement) document.webkitExitFullscreen();
+      }catch(_e){}
+    };
+    if(document.fullscreenElement || document.webkitFullscreenElement || ov.classList.contains("pomo-fullscreen")){
+      exitFull();
+    } else {
+      goFull();
+    }
+}
+document.addEventListener("fullscreenchange",()=>{
+  const ov=document.getElementById("pomodoroOverlay");
+  if(!ov) return;
+  if(!document.fullscreenElement) ov.classList.remove("pomo-fullscreen");
+});
 
 function updateAlertUI(){
     const btn=document.getElementById("pomoAlertBtn");
@@ -3671,12 +4071,27 @@ function updatePomoDisplay(){
     const isLongBreak = pomo.mode==="break" && pomo.cycles>0 && (pomo.session % pomo.cycles === 0);
     const breakMinsNow = isLongBreak ? (pomo.longBreak||15) : (pomo.break||5);
     let total=(pomo.mode==="focus"?pomo.focus:breakMinsNow)*60;
+    const pctDone = Math.max(0,Math.min(100,(total-remaining)/Math.max(1,total)*100));
 
     const progFill = document.getElementById("pomoProgressFill");
-    if(progFill) progFill.style.width=Math.max(0,Math.min(100,(total-remaining)/Math.max(1,total)*100))+"%";
+    if(progFill) progFill.style.width=pctDone+"%";
+
+    const ring=document.getElementById("pomoRing");
+    if(ring) ring.style.setProperty("--pomo-pct", pctDone.toFixed(2));
 
     const tagEl = document.getElementById("pomoSessionTag");
     if(tagEl) tagEl.textContent=`${pomo.mode==="focus"?"🍅 Focus":(isLongBreak?"☕ Long Break":"☕ Break")} · Session ${pomo.session}`;
+
+    const modeLbl=document.getElementById("pomoModeLabel");
+    if(modeLbl) modeLbl.textContent = pomo.mode==="focus" ? "FOCUS SESSION" : (isLongBreak ? "LONG BREAK" : "SHORT BREAK");
+
+    const enc=document.getElementById("pomoEncourage");
+    if(enc){
+      if(pomo.running && pomo.mode==="focus") enc.textContent="Stay with it — you've got this 🚀";
+      else if(pomo.mode==="break") enc.textContent="Rest well. Next focus is coming ☕";
+      else if(pomo.awaitingNext) enc.textContent="Ready for the next session?";
+      else enc.textContent="You can do it! 🚀";
+    }
 
     const startBtn = document.getElementById("pomoStartBtn");
     if(startBtn) startBtn.textContent=pomo.running?"⏸ Pause":(pomo.awaitingNext?"▶ Start Next":"▶ Start");
@@ -3685,18 +4100,18 @@ function updatePomoDisplay(){
     const modeIcon=pomo.mode==="focus"?"🍅":"☕";
 
     const headerBtn=document.getElementById("pomoHeaderBtn");
-if(headerBtn){
-    if(pomo.running){
-        headerBtn.textContent=`${modeIcon} ${modeLabel} ${timeStr}`;
-        headerBtn.classList.add("pomo-active-pulse");
-    }else if(pomo.started && pomo.remaining>0){
-        headerBtn.textContent=`⏸ ${modeLabel} ${timeStr}`;
-        headerBtn.classList.remove("pomo-active-pulse");
-    }else{
-        headerBtn.textContent="🍅 Pomodoro";
-        headerBtn.classList.remove("pomo-active-pulse");
+    if(headerBtn){
+        if(pomo.running){
+            headerBtn.textContent=`${modeIcon} ${modeLabel} ${timeStr}`;
+            headerBtn.classList.add("pomo-active-pulse");
+        }else if(pomo.started && pomo.remaining>0){
+            headerBtn.textContent=`⏸ ${modeLabel} ${timeStr}`;
+            headerBtn.classList.remove("pomo-active-pulse");
+        }else{
+            headerBtn.textContent="🍅 Pomodoro";
+            headerBtn.classList.remove("pomo-active-pulse");
+        }
     }
-}
     const floating=document.getElementById("pomoFloatingTimer");
     if(floating){
         if(pomo.running || (pomo.started && pomo.remaining>0)){
@@ -3720,6 +4135,81 @@ if(headerBtn){
     }else{
         document.title="Syllabus Tracker";
     }
+
+    // Side stats + timeline (best-effort; never breaks timer)
+    try{
+      const dayKey = (typeof today==="function") ? today() : formatDateKey(new Date());
+      const sec = Number(history[dayKey]?.totalSeconds||0) + Math.round(pendingStudySeconds||0);
+      const sess = Number(history[dayKey]?.sessions||0);
+      const goalMin = Number(goal)||120;
+      const goalPct = Math.min(100, (sec/(goalMin*60))*100);
+      const setTxt=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
+      setTxt("pomoSessionsToday", String(sess));
+      setTxt("pomoStudyToday", (typeof fmt==="function"?fmt(sec):Math.round(sec/60)+"m"));
+      setTxt("pomoGoalPct", goalPct.toFixed(0)+"%");
+      setTxt("pomoStatTime", (typeof fmt==="function"?fmt(sec):Math.round(sec/60)+"m"));
+      setTxt("pomoStatSessions", String(sess));
+      setTxt("pomoStatGoal", goalPct.toFixed(0)+"%");
+      const side=document.getElementById("pomoSideRing");
+      if(side) side.style.setProperty("--side-pct", goalPct.toFixed(2));
+      const sideT=document.getElementById("pomoSideRingText");
+      if(sideT) sideT.textContent = goalPct.toFixed(0)+"%";
+      const gChip=document.getElementById("pomoGoalChip");
+      if(gChip) gChip.textContent = `🎯 Goal ${goalPct.toFixed(0)}% · ${sess} sessions`;
+
+      // streak
+      let streak=0;
+      try{
+        const d0=new Date();
+        for(let i=0;i<60;i++){
+          const k=formatDateKey(new Date(d0.getFullYear(), d0.getMonth(), d0.getDate()-i));
+          const t=Number(history[k]?.totalSeconds||0) + (i===0?Math.round(pendingStudySeconds||0):0);
+          if(t>=60) streak++; else if(i>0) break;
+        }
+      }catch(_e){}
+      setTxt("pomoStreakStat", String(streak));
+      setTxt("pomoStatStreak", String(streak));
+
+      // cycle timeline dots
+      const tl=document.getElementById("pomoTimeline");
+      if(tl){
+        const cycles=Math.max(1, Number(pomo.cycles)||4);
+        const sessIdx=((Number(pomo.session)||1)-1) % cycles;
+        let html="";
+        for(let i=0;i<cycles;i++){
+          const cls = i<sessIdx ? "done" : (i===sessIdx ? "now" : "");
+          html += `<span class="pomo-dot ${cls}" title="Focus ${i+1}"></span>`;
+          if(i<cycles-1) html += `<span style="flex:1;height:2px;background:rgba(148,163,184,.2);min-width:8px"></span>`;
+        }
+        tl.innerHTML=html;
+      }
+
+      // week bars
+      const wb=document.getElementById("pomoWeekBars");
+      if(wb){
+        const labels=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+        const now=new Date();
+        const day=now.getDay();
+        const start=new Date(now.getFullYear(), now.getMonth(), now.getDate()-day);
+        let max=1; const vals=[];
+        for(let i=0;i<7;i++){
+          const dd=new Date(start.getFullYear(), start.getMonth(), start.getDate()+i);
+          const k=formatDateKey(dd);
+          let v=Number(history[k]?.totalSeconds||0);
+          if(k===dayKey) v+=Math.round(pendingStudySeconds||0);
+          vals.push(v); if(v>max) max=v;
+        }
+        wb.innerHTML=vals.map((v,i)=>`<div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end"><div class="b" style="height:${Math.max(4, Math.round(v/max*100))}%"></div><div class="lbl">${labels[i]}</div></div>`).join("");
+      }
+
+      const extra=document.getElementById("pomoMotivationExtra");
+      if(extra){
+        if(pomo.book && pomo.chapter){
+          const ch=BOOKS[pomo.book]?.[pomo.chapter-1]||("Chapter "+pomo.chapter);
+          extra.textContent = pomo.book + " · " + ch;
+        } else extra.textContent="Select a chapter and press Start.";
+      }
+    }catch(_e){}
 }
 
 function savePomoState(){
