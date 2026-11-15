@@ -17,44 +17,44 @@
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-    --bg: #f8fafc;
+    --bg: #f4f2ff;
     --card: #ffffff;
-    --soft: #f1f5f9;
-    --text: #0f172a;
-    --muted: #64748b;
-    --border: #e2e8f0;
-    --primary: #4f46e5;
+    --soft: #f0edff;
+    --text: #1e1b4b;
+    --muted: #6b7280;
+    --border: #e8e4f8;
+    --primary: #6366f1;
     --primary-soft: #eef2ff;
-    --success: #059669;
+    --success: #10b981;
     --success-soft: #ecfdf5;
-    --warning: #d97706;
+    --warning: #f59e0b;
     --warning-soft: #fffbeb;
-    --danger: #e11d48;
-    --purple: #7c3aed;
-    --shadow: 0 1px 3px rgba(15,23,42,.04), 0 4px 16px -4px rgba(15,23,42,.08);
-    --shadow-lg: 0 8px 30px -8px rgba(15,23,42,.14);
-    --radius: 16px;
+    --danger: #f43f5e;
+    --purple: #8b5cf6;
+    --shadow: 0 1px 2px rgba(99,102,241,.04), 0 4px 16px -4px rgba(99,102,241,.08);
+    --shadow-lg: 0 10px 28px -8px rgba(99,102,241,.14);
+    --radius: 18px;
     --radius-sm: 12px;
     --ring: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent);
 }
 
 html.dark, body.dark {
-    --bg: #060a12;
-    --card: #0c1322;
-    --soft: #141c2e;
+    --bg: #0a0b14;
+    --card: #12141f;
+    --soft: #1a1d2e;
     --text: #f1f5f9;
     --muted: #94a3b8;
-    --border: #1c2740;
+    --border: #252838;
     --primary: #818cf8;
-    --primary-soft: #1a1a3e;
+    --primary-soft: #1e1b4b;
     --success: #34d399;
     --success-soft: #052e24;
     --warning: #fbbf24;
     --warning-soft: #3b2306;
     --danger: #fb7185;
     --purple: #a78bfa;
-    --shadow: 0 1px 3px rgba(0,0,0,.25), 0 4px 18px -4px rgba(0,0,0,.4);
-    --shadow-lg: 0 12px 36px -8px rgba(0,0,0,.55);
+    --shadow: 0 1px 3px rgba(0,0,0,.3), 0 6px 20px -6px rgba(0,0,0,.45);
+    --shadow-lg: 0 14px 36px -8px rgba(0,0,0,.55);
     --ring: 0 0 0 3px color-mix(in srgb, var(--primary) 22%, transparent);
 }
 
@@ -87,18 +87,16 @@ body::before {
     position: fixed;
     inset: 0;
     background:
-        radial-gradient(ellipse 90% 55% at 12% -8%, rgba(79,70,229,.11), transparent 58%),
-        radial-gradient(ellipse 70% 45% at 92% 0%, rgba(124,58,237,.07), transparent 52%),
-        radial-gradient(ellipse 50% 30% at 50% 100%, rgba(79,70,229,.04), transparent 60%);
+        radial-gradient(ellipse 80% 50% at 10% -5%, rgba(139,92,246,.08), transparent 55%),
+        radial-gradient(ellipse 60% 40% at 95% 5%, rgba(99,102,241,.06), transparent 50%);
     pointer-events: none;
     z-index: -1;
 }
 
 html.dark body::before {
     background:
-        radial-gradient(ellipse 90% 55% at 12% -8%, rgba(129,140,248,.1), transparent 58%),
-        radial-gradient(ellipse 70% 45% at 92% 0%, rgba(167,139,250,.07), transparent 52%),
-        radial-gradient(ellipse 50% 30% at 50% 100%, rgba(129,140,248,.03), transparent 60%);
+        radial-gradient(ellipse 80% 50% at 10% -5%, rgba(139,92,246,.07), transparent 55%),
+        radial-gradient(ellipse 60% 40% at 95% 5%, rgba(99,102,241,.05), transparent 50%);
 }
 
 button, input, select, textarea { font: inherit; }
@@ -122,11 +120,12 @@ button { cursor: pointer; border: 0; }
 }
 
 .topbar-inner {
-    padding: 11px 16px;
+    padding: 12px 16px 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .brand {
@@ -1857,67 +1856,289 @@ footer {
   background: var(--card);
 }
 
+/* ========== Premium header / nav ========== */
+.header-search { flex: 1; max-width: 420px; min-width: 0; }
+.header-search-input {
+  background: var(--soft) !important;
+  border-radius: 999px !important;
+  padding: 9px 16px !important;
+  border: 1px solid transparent !important;
+}
+.header-search-input:focus {
+  border-color: var(--primary) !important;
+  background: var(--card) !important;
+}
+.theme-toggle, .icon-btn { width: 40px; height: 40px; padding: 0; border-radius: 12px; display: grid; place-items: center; }
+.topbar .tabs.top-nav {
+  max-width: 1100px; margin: 0 auto; padding: 0 16px 10px;
+  background: transparent; border: 0; box-shadow: none; border-radius: 0;
+  gap: 2px;
+}
+.topbar .tabs.top-nav .tab {
+  padding: 7px 12px; font-size: 12px; border-radius: 999px;
+}
+.topbar .tabs.top-nav .tab.active {
+  background: linear-gradient(135deg, #6366f1, #7c3aed);
+  box-shadow: 0 4px 14px rgba(99,102,241,.28);
+}
+
+/* ========== Premium Dashboard ========== */
+.dash-home { margin-bottom: 18px; }
+.dash-welcome {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
+}
+.dash-hello { font-size: 26px; font-weight: 800; letter-spacing: -.03em; margin: 0; color: var(--text); }
+.dash-motto { margin-top: 4px; color: var(--muted); font-size: 13px; }
+.dash-date-pill {
+  background: var(--card); border: 1px solid var(--border); border-radius: 999px;
+  padding: 7px 14px; font-size: 12px; font-weight: 650; color: var(--muted);
+  box-shadow: var(--shadow);
+}
+.dash-stats {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(4, 1fr);
+  gap: 12px; margin-bottom: 14px;
+}
+.dash-stat { padding: 16px; position: relative; }
+.dash-stat-main {
+  display: flex; align-items: center; gap: 14px;
+  background: linear-gradient(135deg, #eef2ff 0%, var(--card) 70%);
+}
+html.dark .dash-stat-main { background: linear-gradient(135deg, #1e1b4b 0%, var(--card) 70%); }
+.dash-stat-title { font-size: 13px; font-weight: 700; }
+.dash-stat-value { font-size: 20px; font-weight: 800; letter-spacing: -.03em; margin-top: 2px; }
+.dash-stat-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.dash-stat-icon {
+  width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
+  font-size: 15px; margin-bottom: 8px;
+}
+.progress-ring {
+  width: 72px; height: 72px; border-radius: 50%; flex: none;
+  background: conic-gradient(#6366f1 calc(var(--p) * 1%), color-mix(in srgb, var(--primary) 12%, transparent) 0);
+  display: grid; place-items: center; position: relative;
+}
+.progress-ring::before {
+  content: ""; position: absolute; inset: 7px; border-radius: 50%; background: var(--card);
+}
+.ring-pct { position: relative; z-index: 1; font-size: 13px; font-weight: 800; color: var(--primary); }
+
+.dash-mid {
+  display: grid; grid-template-columns: 1.2fr 1fr; gap: 12px; margin-bottom: 12px;
+}
+.dash-side { display: grid; gap: 12px; align-content: start; }
+.dash-panel { padding: 16px; }
+.dash-panel-title { font-size: 14px; font-weight: 750; margin: 0; }
+.dash-subject-list { display: grid; gap: 10px; }
+.dash-subj-row {
+  display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: center;
+}
+.dash-subj-icon {
+  width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center;
+  background: var(--soft); font-size: 14px;
+}
+.dash-subj-name { font-size: 12.5px; font-weight: 650; }
+.dash-subj-meta { font-size: 11px; color: var(--muted); }
+.dash-subj-pct { font-size: 12px; font-weight: 750; color: var(--primary); min-width: 40px; text-align: right; }
+.dash-continue { margin: 0 !important; }
+.dash-todo-list { display: grid; gap: 8px; }
+.dash-todo-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 0;
+  border-bottom: 1px solid var(--border); font-size: 12.5px;
+}
+.dash-todo-item:last-child { border-bottom: 0; }
+.dash-todo-check {
+  width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border);
+  flex: none;
+}
+.dash-todo-item.done .dash-todo-check {
+  background: var(--success); border-color: var(--success);
+}
+.dash-todo-item.done .dash-todo-title { text-decoration: line-through; opacity: .7; }
+.dash-todo-time { margin-left: auto; color: var(--muted); font-size: 11px; white-space: nowrap; }
+
+.dash-bottom {
+  display: grid; grid-template-columns: 1fr 1.1fr 0.9fr; gap: 12px;
+}
+.dash-week-heat {
+  display: grid; grid-template-columns: auto repeat(7, 1fr); gap: 4px; font-size: 10px; color: var(--muted);
+}
+.dash-heat-cell {
+  aspect-ratio: 1; border-radius: 4px; background: var(--soft); min-height: 14px;
+}
+.dash-heat-cell.l1 { background: #c7d2fe; }
+.dash-heat-cell.l2 { background: #a5b4fc; }
+.dash-heat-cell.l3 { background: #818cf8; }
+.dash-heat-cell.l4 { background: #6366f1; }
+.dash-week-bars {
+  display: flex; align-items: flex-end; gap: 6px; height: 120px; padding-top: 8px;
+}
+.dash-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+.dash-bar {
+  width: 100%; max-width: 28px; border-radius: 6px 6px 2px 2px;
+  background: linear-gradient(180deg, #818cf8, #6366f1); min-height: 4px;
+}
+.dash-bar-label { font-size: 9.5px; color: var(--muted); font-weight: 650; }
+.dash-achieve {
+  background: linear-gradient(145deg, #ecfdf5, var(--card));
+  display: flex; flex-direction: column; justify-content: center;
+}
+html.dark .dash-achieve { background: linear-gradient(145deg, #052e24, var(--card)); }
+.dash-achieve-icon { font-size: 32px; margin-bottom: 6px; }
+
+@media (max-width: 960px) {
+  .dash-stats { grid-template-columns: 1fr 1fr; }
+  .dash-stat-main { grid-column: 1 / -1; }
+  .dash-mid, .dash-bottom { grid-template-columns: 1fr; }
+  .header-search { display: none; }
+}
+@media (max-width: 560px) {
+  .dash-hello { font-size: 22px; }
+  .dash-stats { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .topbar .tabs.top-nav { padding: 0 10px 8px; }
+  .topbar .tabs.top-nav .tab { padding: 6px 10px; font-size: 11px; }
+}
+
 </style>
 </head>
 <body>
-<header class="topbar"><div class="topbar-inner">
-  <div class="brand" onclick="switchTab('syllabus')"><div class="brand-icon">📚</div><h1>Syllabus Tracker</h1></div>
-  <div class="header-actions">
-    <button id="pomoHeaderBtn" class="btn danger" onclick="openPomodoro()">🍅 Pomodoro</button>
-    <button id="themeBtn" class="btn" onclick="toggleTheme()">🌙 Dark</button>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand" onclick="switchTab('syllabus')">
+      <div class="brand-icon">🎓</div>
+      <h1>Syllabus Tracker</h1>
+    </div>
+    <div class="header-search">
+      <input id="globalSearchInput" class="input header-search-input" placeholder="Search chapters, subjects… ( / )" oninput="handleGlobalSearch(this.value)" autocomplete="off">
+    </div>
+    <div class="header-actions">
+      <button id="pomoHeaderBtn" class="btn danger" onclick="openPomodoro()" title="Pomodoro">🍅</button>
+      <button id="themeBtn" class="btn theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+      <button class="btn icon-btn" onclick="switchTab('community')" title="Community">👥</button>
+    </div>
   </div>
-</div></header>
+  <nav class="tabs top-nav">
+    <button class="tab active" data-tab="syllabus" onclick="switchTab('syllabus')">📚 Syllabus</button>
+    <button class="tab" data-tab="exams" onclick="switchTab('exams')">🎯 Exam Planner</button>
+    <button class="tab" data-tab="todo" onclick="switchTab('todo')">✅ To-Do</button>
+    <button class="tab" data-tab="history" onclick="switchTab('history')">📊 History</button>
+    <button class="tab" data-tab="insights" onclick="switchTab('insights')">💡 Insights</button>
+    <button class="tab" data-tab="notes" onclick="switchTab('notes')">📝 Notes</button>
+    <button class="tab" data-tab="revision" onclick="switchTab('revision')">🔄 Revision</button>
+    <button class="tab" data-tab="reports" onclick="switchTab('reports')">📈 Reports</button>
+    <button class="tab" data-tab="community" onclick="switchTab('community')">👥 Community</button>
+  </nav>
+</header>
 
 <main class="container">
 
-<!-- Premium Welcome / Command Center -->
-<section class="card" id="welcomeBar" style="padding:16px 18px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:linear-gradient(135deg,var(--primary-soft) 0%,var(--card) 60%);border:1px solid color-mix(in srgb,var(--primary) 22%,var(--border))">
-  <div style="min-width:0">
-    <div class="kicker" id="welcomeGreeting" style="margin-bottom:2px">Welcome back</div>
-    <h2 id="welcomeDate" style="font-size:15px;font-weight:750;letter-spacing:-.02em;margin:0">—</h2>
-    <p id="welcomeHint" class="sub" style="margin-top:3px">Track · Focus · Complete your HSC syllabus</p>
-  </div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-    <div style="text-align:right">
-      <div class="label">Overall</div>
-      <div id="welcomePct" style="font-size:20px;font-weight:800;color:var(--primary);letter-spacing:-.03em">0.00%</div>
+<!-- Premium Dashboard (always visible summary) -->
+<section id="dashHome" class="dash-home">
+  <div class="dash-welcome">
+    <div>
+      <h2 id="welcomeGreeting" class="dash-hello">Welcome back</h2>
+      <p id="welcomeHint" class="dash-motto">Keep going! Your hard work will pay off.</p>
     </div>
-    <button class="btn primary" onclick="openPomodoro()" style="min-height:40px">🍅 Start Focus</button>
+    <div id="welcomeDate" class="dash-date-pill">—</div>
+  </div>
+
+  <div class="dash-stats">
+    <div class="card dash-stat dash-stat-main">
+      <div class="ring-wrap">
+        <div id="overallRing" class="progress-ring" style="--p:0">
+          <span id="statPercent" class="ring-pct">0%</span>
+        </div>
+      </div>
+      <div>
+        <div class="dash-stat-title">Overall Progress</div>
+        <div class="dash-stat-sub"><span id="statCompleted">0</span> of <span id="statTotal">75</span> chapters completed</div>
+        <div class="progress" style="margin-top:8px;height:6px"><div id="overallFill" class="fill"></div></div>
+      </div>
+    </div>
+    <div class="card dash-stat">
+      <div class="dash-stat-icon" style="background:#eef2ff;color:#6366f1">⏱</div>
+      <div class="label">Study time</div>
+      <div id="quickTodayStudy" class="dash-stat-value">0s</div>
+      <div class="dash-stat-sub">Today</div>
+    </div>
+    <div class="card dash-stat">
+      <div class="dash-stat-icon" style="background:#fff7ed;color:#f59e0b">🔥</div>
+      <div class="label">Study streak</div>
+      <div id="quickStreak" class="dash-stat-value">0 days</div>
+      <div class="dash-stat-sub">Keep it going</div>
+    </div>
+    <div class="card dash-stat">
+      <div class="dash-stat-icon" style="background:#ecfdf5;color:#10b981">🎯</div>
+      <div class="label">Today's goal</div>
+      <div id="quickGoal" class="dash-stat-value">0%</div>
+      <div class="dash-stat-sub">Daily target</div>
+    </div>
+    <div class="card dash-stat">
+      <div class="dash-stat-icon" style="background:#f5f3ff;color:#8b5cf6">📅</div>
+      <div class="label">Upcoming exam</div>
+      <div id="quickExams" class="dash-stat-value">0</div>
+      <div class="dash-stat-sub" id="quickExamSub">None scheduled</div>
+    </div>
+  </div>
+
+  <div class="dash-mid">
+    <div class="card dash-panel">
+      <div class="row" style="margin-bottom:12px">
+        <h3 class="dash-panel-title">📚 Subject progress</h3>
+        <button class="mini" onclick="switchTab('syllabus')">View all →</button>
+      </div>
+      <div id="dashSubjectList" class="dash-subject-list"></div>
+    </div>
+    <div class="dash-side">
+      <section id="continueCard" class="card continue dash-continue" style="display:none">
+        <div class="kicker">Continue studying <span id="continueReason"></span></div>
+        <h2 id="continueTitle"></h2>
+        <p id="continueSub"></p>
+        <div class="progress" style="margin:10px 0 12px;height:6px"><div id="continueFill" class="fill" style="width:0"></div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn primary" style="flex:1" onclick="startPomodoroForContinueTarget()">▶ Start studying</button>
+          <button class="btn" onclick="jumpToContinueTarget()">View</button>
+        </div>
+      </section>
+      <div class="card dash-panel">
+        <div class="row" style="margin-bottom:10px">
+          <h3 class="dash-panel-title">📅 Today's plan</h3>
+          <button class="mini" onclick="switchTab('todo')">View all →</button>
+        </div>
+        <div id="dashTodoList" class="dash-todo-list"><div class="community-empty" style="padding:16px">No tasks for today</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dash-bottom">
+    <div class="card dash-panel">
+      <div class="row" style="margin-bottom:8px">
+        <h3 class="dash-panel-title">Weekly study activity</h3>
+        <button class="mini" onclick="switchTab('reports')">Reports →</button>
+      </div>
+      <div id="dashWeekHeat" class="dash-week-heat"></div>
+    </div>
+    <div class="card dash-panel">
+      <div class="row" style="margin-bottom:8px">
+        <h3 class="dash-panel-title">Weekly study time</h3>
+        <button class="mini" onclick="switchTab('history')">History →</button>
+      </div>
+      <div id="dashWeekBars" class="dash-week-bars"></div>
+    </div>
+    <div class="card dash-panel dash-achieve">
+      <div class="dash-achieve-icon">🏆</div>
+      <h3 class="dash-panel-title" id="dashAchieveTitle">You're building consistency!</h3>
+      <p class="sub" id="dashAchieveSub">Start studying to unlock achievements</p>
+      <button class="btn" style="margin-top:10px" onclick="switchTab('insights')">View Achievements →</button>
+    </div>
+  </div>
+
+  <!-- Hidden compatibility nodes used by existing JS -->
+  <div style="display:none" aria-hidden="true">
+    <span id="statInProgress">0</span>
+    <span id="welcomePct">0%</span>
   </div>
 </section>
-
-<section class="grid4">
-  <div class="stat"><div class="label">Total Chapters</div><div id="statTotal" class="value">75</div><div class="sub">8 subjects</div></div>
-  <div class="stat"><div class="label">Completed</div><div id="statCompleted" class="value" style="color:var(--success)">0</div><div class="sub">Finished chapters</div></div>
-  <div class="stat"><div class="label">In Progress</div><div id="statInProgress" class="value" style="color:var(--warning)">0</div><div class="sub">Currently studying</div></div>
-  <div class="stat"><div class="label">Overall Progress</div><div id="statPercent" class="value" style="color:var(--primary)">0.00%</div><div class="sub">Syllabus completion</div></div>
-</section>
-
-<div class="progress" style="height:8px;margin:6px 0 10px;background:var(--soft)"><div id="overallFill" class="fill"></div></div>
-
-<section class="quick">
-  <div class="card"><div class="qicon">🍅</div><div><div class="label">Today's Focus</div><div id="quickTodayStudy" class="qval">0s</div></div></div>
-  <div class="card"><div class="qicon">🔥</div><div><div class="label">Study Streak</div><div id="quickStreak" class="qval">0 days</div></div></div>
-  <div class="card"><div class="qicon">🎯</div><div><div class="label">Daily Goal</div><div id="quickGoal" class="qval">0.00%</div></div></div>
-  <div class="card"><div class="qicon">📝</div><div><div class="label">Upcoming Exams</div><div id="quickExams" class="qval">0</div></div></div>
-</section>
-
-<section id="continueCard" class="card continue" style="display:none">
-  <div><div class="kicker">Continue Studying <span id="continueReason"></span></div><h2 id="continueTitle"></h2><p id="continueSub"></p></div>
-  <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn primary" onclick="jumpToContinueTarget()">View in Syllabus →</button><button class="btn danger" onclick="startPomodoroForContinueTarget()">🍅 Study</button></div>
-</section>
-
-<nav class="tabs">
-  <button class="tab active" data-tab="syllabus" onclick="switchTab('syllabus')">📚 Syllabus</button>
-  <button class="tab" data-tab="exams" onclick="switchTab('exams')">🎯 Exam Planner</button>
-  <button class="tab" data-tab="todo" onclick="switchTab('todo')">📋 To-Do List</button>
-  <button class="tab" data-tab="history" onclick="switchTab('history')">📊 Study History</button>
-  <button class="tab" data-tab="insights" onclick="switchTab('insights')">💡 Insights</button>
-  <button class="tab" data-tab="notes" onclick="switchTab('notes')">📝 Notes</button>
-  <button class="tab" data-tab="revision" onclick="switchTab('revision')">🔄 Revision</button>
-  <button class="tab" data-tab="reports" onclick="switchTab('reports')">📈 Reports</button>
-  <button class="tab" data-tab="community" onclick="switchTab('community')">👥 Community</button>
-</nav>
 
 <!-- Syllabus Tab -->
 <section id="syllabusPanel" class="panel active">
@@ -2432,13 +2653,31 @@ if (!achievements || typeof achievements !== "object" || Array.isArray(achieveme
 let revisionIntervalDays = Number(localStorage.getItem(KEY.revisionInterval));
 if (!revisionIntervalDays || isNaN(revisionIntervalDays) || revisionIntervalDays < 1) revisionIntervalDays = 7;
     
+/** Local calendar YYYY-MM-DD (never UTC). Invalid dates → "". */
 const formatDateKey = (d = new Date()) => {
     const dt = d instanceof Date ? d : new Date(d);
+    if(!(dt instanceof Date) || isNaN(dt.getTime())) return "";
     const year = dt.getFullYear();
     const month = String(dt.getMonth() + 1).padStart(2, '0');
     const day = String(dt.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 };
+/** Safari-safe local midnight from YYYY-MM-DD (no "T00:00:00" string parse). */
+function parseLocalDate(ymd){
+    if(!ymd || typeof ymd !== "string") return null;
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd.trim());
+    if(!m) return null;
+    const y = Number(m[1]), mo = Number(m[2]) - 1, d = Number(m[3]);
+    if(!Number.isFinite(y) || !Number.isFinite(mo) || !Number.isFinite(d)) return null;
+    const dt = new Date(y, mo, d, 0, 0, 0, 0);
+    if(dt.getFullYear() !== y || dt.getMonth() !== mo || dt.getDate() !== d) return null;
+    return dt;
+}
+function localMidnightMs(fromMs){
+    const dt = new Date(Number(fromMs));
+    if(isNaN(dt.getTime())) return NaN;
+    return new Date(dt.getFullYear(), dt.getMonth(), dt.getDate() + 1, 0, 0, 0, 0).getTime();
+}
 const today = () => formatDateKey(new Date());
 let currentDayKey = today();
 
@@ -2463,7 +2702,8 @@ function toast(t){
 function applyTheme(d){
     document.documentElement.classList.toggle("dark",d);
     document.body.classList.toggle("dark",d);
-    document.getElementById("themeBtn").textContent=d?"☀️ Light":"🌙 Dark";
+    const tb=document.getElementById("themeBtn");
+    if(tb) tb.textContent=d?"☀️":"🌙";
     localStorage.setItem(KEY.theme,d?"dark":"light");
     if(currentTab==="history")drawGraph();
 }
@@ -2512,16 +2752,17 @@ function updateDashboard(){
     const sec=Number(history[today()]?.totalSeconds||0) + Math.round(pendingStudySeconds);
     const goalVal=Math.min(100,(sec/(goal*60)*100));
 
-    document.getElementById("statTotal").textContent=total;
-    document.getElementById("statCompleted").textContent=done;
-    document.getElementById("statInProgress").textContent=inp;
-    document.getElementById("statPercent").textContent=pctStr;
-    document.getElementById("overallFill").style.width=pctVal+"%";
-    document.getElementById("quickTodayStudy").textContent=fmt(sec);
+    const setTxt=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+    setTxt("statTotal", total);
+    setTxt("statCompleted", done);
+    setTxt("statInProgress", inp);
+    setTxt("statPercent", Math.round(pctVal)+"%");
+    const of=document.getElementById("overallFill"); if(of) of.style.width=pctVal+"%";
+    const ring=document.getElementById("overallRing"); if(ring) ring.style.setProperty("--p", pctVal);
+    setTxt("quickTodayStudy", fmt(sec));
+    setTxt("welcomePct", pctStr);
 
     // Use the in-memory pending study time for today before reading streak days.
-    // This prevents the first study tick of a new day from temporarily dropping
-    // an existing streak to zero before localStorage is flushed.
     let cur=new Date(),streak=0;
     if(sec<=0)cur.setDate(cur.getDate()-1);
     while((formatDateKey(cur)===today()
@@ -2531,59 +2772,129 @@ function updateDashboard(){
         cur.setDate(cur.getDate()-1);
         if(streak>1000)break;
     }
-    document.getElementById("quickStreak").textContent=streak+(streak===1?" day":" days");
-    document.getElementById("quickGoal").textContent=fmtPct(goalVal);
+    setTxt("quickStreak", streak+(streak===1?" day":" days"));
+    setTxt("quickGoal", Math.round(goalVal)+"%");
+
     const upcoming=exams.filter(e=>e.date && e.date>=today());
-let daysLeftText="";
-if(upcoming.length){
-  const validNearest=upcoming.map(e=>{
-    const d1=new Date(today()+"T00:00:00");
-    const d2=new Date(e.date+"T00:00:00");
-    return isNaN(d2) ? null : Math.round((d2-d1)/86400000);
-  }).filter(n=>n!=null && !isNaN(n)).sort((a,b)=>a-b)[0];
+    let nearestDays=null, nearestName="";
+    if(upcoming.length){
+      const sorted=upcoming.map(e=>{
+        const d1=parseLocalDate(today());
+        const d2=parseLocalDate(e.date);
+        if(!d1||!d2) return {name:e.name, days:null};
+        return {name:e.name, days: Math.round((d2.getTime()-d1.getTime())/86400000)};
+      }).filter(x=>x.days!=null).sort((a,b)=>a.days-b.days);
+      if(sorted.length){ nearestDays=Math.max(0,sorted[0].days); nearestName=sorted[0].name; }
+    }
+    if(nearestDays!=null){
+      setTxt("quickExams", nearestDays+" days");
+      setTxt("quickExamSub", nearestName || "Upcoming");
+    } else {
+      setTxt("quickExams", "—");
+      setTxt("quickExamSub", "None scheduled");
+    }
 
-  if(validNearest!=null){
-    daysLeftText=`   (${Math.max(0, validNearest)} d left)`;
-  }
-}
-document.getElementById("quickExams").textContent=upcoming.length+daysLeftText;
-
-    // Premium welcome bar
+    // Welcome greeting
     try{
       const hour=new Date().getHours();
-      const greet=hour<12?"শুভ সকাল":hour<17?"শুভ দুপুর":hour<21?"শুভ সন্ধ্যা":"শুভ রাত্রি";
+      const greet=hour<12?"Good morning":hour<17?"Good afternoon":hour<21?"Good evening":"Good night";
       const gEl=document.getElementById("welcomeGreeting");
-      if(gEl) gEl.textContent=greet+" · Welcome back";
+      if(gEl) gEl.textContent=greet+" 👋";
       const dEl=document.getElementById("welcomeDate");
-      if(dEl) dEl.textContent=new Date().toLocaleDateString("bn-BD",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
-      const pEl=document.getElementById("welcomePct");
-      if(pEl) pEl.textContent=pctStr;
+      if(dEl) dEl.textContent=new Date().toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"});
       const hEl=document.getElementById("welcomeHint");
       if(hEl){
-        // Prefer nearest exam countdown when available
-        let examHint = "";
-        try{
-          const upcomingSorted = exams.filter(e=>e.date && e.date>=today()).map(e=>{
-            const d1=new Date(today()+"T00:00:00");
-            const d2=new Date(e.date+"T00:00:00");
-            const days = isNaN(d2)?null:Math.round((d2-d1)/86400000);
-            return {name:e.name, days};
-          }).filter(x=>x.days!=null).sort((a,b)=>a.days-b.days);
-          if(upcomingSorted.length){
-            const n = upcomingSorted[0];
-            examHint = n.days===0
-              ? `🎯 আজ: ${n.name}`
-              : `🎯 ${n.name} — ${n.days} দিন বাকি`;
-          }
-        }catch(_e){}
-        if(examHint) hEl.textContent = examHint;
-        else if(done===0) hEl.textContent="আজই প্রথম chapter শুরু করো — Focus দিয়ে শুরু করো";
-        else if(pctVal>=100) hEl.textContent="সম্পূর্ণ syllabus শেষ! Revision-এ মনোযোগ দাও 🎉";
-        else if(inp>0) hEl.textContent=`${inp} chapter চলছে · ${done}/${total} সম্পন্ন`;
-        else hEl.textContent=`${done}/${total} chapter সম্পন্ন · পরেরটিতে এগোও`;
+        if(nearestName) hEl.textContent=`🎯 ${nearestName} in ${nearestDays} day${nearestDays===1?"":"s"} — stay focused!`;
+        else if(done===0) hEl.textContent="Keep going! Start your first chapter today.";
+        else if(pctVal>=100) hEl.textContent="Syllabus complete — time for revision! 🎉";
+        else if(streak>=7) hEl.textContent=`${streak}-day streak is amazing! Keep the momentum.`;
+        else hEl.textContent="Keep going! Your hard work will pay off.";
+      }
+      const at=document.getElementById("dashAchieveTitle");
+      const as=document.getElementById("dashAchieveSub");
+      if(at&&as){
+        if(streak>=12){ at.textContent="You're building consistency!"; as.textContent=streak+" days study streak is amazing!"; }
+        else if(done>=10){ at.textContent="Solid progress!"; as.textContent=done+" chapters completed — keep pushing."; }
+        else if(done>=1){ at.textContent="Great start!"; as.textContent="Every chapter counts. Stay consistent."; }
+        else { at.textContent="Ready to begin?"; as.textContent="Start studying to unlock achievements."; }
       }
     }catch(_e){}
+
     updateContinue();
+    try{ renderDashSubjects(); }catch(_e){}
+    try{ renderDashTodos(); }catch(_e){}
+    try{ renderDashWeek(); }catch(_e){}
+}
+
+function renderDashSubjects(){
+  const box=document.getElementById("dashSubjectList");
+  if(!box) return;
+  const rows=Object.entries(BOOKS).map(([b,arr])=>{
+    let done=0; arr.forEach((_,i)=>{ if(progress[chKey(b,i+1)]==="complete") done++; });
+    const pct=arr.length?(done/arr.length*100):0;
+    return {b, done, total:arr.length, pct, icon:ICONS[b]||"📘"};
+  }).sort((a,b)=>b.pct-a.pct);
+  box.innerHTML=rows.map(r=>`<div class="dash-subj-row">
+    <div class="dash-subj-icon">${r.icon}</div>
+    <div><div class="dash-subj-name">${esc(r.b)}</div>
+      <div class="dash-subj-meta">${r.done} / ${r.total} chapters</div>
+      <div class="progress" style="height:5px;margin-top:4px"><div class="fill" style="width:${r.pct}%"></div></div>
+    </div>
+    <div class="dash-subj-pct">${Math.round(r.pct)}%</div>
+  </div>`).join("");
+}
+
+function renderDashTodos(){
+  const box=document.getElementById("dashTodoList");
+  if(!box) return;
+  const td=today();
+  const list=(todos||[]).filter(t=>t.date===td).sort((a,b)=>{
+    if(a.status==="complete"&&b.status!=="complete") return 1;
+    if(b.status==="complete"&&a.status!=="complete") return -1;
+    return 0;
+  }).slice(0,5);
+  if(!list.length){ box.innerHTML='<div class="community-empty" style="padding:12px">No tasks for today — add from To-Do</div>'; return; }
+  box.innerHTML=list.map(t=>`<div class="dash-todo-item ${t.status==="complete"?"done":""}">
+    <div class="dash-todo-check"></div>
+    <div class="dash-todo-title">${esc(t.title||"Task")}</div>
+    <div class="dash-todo-time">${t.priority==="high"?"🔴":t.priority==="low"?"🟢":"🟡"}</div>
+  </div>`).join("");
+}
+
+function renderDashWeek(){
+  const heat=document.getElementById("dashWeekHeat");
+  const bars=document.getElementById("dashWeekBars");
+  const days=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const vals=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    const key=formatDateKey(d);
+    const sec=Number(history[key]?.totalSeconds||0);
+    vals.push({label:days[d.getDay()], sec, key});
+  }
+  const max=Math.max(1, ...vals.map(v=>v.sec));
+  if(heat){
+    heat.innerHTML=`<div></div>${vals.map(v=>`<div style="text-align:center">${v.label[0]}</div>`).join("")}`+
+      `<div style="font-size:9px;align-self:center">Act</div>`+
+      vals.map(v=>{
+        const lvl=v.sec<=0?0:v.sec<max*0.25?1:v.sec<max*0.5?2:v.sec<max*0.75?3:4;
+        return `<div class="dash-heat-cell l${lvl}" title="${v.key}: ${fmt(v.sec)}"></div>`;
+      }).join("");
+  }
+  if(bars){
+    bars.innerHTML=vals.map(v=>{
+      const h=Math.max(4, Math.round((v.sec/max)*100));
+      return `<div class="dash-bar-col"><div class="dash-bar" style="height:${h}%"></div><div class="dash-bar-label">${v.label}</div></div>`;
+    }).join("");
+  }
+}
+
+function handleGlobalSearch(v){
+  search=v||"";
+  const sInput=document.getElementById("searchInput");
+  if(sInput && sInput!==document.activeElement) sInput.value=search;
+  if(currentTab!=="syllabus") switchTab("syllabus");
+  else renderSyllabus();
 }
 
 function findContinue(){
@@ -2597,11 +2908,17 @@ let continueTarget=null;
 function updateContinue(){
     continueTarget=findContinue();
     const e=document.getElementById("continueCard");
+    if(!e)return;
     if(!continueTarget){e.style.display="none";return;}
-    e.style.display="flex";
-    document.getElementById("continueReason").textContent=continueTarget.reason;
-    document.getElementById("continueTitle").textContent=BOOKS[continueTarget.book][continueTarget.chapter-1];
-    document.getElementById("continueSub").textContent=`${continueTarget.book} · Chapter ${continueTarget.chapter}`;
+    e.style.display="block";
+    const r=document.getElementById("continueReason"); if(r) r.textContent=continueTarget.reason;
+    const t=document.getElementById("continueTitle"); if(t) t.textContent=BOOKS[continueTarget.book][continueTarget.chapter-1];
+    const s=document.getElementById("continueSub"); if(s) s.textContent=`${continueTarget.book} · Chapter ${continueTarget.chapter}`;
+    const cf=document.getElementById("continueFill");
+    if(cf){
+      const st=progress[chKey(continueTarget.book,continueTarget.chapter)]||"not-started";
+      cf.style.width=st==="complete"?"100%":st==="in-progress"?"50%":"10%";
+    }
 }
 
 function jumpToContinueTarget(){
@@ -2722,8 +3039,9 @@ function renderExams(){
         let p=fmtPct(raw);
         const d=document.createElement("div");
         d.className="card exam";
-        const parsedDate = e.date ? new Date(e.date + "T00:00:00") : null;
-const daysLeft = (parsedDate && !isNaN(parsedDate)) ? Math.round((parsedDate - new Date(today() + "T00:00:00")) / 86400000) : null;
+        const parsedDate = e.date ? parseLocalDate(e.date) : null;
+const todayStart = parseLocalDate(today());
+const daysLeft = (parsedDate && todayStart) ? Math.round((parsedDate.getTime() - todayStart.getTime()) / 86400000) : null;
 const daysText = (daysLeft != null && !isNaN(daysLeft)) ? ` · ${Math.max(0, daysLeft)} d left` : "";
 d.innerHTML=`<div class="row"><div><h3>${esc(e.name)}</h3><div class="date">📅 ${esc(e.date||"")}${daysText}</div></div><span class="filter">${(e.chapters||[]).length} chapters</span></div><div style="margin:10px 0 4px;font-size:11px;font-weight:800;display:flex;justify-content:space-between"><span>Preparation</span><strong style="color:var(--primary)">${done}/${chapters.length} (${p})</strong></div><div class="progress"><div class="fill" style="width:${raw}%"></div></div><div class="exam-actions"><button class="btn primary" onclick='openExamDetail(${JSON.stringify(e.id)})'>View Chapters</button><button class="btn" onclick='editExam(${JSON.stringify(e.id)})'>Edit</button><button class="btn" style="color:var(--danger)" onclick='openDeleteExamModal(${JSON.stringify(e.id)})'>Delete</button></div>`;
         box.appendChild(d);
@@ -3542,13 +3860,20 @@ function togglePomodoroPlay(){
 
 function pomoTick(){
     const now = Date.now();
-    
+    checkMidnightChange();
+
+    // Wall-clock delta from lastTick → now (capped to phase end). Handles background throttling.
     let activeSecondsPassed = 0;
-    if (lastTick > 0) {
-        activeSecondsPassed = Math.max(0, (Math.min(now, pomo.end) - Math.max(lastTick, 0)) / 1000);
+    if (lastTick > 0 && pomo.end > 0) {
+        const from = Math.max(0, lastTick);
+        const to = Math.min(now, pomo.end);
+        activeSecondsPassed = Math.max(0, (to - from) / 1000);
+        // Guard against absurd jumps (clock skew / tab restore glitches)
+        if(activeSecondsPassed > 6 * 3600) activeSecondsPassed = 0;
     }
-    lastTick = now;
-    
+    // Advance lastTick only up to phase end so we never re-credit past the end on a later tick.
+    lastTick = Math.min(now, pomo.end > 0 ? pomo.end : now);
+
     pomo.remaining = Math.max(0, Math.ceil((pomo.end - now) / 1000));
 
     if(pomo.mode==="focus" && activeSecondsPassed > 0 && pomo.book && pomo.chapter){
@@ -3578,6 +3903,7 @@ function pomoTick(){
     if(pomo.remaining<=0){
         clearInterval(pomo.timer);
         pomo.running=false;
+        // Credit any residual focus seconds up to end once more is already handled above.
         flushStudySeconds(true);
         clearBackgroundPomodoroNotification();
         handlePomoFinish();
@@ -3734,12 +4060,17 @@ function skipPomodoro(){
 // Memory buffer to eliminate battery drain & excessive localStorage I/O
 function addStudySeconds(b,c,sec){
     if(!b || !c || sec <= 0) return;
+    // Cross-midnight: flush previous day's buffer before accumulating on the new day.
+    const dayNow = today();
+    if(pendingStudySeconds > 0 && pendingStudyDay && pendingStudyDay !== dayNow){
+        flushStudySeconds(true);
+    }
     // If buffer holds time for a different chapter, flush it first so credits stay accurate.
     if(pendingStudySeconds > 0 && (pendingStudyBook !== b || pendingStudyChapter !== c)){
         flushStudySeconds(true);
     }
     if(pendingStudySeconds <= 0){
-        pendingStudyDay = today();
+        pendingStudyDay = dayNow;
         pendingStudyBook = b;
         pendingStudyChapter = c;
     }
@@ -3753,26 +4084,24 @@ function recordRecoveredFocusTime(startMs, endMs, book, chapter){
     let cursor = startMs;
     const ck = chKey(book, chapter);
     let guard = 0;
-    while(cursor < endMs && guard++ < 100){
-        const dayStart = new Date(cursor);
-        const nextMidnight = new Date(dayStart);
-        nextMidnight.setHours(24, 0, 0, 0);
-        const nextMidMs = nextMidnight.getTime();
+    // Split at each local midnight so recovered focus never lands on the wrong calendar day.
+    while(cursor < endMs && guard++ < 400){
+        const nextMidMs = localMidnightMs(cursor);
+        if(!Number.isFinite(nextMidMs)) break;
         const segmentEnd = Math.min(endMs, nextMidMs > cursor ? nextMidMs : cursor + 86400000);
-        const seconds = Math.max(0, (segmentEnd - cursor) / 1000);
-        if(seconds > 0){
-            const dayKey = formatDateKey(new Date(cursor));
-            const addSec = Math.round(seconds);
-            if(addSec > 0){
-                history[dayKey] ??= {totalSeconds:0,sessions:0,byBook:{},byChapter:{}};
-                history[dayKey].totalSeconds = (Number(history[dayKey].totalSeconds) || 0) + addSec;
-                history[dayKey].byBook ??= {};
-                history[dayKey].byChapter ??= {};
-                history[dayKey].byBook[book] = (Number(history[dayKey].byBook[book]) || 0) + addSec;
-                history[dayKey].byChapter[ck] = (Number(history[dayKey].byChapter[ck]) || 0) + addSec;
-            }
+        if(segmentEnd <= cursor) break;
+        const seconds = (segmentEnd - cursor) / 1000;
+        const dayKey = formatDateKey(new Date(cursor));
+        const addSec = Math.round(seconds);
+        if(dayKey && addSec > 0){
+            history[dayKey] ??= {totalSeconds:0,sessions:0,byBook:{},byChapter:{}};
+            history[dayKey].totalSeconds = (Number(history[dayKey].totalSeconds) || 0) + addSec;
+            history[dayKey].byBook ??= {};
+            history[dayKey].byChapter ??= {};
+            history[dayKey].byBook[book] = (Number(history[dayKey].byBook[book]) || 0) + addSec;
+            history[dayKey].byChapter[ck] = (Number(history[dayKey].byChapter[ck]) || 0) + addSec;
         }
-        cursor = (segmentEnd > cursor) ? segmentEnd : cursor + 86400000;
+        cursor = segmentEnd;
     }
     save(KEY.history, history);
     updateDashboard();
@@ -3814,93 +4143,100 @@ function flushStudySeconds(force = false){
 document.addEventListener("visibilitychange",()=>{
     checkMidnightChange();
     if(document.visibilityState === "hidden"){
+        // Snapshot state so background resume can reconcile wall-clock time once.
         flushStudySeconds(true);
         if(pomo.running){
             savePomoState();
             updateBackgroundPomodoroNotification(true);
         }
+        return;
     }
-    if(document.visibilityState==="visible"){
-        if(pomo.running && pomo.end > 0){
-            const now = Date.now();
-            if(now >= pomo.end){
-                if(pomo.mode === "focus"){
-                    // Focus ended while in background. Credit strictly this focus session.
-                    let activeSecondsPassed = 0;
-                    if(lastTick > 0){
-                        activeSecondsPassed = Math.max(0, (pomo.end - Math.max(lastTick, 0)) / 1000);
-                    }
-                    if(activeSecondsPassed > 0 && pomo.book && pomo.chapter){
-                        addStudySeconds(pomo.book, pomo.chapter, activeSecondsPassed);
-                    }
-                    flushStudySeconds(true);
+    if(document.visibilityState!=="visible") return;
+    if(!pomo.running || !(pomo.end > 0)) return;
 
-                    const breakEnd = pomo.end + pomo.break * 60 * 1000;
-                    if(now < breakEnd){
-                        // Break is currently active!
-                        pomo.mode = "break";
-                        pomo.end = breakEnd;
-                        pomo.remaining = Math.max(0, Math.ceil((breakEnd - now) / 1000));
-                        pomo.running = true;
-                        pomo.started = true;
-                        pomo.awaitingNext = false;
-                        lastTick = now;
-                                                clearInterval(pomo.timer);
-                        pomo.timer = setInterval(pomoTick, 500);
-                        playAlertSound();
-                        toast(`☕ Focus complete — ${fmt(pomo.remaining)} break remaining`);
-                        updateBackgroundPomodoroNotification(true);
-                                       } else {
-                        // Both focus and break finished while in background → auto-start next focus
-                        pomo.mode = "focus";
-                        pomo.session++;
-                        pomo.remaining = pomo.focus * 60;
-                        pomo.running = true;
-                        pomo.started = true;
-                        pomo.awaitingNext = false;
-                        lastTick = Date.now();
-                        pomo.end = Date.now() + pomo.remaining * 1000;
-                        clearInterval(pomo.timer);
-                        pomo.timer = setInterval(pomoTick, 500);
-                        playAlertSound();
-                        toast("🍅 Next focus session started!");
-                        updateBackgroundPomodoroNotification(true);
-                    }
-                    savePomoState();
-                    updatePomoDisplay();
-                    updateDashboard();
-                    return;
-                                } else {
-                    // Break ended while in background → auto-start next focus
-                    pomo.mode = "focus";
-                    pomo.session++;
-                    pomo.remaining = pomo.focus * 60;
-                    pomo.running = true;
-                    pomo.started = true;
-                    pomo.awaitingNext = false;
-                    lastTick = Date.now();
-                    pomo.end = Date.now() + pomo.remaining * 1000;
-                    clearInterval(pomo.timer);
-                    pomo.timer = setInterval(pomoTick, 500);
-                    playAlertSound();
-                    toast("🍅 Break finished — next focus started!");
-                    updateBackgroundPomodoroNotification(true);
-                    savePomoState();
-                    updatePomoDisplay();
-                    updateDashboard();
-                    return;
-                }
-            } else {
-                pomoTick();
-            }
-        }
+    const now = Date.now();
+    // Single reconciliation path: credit focus time once via pomoTick semantics, then advance lastTick.
+    if(now < pomo.end){
+        // Still inside current phase — one tick credits missed seconds without double-count.
+        pomoTick();
+        return;
     }
+
+    // Phase ended while backgrounded.
+    if(pomo.mode === "focus"){
+        // Credit remaining focus up to phase end only (lastTick may already be at end from a prior tick).
+        let activeSecondsPassed = 0;
+        if(lastTick > 0 && lastTick < pomo.end){
+            activeSecondsPassed = Math.max(0, (pomo.end - lastTick) / 1000);
+            if(activeSecondsPassed > 6 * 3600) activeSecondsPassed = 0;
+        }
+        if(activeSecondsPassed > 0 && pomo.book && pomo.chapter){
+            addStudySeconds(pomo.book, pomo.chapter, activeSecondsPassed);
+        }
+        lastTick = pomo.end;
+        flushStudySeconds(true);
+
+        const useLong = (pomo.cycles > 0) && (pomo.session % pomo.cycles === 0);
+        const breakMins = useLong ? (pomo.longBreak || 15) : (pomo.break || 5);
+        const breakEnd = pomo.end + breakMins * 60 * 1000;
+        if(now < breakEnd){
+            pomo.mode = "break";
+            pomo.end = breakEnd;
+            pomo.remaining = Math.max(0, Math.ceil((breakEnd - now) / 1000));
+            pomo.running = true;
+            pomo.started = true;
+            pomo.awaitingNext = false;
+            lastTick = now;
+            clearInterval(pomo.timer);
+            pomo.timer = setInterval(pomoTick, 500);
+            playAlertSound();
+            toast(`☕ Focus complete — ${fmt(pomo.remaining)} break remaining`);
+            updateBackgroundPomodoroNotification(true);
+        } else {
+            pomo.mode = "focus";
+            pomo.session++;
+            pomo.remaining = pomo.focus * 60;
+            pomo.running = true;
+            pomo.started = true;
+            pomo.awaitingNext = false;
+            lastTick = now;
+            pomo.end = now + pomo.remaining * 1000;
+            clearInterval(pomo.timer);
+            pomo.timer = setInterval(pomoTick, 500);
+            playAlertSound();
+            toast("🍅 Next focus session started!");
+            updateBackgroundPomodoroNotification(true);
+        }
+        savePomoState();
+        updatePomoDisplay();
+        updateDashboard();
+        return;
+    }
+
+    // Break ended while backgrounded → next focus
+    pomo.mode = "focus";
+    pomo.session++;
+    pomo.remaining = pomo.focus * 60;
+    pomo.running = true;
+    pomo.started = true;
+    pomo.awaitingNext = false;
+    lastTick = now;
+    pomo.end = now + pomo.remaining * 1000;
+    clearInterval(pomo.timer);
+    pomo.timer = setInterval(pomoTick, 500);
+    playAlertSound();
+    toast("🍅 Break finished — next focus started!");
+    updateBackgroundPomodoroNotification(true);
+    savePomoState();
+    updatePomoDisplay();
+    updateDashboard();
 });
 
 window.addEventListener("focus",()=>{
     checkMidnightChange();
-    if(pomo.running && pomo.end > 0 && Date.now() >= pomo.end){
-        document.dispatchEvent(new Event("visibilitychange"));
+    // visibilitychange already reconciles phase end; only soft-sync if still mid-phase.
+    if(pomo.running && pomo.end > 0 && document.visibilityState === "visible" && Date.now() < pomo.end){
+        pomoTick();
     }
 });
 
@@ -5165,12 +5501,14 @@ function checkAchievements(){
   }, { passive: false });
 
   function endDrag(e){
-    if(!drag || (e && e.pointerId !== drag.id)) return;
+    if(!drag) return;
+    if(e && e.pointerId != null && e.pointerId !== drag.id) return;
     const f = el();
-    const wasMoved = drag.moved;
+    const wasMoved = !!drag.moved;
+    const pid = drag.id;
     if(f){
       f.classList.remove("dragging");
-      try{ if(e) f.releasePointerCapture(drag.id); }catch(_e){}
+      try{ f.releasePointerCapture(pid); }catch(_e){}
       if(wasMoved){
         const rect = f.getBoundingClientRect();
         const side = sideFromX(rect.left + rect.width / 2, window.innerWidth);
@@ -5182,8 +5520,29 @@ function checkAchievements(){
     drag = null;
     if(open) openPomodoro();
   }
+  function forceEndDrag(){
+    if(!drag) return;
+    const f = el();
+    if(f){
+      f.classList.remove("dragging");
+      try{ f.releasePointerCapture(drag.id); }catch(_e){}
+      if(drag.moved){
+        try{
+          const rect = f.getBoundingClientRect();
+          const side = sideFromX(rect.left + rect.width / 2, window.innerWidth);
+          const bottom = window.innerHeight - rect.bottom;
+          applyPos(side, bottom);
+        }catch(_e){}
+      }
+    }
+    drag = null;
+  }
   document.addEventListener("pointerup", endDrag);
   document.addEventListener("pointercancel", endDrag);
+  // Safari / iOS: pointer can be lost on blur or tab switch without pointerup.
+  window.addEventListener("blur", forceEndDrag);
+  window.addEventListener("pointerup", forceEndDrag);
+  document.addEventListener("lostpointercapture", forceEndDrag);
 
   window.addEventListener("resize", ()=>{
     const p = loadPos();
@@ -6016,8 +6375,17 @@ async function communityJoinByCode(){
 
 /* ---------- open a community ---------- */
 function communityCleanupRealtime(){
-  if(communityRealtime&&communityClient){try{communityClient.removeChannel(communityRealtime);}catch(_e){}}
-  communityRealtime=null;communityStopPolling();
+  // Fully detach previous room channel before opening another (prevents leak / duplicate events).
+  try{
+    if(communityRealtime){
+      try{ if(typeof communityRealtime.unsubscribe==="function") communityRealtime.unsubscribe(); }catch(_e){}
+      if(communityClient){
+        try{ communityClient.removeChannel(communityRealtime); }catch(_e){}
+      }
+    }
+  }catch(_e){}
+  communityRealtime=null;
+  communityStopPolling();
 }
 function communityForceRefreshRoom(){
   if(!communityClient||!communityUser||!communityCurrent||communityCurrent.id==null){
