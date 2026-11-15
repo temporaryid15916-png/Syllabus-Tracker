@@ -7813,5 +7813,57 @@ document.addEventListener("click",event=>{
 document.addEventListener("DOMContentLoaded",()=>{communityWireInputs();communityInit();});
 </script>
 
+<!-- Dashboard Name Modal -->
+<div id="userNameModal" class="modal">
+  <div class="card modalbox" style="max-width:400px">
+
+    <div style="font-size:30px;margin-bottom:10px">
+      👋
+    </div>
+
+    <h3>Set Your Name</h3>
+
+    <p style="font-size:12px;color:var(--muted);margin:7px 0 16px">
+      Enter your name to personalize your dashboard greeting.
+    </p>
+
+    <label class="label" for="userNameInput">
+      Your Name
+    </label>
+
+    <input
+      id="userNameInput"
+      class="input"
+      type="text"
+      maxlength="32"
+      placeholder="Enter your name"
+      autocomplete="given-name"
+      style="margin-top:7px"
+      onkeydown="if(event.key==='Enter'){event.preventDefault();saveUserName();}"
+    >
+
+    <div class="modal-actions">
+
+      <button
+        type="button"
+        class="btn"
+        onclick="closeUserNameModal()"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="btn primary"
+        onclick="saveUserName()"
+      >
+        Save Name
+      </button>
+
+    </div>
+
+  </div>
+</div>
+
 </body>
 </html>
