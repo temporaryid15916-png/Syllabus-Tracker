@@ -400,8 +400,11 @@ button { cursor: pointer; border: 0; }
     box-shadow: 0 3px 12px rgba(79,70,229,.32);
 }
 
-.panel { display: none; }
+.panel { display: none; scroll-margin-top: 120px; }
 .panel.active { display: block; }
+@media (max-width: 760px) {
+  .panel { scroll-margin-top: 140px; }
+}
 
 /* ========== TOOLBAR ========== */
 .toolbar {
@@ -2126,7 +2129,7 @@ html.dark .dash-achieve { background: linear-gradient(145deg, #052e24, var(--car
     <div class="card dash-panel">
       <div class="row" style="margin-bottom:12px">
         <h3 class="dash-panel-title">📚 Subject progress</h3>
-        <button class="mini" onclick="switchTab('syllabus')">View all →</button>
+        <button class="mini" onclick="goToSection('syllabus')">📚 View all →</button>
       </div>
       <div id="dashSubjectList" class="dash-subject-list"></div>
     </div>
@@ -2144,7 +2147,7 @@ html.dark .dash-achieve { background: linear-gradient(145deg, #052e24, var(--car
       <div class="card dash-panel">
         <div class="row" style="margin-bottom:10px">
           <h3 class="dash-panel-title">📅 Today's plan</h3>
-          <button class="mini" onclick="switchTab('todo')">View all →</button>
+          <button class="mini" onclick="goToSection('todo')">✅ View all →</button>
         </div>
         <div id="dashTodoList" class="dash-todo-list"><div class="community-empty" style="padding:16px">No tasks for today</div></div>
       </div>
@@ -2152,7 +2155,7 @@ html.dark .dash-achieve { background: linear-gradient(145deg, #052e24, var(--car
         <div class="dash-achieve-icon">🏆</div>
         <h3 class="dash-panel-title" id="dashAchieveTitle">You're building consistency!</h3>
         <p class="sub" id="dashAchieveSub">Start studying to unlock achievements</p>
-        <button class="btn" style="margin-top:10px" onclick="switchTab('insights')">View Achievements →</button>
+        <button class="btn" style="margin-top:10px" onclick="goToSection('insights')">🏆 View Achievements →</button>
       </div>
     </div>
   </div>
@@ -2161,14 +2164,14 @@ html.dark .dash-achieve { background: linear-gradient(145deg, #052e24, var(--car
     <div class="card dash-panel">
       <div class="row" style="margin-bottom:8px">
         <h3 class="dash-panel-title">Weekly study activity</h3>
-        <button class="mini" onclick="switchTab('reports')">Reports →</button>
+        <button class="mini" onclick="goToSection('reports')">📈 Reports →</button>
       </div>
       <div id="dashWeekHeat" class="dash-week-heat"></div>
     </div>
     <div class="card dash-panel">
       <div class="row" style="margin-bottom:8px">
         <h3 class="dash-panel-title">Weekly study time</h3>
-        <button class="mini" onclick="switchTab('history')">History →</button>
+        <button class="mini" onclick="goToSection('history')">📊 History →</button>
       </div>
       <div id="dashWeekBars" class="dash-week-bars"></div>
     </div>
@@ -2753,7 +2756,7 @@ function toggleTheme(){
     applyTheme(!document.documentElement.classList.contains("dark"));
 }
 
-function switchTab(t){
+function switchTab(t, opts){
     currentTab=t;
     document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===t));
     document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===t+"Panel"));
@@ -2776,6 +2779,21 @@ function switchTab(t){
         }
       }catch(_e){}
     }
+    if(opts && opts.scroll){
+      const panel = document.getElementById(t + "Panel");
+      if(panel){
+        requestAnimationFrame(()=>{
+          setTimeout(()=>{
+            try{ panel.scrollIntoView({ behavior: "smooth", block: "start" }); }
+            catch(_e){ panel.scrollIntoView(true); }
+          }, 40);
+        });
+      }
+    }
+}
+
+function goToSection(tab){
+  switchTab(tab, { scroll: true });
 }
 
 function updateDashboard(){
