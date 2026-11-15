@@ -17,43 +17,45 @@
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-    --bg: #f1f5f9;
+    --bg: #f8fafc;
     --card: #ffffff;
-    --soft: #e8eef6;
+    --soft: #f1f5f9;
     --text: #0f172a;
     --muted: #64748b;
     --border: #e2e8f0;
     --primary: #4f46e5;
-    --primary-soft: #e0e7ff;
+    --primary-soft: #eef2ff;
     --success: #059669;
-    --success-soft: #d1fae5;
+    --success-soft: #ecfdf5;
     --warning: #d97706;
-    --warning-soft: #fef3c7;
+    --warning-soft: #fffbeb;
     --danger: #e11d48;
     --purple: #7c3aed;
-    --shadow: 0 2px 12px -2px rgba(15,23,42,.07);
-    --shadow-lg: 0 12px 32px -8px rgba(15,23,42,.12);
+    --shadow: 0 1px 3px rgba(15,23,42,.04), 0 4px 16px -4px rgba(15,23,42,.08);
+    --shadow-lg: 0 8px 30px -8px rgba(15,23,42,.14);
     --radius: 16px;
     --radius-sm: 12px;
+    --ring: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent);
 }
 
 html.dark, body.dark {
-    --bg: #070b14;
-    --card: #0f172a;
-    --soft: #1a2438;
+    --bg: #060a12;
+    --card: #0c1322;
+    --soft: #141c2e;
     --text: #f1f5f9;
     --muted: #94a3b8;
-    --border: #1e2a3f;
+    --border: #1c2740;
     --primary: #818cf8;
-    --primary-soft: #1e1b4b;
+    --primary-soft: #1a1a3e;
     --success: #34d399;
-    --success-soft: #064e3b;
+    --success-soft: #052e24;
     --warning: #fbbf24;
-    --warning-soft: #422006;
+    --warning-soft: #3b2306;
     --danger: #fb7185;
     --purple: #a78bfa;
-    --shadow: 0 2px 12px -2px rgba(0,0,0,.35);
-    --shadow-lg: 0 14px 36px -8px rgba(0,0,0,.5);
+    --shadow: 0 1px 3px rgba(0,0,0,.25), 0 4px 18px -4px rgba(0,0,0,.4);
+    --shadow-lg: 0 12px 36px -8px rgba(0,0,0,.55);
+    --ring: 0 0 0 3px color-mix(in srgb, var(--primary) 22%, transparent);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -85,16 +87,18 @@ body::before {
     position: fixed;
     inset: 0;
     background:
-        radial-gradient(ellipse 80% 50% at 15% -10%, rgba(79,70,229,.09), transparent 55%),
-        radial-gradient(ellipse 60% 40% at 90% 5%, rgba(124,58,237,.06), transparent 50%);
+        radial-gradient(ellipse 90% 55% at 12% -8%, rgba(79,70,229,.11), transparent 58%),
+        radial-gradient(ellipse 70% 45% at 92% 0%, rgba(124,58,237,.07), transparent 52%),
+        radial-gradient(ellipse 50% 30% at 50% 100%, rgba(79,70,229,.04), transparent 60%);
     pointer-events: none;
     z-index: -1;
 }
 
 html.dark body::before {
     background:
-        radial-gradient(ellipse 80% 50% at 15% -10%, rgba(129,140,248,.08), transparent 55%),
-        radial-gradient(ellipse 60% 40% at 90% 5%, rgba(167,139,250,.05), transparent 50%);
+        radial-gradient(ellipse 90% 55% at 12% -8%, rgba(129,140,248,.1), transparent 58%),
+        radial-gradient(ellipse 70% 45% at 92% 0%, rgba(167,139,250,.07), transparent 52%),
+        radial-gradient(ellipse 50% 30% at 50% 100%, rgba(129,140,248,.03), transparent 60%);
 }
 
 button, input, select, textarea { font: inherit; }
@@ -105,9 +109,9 @@ button { cursor: pointer; border: 0; }
     position: sticky;
     top: 0;
     z-index: 100;
-    background: color-mix(in srgb, var(--bg) 78%, transparent);
-    backdrop-filter: blur(18px) saturate(160%);
-    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     border-bottom: 1px solid var(--border);
 }
 
@@ -161,42 +165,46 @@ button { cursor: pointer; border: 0; }
     border: 1px solid var(--border);
     background: var(--card);
     color: var(--text);
-    padding: 8px 13px;
-    border-radius: 10px;
+    padding: 8px 14px;
+    border-radius: 11px;
     font-size: 12px;
     font-weight: 650;
     transition: all .18s ease;
     box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    letter-spacing: -.01em;
 }
 
 .btn:hover {
     border-color: var(--primary);
     color: var(--primary);
     transform: translateY(-1px);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--primary) 12%, transparent);
 }
 
 .btn.primary {
     background: linear-gradient(135deg, #4f46e5, #4338ca);
     border-color: transparent;
     color: #fff;
-    box-shadow: 0 3px 12px rgba(79,70,229,.3);
+    box-shadow: 0 4px 14px rgba(79,70,229,.32);
 }
 
 .btn.primary:hover {
-    filter: brightness(1.08);
+    filter: brightness(1.07);
     color: #fff;
+    box-shadow: 0 6px 18px rgba(79,70,229,.4);
 }
 
 .btn.danger {
     background: linear-gradient(135deg, #e11d48, #be123c);
     border-color: transparent;
     color: #fff;
-    box-shadow: 0 3px 12px rgba(225,29,72,.25);
+    box-shadow: 0 4px 14px rgba(225,29,72,.28);
 }
 
 .btn.danger:hover {
-    filter: brightness(1.08);
+    filter: brightness(1.07);
     color: #fff;
+    box-shadow: 0 6px 18px rgba(225,29,72,.35);
 }
 
 /* ========== LAYOUT ========== */
@@ -220,7 +228,7 @@ button { cursor: pointer; border: 0; }
 }
 
 .stat {
-    padding: 14px 14px;
+    padding: 15px 15px;
     position: relative;
     overflow: hidden;
 }
@@ -233,6 +241,11 @@ button { cursor: pointer; border: 0; }
     right: 0;
     height: 3px;
     background: linear-gradient(90deg, #4f46e5, #7c3aed);
+}
+
+.stat:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-1px);
 }
 
 .label {
@@ -359,15 +372,17 @@ button { cursor: pointer; border: 0; }
     margin-bottom: 14px;
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 13px;
+    border-radius: 14px;
     overflow-x: auto;
     box-shadow: var(--shadow);
+    scrollbar-width: none;
 }
+.tabs::-webkit-scrollbar { display: none; }
 
 .tab {
     white-space: nowrap;
     padding: 8px 13px;
-    border-radius: 9px;
+    border-radius: 10px;
     background: transparent;
     color: var(--muted);
     font-size: 12px;
@@ -383,7 +398,7 @@ button { cursor: pointer; border: 0; }
 .tab.active {
     background: linear-gradient(135deg, #4f46e5, #4338ca);
     color: #fff;
-    box-shadow: 0 3px 12px rgba(79,70,229,.3);
+    box-shadow: 0 3px 12px rgba(79,70,229,.32);
 }
 
 .panel { display: none; }
@@ -1854,6 +1869,23 @@ footer {
 </div></header>
 
 <main class="container">
+
+<!-- Premium Welcome / Command Center -->
+<section class="card" id="welcomeBar" style="padding:16px 18px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:linear-gradient(135deg,var(--primary-soft) 0%,var(--card) 60%);border:1px solid color-mix(in srgb,var(--primary) 22%,var(--border))">
+  <div style="min-width:0">
+    <div class="kicker" id="welcomeGreeting" style="margin-bottom:2px">Welcome back</div>
+    <h2 id="welcomeDate" style="font-size:15px;font-weight:750;letter-spacing:-.02em;margin:0">—</h2>
+    <p id="welcomeHint" class="sub" style="margin-top:3px">Track · Focus · Complete your HSC syllabus</p>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <div style="text-align:right">
+      <div class="label">Overall</div>
+      <div id="welcomePct" style="font-size:20px;font-weight:800;color:var(--primary);letter-spacing:-.03em">0.00%</div>
+    </div>
+    <button class="btn primary" onclick="openPomodoro()" style="min-height:40px">🍅 Start Focus</button>
+  </div>
+</section>
+
 <section class="grid4">
   <div class="stat"><div class="label">Total Chapters</div><div id="statTotal" class="value">75</div><div class="sub">8 subjects</div></div>
   <div class="stat"><div class="label">Completed</div><div id="statCompleted" class="value" style="color:var(--success)">0</div><div class="sub">Finished chapters</div></div>
@@ -2137,10 +2169,17 @@ footer {
     <div style="font-size:11.5px;font-weight:750;color:var(--muted);margin-bottom:6px">Custom Session Duration</div>
     <div style="display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap">
       <span class="label">Focus:</span>
-      <input id="pomoCustomFocus" class="input" style="width:65px;padding:5px;text-align:center" type="number" min="1" max="240" step="1" value="25">
-      <span class="label">min | Break:</span>
-      <input id="pomoCustomBreak" class="input" style="width:60px;padding:5px;text-align:center" type="number" min="1" max="60" step="1" value="5">
+      <input id="pomoCustomFocus" class="input" style="width:58px;padding:5px;text-align:center" type="number" min="1" max="240" step="1" value="25">
+      <span class="label">min · Short:</span>
+      <input id="pomoCustomBreak" class="input" style="width:52px;padding:5px;text-align:center" type="number" min="1" max="60" step="1" value="5">
+      <span class="label">min · Long:</span>
+      <input id="pomoCustomLongBreak" class="input" style="width:52px;padding:5px;text-align:center" type="number" min="1" max="60" step="1" value="15">
       <span class="label">min</span>
+    </div>
+    <div style="display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px">
+      <span class="label">Long break after</span>
+      <input id="pomoCustomCycles" class="input" style="width:48px;padding:5px;text-align:center" type="number" min="1" max="12" step="1" value="4">
+      <span class="label">focus sessions</span>
       <button class="btn primary" style="padding:6px 10px;font-size:11.5px" onclick="applyCustomPomoTime()">Apply</button>
     </div>
   </div>
@@ -2320,6 +2359,12 @@ footer {
   <div>©turabi_alam</div>
   <div style="margin-top:3px">Study • Track • Complete</div>
   <div style="margin-top:3px">Made with ❤️ for HSC Students</div>
+  <div style="margin-top:12px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap">
+    <button class="mini" onclick="exportBackup()" title="Download all local data as JSON">⬇ Backup</button>
+    <button class="mini" onclick="document.getElementById('backupImportInput').click()" title="Restore from a backup file">⬆ Restore</button>
+    <input id="backupImportInput" type="file" accept="application/json,.json" style="display:none" onchange="importBackup(event)">
+  </div>
+  <div class="sub" style="margin-top:6px">Keyboard: <kbd style="background:var(--soft);padding:1px 5px;border-radius:4px">P</kbd> Pomodoro · <kbd style="background:var(--soft);padding:1px 5px;border-radius:4px">1–9</kbd> Tabs · <kbd style="background:var(--soft);padding:1px 5px;border-radius:4px">/</kbd> Search</div>
 </footer>
 
 <script>
@@ -2502,6 +2547,42 @@ if(upcoming.length){
   }
 }
 document.getElementById("quickExams").textContent=upcoming.length+daysLeftText;
+
+    // Premium welcome bar
+    try{
+      const hour=new Date().getHours();
+      const greet=hour<12?"শুভ সকাল":hour<17?"শুভ দুপুর":hour<21?"শুভ সন্ধ্যা":"শুভ রাত্রি";
+      const gEl=document.getElementById("welcomeGreeting");
+      if(gEl) gEl.textContent=greet+" · Welcome back";
+      const dEl=document.getElementById("welcomeDate");
+      if(dEl) dEl.textContent=new Date().toLocaleDateString("bn-BD",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+      const pEl=document.getElementById("welcomePct");
+      if(pEl) pEl.textContent=pctStr;
+      const hEl=document.getElementById("welcomeHint");
+      if(hEl){
+        // Prefer nearest exam countdown when available
+        let examHint = "";
+        try{
+          const upcomingSorted = exams.filter(e=>e.date && e.date>=today()).map(e=>{
+            const d1=new Date(today()+"T00:00:00");
+            const d2=new Date(e.date+"T00:00:00");
+            const days = isNaN(d2)?null:Math.round((d2-d1)/86400000);
+            return {name:e.name, days};
+          }).filter(x=>x.days!=null).sort((a,b)=>a.days-b.days);
+          if(upcomingSorted.length){
+            const n = upcomingSorted[0];
+            examHint = n.days===0
+              ? `🎯 আজ: ${n.name}`
+              : `🎯 ${n.name} — ${n.days} দিন বাকি`;
+          }
+        }catch(_e){}
+        if(examHint) hEl.textContent = examHint;
+        else if(done===0) hEl.textContent="আজই প্রথম chapter শুরু করো — Focus দিয়ে শুরু করো";
+        else if(pctVal>=100) hEl.textContent="সম্পূর্ণ syllabus শেষ! Revision-এ মনোযোগ দাও 🎉";
+        else if(inp>0) hEl.textContent=`${inp} chapter চলছে · ${done}/${total} সম্পন্ন`;
+        else hEl.textContent=`${done}/${total} chapter সম্পন্ন · পরেরটিতে এগোও`;
+      }
+    }catch(_e){}
     updateContinue();
 }
 
@@ -2587,6 +2668,21 @@ function toggleChapterStatus(b,c){
       progress[k]="complete";
       toast("🟢 Complete!");
       try{ offerTodoSyncOnChapterComplete(b,c); }catch(_e){}
+      // Smart revision: schedule next review if not already tracked
+      try{
+        const rk = chKey(b,c);
+        if(!revisions[rk] || revisions[rk].status==="done"){
+          const due = new Date(); due.setDate(due.getDate() + (revisionIntervalDays||7));
+          revisions[rk] = {
+            book:b, chapter:c,
+            due: formatDateKey(due),
+            status: "upcoming",
+            createdAt: new Date().toISOString(),
+            interval: revisionIntervalDays||7
+          };
+          saveRevisions();
+        }
+      }catch(_e){}
     }
     else {delete progress[k];toast("⚪ Not Started");}
     last={book:b,chapter:c};
@@ -2761,7 +2857,9 @@ function startPomodoroForExam(){
 
 // Pomodoro Timer with Buffered Storage & Performance Guard
 let pomo = {
-    running:false,started:false,awaitingNext:false,mode:"focus",focus:25,break:5,remaining:1500,end:0,book:"",chapter:null,session:1,timer:null
+    running:false,started:false,awaitingNext:false,mode:"focus",
+    focus:25,break:5,longBreak:15,cycles:4,
+    remaining:1500,end:0,book:"",chapter:null,session:1,timer:null
 };
 let lastTick = Date.now();
 let lastBgNotificationAt = 0;
@@ -3163,14 +3261,19 @@ function applyCustomPomoTime(){
 
     const f=Math.round(Math.max(1,Math.min(240,Number(document.getElementById("pomoCustomFocus").value)||25)));
     const b=Math.round(Math.max(1,Math.min(60,Number(document.getElementById("pomoCustomBreak").value)||5)));
+    const lb=Math.round(Math.max(1,Math.min(60,Number(document.getElementById("pomoCustomLongBreak")?.value)||15)));
+    const cy=Math.round(Math.max(1,Math.min(12,Number(document.getElementById("pomoCustomCycles")?.value)||4)));
 
     pomo.focus=f;
     pomo.break=b;
-    const newTotal=(pomo.mode==="focus"?pomo.focus:pomo.break)*60;
+    pomo.longBreak=lb;
+    pomo.cycles=cy;
+    const breakMin = (pomo.mode==="break" && (pomo.session % pomo.cycles === 0)) ? pomo.longBreak : pomo.break;
+    const newTotal=(pomo.mode==="focus"?pomo.focus:breakMin)*60;
     if(!pomo.started || !pomo.running){
         pomo.remaining=newTotal;
     } else {
-        const oldTotal=(pomo.mode==="focus"?pomo.focus:pomo.break)*60;
+        const oldTotal=(pomo.mode==="focus"?pomo.focus:breakMin)*60;
         const oldRemaining=Math.max(0,Number(pomo.remaining)||0);
         const elapsed=Math.max(0,oldTotal-oldRemaining);
         pomo.remaining=Math.max(0,newTotal-Math.min(elapsed,newTotal));
@@ -3178,7 +3281,7 @@ function applyCustomPomoTime(){
 
     savePomoState();
     updatePomoDisplay();
-    toast(`⏱ Custom duration applied: ${f}m focus / ${b}m break`);
+    toast(`⏱ Applied: ${f}m focus / ${b}m short / ${lb}m long (every ${cy})`);
 }
 function updatePomoDisplay(){
     const remaining=Math.max(0,Math.round(Number(pomo.remaining)||0));
@@ -3188,13 +3291,15 @@ function updatePomoDisplay(){
     const clockEl = document.getElementById("pomoClock");
     if(clockEl) clockEl.textContent=timeStr;
 
-    let total=(pomo.mode==="focus"?pomo.focus:pomo.break)*60;
+    const isLongBreak = pomo.mode==="break" && pomo.cycles>0 && (pomo.session % pomo.cycles === 0);
+    const breakMinsNow = isLongBreak ? (pomo.longBreak||15) : (pomo.break||5);
+    let total=(pomo.mode==="focus"?pomo.focus:breakMinsNow)*60;
 
     const progFill = document.getElementById("pomoProgressFill");
     if(progFill) progFill.style.width=Math.max(0,Math.min(100,(total-remaining)/Math.max(1,total)*100))+"%";
 
     const tagEl = document.getElementById("pomoSessionTag");
-    if(tagEl) tagEl.textContent=`${pomo.mode==="focus"?"🍅 Focus":"☕ Break"} · Session ${pomo.session}`;
+    if(tagEl) tagEl.textContent=`${pomo.mode==="focus"?"🍅 Focus":(isLongBreak?"☕ Long Break":"☕ Break")} · Session ${pomo.session}`;
 
     const startBtn = document.getElementById("pomoStartBtn");
     if(startBtn) startBtn.textContent=pomo.running?"⏸ Pause":(pomo.awaitingNext?"▶ Start Next":"▶ Start");
@@ -3243,7 +3348,9 @@ if(headerBtn){
 function savePomoState(){
     try{
         localStorage.setItem("syllabusPomoState",JSON.stringify({
-            running:pomo.running,started:pomo.started,awaitingNext:pomo.awaitingNext,mode:pomo.mode,focus:pomo.focus,break:pomo.break,remaining:pomo.remaining,end:pomo.end,book:pomo.book,chapter:pomo.chapter,session:pomo.session,lastTick:lastTick
+            running:pomo.running,started:pomo.started,awaitingNext:pomo.awaitingNext,mode:pomo.mode,
+            focus:pomo.focus,break:pomo.break,longBreak:pomo.longBreak,cycles:pomo.cycles,
+            remaining:pomo.remaining,end:pomo.end,book:pomo.book,chapter:pomo.chapter,session:pomo.session,lastTick:lastTick
         }));
     }catch(e){}
 }
@@ -3257,6 +3364,8 @@ function restorePomoState(){
         pomo.chapter = (pomo.book && BOOKS[pomo.book]?.[Number(st.chapter)-1]) ? Number(st.chapter) : null;
         if(Number.isFinite(Number(st.focus))) pomo.focus = Math.round(Math.max(1, Math.min(240, Number(st.focus))));
         if(Number.isFinite(Number(st.break))) pomo.break = Math.round(Math.max(1, Math.min(60, Number(st.break))));
+        if(Number.isFinite(Number(st.longBreak))) pomo.longBreak = Math.round(Math.max(1, Math.min(60, Number(st.longBreak))));
+        if(Number.isFinite(Number(st.cycles))) pomo.cycles = Math.round(Math.max(1, Math.min(12, Number(st.cycles))));
         if(Number.isFinite(st.session)) pomo.session = Math.max(1, Number(st.session));
 
         pomo.started = !!st.started;
@@ -3269,17 +3378,25 @@ function restorePomoState(){
 
         const focusInput = document.getElementById("pomoCustomFocus");
         const breakInput = document.getElementById("pomoCustomBreak");
+        const longInput = document.getElementById("pomoCustomLongBreak");
+        const cyclesInput = document.getElementById("pomoCustomCycles");
         if(focusInput) focusInput.value = pomo.focus;
         if(breakInput) breakInput.value = pomo.break;
+        if(longInput) longInput.value = pomo.longBreak || 15;
+        if(cyclesInput) cyclesInput.value = pomo.cycles || 4;
 
         if(st.running && pomo.end > 0 && pomo.book && pomo.chapter){
             const now = Date.now();
             let phaseEnd = pomo.end;
             let mode = pomo.mode;
             let session = pomo.session;
-            const durationFor = m => (m === "focus" ? pomo.focus : pomo.break) * 60000;
+            const durationFor = (m, sess) => {
+              if(m === "focus") return pomo.focus * 60000;
+              const useLong = (pomo.cycles > 0) && (sess % pomo.cycles === 0);
+              return (useLong ? (pomo.longBreak||15) : pomo.break) * 60000;
+            };
             const savedLastTick = Math.max(0, Number(st.lastTick) || (phaseEnd - pomo.remaining * 1000));
-            const phaseStart = Math.max(savedLastTick, phaseEnd - durationFor(mode));
+            const phaseStart = Math.max(savedLastTick, phaseEnd - durationFor(mode, session));
 
             if(mode === "focus"){
                 // Recover focus time strictly for this session up to phaseEnd
@@ -3301,7 +3418,7 @@ function restorePomoState(){
                     pomo.timer = setInterval(pomoTick, 500);
                 } else {
                     // Focus session finished while app was closed. Automatically transition to break!
-                    const breakEnd = phaseEnd + durationFor("break");
+                    const breakEnd = phaseEnd + durationFor("break", session);
                     if(now < breakEnd){
                         // Break is currently active!
                         pomo.mode = "break";
@@ -3491,16 +3608,20 @@ function handlePomoFinish(){
             save(KEY.history, history);
         }catch(_e){}
 
-        // Focus finished: Automatically start break.
+        // Focus finished: Automatically start break (long break every N sessions).
+        const useLong = (pomo.cycles > 0) && (pomo.session % pomo.cycles === 0);
+        const breakMins = useLong ? (pomo.longBreak || 15) : (pomo.break || 5);
         sendSysNotification(
             "🎉 Focus Complete!",
-            `Finished studying ${pomo.book} • ${chName}. Break starting!`
+            `Finished studying ${pomo.book} • ${chName}. ${useLong?"Long break":"Break"} starting!`
         );
 
-        toast(`☕ Focus complete — ${pomo.break}m break started!`);
+        toast(useLong
+          ? `☕ Focus complete — ${breakMins}m long break started!`
+          : `☕ Focus complete — ${breakMins}m break started!`);
 
         pomo.mode = "break";
-        pomo.remaining = pomo.break * 60;
+        pomo.remaining = breakMins * 60;
         pomo.running = true;
         pomo.started = true;
         pomo.awaitingNext = false;
@@ -5104,6 +5225,103 @@ document.addEventListener("click", (ev)=>{
   }
 });
 
+/* ========== Backup / Restore (safe, validates structure) ========== */
+function exportBackup(){
+  try{
+    flushStudySeconds(true);
+    savePomoState();
+    const payload = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      app: "Syllabus Tracker",
+      data: {
+        progress: load(KEY.progress, {}),
+        last: load(KEY.last, null),
+        collapsed: load(KEY.collapsed, {}),
+        history: load(KEY.history, {}),
+        exams: load(KEY.exams, []),
+        goal: Number(localStorage.getItem(KEY.goal)) || 120,
+        weeklyGoal: Number(localStorage.getItem(KEY.weeklyGoal)) || 600,
+        todos: load(KEY.todos, []),
+        todoPlans: load(KEY.todoPlans, []),
+        notes: load(KEY.notes, {}),
+        revisions: load(KEY.revisions, {}),
+        achievements: load(KEY.achievements, {}),
+        revisionInterval: Number(localStorage.getItem(KEY.revisionInterval)) || 7,
+        theme: localStorage.getItem(KEY.theme) || "light",
+        pomoState: (()=>{ try{ return JSON.parse(localStorage.getItem("syllabusPomoState")||"null"); }catch{ return null; } })()
+      }
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `syllabus-tracker-backup-${today()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+    toast("⬇ Backup downloaded");
+  }catch(e){
+    toast("Backup failed");
+    console.error(e);
+  }
+}
+
+function importBackup(ev){
+  const file = ev?.target?.files?.[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const raw = JSON.parse(String(reader.result||""));
+      if(!raw || typeof raw !== "object" || !raw.data || typeof raw.data !== "object"){
+        toast("Invalid backup file");
+        return;
+      }
+      const d = raw.data;
+      // Validate types before writing — never silently overwrite with garbage
+      if(d.progress && typeof d.progress === "object" && !Array.isArray(d.progress)) save(KEY.progress, d.progress);
+      if(d.last !== undefined) save(KEY.last, d.last);
+      if(d.collapsed && typeof d.collapsed === "object") save(KEY.collapsed, d.collapsed);
+      if(d.history && typeof d.history === "object" && !Array.isArray(d.history)) save(KEY.history, d.history);
+      if(Array.isArray(d.exams)) save(KEY.exams, d.exams);
+      if(Number.isFinite(Number(d.goal)) && Number(d.goal) >= 10) localStorage.setItem(KEY.goal, String(Math.round(Number(d.goal))));
+      if(Number.isFinite(Number(d.weeklyGoal)) && Number(d.weeklyGoal) >= 30) localStorage.setItem(KEY.weeklyGoal, String(Math.round(Number(d.weeklyGoal))));
+      if(Array.isArray(d.todos)) save(KEY.todos, d.todos);
+      if(Array.isArray(d.todoPlans)) save(KEY.todoPlans, d.todoPlans);
+      if(d.notes && typeof d.notes === "object") save(KEY.notes, d.notes);
+      if(d.revisions && typeof d.revisions === "object") save(KEY.revisions, d.revisions);
+      if(d.achievements && typeof d.achievements === "object") save(KEY.achievements, d.achievements);
+      if(Number.isFinite(Number(d.revisionInterval))) localStorage.setItem(KEY.revisionInterval, String(Math.max(1, Math.min(90, Math.round(Number(d.revisionInterval))))));
+      if(d.theme === "dark" || d.theme === "light") localStorage.setItem(KEY.theme, d.theme);
+      if(d.pomoState && typeof d.pomoState === "object"){
+        try{ localStorage.setItem("syllabusPomoState", JSON.stringify(d.pomoState)); }catch(_e){}
+      }
+      toast("✅ Restore complete — reloading…");
+      setTimeout(()=> location.reload(), 700);
+    }catch(e){
+      toast("Could not read backup file");
+      console.error(e);
+    }finally{
+      try{ ev.target.value = ""; }catch(_e){}
+    }
+  };
+  reader.onerror = ()=> toast("File read error");
+  reader.readAsText(file);
+}
+
+/* Keyboard shortcuts (desktop) */
+document.addEventListener("keydown", (e)=>{
+  const tag = (e.target && e.target.tagName || "").toLowerCase();
+  if(tag === "input" || tag === "textarea" || tag === "select" || e.target?.isContentEditable) return;
+  if(e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key;
+  if(k === "p" || k === "P"){ e.preventDefault(); openPomodoro(); return; }
+  if(k === "/"){ e.preventDefault(); switchTab("syllabus"); const s=document.getElementById("searchInput"); if(s){ s.focus(); s.select?.(); } return; }
+  if(k === "d" || k === "D"){ e.preventDefault(); toggleTheme(); return; }
+  const tabMap = {"1":"syllabus","2":"exams","3":"todo","4":"history","5":"insights","6":"notes","7":"revision","8":"reports","9":"community"};
+  if(tabMap[k]){ e.preventDefault(); switchTab(tabMap[k]); }
+});
+
 function init(){
     const sel=document.getElementById("bookSelectFilter");
     sel.innerHTML=`<option value="all">📚 All Subjects</option>`+Object.keys(BOOKS).map(b=>`<option>${b}</option>`).join("");
@@ -6184,6 +6402,13 @@ async function communityLoadMembers(id,silent){
   // Equal visibility: every Community member can see every member's shared progress.
   // Do not filter progress rows based on owner/admin/member role.
   const canSeeAllProgress=true;
+  // Leaderboard-style sort: higher completion first, then today's study time.
+  rows.sort((a,b)=>{
+    const pa = (Number(a.total_chapters)>0) ? (Number(a.completed_chapters)||0)/(Number(a.total_chapters)||1) : 0;
+    const pb = (Number(b.total_chapters)>0) ? (Number(b.completed_chapters)||0)/(Number(b.total_chapters)||1) : 0;
+    if(pb!==pa) return pb-pa;
+    return (Number(b.today_seconds)||0) - (Number(a.today_seconds)||0);
+  });
   const sharedIds=new Set(rows.map(r=>communitySid(r.user_id)));
   const label=uid=>communityEsc(communityName(uid))+(communitySame(uid,me)?" (You)":"");
     const cards=rows.map(m=>{
