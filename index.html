@@ -3140,18 +3140,55 @@ function goToSection(tab){
   switchTab(tab, { scroll: true });
 }
 
+
 function editUserName(){
-  let cur="";
-  try{ cur=(localStorage.getItem("syllabusUserName")||"").trim(); }catch(_e){}
-  const next=prompt("তোমার নাম লিখো (dashboard greeting-এ দেখাবে):\nLeave empty to clear.", cur);
-  if(next===null) return;
-  const cleaned=String(next).trim().slice(0,32);
+  const modal = document.getElementById("userNameModal");
+  const input = document.getElementById("userNameInput");
+
+  if(!modal || !input) return;
+
+  input.value = "";
+  modal.classList.add("show");
+
+  setTimeout(() => {
+    input.focus();
+  }, 100);
+}
+
+function closeUserNameModal(){
+  const modal = document.getElementById("userNameModal");
+  if(modal) modal.classList.remove("show");
+}
+
+function saveUserName(){
+  const input = document.getElementById("userNameInput");
+  if(!input) return;
+
+  const cleaned = String(input.value || "").trim().slice(0,32);
+
+  if(!cleaned){
+    if(typeof toast === "function"){
+      toast("Please enter your name.");
+    }
+    input.focus();
+    return;
+  }
+
   try{
-    if(cleaned) localStorage.setItem("syllabusUserName", cleaned);
-    else localStorage.removeItem("syllabusUserName");
+    localStorage.setItem("syllabusUserName", cleaned);
   }catch(_e){}
-  try{ updateDashboard(); }catch(_e){}
-  try{ if(typeof toast==="function") toast(cleaned ? ("Name saved: "+cleaned) : "Name cleared"); }catch(_e){}
+
+  closeUserNameModal();
+
+  try{
+    updateDashboard();
+  }catch(_e){}
+
+  try{
+    if(typeof toast === "function"){
+      toast("Name saved successfully!");
+    }
+  }catch(_e){}
 }
 
 function updateDashboard(){
