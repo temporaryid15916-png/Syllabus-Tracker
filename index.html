@@ -3228,7 +3228,7 @@ function updateDashboard(){
     setTxt("statTotal", total);
     setTxt("statCompleted", done);
     setTxt("statInProgress", inp);
-    setTxt("statPercent", Math.round(pctVal)+"%");
+    setTxt("statPercent", fmtPct(pctVal));
     const of=document.getElementById("overallFill"); if(of) of.style.width=pctVal+"%";
     const ring=document.getElementById("overallRing"); if(ring) ring.style.setProperty("--p", pctVal);
     setTxt("quickTodayStudy", fmt(sec));
@@ -3245,7 +3245,7 @@ function updateDashboard(){
         if(streak>1000)break;
     }
     setTxt("quickStreak", streak+(streak===1?" day":" days"));
-    setTxt("quickGoal", Math.round(goalVal)+"%");
+    setTxt("quickGoal", fmtPct(goalVal));
 
     const upcoming=exams.filter(e=>e.date && e.date>=today());
     let nearestDays=null, nearestName="";
@@ -3314,7 +3314,7 @@ function renderDashSubjects(){
       <div class="dash-subj-meta">${r.done} / ${r.total} chapters</div>
       <div class="progress" style="height:5px;margin-top:4px"><div class="fill" style="width:${r.pct}%"></div></div>
     </div>
-    <div class="dash-subj-pct">${Math.round(r.pct)}%</div>
+    <div class="dash-subj-pct">${fmtPct(r.pct)}</div>
   </div>`).join("");
 }
 
@@ -4201,10 +4201,10 @@ function updatePomoDisplay(){
       const setTxt=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
       setTxt("pomoSessionsToday", String(sess));
       setTxt("pomoStudyToday", (typeof fmt==="function"?fmt(sec):Math.round(sec/60)+"m"));
-      setTxt("pomoGoalPct", goalPct.toFixed(0)+"%");
+      setTxt("pomoGoalPct", goalPct.toFixed(2)+"%");
       setTxt("pomoStatTime", (typeof fmt==="function"?fmt(sec):Math.round(sec/60)+"m"));
       setTxt("pomoStatSessions", String(sess));
-      setTxt("pomoStatGoal", goalPct.toFixed(0)+"%");
+      setTxt("pomoStatGoal", goalPct.toFixed(2)+"%");
       const side=document.getElementById("pomoSideRing");
       if(side) side.style.setProperty("--side-pct", goalPct.toFixed(2));
       const sideT=document.getElementById("pomoSideRingText");
