@@ -1036,23 +1036,41 @@ html.dark .subject-icon {
 }
 .pomo-week-mini {
     display: flex;
-    align-items: flex-end;
+    align-items: stretch;
     gap: 5px;
-    height: 64px;
+    height: 72px;
     margin-top: 8px;
 }
-.pomo-week-mini .b {
+.pomo-week-mini .wcol {
     flex: 1;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+.pomo-week-mini .wtrack {
+    width: 100%;
+    height: 54px;
+    display: flex;
+    align-items: flex-end;
+    background: rgba(99,102,241,.10);
+    border-radius: 5px 5px 2px 2px;
+    overflow: hidden;
+}
+.pomo-week-mini .b {
+    display: block;
+    width: 100%;
     border-radius: 5px 5px 2px 2px;
     background: linear-gradient(180deg, #a5b4fc, #6366f1);
-    min-height: 4px;
 }
 .pomo-week-mini .lbl {
     font-size: 9px;
+    line-height: 12px;
+    height: 12px;
     color: #94a3b8;
     text-align: center;
-    margin-top: 3px;
+    margin-top: 4px;
 }
 .pomo-timeline {
     display: flex;
