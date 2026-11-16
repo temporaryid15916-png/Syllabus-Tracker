@@ -1027,7 +1027,7 @@ html.dark .subject-icon {
     place-items: center;
     flex: none;
 }
-.pomo-side-ring span { font-size: 10px; font-weight: 800; color: #e0e7ff; }
+.pomo-side-ring span { font-size: 12px; font-weight: 800; color: #e0e7ff; }
 .pomo-progress-head {
     display: flex;
     align-items: center;
@@ -1036,41 +1036,23 @@ html.dark .subject-icon {
 }
 .pomo-week-mini {
     display: flex;
-    align-items: stretch;
+    align-items: flex-end;
     gap: 5px;
-    height: 72px;
+    height: 64px;
     margin-top: 8px;
 }
-.pomo-week-mini .wcol {
+.pomo-week-mini .b {
     flex: 1;
     min-width: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-}
-.pomo-week-mini .wtrack {
-    width: 100%;
-    height: 54px;
-    display: flex;
-    align-items: flex-end;
-    background: rgba(99,102,241,.10);
-    border-radius: 5px 5px 2px 2px;
-    overflow: hidden;
-}
-.pomo-week-mini .b {
-    display: block;
-    width: 100%;
     border-radius: 5px 5px 2px 2px;
     background: linear-gradient(180deg, #a5b4fc, #6366f1);
+    min-height: 4px;
 }
 .pomo-week-mini .lbl {
     font-size: 9px;
-    line-height: 12px;
-    height: 12px;
     color: #94a3b8;
     text-align: center;
-    margin-top: 4px;
+    margin-top: 3px;
 }
 .pomo-timeline {
     display: flex;
@@ -2350,19 +2332,19 @@ html.dark .dash-achieve { background: linear-gradient(145deg, #052e24, var(--car
     <div class="header-actions">
       <button id="pomoHeaderBtn" class="btn danger" onclick="openPomodoro()" title="Pomodoro">🍅</button>
       <button id="themeBtn" class="btn theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
-      <button class="btn icon-btn" onclick="switchTab('community')" title="Community">👥</button>
+      <button class="btn icon-btn" onclick="goToSection('community')" title="Community">👥</button>
     </div>
   </div>
   <nav class="tabs top-nav">
-    <button class="tab active" data-tab="syllabus" onclick="switchTab('syllabus')">📚 Syllabus</button>
-    <button class="tab" data-tab="exams" onclick="switchTab('exams')">🎯 Exam Planner</button>
-    <button class="tab" data-tab="todo" onclick="switchTab('todo')">✅ To-Do</button>
-    <button class="tab" data-tab="history" onclick="switchTab('history')">📊 History</button>
-    <button class="tab" data-tab="insights" onclick="switchTab('insights')">💡 Insights</button>
-    <button class="tab" data-tab="notes" onclick="switchTab('notes')">📝 Notes</button>
-    <button class="tab" data-tab="revision" onclick="switchTab('revision')">🔄 Revision</button>
-    <button class="tab" data-tab="reports" onclick="switchTab('reports')">📈 Reports</button>
-    <button class="tab" data-tab="community" onclick="switchTab('community')">👥 Community</button>
+    <button class="tab active" data-tab="syllabus" onclick="goToSection('syllabus')">📚 Syllabus</button>
+    <button class="tab" data-tab="exams" onclick="goToSection('exams')">🎯 Exam Planner</button>
+    <button class="tab" data-tab="todo" onclick="goToSection('todo')">✅ To-Do</button>
+    <button class="tab" data-tab="history" onclick="goToSection('history')">📊 History</button>
+    <button class="tab" data-tab="insights" onclick="goToSection('insights')">💡 Insights</button>
+    <button class="tab" data-tab="notes" onclick="goToSection('notes')">📝 Notes</button>
+    <button class="tab" data-tab="revision" onclick="goToSection('revision')">🔄 Revision</button>
+    <button class="tab" data-tab="reports" onclick="goToSection('reports')">📈 Reports</button>
+    <button class="tab" data-tab="community" onclick="goToSection('community')">👥 Community</button>
   </nav>
 </header>
 
@@ -3228,7 +3210,7 @@ function updateDashboard(){
     setTxt("statTotal", total);
     setTxt("statCompleted", done);
     setTxt("statInProgress", inp);
-    setTxt("statPercent", fmtPct(pctVal));
+    setTxt("statPercent", Math.round(pctVal)+"%");
     const of=document.getElementById("overallFill"); if(of) of.style.width=pctVal+"%";
     const ring=document.getElementById("overallRing"); if(ring) ring.style.setProperty("--p", pctVal);
     setTxt("quickTodayStudy", fmt(sec));
@@ -3245,7 +3227,7 @@ function updateDashboard(){
         if(streak>1000)break;
     }
     setTxt("quickStreak", streak+(streak===1?" day":" days"));
-    setTxt("quickGoal", fmtPct(goalVal));
+    setTxt("quickGoal", Math.round(goalVal)+"%");
 
     const upcoming=exams.filter(e=>e.date && e.date>=today());
     let nearestDays=null, nearestName="";
@@ -3314,7 +3296,7 @@ function renderDashSubjects(){
       <div class="dash-subj-meta">${r.done} / ${r.total} chapters</div>
       <div class="progress" style="height:5px;margin-top:4px"><div class="fill" style="width:${r.pct}%"></div></div>
     </div>
-    <div class="dash-subj-pct">${fmtPct(r.pct)}</div>
+    <div class="dash-subj-pct">${Math.round(r.pct)}%</div>
   </div>`).join("");
 }
 
@@ -4201,16 +4183,16 @@ function updatePomoDisplay(){
       const setTxt=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
       setTxt("pomoSessionsToday", String(sess));
       setTxt("pomoStudyToday", (typeof fmt==="function"?fmt(sec):Math.round(sec/60)+"m"));
-      setTxt("pomoGoalPct", goalPct.toFixed(2)+"%");
+      setTxt("pomoGoalPct", goalPct.toFixed(0)+"%");
       setTxt("pomoStatTime", (typeof fmt==="function"?fmt(sec):Math.round(sec/60)+"m"));
       setTxt("pomoStatSessions", String(sess));
-      setTxt("pomoStatGoal", goalPct.toFixed(2)+"%");
+      setTxt("pomoStatGoal", goalPct.toFixed(0)+"%");
       const side=document.getElementById("pomoSideRing");
       if(side) side.style.setProperty("--side-pct", goalPct.toFixed(2));
       const sideT=document.getElementById("pomoSideRingText");
-      if(sideT) sideT.textContent = goalPct.toFixed(2)+"%";
+      if(sideT) sideT.textContent = goalPct.toFixed(0)+"%";
       const gChip=document.getElementById("pomoGoalChip");
-      if(gChip) gChip.textContent = `🎯 Goal ${goalPct.toFixed(2)}% · ${sess} sessions`;
+      if(gChip) gChip.textContent = `🎯 Goal ${goalPct.toFixed(0)}% · ${sess} sessions`;
 
       // streak
       let streak=0;
@@ -4240,13 +4222,12 @@ function updatePomoDisplay(){
       }
 
       // week bars
-            const wb=document.getElementById("pomoWeekBars");
+      const wb=document.getElementById("pomoWeekBars");
       if(wb){
         const labels=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
         const now=new Date();
         const day=now.getDay();
         const start=new Date(now.getFullYear(), now.getMonth(), now.getDate()-day);
-        const TRACK_H=54;
         let max=1; const vals=[];
         for(let i=0;i<7;i++){
           const dd=new Date(start.getFullYear(), start.getMonth(), start.getDate()+i);
@@ -4255,11 +4236,7 @@ function updatePomoDisplay(){
           if(k===dayKey) v+=Math.round(pendingStudySeconds||0);
           vals.push(v); if(v>max) max=v;
         }
-        wb.innerHTML=vals.map((v,i)=>{
-          const h = v>0 ? Math.max(4, Math.round(v/max*TRACK_H)) : 2;
-          const tip = labels[i]+": "+(typeof fmt==="function" ? fmt(v) : Math.round(v/60)+"m");
-          return `<div class="wcol" title="${tip}"><div class="wtrack"><span class="b" style="height:${h}px"></span></div><div class="lbl">${labels[i]}</div></div>`;
-        }).join("");
+        wb.innerHTML=vals.map((v,i)=>`<div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end"><div class="b" style="height:${Math.max(4, Math.round(v/max*100))}%"></div><div class="lbl">${labels[i]}</div></div>`).join("");
       }
 
       const extra=document.getElementById("pomoMotivationExtra");
