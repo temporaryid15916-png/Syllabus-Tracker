@@ -4178,21 +4178,30 @@ function updatePomoDisplay(){
       const dayKey = (typeof today==="function") ? today() : formatDateKey(new Date());
       const sec = Number(history[dayKey]?.totalSeconds||0) + Math.round(pendingStudySeconds||0);
       const sess = Number(history[dayKey]?.sessions||0);
-      const goalMin = Number(goal)||120;
+            const goalMin = Number(goal)||120;
       const goalPct = Math.min(100, (sec/(goalMin*60))*100);
-      const setTxt=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
+      const goalPctText = fmtPct(goalPct);
+
+      const setTxt=(id,v)=>{
+        const el=document.getElementById(id);
+        if(el) el.textContent=v;
+      };
+
       setTxt("pomoSessionsToday", String(sess));
       setTxt("pomoStudyToday", (typeof fmt==="function"?fmt(sec):Math.round(sec/60)+"m"));
-      setTxt("pomoGoalPct", goalPct.toFixed(0)+"%");
+      setTxt("pomoGoalPct", goalPctText);
       setTxt("pomoStatTime", (typeof fmt==="function"?fmt(sec):Math.round(sec/60)+"m"));
       setTxt("pomoStatSessions", String(sess));
-      setTxt("pomoStatGoal", goalPct.toFixed(0)+"%");
+      setTxt("pomoStatGoal", goalPctText);
+
       const side=document.getElementById("pomoSideRing");
       if(side) side.style.setProperty("--side-pct", goalPct.toFixed(2));
+
       const sideT=document.getElementById("pomoSideRingText");
-      if(sideT) sideT.textContent = goalPct.toFixed(0)+"%";
+      if(sideT) sideT.textContent = goalPctText;
+
       const gChip=document.getElementById("pomoGoalChip");
-      if(gChip) gChip.textContent = `🎯 Goal ${goalPct.toFixed(0)}% · ${sess} sessions`;
+      if(gChip) gChip.textContent = `🎯 Goal ${goalPctText} · ${sess} sessions`;
 
       // streak
       let streak=0;
