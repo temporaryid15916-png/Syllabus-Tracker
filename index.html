@@ -4210,7 +4210,7 @@ function updatePomoDisplay(){
       const sideT=document.getElementById("pomoSideRingText");
       if(sideT) sideT.textContent = goalPct.toFixed(2)+"%";
       const gChip=document.getElementById("pomoGoalChip");
-      if(gChip) gChip.textContent = `🎯 Goal ${goalPct.toFixed(0)}% · ${sess} sessions`;
+      if(gChip) gChip.textContent = `🎯 Goal ${goalPct.toFixed(2)}% · ${sess} sessions`;
 
       // streak
       let streak=0;
