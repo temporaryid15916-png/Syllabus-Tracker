@@ -4208,7 +4208,7 @@ function updatePomoDisplay(){
       const side=document.getElementById("pomoSideRing");
       if(side) side.style.setProperty("--side-pct", goalPct.toFixed(2));
       const sideT=document.getElementById("pomoSideRingText");
-      if(sideT) sideT.textContent = goalPct.toFixed(0)+"%";
+      if(sideT) sideT.textContent = goalPct.toFixed(2)+"%";
       const gChip=document.getElementById("pomoGoalChip");
       if(gChip) gChip.textContent = `🎯 Goal ${goalPct.toFixed(0)}% · ${sess} sessions`;
 
