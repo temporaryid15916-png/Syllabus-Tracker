@@ -4517,7 +4517,7 @@ function pomoTick(){
 function handlePomoFinish(){
     playAlertSound();
 
-    const chName = BOOKS[pomo.book]?.[pomo.chapter-1] || `Chapter ${pomo.chapter}`;
+        const chName = POMO_BOOKS[pomo.book]?.[pomo.chapter-1] || `Chapter ${pomo.chapter}`;
 
     clearInterval(pomo.timer);
     pomo.timer = null;
