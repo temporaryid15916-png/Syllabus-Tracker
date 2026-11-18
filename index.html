@@ -4417,7 +4417,7 @@ function restorePomoState(){
 function togglePomodoroPlay(){
     getAudioContext(true);
 
-    if(!pomo.book || !pomo.chapter || !BOOKS[pomo.book]?.[pomo.chapter-1]){
+       if(!pomo.book || !pomo.chapter || !POMO_BOOKS[pomo.book]?.[pomo.chapter-1]){
         toast("⚠️ Please select a subject and chapter first!");
         return;
     }
