@@ -4065,8 +4065,8 @@ function handlePomoChapterChange(c){
     if(pomo.started) return;
     pomo.chapter = c ? Number(c) : null;
     const topicEl = document.getElementById("pomoCurrentTopic");
-    if(pomo.book && pomo.chapter && BOOKS[pomo.book]?.[pomo.chapter-1]){
-        topicEl.textContent = `${pomo.book} · ${BOOKS[pomo.book][pomo.chapter-1]}`;
+      if(pomo.book && pomo.chapter && POMO_BOOKS[pomo.book]?.[pomo.chapter-1]){
+        topicEl.textContent = `${pomo.book} · ${POMO_BOOKS[pomo.book][pomo.chapter-1]}`;
         topicEl.style.color = "var(--primary)";
     } else {
         topicEl.textContent = "Please select a subject and chapter to begin";
