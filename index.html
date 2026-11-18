@@ -4014,24 +4014,24 @@ function playAlertSound(){
 function populatePomoPickers(){
     const b=document.getElementById("pomoBookSelect");
     let bHtml = `<option value="" ${!pomo.book ? "selected disabled" : "disabled"}>-- Select Subject --</option>`;
-    bHtml += Object.keys(BOOKS).map(x=>`<option value="${x}" ${x===pomo.book?"selected":""}>${x}</option>`).join("");
+    bHtml += Object.keys(POMO_BOOKS).map(x=>`<option value="${x}" ${x===pomo.book?"selected":""}>${x}</option>`).join("");
     b.innerHTML = bHtml;
     b.disabled = !!pomo.started;
 
     const s=document.getElementById("pomoChapterSelect");
-    if(!pomo.book || !BOOKS[pomo.book]){
+    if(!pomo.book || !POMO_BOOKS[pomo.book]){
         s.innerHTML = `<option value="" selected disabled>-- Select Chapter --</option>`;
         s.disabled = true;
     } else {
         let sHtml = `<option value="" ${!pomo.chapter ? "selected disabled" : "disabled"}>-- Select Chapter --</option>`;
-        sHtml += BOOKS[pomo.book].map((n,i)=>`<option value="${i+1}" ${pomo.chapter===(i+1)?"selected":""}>${i+1}. ${n}</option>`).join("");
+        sHtml += POMO_BOOKS[pomo.book].map((n,i)=>`<option value="${i+1}" ${pomo.chapter===(i+1)?"selected":""}>${i+1}. ${n}</option>`).join("");
         s.innerHTML = sHtml;
         s.disabled = !!pomo.started;
     }
 
     const topicEl = document.getElementById("pomoCurrentTopic");
-    if(pomo.book && pomo.chapter && BOOKS[pomo.book]?.[pomo.chapter-1]){
-        topicEl.textContent = `${pomo.book} · ${BOOKS[pomo.book][pomo.chapter-1]}`;
+    if(pomo.book && pomo.chapter && POMO_BOOKS[pomo.book]?.[pomo.chapter-1]){
+        topicEl.textContent = `${pomo.book} · ${POMO_BOOKS[pomo.book][pomo.chapter-1]}`;
         topicEl.style.color = "var(--primary)";
     } else {
         topicEl.textContent = "Please select a subject and chapter to begin";
