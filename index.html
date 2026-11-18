@@ -3934,7 +3934,7 @@ function updateBackgroundPomodoroNotification(force=false){
     const m=Math.floor(remaining/60),s=remaining%60;
     const timeStr=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
     const bookTitle = pomo.book || "Focus";
-    const chName = (pomo.book && pomo.chapter && BOOKS[pomo.book]?.[pomo.chapter-1]) ? BOOKS[pomo.book][pomo.chapter-1] : "";
+        const chName = (pomo.book && pomo.chapter && POMO_BOOKS[pomo.book]?.[pomo.chapter-1]) ? POMO_BOOKS[pomo.book][pomo.chapter-1] : "";
     const title = (pomo.mode==="focus" ? "🍅 Focus · " : "☕ Break · ") + timeStr;
     const bodyBase = (pomo.mode==="focus" ? "Focus session" : "Break") +
         (bookTitle ? " • "+bookTitle : "") +
