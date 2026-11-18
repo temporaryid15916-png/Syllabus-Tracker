@@ -4044,14 +4044,19 @@ function handlePomoBookChange(b){
     pomo.book = b || "";
     pomo.chapter = null;
     const s = document.getElementById("pomoChapterSelect");
-    if(!pomo.book || !BOOKS[pomo.book]){
+    if(!pomo.book || !POMO_BOOKS[pomo.book]){
         s.innerHTML = `<option value="" selected disabled>-- Select Chapter --</option>`;
         s.disabled = true;
     } else {
         let sHtml = `<option value="" selected disabled>-- Select Chapter --</option>`;
-        sHtml += BOOKS[pomo.book].map((n,i)=>`<option value="${i+1}">${i+1}. ${n}</option>`).join("");
+        sHtml += POMO_BOOKS[pomo.book].map((n,i)=>`<option value="${i+1}">${i+1}. ${n}</option>`).join("");
         s.innerHTML = sHtml;
         s.disabled = false;
+    }
+    if(pomo.book === "E.B.I."){
+        s.value = "1";
+        handlePomoChapterChange(1);
+        return;
     }
     handlePomoChapterChange("");
 }
