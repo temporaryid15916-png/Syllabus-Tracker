@@ -4281,8 +4281,8 @@ function restorePomoState(){
         const st = JSON.parse(localStorage.getItem("syllabusPomoState") || "null");
         if(!st) return;
 
-        pomo.book = BOOKS[st.book] ? st.book : "";
-        pomo.chapter = (pomo.book && BOOKS[pomo.book]?.[Number(st.chapter)-1]) ? Number(st.chapter) : null;
+        pomo.book = POMO_BOOKS[st.book] ? st.book : "";
+        pomo.chapter = (pomo.book && POMO_BOOKS[pomo.book]?.[Number(st.chapter)-1]) ? Number(st.chapter) : null;
         if(Number.isFinite(Number(st.focus))) pomo.focus = Math.round(Math.max(1, Math.min(240, Number(st.focus))));
         if(Number.isFinite(Number(st.break))) pomo.break = Math.round(Math.max(1, Math.min(60, Number(st.break))));
         if(Number.isFinite(Number(st.longBreak))) pomo.longBreak = Math.round(Math.max(1, Math.min(60, Number(st.longBreak))));
