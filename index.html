@@ -4259,7 +4259,7 @@ function updatePomoDisplay(){
       const extra=document.getElementById("pomoMotivationExtra");
       if(extra){
         if(pomo.book && pomo.chapter){
-          const ch=BOOKS[pomo.book]?.[pomo.chapter-1]||("Chapter "+pomo.chapter);
+          const ch=POMO_BOOKS[pomo.book]?.[pomo.chapter-1]||("Chapter "+pomo.chapter);
           extra.textContent = pomo.book + " · " + ch;
         } else extra.textContent="Select a chapter and press Start.";
       }
