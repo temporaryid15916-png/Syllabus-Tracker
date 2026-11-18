@@ -4978,7 +4978,7 @@ function renderHistory(){
     if(pomo.book && pendingStudySeconds > 0){
         totals[pomo.book] = (totals[pomo.book]||0) + pendingStudySeconds;
     }
-    document.getElementById("bookStudyList").innerHTML=Object.keys(BOOKS).map(b=>`<div class="listrow"><span>${b}</span><strong>${fmt(totals[b]||0)}</strong></div>`).join("");
+    document.getElementById("bookStudyList").innerHTML=Object.keys(POMO_BOOKS).map(b=>`<div class="listrow"><span>${b}</span><strong>${fmt(totals[b]||0)}</strong></div>`).join("");
 }
 
 function saveDailyGoal(){
