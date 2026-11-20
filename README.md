@@ -13,5 +13,4 @@ HSC 1st & 2nd Year syllabus progress tracking app.
 - Physics
 - Chemistry
 - Higher Math
-- Botany
-- Zoology
+- Biology
