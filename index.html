@@ -8223,6 +8223,123 @@ document.addEventListener("click",event=>{
   if(joinButton)communityJoinPublic(joinButton.dataset.communityJoin);
 });
 document.addEventListener("DOMContentLoaded",()=>{communityWireInputs();communityInit();});
+ 
+/* ---------- Community message notifications (works while the app is open, even in a background tab) ---------- */
+(function(){
+  const seen = new Set();
+  let watchedUser = null, baselineDone = false, channel = null, busy = false, asked = false;
+
+  const roomIds = () => (communityMemberships || []).map(m => communitySid(m.community_id));
+  const roomName = cid => {
+    const m = (communityMemberships || []).find(x => communitySame(x.community_id, cid));
+    return (m && m.communities && m.communities.name) || "Community";
+  };
+  const isLooking = cid =>
+    document.visibilityState === "visible" && document.hasFocus() &&
+    typeof currentTab !== "undefined" && currentTab === "community" &&
+    communityCurrent && communitySame(communityCurrent.id, cid);
+
+  async function announce(m){
+    if(!m || m.id == null) return;
+    const key = communitySid(m.id);
+    if(seen.has(key)) return;
+    seen.add(key);
+    if(seen.size > 600) seen.delete(seen.values().next().value);
+    if(!baselineDone) return;
+    if(!communityUser || communitySame(m.user_id, communityUser.id)) return;
+    if(!roomIds().includes(communitySid(m.community_id))) return;
+    if(isLooking(m.community_id)) return;
+    await communityFetchNames([m.user_id]);
+    const who = communityName(m.user_id), room = roomName(m.community_id);
+    let text = String(m.body || "").replace(/\s+/g, " ").trim();
+    if(text.length > 120) text = text.slice(0, 117) + "…";
+    if(document.visibilityState === "visible" && document.hasFocus()){
+      try{ toast("💬 " + who + " (" + room + "): " + text); }catch(_e){}
+    }else{
+      try{
+        await showSystemNotification("💬 " + who + " • " + room, text, {
+          tag: "community-" + communitySid(m.community_id),
+          renotify: true,
+          silent: false,
+          data: {source: "community", communityId: communitySid(m.community_id)}
+        });
+      }catch(_e){}
+    }
+  }
+
+  async function pull(){
+    if(busy || !communityClient || !communityUser) return;
+    const list = roomIds();
+    if(!list.length) return;
+    busy = true;
+    try{
+      const rows = [];
+      for(const cid of list){
+        let data = null;
+        try{
+          const r = await communityClient.rpc("get_community_messages", {p_community_id: cid, p_limit: 8});
+          if(!r.error) data = r.data || [];
+        }catch(_e){}
+        if(data === null){
+          try{
+            const q = await communityClient.from("community_messages")
+              .select("id,community_id,user_id,body,created_at")
+              .eq("community_id", cid).order("created_at", {ascending: false}).limit(8);
+            if(!q.error) data = q.data || [];
+          }catch(_e){}
+        }
+        (data || []).forEach(m => rows.push(Object.assign({community_id: cid}, m)));
+      }
+      rows.sort((a, b) => String(a.created_at || "").localeCompare(String(b.created_at || "")));
+      for(const m of rows) await announce(m);
+      baselineDone = true;
+    }catch(_e){}
+    finally{ busy = false; }
+  }
+
+  function startRealtime(){
+    try{
+      if(channel){ communityClient.removeChannel(channel); channel = null; }
+      channel = communityClient.channel("community-notify-" + communitySid(communityUser.id) + "-" + Date.now())
+        .on("postgres_changes", {event: "INSERT", schema: "public", table: "community_messages"}, p => { announce(p.new); })
+        .subscribe();
+    }catch(_e){}
+  }
+
+  function askPermissionOnce(){
+    if(asked || !("Notification" in window) || Notification.permission !== "default") return;
+    asked = true;
+    document.addEventListener("pointerdown", () => { try{ Notification.requestPermission(); }catch(_e){} }, {once: true});
+  }
+
+  function ensure(){
+    if(!communityClient || !communityUser){
+      if(watchedUser){
+        try{ if(channel) communityClient.removeChannel(channel); }catch(_e){}
+        channel = null; watchedUser = null; baselineDone = false; seen.clear();
+      }
+      return;
+    }
+    if(watchedUser !== communityUser.id){
+      watchedUser = communityUser.id; baselineDone = false; seen.clear();
+      startRealtime();
+    }
+    if(roomIds().length) askPermissionOnce();
+  }
+
+  // Timer inside a Web Worker is not throttled in background tabs, so alerts still arrive when the tab is hidden.
+  try{
+    const src = "setInterval(function(){postMessage(1)},15000);";
+    const w = new Worker(URL.createObjectURL(new Blob([src], {type: "text/javascript"})));
+    w.onmessage = () => { ensure(); pull(); };
+  }catch(_e){
+    setInterval(() => { ensure(); pull(); }, 15000);
+  }
+  setInterval(ensure, 3000);
+  setTimeout(() => { ensure(); pull(); }, 4000);
+  document.addEventListener("visibilitychange", () => { if(document.visibilityState === "visible"){ ensure(); pull(); } });
+  window.addEventListener("online", () => { ensure(); if(communityUser) startRealtime(); pull(); });
+})();   
 </script>
 
 <!-- Dashboard Name Modal -->
