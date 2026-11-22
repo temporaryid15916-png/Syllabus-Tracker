@@ -7510,10 +7510,18 @@ function communityMergeMessages(a,b){
 async function communityFetchNames(ids){
   const need=[...new Set((ids||[]).filter(i=>i!=null).map(communitySid))].filter(i=>!communityProfileNameCache.has(i)&&!communityNameMiss.has(i));
   if(!need.length||!communityClient)return;
+  const keep=p=>{ if(p&&p.id!=null&&String(p.display_name||"").trim())communityProfileNameCache.set(communitySid(p.id),String(p.display_name).trim()); };
   try{
-    const {data,error}=await communityClient.from("profiles").select("id,display_name").in("id",need);
-    if(!error)(data||[]).forEach(p=>communityProfileNameCache.set(communitySid(p.id),p.display_name||"Member"));
+    const r=await communityClient.rpc("get_community_display_names",{p_user_ids:need});
+    if(!r.error)(r.data||[]).forEach(keep);
   }catch(_e){}
+  const left=need.filter(i=>!communityProfileNameCache.has(i));
+  if(left.length){
+    try{
+      const {data,error}=await communityClient.from("profiles").select("id,display_name").in("id",left);
+      if(!error)(data||[]).forEach(keep);
+    }catch(_e){}
+  }
   need.forEach(i=>{if(!communityProfileNameCache.has(i))communityNameMiss.add(i);});
 }
 function communityName(uid){
