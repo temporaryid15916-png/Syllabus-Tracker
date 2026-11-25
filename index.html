@@ -5549,7 +5549,7 @@ function restorePomoState(){
                     pomo.awaitingNext = false;
                     lastTick = now;
                     clearInterval(pomo.timer);
-                    pomo.timer = setInterval(pomoTick, 500);
+                    pomo.timer = setInterval(pomoTick, 250);
                 } else {
                     // Focus session finished while app was closed. Automatically transition to break!
                     const breakEnd = phaseEnd + durationFor("break", session);
@@ -5564,7 +5564,7 @@ function restorePomoState(){
                         pomo.awaitingNext = false;
                         lastTick = now;
                         clearInterval(pomo.timer);
-                        pomo.timer = setInterval(pomoTick, 500);
+                        pomo.timer = setInterval(pomoTick, 250);
                         toast("☕ Focus completed — break is active!");
                                         } else {
                         // Both focus and break finished while closed → auto-start next focus
@@ -5577,7 +5577,7 @@ function restorePomoState(){
                         lastTick = now;
                         pomo.end = now + pomo.remaining * 1000;
                         clearInterval(pomo.timer);
-                        pomo.timer = setInterval(pomoTick, 500);
+                        pomo.timer = setInterval(pomoTick, 250);
                         toast("🍅 Next focus session started!");
                     }
                 }
@@ -5594,7 +5594,7 @@ function restorePomoState(){
                     pomo.awaitingNext = false;
                     lastTick = now;
                     clearInterval(pomo.timer);
-                    pomo.timer = setInterval(pomoTick, 500);
+                    pomo.timer = setInterval(pomoTick, 250);
                                 } else {
                     // Break finished while closed → auto-start next focus session
                     pomo.mode = "focus";
@@ -5606,7 +5606,7 @@ function restorePomoState(){
                     lastTick = now;
                     pomo.end = now + pomo.remaining * 1000;
                     clearInterval(pomo.timer);
-                    pomo.timer = setInterval(pomoTick, 500);
+                    pomo.timer = setInterval(pomoTick, 250);
                     toast("🍅 Break finished — next focus started!");
                 }
             }
@@ -5668,7 +5668,7 @@ function togglePomodoroPlay(){
         if(cSelect)cSelect.disabled=true;
 
         clearInterval(pomo.timer);
-        pomo.timer = setInterval(pomoTick, 500);
+        pomo.timer = setInterval(pomoTick, 250);
 
         // Ask once (non-blocking) so notification-bar countdown can show outside the app.
         try{
@@ -5875,7 +5875,7 @@ function skipPomodoro(){
         lastTick=Date.now();
         pomo.end=Date.now() + pomo.remaining*1000;
                clearInterval(pomo.timer);
-        pomo.timer=setInterval(pomoTick, 500);
+        pomo.timer=setInterval(pomoTick, 250);
         toast(`☕ Skipped to break (${pomo.break}m)`);
         updateBackgroundPomodoroNotification(true);
         } else {
@@ -6029,7 +6029,7 @@ document.addEventListener("visibilitychange",()=>{
             pomo.awaitingNext = false;
             lastTick = now;
             clearInterval(pomo.timer);
-            pomo.timer = setInterval(pomoTick, 500);
+            pomo.timer = setInterval(pomoTick, 250);
             playAlertSound();
             toast(`☕ Focus complete — ${fmt(pomo.remaining)} break remaining`);
             updateBackgroundPomodoroNotification(true);
@@ -6043,7 +6043,7 @@ document.addEventListener("visibilitychange",()=>{
             lastTick = now;
             pomo.end = now + pomo.remaining * 1000;
             clearInterval(pomo.timer);
-            pomo.timer = setInterval(pomoTick, 500);
+            pomo.timer = setInterval(pomoTick, 250);
             playAlertSound();
             toast("🍅 Next focus session started!");
             updateBackgroundPomodoroNotification(true);
@@ -6064,7 +6064,7 @@ document.addEventListener("visibilitychange",()=>{
     lastTick = now;
     pomo.end = now + pomo.remaining * 1000;
     clearInterval(pomo.timer);
-    pomo.timer = setInterval(pomoTick, 500);
+    pomo.timer = setInterval(pomoTick, 250);
     playAlertSound();
     toast("🍅 Break finished — next focus started!");
     updateBackgroundPomodoroNotification(true);
