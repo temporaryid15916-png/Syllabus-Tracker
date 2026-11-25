@@ -5761,9 +5761,8 @@ function pomoTick(){
     }
 })();
 function handlePomoFinish(){
-    playAlertSound();
-
-        const chName = POMO_BOOKS[pomo.book]?.[pomo.chapter-1] || `Chapter ${pomo.chapter}`;
+    const phaseEnd = (pomo.end > 0) ? pomo.end : Date.now();
+    const chName = POMO_BOOKS[pomo.book]?.[pomo.chapter-1] || `Chapter ${pomo.chapter}`;
 
     clearInterval(pomo.timer);
     pomo.timer = null;
@@ -5771,7 +5770,6 @@ function handlePomoFinish(){
 
     const bSelect = document.getElementById("pomoBookSelect");
     const cSelect = document.getElementById("pomoChapterSelect");
-
     if(bSelect) bSelect.disabled = true;
     if(cSelect) cSelect.disabled = true;
 
@@ -5783,60 +5781,52 @@ function handlePomoFinish(){
             save(KEY.history, history);
         }catch(_e){}
 
-        // Focus finished: Automatically start break (long break every N sessions).
         const useLong = (pomo.cycles > 0) && (pomo.session % pomo.cycles === 0);
         const breakMins = useLong ? (pomo.longBreak || 15) : (pomo.break || 5);
-        sendSysNotification(
-            "🎉 Focus Complete!",
-            `Finished studying ${pomo.book} • ${chName}. ${useLong?"Long break":"Break"} starting!`
-        );
-
-        toast(useLong
-          ? `☕ Focus complete — ${breakMins}m long break started!`
-          : `☕ Focus complete — ${breakMins}m break started!`);
 
         pomo.mode = "break";
         pomo.remaining = breakMins * 60;
         pomo.running = true;
         pomo.started = true;
         pomo.awaitingNext = false;
+        lastTick = phaseEnd;
+        pomo.end = phaseEnd + pomo.remaining * 1000;
+        pomo.timer = setInterval(pomoTick, 250);
 
-        lastTick = Date.now();
-        pomo.end = Date.now() + pomo.remaining * 1000;
-
-        pomo.timer = setInterval(pomoTick, 500);
-
+        playAlertSound();
+        sendSysNotification(
+            "🎉 Focus Complete!",
+            `Finished studying ${pomo.book} • ${chName}. ${useLong?"Long break":"Break"} starting!`
+        );
+        toast(useLong
+          ? `☕ Focus complete — ${breakMins}m long break started!`
+          : `☕ Focus complete — ${breakMins}m break started!`);
         updateBackgroundPomodoroNotification(true);
         savePomoState();
         updatePomoDisplay();
 
     } else {
-        // Break finished: Automatically start next focus session.
-        sendSysNotification(
-            "⏰ Break Finished!",
-            "Your next focus session is starting now!"
-        );
-
-        toast("🍅 Break complete — next focus session started!");
-
         pomo.mode = "focus";
         pomo.session++;
         pomo.remaining = pomo.focus * 60;
         pomo.running = true;
         pomo.started = true;
         pomo.awaitingNext = false;
+        lastTick = phaseEnd;
+        pomo.end = phaseEnd + pomo.remaining * 1000;
+        pomo.timer = setInterval(pomoTick, 250);
 
-        lastTick = Date.now();
-        pomo.end = Date.now() + pomo.remaining * 1000;
-
-        pomo.timer = setInterval(pomoTick, 500);
-
+        playAlertSound();
+        sendSysNotification(
+            "⏰ Break Finished!",
+            "Your next focus session is starting now!"
+        );
+        toast("🍅 Break complete — next focus session started!");
         updateBackgroundPomodoroNotification(true);
         savePomoState();
         updatePomoDisplay();
     }
 }
-
 
 function resetPomodoro(){
     clearInterval(pomo.timer);
