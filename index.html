@@ -7413,7 +7413,7 @@ document.addEventListener("keydown", (e)=>{
 function init(){
     const sel=document.getElementById("bookSelectFilter");
     sel.innerHTML=`<option value="all">📚 All Subjects</option>`+Object.keys(BOOKS).map(b=>`<option>${b}</option>`).join("");
-    applyTheme((localStorage.getItem(KEY.theme)||"light")==="dark");
+    setAppTheme(localStorage.getItem(KEY.theme)||"light");
     restorePomoState();
     populatePomoPickers();
     updatePomoDisplay();
