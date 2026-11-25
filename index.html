@@ -4892,6 +4892,8 @@ function openPomodoro(){
     populatePomoPickers();
     updatePomoDisplay();
     updateAlertUI();
+    const soundSel = document.getElementById("pomoSoundSelect");
+    if(soundSel) soundSel.value = getPomoSoundId();
 }
 function closePomodoro(){
     const ov=document.getElementById("pomodoroOverlay");
