@@ -5079,46 +5079,149 @@ function clearBackgroundPomodoroNotification(){
     }catch(_e){}
 }
 
-function playAlertSound(){
-    // Web Audio chime (works after any prior user gesture unlocked the context)
-    try {
-        const ctx=getAudioContext(false);
-        if(ctx){
-            const kick=()=>{
-                try{
-                    const now=ctx.currentTime;
-                    [523.25, 659.25, 783.99, 1046.5].forEach((freq,i)=>{
-                        const osc=ctx.createOscillator();
-                        const gain=ctx.createGain();
-                        osc.type="sine";
-                        osc.frequency.setValueAtTime(freq,now+i*0.15);
-                        gain.gain.setValueAtTime(0.0001,now+i*0.15);
-                        gain.gain.linearRampToValueAtTime(0.45,now+i*0.15+0.03);
-                        gain.gain.exponentialRampToValueAtTime(0.0001,now+i*0.15+0.85);
-                        osc.connect(gain);
-                        gain.connect(ctx.destination);
-                        osc.start(now+i*0.15);
-                        osc.stop(now+i*0.15+0.9);
-                    });
-                }catch(_e){}
-            };
-            if(ctx.state==="suspended"){
-                ctx.resume().then(kick).catch(kick);
-            }else kick();
-        }
-    }catch(e){}
-    // HTMLAudio fallback for mobile browsers that block oscillators when backgrounded
-    try{
-        const a=new Audio("data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleXR+g5OPmY+HfXqBe5CWko+Jg4B9f4mQlZKNiIN+foKMlJOPi4aBf4KJlJSQjIeDgIGHkpSRjYeDgIGJlJWSjYeDgIGJlJWSjYeDgIGJlJWSjYeDgA==");
-        a.volume=0.85;
-        const p=a.play();
-        if(p&&typeof p.catch==="function")p.catch(()=>{});
-    }catch(e){}
-    if(navigator.vibrate){
-        try{navigator.vibrate([400,200,400,200,400]);}catch(e){}
-    }
+const POMO_SOUND_KEY = "syllabusPomoAlertSound";
+const POMO_SOUNDS = [
+  { id:"chime",   label:"🔔 Classic Chime" },
+  { id:"bell",    label:"🛎️ Soft Bell" },
+  { id:"digital", label:"📟 Digital Beep" },
+  { id:"soft",    label:"🌊 Soft Wave" },
+  { id:"bright",  label:"✨ Bright Ping" },
+  { id:"deep",    label:"🥁 Deep Pulse" },
+  { id:"marimba", label:"🎹 Marimba" },
+  { id:"alarm",   label:"⏰ Alarm" },
+  { id:"none",    label:"🔇 Silent" }
+];
+
+function getPomoSoundId(){
+  try{
+    const v = localStorage.getItem(POMO_SOUND_KEY);
+    if(v && POMO_SOUNDS.some(s=>s.id===v)) return v;
+  }catch(_e){}
+  return "chime";
 }
 
+function setPomoSoundId(id){
+  if(!POMO_SOUNDS.some(s=>s.id===id)) id = "chime";
+  try{ localStorage.setItem(POMO_SOUND_KEY, id); }catch(_e){}
+  const sel = document.getElementById("pomoSoundSelect");
+  if(sel && sel.value !== id) sel.value = id;
+}
+
+function playToneSequence(ctx, notes){
+  const t0 = ctx.currentTime;
+  notes.forEach(n=>{
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = n.type || "sine";
+    osc.frequency.setValueAtTime(n.f, t0 + n.start);
+    gain.gain.setValueAtTime(0.0001, t0 + n.start);
+    gain.gain.linearRampToValueAtTime(n.peak || 0.4, t0 + n.start + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + n.start + (n.dur || 0.4));
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(t0 + n.start);
+    osc.stop(t0 + n.start + (n.dur || 0.4) + 0.05);
+  });
+}
+
+function playAlertSound(){
+  const id = getPomoSoundId();
+  if(id === "none"){
+    if(navigator.vibrate){ try{ navigator.vibrate([120,80,120]); }catch(_e){} }
+    return;
+  }
+  try{
+    const ctx = getAudioContext(false);
+    if(ctx){
+      const kick = ()=>{
+        try{
+          if(id === "chime"){
+            playToneSequence(ctx, [
+              {f:523.25,start:0,dur:0.85,peak:0.42},
+              {f:659.25,start:0.14,dur:0.85,peak:0.40},
+              {f:783.99,start:0.28,dur:0.90,peak:0.38},
+              {f:1046.5,start:0.42,dur:0.95,peak:0.36}
+            ]);
+          } else if(id === "bell"){
+            playToneSequence(ctx, [
+              {f:880,start:0,dur:1.1,peak:0.45,type:"triangle"},
+              {f:1320,start:0.05,dur:0.9,peak:0.22},
+              {f:660,start:0.02,dur:1.2,peak:0.18}
+            ]);
+          } else if(id === "digital"){
+            playToneSequence(ctx, [
+              {f:880,start:0,dur:0.18,peak:0.5,type:"square"},
+              {f:880,start:0.22,dur:0.18,peak:0.5,type:"square"},
+              {f:1175,start:0.44,dur:0.28,peak:0.45,type:"square"}
+            ]);
+          } else if(id === "soft"){
+            playToneSequence(ctx, [
+              {f:392,start:0,dur:1.2,peak:0.28},
+              {f:494,start:0.2,dur:1.1,peak:0.24},
+              {f:587,start:0.4,dur:1.0,peak:0.22,type:"triangle"}
+            ]);
+          } else if(id === "bright"){
+            playToneSequence(ctx, [
+              {f:1319,start:0,dur:0.25,peak:0.4},
+              {f:1568,start:0.12,dur:0.35,peak:0.38},
+              {f:2093,start:0.28,dur:0.45,peak:0.32,type:"triangle"}
+            ]);
+          } else if(id === "deep"){
+            playToneSequence(ctx, [
+              {f:110,start:0,dur:0.5,peak:0.55,type:"sawtooth"},
+              {f:165,start:0.35,dur:0.55,peak:0.4,type:"triangle"},
+              {f:220,start:0.7,dur:0.7,peak:0.3}
+            ]);
+          } else if(id === "marimba"){
+            playToneSequence(ctx, [
+              {f:523,start:0,dur:0.35,peak:0.42,type:"triangle"},
+              {f:659,start:0.18,dur:0.35,peak:0.40,type:"triangle"},
+              {f:784,start:0.36,dur:0.45,peak:0.38,type:"triangle"},
+              {f:1047,start:0.54,dur:0.55,peak:0.34,type:"triangle"}
+            ]);
+          } else if(id === "alarm"){
+            playToneSequence(ctx, [
+              {f:880,start:0,dur:0.2,peak:0.5,type:"square"},
+              {f:698,start:0.2,dur:0.2,peak:0.5,type:"square"},
+              {f:880,start:0.4,dur:0.2,peak:0.5,type:"square"},
+              {f:698,start:0.6,dur:0.2,peak:0.5,type:"square"},
+              {f:880,start:0.85,dur:0.35,peak:0.45,type:"square"}
+            ]);
+          }
+        }catch(_e){}
+      };
+      if(ctx.state === "suspended"){
+        ctx.resume().then(kick).catch(kick);
+      } else {
+        kick();
+      }
+    }
+  }catch(e){}
+  try{
+    const a = new Audio("data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleXR+g5OPmY+HfXqBe5CWko+Jg4B9f4mQlZKNiIN+foKMlJOPi4aBf4KJlJSQjIeDgIGHkpSRjYeDgIGJlJWSjYeDgIGJlJWSjYeDgIGJlJWSjYeDgA==");
+    a.volume = 0.75;
+    const p = a.play();
+    if(p && typeof p.catch === "function") p.catch(()=>{});
+  }catch(e){}
+  if(navigator.vibrate){
+    try{
+      if(id === "alarm") navigator.vibrate([300,120,300,120,400]);
+      else navigator.vibrate([220,100,220]);
+    }catch(e){}
+  }
+}
+
+function previewPomoSound(){
+  getAudioContext(true);
+  playAlertSound();
+}
+
+function onPomoSoundChange(val){
+  setPomoSoundId(val);
+  getAudioContext(true);
+  playAlertSound();
+  toast("🔔 Alert sound: " + (POMO_SOUNDS.find(s=>s.id===val)?.label || val));
+}
 function populatePomoPickers(){
     const b=document.getElementById("pomoBookSelect");
     let bHtml = `<option value="" ${!pomo.book ? "selected disabled" : "disabled"}>-- Select Subject --</option>`;
