@@ -5888,7 +5888,7 @@ function skipPomodoro(){
         lastTick=Date.now();
         pomo.end=Date.now()+pomo.remaining*1000;
         clearInterval(pomo.timer);
-        pomo.timer=setInterval(pomoTick,500);
+        pomo.timer=setInterval(pomoTick,250);
         toast("🍅 Skipped break — next focus started");
         updateBackgroundPomodoroNotification(true);
     }
