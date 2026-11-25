@@ -3321,7 +3321,18 @@ body :is(.input,.select):not(#communityPanel *,#communityV2Dialog *,#pomodoroOve
     </div>
     <div class="header-actions">
       <button id="pomoHeaderBtn" class="btn danger" onclick="openPomodoro()" title="Pomodoro">🍅</button>
-      <button id="themeBtn" class="btn theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+            <div style="position:relative">
+        <button id="themeBtn" class="btn theme-toggle" onclick="toggleThemeMenu()" title="Themes">🎨</button>
+        <div id="themeMenu" style="display:none;position:absolute;right:0;top:calc(100% + 8px);z-index:200;min-width:180px;padding:8px;border-radius:14px;background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow-lg)">
+          <button type="button" class="btn" style="width:100%;margin-bottom:4px;text-align:left" onclick="setAppTheme('light')">☀️ Light</button>
+          <button type="button" class="btn" style="width:100%;margin-bottom:4px;text-align:left" onclick="setAppTheme('dark')">🌙 Dark</button>
+          <button type="button" class="btn" style="width:100%;margin-bottom:4px;text-align:left" onclick="setAppTheme('midnight')">🌌 Midnight</button>
+          <button type="button" class="btn" style="width:100%;margin-bottom:4px;text-align:left" onclick="setAppTheme('forest')">🌿 Forest</button>
+          <button type="button" class="btn" style="width:100%;margin-bottom:4px;text-align:left" onclick="setAppTheme('ocean')">🌊 Ocean</button>
+          <button type="button" class="btn" style="width:100%;margin-bottom:4px;text-align:left" onclick="setAppTheme('rose')">🌸 Rose</button>
+          <button type="button" class="btn" style="width:100%;text-align:left" onclick="setAppTheme('sunset')">🌅 Sunset</button>
+        </div>
+      </div>
       <button class="btn icon-btn" onclick="goToSection('community')" title="Community">👥</button>
     </div>
   </div>
