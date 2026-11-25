@@ -3763,9 +3763,26 @@ body :is(.input,.select):not(#communityPanel *,#communityV2Dialog *,#pomodoroOve
           <label>🌿 Long Break</label>
           <input id="pomoCustomLongBreak" class="input" type="number" min="1" max="60" step="1" value="15">
         </div>
-        <div class="pomo-setting-row">
+                <div class="pomo-setting-row">
           <label>🔁 Sessions / Cycle</label>
           <input id="pomoCustomCycles" class="input" type="number" min="1" max="12" step="1" value="4">
+        </div>
+        <div class="pomo-setting-row">
+          <label>🔔 Alert Sound</label>
+          <select id="pomoSoundSelect" class="select" style="width:140px;text-align:left" onchange="onPomoSoundChange(this.value)">
+            <option value="chime">🔔 Classic Chime</option>
+            <option value="bell">🛎️ Soft Bell</option>
+            <option value="digital">📟 Digital Beep</option>
+            <option value="soft">🌊 Soft Wave</option>
+            <option value="bright">✨ Bright Ping</option>
+            <option value="deep">🥁 Deep Pulse</option>
+            <option value="marimba">🎹 Marimba</option>
+            <option value="alarm">⏰ Alarm</option>
+            <option value="none">🔇 Silent</option>
+          </select>
+        </div>
+        <div style="margin-top:6px">
+          <button type="button" class="btn" style="width:100%;background:rgba(255,255,255,.08);color:#e2e8f0;border-color:rgba(148,163,184,.3)" onclick="previewPomoSound()">▶ Preview Sound</button>
         </div>
         <div style="margin-top:10px">
           <button class="btn primary" style="width:100%" onclick="applyCustomPomoTime()">✓ Apply Settings</button>
