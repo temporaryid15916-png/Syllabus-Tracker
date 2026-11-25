@@ -2684,6 +2684,26 @@ html.dark .dash-achieve { background: radial-gradient(300px 140px at 100% 0%, rg
 .brand-icon { width: 42px; height: 42px; background: none; box-shadow: none; border-radius: 0; }
 .brand-icon img { width: 100%; height: 100%; object-fit: contain; display: block; filter: drop-shadow(0 6px 14px rgba(91, 92, 230, .45)); }
 body::after { display: none; }   
+html[data-theme="midnight"]{
+  --bg:#05060f;--card:#0c0e1a;--soft:#121528;--text:#e8ecff;--muted:#8b93b8;
+  --border:rgba(120,140,255,.12);--primary:#7c8cff;--primary-soft:#15183a;--purple:#9b8cff;
+}
+html[data-theme="forest"]{
+  --bg:#07120c;--card:#0c1a12;--soft:#12261a;--text:#e6f5ec;--muted:#8aafa0;
+  --border:rgba(80,180,120,.14);--primary:#34d399;--primary-soft:#0f2a1c;--purple:#6ee7b7;--success:#4ade80;
+}
+html[data-theme="ocean"]{
+  --bg:#061018;--card:#0b1824;--soft:#122433;--text:#e6f4ff;--muted:#8ab0c4;
+  --border:rgba(56,180,255,.14);--primary:#38bdf8;--primary-soft:#0c2436;--purple:#67e8f9;
+}
+html[data-theme="rose"]{
+  --bg:#fff5f8;--card:#ffffff;--soft:#ffeef3;--text:#3b1020;--muted:#9a6b7c;
+  --border:rgba(244,114,182,.18);--primary:#e11d48;--primary-soft:#ffe4ec;--purple:#f472b6;
+}
+html[data-theme="sunset"]{
+  --bg:#fff7f0;--card:#ffffff;--soft:#fff1e6;--text:#3b1d0c;--muted:#a67c5b;
+  --border:rgba(249,115,22,.16);--primary:#ea580c;--primary-soft:#ffedd5;--purple:#fb923c;
+}
 </style>
 <style id="communityV2Style">
 /* ===== COMMUNITY V2 (upgrade). Every selector is scoped to .community-v2* / #communityV2* ===== */
