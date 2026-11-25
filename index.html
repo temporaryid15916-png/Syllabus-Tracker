@@ -4144,18 +4144,53 @@ function toast(t){
     window.__toast=setTimeout(()=>e.classList.remove("show"),2200);
 }
 
+const THEME_META = {
+  light:    { dark:false, icon:"☀️" },
+  dark:     { dark:true,  icon:"🌙" },
+  midnight: { dark:true,  icon:"🌌" },
+  forest:   { dark:true,  icon:"🌿" },
+  ocean:    { dark:true,  icon:"🌊" },
+  rose:     { dark:false, icon:"🌸" },
+  sunset:   { dark:false, icon:"🌅" }
+};
+
 function applyTheme(d){
-    document.documentElement.classList.toggle("dark",d);
-    document.body.classList.toggle("dark",d);
-    const tb=document.getElementById("themeBtn");
-    if(tb) tb.textContent=d?"☀️":"🌙";
-    localStorage.setItem(KEY.theme,d?"dark":"light");
-    if(currentTab==="history")drawGraph();
+  setAppTheme(d ? "dark" : "light");
+}
+
+function setAppTheme(name){
+  if(!THEME_META[name]) name = "light";
+  const meta = THEME_META[name];
+  document.documentElement.classList.toggle("dark", !!meta.dark);
+  document.body.classList.toggle("dark", !!meta.dark);
+  document.documentElement.setAttribute("data-theme", name);
+  const tb = document.getElementById("themeBtn");
+  if(tb) tb.textContent = meta.icon;
+  try{ localStorage.setItem(KEY.theme, name); }catch(_e){}
+  const menu = document.getElementById("themeMenu");
+  if(menu) menu.style.display = "none";
+  if(typeof currentTab !== "undefined" && currentTab === "history" && typeof drawGraph === "function") drawGraph();
 }
 
 function toggleTheme(){
-    applyTheme(!document.documentElement.classList.contains("dark"));
+  const cur = document.documentElement.getAttribute("data-theme") || (document.documentElement.classList.contains("dark") ? "dark" : "light");
+  setAppTheme(cur === "light" ? "dark" : "light");
 }
+
+function toggleThemeMenu(){
+  const menu = document.getElementById("themeMenu");
+  if(!menu) return;
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+document.addEventListener("click", function(e){
+  const menu = document.getElementById("themeMenu");
+  const btn = document.getElementById("themeBtn");
+  if(!menu || !btn) return;
+  if(menu.style.display === "block" && !menu.contains(e.target) && e.target !== btn){
+    menu.style.display = "none";
+  }
+});
 
 function switchTab(t, opts){
     currentTab=t;
