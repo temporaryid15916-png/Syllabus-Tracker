@@ -2677,6 +2677,213 @@ html.dark .dash-achieve { background: radial-gradient(300px 140px at 100% 0%, rg
 .brand-icon img { width: 100%; height: 100%; object-fit: contain; display: block; filter: drop-shadow(0 6px 14px rgba(91, 92, 230, .45)); }
 body::after { display: none; }   
 </style>
+<style id="communityV2Style">
+/* ===== COMMUNITY V2 (upgrade). Every selector is scoped to .community-v2* / #communityV2* ===== */
+.community-v2{--cv2-r:16px;--cv2-gap:12px;display:grid;grid-template-columns:300px minmax(0,1fr);gap:14px;align-items:start}
+.community-v2-side{display:grid;gap:11px;align-content:start;position:sticky;top:12px}
+.community-v2-side-toggle{display:none;width:100%;justify-content:space-between;align-items:center;gap:8px;font-weight:700}
+.community-v2-side-body{display:grid;gap:11px}
+.community-v2.side-collapsed .community-v2-side-body{display:none}
+.community-v2-fold{padding:0}
+.community-v2-fold>summary{cursor:pointer;list-style:none;padding:13px 15px;font-weight:800;font-size:13.5px;display:flex;justify-content:space-between;align-items:center}
+.community-v2-fold>summary::-webkit-details-marker{display:none}
+.community-v2-fold>summary::after{content:"▾";color:var(--muted);transition:transform .2s}
+.community-v2-fold[open]>summary::after{transform:rotate(180deg)}
+.community-v2-fold>.community-v2-fold-body{padding:0 15px 15px}
+.community-v2-fold .community-form{margin-top:8px}
+.community-v2-main{display:grid;gap:12px;min-width:0}
+.community-v2-room h2{font-size:17px;letter-spacing:-.02em}
+.community-v2-room-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.community-v2-live{font-size:11.5px;font-weight:700;color:var(--success)}
+/* section nav */
+.community-v2-nav{display:flex;gap:6px;overflow-x:auto;padding:4px;background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+.community-v2-tab{flex:none;display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border:0;border-radius:10px;background:transparent;color:var(--muted);font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;position:relative;min-height:40px;transition:background .18s,color .18s}
+.community-v2-tab:hover{background:var(--soft);color:var(--text)}
+.community-v2-tab.active{background:var(--primary);color:#fff;box-shadow:0 6px 14px -8px var(--primary)}
+.community-v2-tab:focus-visible,.community-v2 button:focus-visible,.community-v2 summary:focus-visible,#communityV2Dialog button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.community-v2-badge{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--danger);color:#fff;font-size:10.5px;font-weight:800;line-height:18px;text-align:center}
+.community-v2-banner{padding:11px 14px;border-radius:12px;background:var(--warning-soft);border:1px solid color-mix(in srgb,var(--warning) 45%,var(--border));color:var(--text);font-size:12.5px}
+.community-v2-banner code,.community-v2-hint code,.community-v2-state code{background:var(--soft);padding:1px 5px;border-radius:5px;font-size:11.5px}
+.community-v2-pane{display:grid;gap:12px;min-width:0}
+.community-v2-pane[hidden],.community-v2 [hidden],#communityV2Dialog [hidden]{display:none!important}
+.community-v2-pane-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.community-v2-pane-head h3{font-size:16px;font-weight:800;letter-spacing:-.02em}
+.community-v2-pane-head p,.community-v2-muted{font-size:12px;color:var(--muted);margin:2px 0 0}
+.community-v2-card{background:var(--card);border:1px solid var(--border);border-radius:var(--cv2-r);padding:14px;box-shadow:var(--shadow);min-width:0}
+.community-v2-card.flat{box-shadow:none;background:var(--soft)}
+.community-v2-card-h{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.community-v2-card h4{font-size:15px;margin:3px 0 6px;letter-spacing:-.01em}
+.community-v2-stack{display:grid;gap:11px}
+.community-v2-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:11px}
+.community-v2-sub{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:14px 0 6px;font-weight:800}
+.community-v2-actions{display:inline-flex;gap:6px;flex-wrap:wrap;align-items:center}
+.community-v2-more{text-align:center}
+.community-v2 .mini.danger,.community-v2 .btn.danger{color:var(--danger)}
+/* chat */
+.community-v2-chatcard{padding:0;overflow:hidden}
+.community-v2-pinned{border-bottom:1px solid var(--border);background:var(--warning-soft)}
+.community-v2-pinned-head{width:100%;display:flex;gap:10px;align-items:center;padding:9px 13px;border:0;background:transparent;color:var(--text);font:inherit;font-size:12px;font-weight:700;cursor:pointer;text-align:left}
+.community-v2-pinned-prev{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;color:var(--muted)}
+.community-v2-pinned-list{list-style:none;margin:0;padding:0 8px 8px;display:grid;gap:4px}
+.community-v2-pinned-list li{display:flex;gap:6px;align-items:center}
+.community-v2-pinned-item{flex:1;min-width:0;text-align:left;border:1px solid var(--border);background:var(--card);border-radius:10px;padding:7px 10px;font:inherit;font-size:12px;color:var(--text);cursor:pointer;display:grid;gap:1px}
+.community-v2-pinned-item span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.community-v2-pinned-item small{color:var(--muted);font-size:10.5px}
+.community-v2 #communityChat.community-chat{height:clamp(320px,58vh,600px);max-height:none;min-height:0;margin:0;border:0;border-radius:0;background:var(--soft);padding:12px;gap:2px;scroll-behavior:smooth}
+.community-v2-newpill{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;z-index:3;padding:7px 14px;border-radius:999px;border:0;background:var(--primary);color:#fff;font:inherit;font-size:12px;font-weight:700;cursor:pointer;box-shadow:var(--shadow-lg)}
+.community-v2-chatwrap{position:relative}
+.community-v2-day{display:flex;justify-content:center;margin:10px 0 6px;position:sticky;top:0;z-index:2}
+.community-v2-day span{background:var(--card);border:1px solid var(--border);color:var(--muted);font-size:10.5px;font-weight:700;padding:3px 11px;border-radius:999px}
+.community-v2-msg{display:flex;gap:8px;align-items:flex-start;max-width:min(92%,640px);margin-top:8px;transition:background .6s}
+.community-v2-msg.grouped{margin-top:1px}
+.community-v2-msg.mine{align-self:flex-end;flex-direction:row-reverse}
+.community-v2-msg.flash .community-v2-bubble{box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 40%,transparent)}
+.community-v2-avatar{--cv2-h:250;flex:none;width:32px;height:32px;border-radius:50%;display:inline-grid;place-items:center;font-size:11.5px;font-weight:800;color:#fff;background:hsl(var(--cv2-h) 55% 46%)}
+.community-v2-avatar.sm{width:22px;height:22px;font-size:9px;vertical-align:middle}
+.community-v2-avatar.lg{width:56px;height:56px;font-size:19px}
+.community-v2-avatar-gap{flex:none;width:32px}
+.community-v2-bubble{position:relative;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:7px 11px 6px;overflow-wrap:anywhere}
+.community-v2-msg.mine .community-v2-bubble{background:var(--primary-soft);border-color:color-mix(in srgb,var(--primary) 32%,var(--border))}
+.community-v2-msg.pinned .community-v2-bubble{border-color:var(--warning)}
+.community-v2-msg-head{display:flex;gap:8px;align-items:baseline;font-size:11.5px}
+.community-v2-msg-head time,.community-v2-msg-foot time{font-size:10px;color:var(--muted)}
+.community-v2-msg-text{font-size:13px;line-height:1.45;white-space:pre-wrap;color:var(--text);margin-top:2px}
+.community-v2-msg-foot{display:flex;gap:6px;align-items:center;justify-content:flex-end;min-height:0}
+.community-v2-flag{font-size:10px;font-weight:700;color:var(--muted)}
+.community-v2-flag.pin{color:var(--warning);display:block}
+.community-v2-flag.edited{font-style:italic}
+.community-v2-quote{display:grid;width:100%;text-align:left;gap:1px;margin:3px 0;padding:5px 9px;border:0;border-left:3px solid var(--primary);border-radius:6px;background:color-mix(in srgb,var(--primary) 9%,transparent);color:var(--text);font:inherit;font-size:11.5px;cursor:pointer}
+.community-v2-quote span{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.community-v2-reacts{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.community-v2-react{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:999px;padding:2px 8px;font:inherit;font-size:12px;cursor:pointer;min-height:26px}
+.community-v2-react.mine{background:var(--primary-soft);border-color:var(--primary)}
+.community-v2-picker{display:flex;gap:2px;margin-top:5px;padding:4px;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);width:max-content;max-width:100%}
+.community-v2-picker button{border:0;background:transparent;font-size:18px;cursor:pointer;border-radius:8px;width:34px;height:34px}
+.community-v2-picker button:hover{background:var(--soft)}
+.community-v2-msg-actions{position:absolute;top:-15px;right:8px;display:flex;gap:1px;padding:1px 3px;background:var(--card);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .15s;z-index:2}
+.community-v2-msg:hover .community-v2-msg-actions,.community-v2-msg:focus-within .community-v2-msg-actions{opacity:1;pointer-events:auto}
+@media (hover:none){.community-v2-msg-actions{position:static;opacity:1;pointer-events:auto;background:transparent;border:0;box-shadow:none;padding:0;margin-top:3px}}
+.community-v2-msg-actions button{border:0;background:transparent;cursor:pointer;font-size:13px;min-width:30px;min-height:30px;border-radius:8px;color:var(--muted)}
+.community-v2-msg-actions button:hover{background:var(--soft);color:var(--text)}
+.community-v2-edit{display:grid;gap:5px;margin-top:3px;min-width:200px}
+.community-v2-edit-actions{display:flex;gap:6px;justify-content:flex-end;align-items:center}
+.community-v2-compose{padding:10px 12px;border-top:1px solid var(--border);display:grid;gap:6px;background:var(--card)}
+.community-v2-compose textarea{resize:none;min-height:44px}
+.community-v2-compose-row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.community-v2-compose-row .sub{font-size:11px}
+.community-v2-replybar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 10px;border-radius:10px;background:var(--soft);border-left:3px solid var(--primary);font-size:12px}
+.community-v2-replybar em{color:var(--muted);margin-left:6px;font-style:normal}
+.community-v2-err{color:var(--danger);font-size:12px;margin:0}
+.community-v2-count{font-size:11px;color:var(--muted)} .community-v2-count.warn{color:var(--danger)}
+.community-v2-strip{padding:6px 12px;background:var(--warning-soft);color:var(--text);font-size:11.5px}
+/* legacy-fallback mode hides v2-only chrome */
+.community-v2-pane.is-legacy .community-v2-pinned,.community-v2-pane:not(.is-enhanced) .community-v2-pinned{display:none}
+/* states, skeletons */
+.community-v2-state{display:grid;gap:4px;justify-items:center;text-align:center;padding:30px 16px;color:var(--muted);grid-column:1/-1}
+.community-v2-state strong{color:var(--text);font-size:14px}.community-v2-state p{margin:0;font-size:12.5px;max-width:420px}
+.community-v2-state-icon{font-size:30px}.community-v2-state .btn{margin-top:8px}
+.community-v2-hint{font-size:11.5px;color:var(--muted)}
+.community-v2-skels{display:grid;gap:10px;padding:6px 0}
+.community-v2-skel{display:grid;gap:7px;padding:14px;border-radius:14px;background:var(--card);border:1px solid var(--border)}
+.community-v2-skel span{height:11px;border-radius:6px;background:linear-gradient(90deg,var(--soft),color-mix(in srgb,var(--border) 70%,var(--soft)),var(--soft));background-size:200% 100%;animation:communityV2Shimmer 1.3s infinite linear}
+.community-v2-skel span:last-child{width:60%}
+@keyframes communityV2Shimmer{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.community-v2-skel span{animation:none}.community-v2 *{scroll-behavior:auto!important;transition:none!important}}
+/* controls */
+.community-v2-seg{display:inline-flex;gap:3px;padding:3px;background:var(--soft);border-radius:11px;border:1px solid var(--border);flex-wrap:wrap}
+.community-v2-seg button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:12px;font-weight:700;padding:7px 12px;border-radius:8px;cursor:pointer;min-height:34px}
+.community-v2-seg button.active{background:var(--card);color:var(--primary);box-shadow:var(--shadow)}
+.community-v2-chip{display:inline-block;font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:999px;background:var(--soft);color:var(--muted);white-space:nowrap}
+.community-v2-chip.ok{background:var(--success-soft);color:var(--success)}.community-v2-chip.warn{background:var(--warning-soft);color:var(--warning)}.community-v2-chip.live{background:var(--primary-soft);color:var(--primary)}
+.community-v2-kind{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--primary)}
+.community-v2-card>header,.community-v2-card>footer{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.community-v2-card>footer{margin-top:10px}
+.community-v2-bar{height:8px;border-radius:999px;background:var(--soft);overflow:hidden;border:1px solid var(--border)}
+.community-v2-bar span{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--purple));border-radius:999px;transition:width .5s}
+.community-v2-bar.ok span{background:var(--success)}
+.community-v2-prog{display:grid;gap:5px;margin:8px 0}
+.community-v2-prog-l{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.community-v2-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:8px;margin:8px 0}
+.community-v2-stat{background:var(--soft);border-radius:12px;padding:10px;text-align:center;display:grid;gap:2px}
+.community-v2-stat strong{font-size:16px;color:var(--text)}.community-v2-stat span{font-size:10.5px;color:var(--muted)}
+.community-v2-callout{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;padding:13px 15px;border-radius:14px;background:var(--primary-soft);border:1px solid color-mix(in srgb,var(--primary) 30%,var(--border))}
+.community-v2-callout.ok{background:var(--success-soft);border-color:color-mix(in srgb,var(--success) 35%,var(--border))}
+.community-v2-callout p{font-size:12px;color:var(--muted);margin:2px 0 0;max-width:520px}
+.community-v2-callout-actions{display:flex;gap:6px;flex-wrap:wrap}
+.community-v2-how{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:11px 14px;font-size:12.5px}
+.community-v2-how summary{cursor:pointer;font-weight:700}.community-v2-how ul{margin:8px 0 0;padding-left:18px;display:grid;gap:5px;color:var(--muted)}
+.community-v2-lb{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.community-v2-lb-row,.community-v2-prow{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;background:var(--soft);flex-wrap:wrap}
+.community-v2-lb-row.me{outline:2px solid var(--primary);background:var(--primary-soft)}
+.community-v2-rank{width:28px;text-align:center;font-weight:800;font-size:15px}
+.community-v2-lb-name{border:0;background:transparent;color:var(--text);font:inherit;font-weight:700;cursor:pointer;text-align:left;padding:2px 0}
+.community-v2-lb-name:hover{color:var(--primary);text-decoration:underline}
+.community-v2-lb-stats{margin-left:auto;font-size:11.5px;color:var(--muted)} .community-v2-lb-stats b{color:var(--text)}
+.community-v2-plist{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.community-v2-prow .community-v2-actions{margin-left:auto}
+.community-v2-ann.pinned{border-left:4px solid var(--warning)} .community-v2-ann{border-left:4px solid var(--primary)}
+.community-v2-ann-body{font-size:13px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.community-v2-chal.done{border-color:var(--success)}
+.community-v2-desc{font-size:12.5px;margin:0 0 4px}
+.community-v2-parts{margin-top:8px;font-size:12px}.community-v2-parts ul{list-style:none;padding:0;margin:6px 0 0;display:grid;gap:4px}
+.community-v2-parts li{display:flex;gap:7px;align-items:center}.community-v2-parts em{margin-left:auto;font-style:normal;color:var(--muted)}
+.community-v2-opts{display:grid;gap:7px;margin:8px 0}
+.community-v2-opt{display:grid;gap:4px;padding:9px 11px;border:1px solid var(--border);border-radius:11px;font-size:13px}
+.community-v2-opt.pick{display:flex;gap:9px;align-items:center;cursor:pointer;min-height:42px}
+.community-v2-opt.pick:hover{border-color:var(--primary)}.community-v2-opt.mine{border-color:var(--primary)}
+.community-v2-opt-top{display:flex;justify-content:space-between;gap:8px}
+.community-v2-poll.closed{opacity:.92}
+.community-v2-members{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.community-v2-member{display:flex;gap:10px;align-items:center;text-align:left;padding:10px;border:1px solid var(--border);border-radius:13px;background:var(--card);color:var(--text);font:inherit;cursor:pointer;min-width:0}
+.community-v2-member:hover{border-color:var(--primary);box-shadow:var(--shadow)}
+.community-v2-member-t{display:grid;min-width:0}.community-v2-member-t strong{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.community-v2-member-t small{font-size:11px;color:var(--muted)}
+.community-v2-avwrap{position:relative;display:inline-flex}
+.community-v2-dot{position:absolute;right:-1px;bottom:-1px;width:11px;height:11px;border-radius:50%;background:var(--success);border:2px solid var(--card)}
+.community-v2 #communityMembers .community-member[data-member-uid]{cursor:pointer}
+.community-v2-badges{display:flex;flex-wrap:wrap;gap:6px}
+.community-v2-badgechip{background:var(--primary-soft);color:var(--primary);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700}
+.community-v2-ach{text-align:center;display:grid;gap:4px;justify-items:center}
+.community-v2-ach:not(.earned) .community-v2-ach-ic{filter:grayscale(1);opacity:.45}
+.community-v2-ach.earned{border-color:var(--success)}
+.community-v2-ach-ic{font-size:36px}
+.community-v2-groupcard{display:grid;gap:5px;text-align:left;cursor:pointer;color:var(--text);font:inherit}
+.community-v2-groupcard:hover{border-color:var(--primary)}
+.community-v2-glist{display:flex;flex-direction:column;gap:2px;height:clamp(240px,42vh,420px);overflow-y:auto;padding:10px;background:var(--soft);border-radius:12px}
+.community-v2-notifs{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.community-v2-notif{width:100%;display:flex;gap:10px;align-items:flex-start;text-align:left;padding:11px 12px;border:1px solid var(--border);border-radius:13px;background:var(--card);color:var(--text);font:inherit;cursor:pointer}
+.community-v2-notif.unread{background:var(--primary-soft);border-color:color-mix(in srgb,var(--primary) 35%,var(--border))}
+.community-v2-notif-ic{font-size:20px}.community-v2-notif-t{display:grid;gap:1px;flex:1;min-width:0;font-size:12.5px}.community-v2-notif-t small{color:var(--muted);font-size:11px}
+.community-v2-unread{width:9px;height:9px;border-radius:50%;background:var(--primary);flex:none;margin-top:5px}
+.community-v2-prefs{display:grid;gap:4px;margin-top:8px}
+.community-v2-switch,.community-v2-check{display:flex;gap:9px;align-items:center;font-size:12.5px;padding:6px 2px;cursor:pointer}
+.community-v2-switch input,.community-v2-check input{width:18px;height:18px;accent-color:var(--primary)}
+/* dialog */
+#communityV2Dialog{position:fixed;inset:0;z-index:2000;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(8,6,30,.55);backdrop-filter:blur(8px)}
+#communityV2Dialog.show{display:flex}
+.community-v2-dialog-box{width:100%;max-width:440px;max-height:calc(100vh - 28px);overflow:auto;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:20px;padding:20px;box-shadow:var(--shadow-lg)}
+.community-v2-dialog-box.wide{max-width:600px}
+.community-v2-dialog-box h3{font-size:17px;font-weight:800;margin-bottom:10px}
+.community-v2-dialog-text{font-size:13.5px;color:var(--muted);line-height:1.5;margin:0}
+.community-v2-dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;flex-wrap:wrap}
+.community-v2-form{display:grid;gap:11px}
+.community-v2-form label{display:grid;gap:4px;font-size:12px;font-weight:700;color:var(--muted)}
+.community-v2-form .community-v2-check{display:flex;color:var(--text);font-weight:500}
+.community-v2-row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px}
+.community-v2-optrow{display:flex;gap:6px;margin-bottom:6px}.community-v2-lbl{font-size:12px;font-weight:700;color:var(--muted);display:block;margin-bottom:5px}
+.community-v2-profile-head{display:flex;gap:14px;align-items:center;margin-bottom:6px}
+.community-v2-profile-head h3{margin:0}
+/* responsive */
+@media (max-width:900px){
+  .community-v2{grid-template-columns:1fr}
+  .community-v2-side{position:static}
+  .community-v2-side-toggle{display:flex}
+  .community-v2-tab-lb{display:none}.community-v2-tab.active .community-v2-tab-lb{display:inline}
+  .community-v2-tab{padding:9px 12px}
+  .community-v2 #communityChat.community-chat{height:clamp(300px,55vh,520px)}
+  .community-v2-msg{max-width:96%}
+}
+@media (max-width:520px){.community-v2-dialog-box{padding:16px;border-radius:16px}.community-v2-lb-stats{margin-left:0;width:100%}}
+</style>
 </head>
 <body>
 <header class="topbar">
@@ -2992,8 +3199,11 @@ body::after { display: none; }
   </div>
   <div id="communityAppView" style="display:none">
     <div class="card community-card" style="margin-bottom:12px"><div class="row" style="flex-wrap:wrap"><div><h2 id="communityWelcome">Community</h2><p id="communitySignedEmail"></p></div><button class="btn" onclick="communitySignOut()">Logout</button></div></div>
-    <div class="community-wrap">
-      <div class="community-stack">
+    <div class="community-v2" id="communityV2Root">
+      <aside class="community-v2-side" aria-label="Communities">
+        <button type="button" class="btn community-v2-side-toggle" data-cv2-action="toggle-side" aria-expanded="true"><span>☰ Communities &amp; progress sharing</span><span aria-hidden="true">▾</span></button>
+        <div class="community-v2-side-body">
+        <div class="card community-card"><div class="row" style="flex-wrap:wrap"><h2>Your Communities</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="mini" onclick="communityLoadMyCommunities(true)">↻ Refresh</button><button class="mini" onclick="communityCleanListedMemberships()">Clean stale list</button></div></div><div id="communityMyList" class="community-list"><div class="community-empty">Loading…</div></div></div>
         <div class="card community-card">
           <h2>＋ Create Community</h2><p>একটি study group তৈরি করো।</p>
           <div class="community-form"><input id="newCommunityName" class="input" maxlength="60" placeholder="Community name"><input id="newCommunityDescription" class="input" maxlength="240" placeholder="Short description (optional)"><select id="newCommunityVisibility" class="select"><option value="private">Private · Invite code required</option><option value="public">Public · Anyone can join</option></select><button class="btn primary" onclick="communityCreate()">Create Community</button></div>
@@ -3003,19 +3213,49 @@ body::after { display: none; }
           <div class="community-form"><input id="communityInviteCode" class="input" maxlength="20" placeholder="Invite code"><button class="btn" onclick="communityJoinByCode()">Join Community</button></div>
         </div>
         <div class="card community-card"><div class="row"><h2>Discover public groups</h2><button class="mini" onclick="communityLoadDiscover()">↻ Find</button></div><p>Public Community-তে invite code ছাড়াই join করা যায়।</p><div id="communityDiscoverList" class="community-list"><div class="community-empty">Find public groups.</div></div></div>
-        <div class="card community-card"><div class="row" style="flex-wrap:wrap"><h2>Your Communities</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="mini" onclick="communityLoadMyCommunities(true)">↻ Refresh</button><button class="mini" onclick="communityCleanListedMemberships()">Clean stale list</button></div></div><div id="communityMyList" class="community-list"><div class="community-empty">Loading…</div></div></div>
         <div class="card community-card"><h2>Study progress sharing</h2><p>তোমার Syllabus Progress এবং Study Time Summary নির্বাচিত Community-র সঙ্গে Share করো। Sharing চালু থাকলে সব তথ্য স্বয়ংক্রিয়ভাবে Update হবে।</p><div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:10px"><button class="btn primary" onclick="communitySyncProgress()">Share my progress</button><button class="btn" onclick="communityStopSharing()">Stop sharing</button></div><p id="communityShareInfo" style="margin-top:8px"></p><div id="communityMyProgress" class="community-metrics"></div></div>
-      </div>
-      <div class="community-stack">
-        <div class="card community-card">
+        </div>
+      </aside>
+      <section class="community-v2-main" aria-label="Community workspace">
+        <div class="card community-card community-v2-room">
           <div class="row" style="flex-wrap:wrap"><div><h2 id="communityRoomTitle">Select a Community</h2><p id="communityRoomDescription">Chat and member progress will appear here.</p></div><button type="button" id="communityLeaveButton" class="btn" onclick="communityLeave()" disabled>Leave</button></div>
+          <div class="community-v2-room-meta"><span id="communityV2Presence" class="community-v2-live" hidden></span></div>
           <div id="communityInviteInfo" class="community-status" style="display:none;margin-top:10px"></div>
           <div id="communityLeaveStatus" class="community-status" style="display:none;margin-top:10px"></div>
-          <div id="communityChat" class="community-chat"><div class="community-empty">বাম পাশ থেকে একটি Community নির্বাচন করো।</div></div>
-          <div class="community-form"><textarea id="communityMessageInput" class="input" rows="2" maxlength="2000" placeholder="Write a message…" style="resize:vertical"></textarea><div class="row"><span class="sub">Respect other learners. No passwords or private data.</span><button class="btn primary" onclick="communitySendMessage()">Send ↗</button></div></div>
         </div>
-        <div class="card community-card"><div class="row" style="flex-wrap:wrap"><h2>Members & study progress</h2><button class="mini" onclick="communityForceRefreshRoom()">↻ Refresh</button></div><p>শুধু নির্বাচিত Community-র সদস্যদের share করা summary দেখা যাবে।</p><div id="communityMembers" class="community-members"><div class="community-empty">কোনো Community নির্বাচিত হয়নি।</div></div></div>
-      </div>
+        <nav class="community-v2-nav" id="communityV2Nav" role="tablist" aria-label="Community sections"></nav>
+        <div class="community-v2-banner" id="communityV2Banner" role="status" hidden></div>
+        <div class="community-v2-pane is-enhanced-off" id="communityV2Pane-chat" role="tabpanel" aria-labelledby="communityV2Tab-chat">
+          <div class="card community-card community-v2-chatcard">
+            <div class="community-v2-pinned" id="communityV2Pinned" hidden></div>
+            <div class="community-v2-strip" id="communityV2ChatStatus" role="status" hidden></div>
+            <div class="community-v2-chatwrap">
+          <div id="communityChat" class="community-chat"><div class="community-empty">বাম পাশ থেকে একটি Community নির্বাচন করো।</div></div>
+              <button type="button" class="community-v2-newpill" id="communityV2NewPill" data-cv2-action="new-pill" hidden></button>
+            </div>
+            <div class="community-v2-compose">
+              <div class="community-v2-replybar" id="communityV2ReplyBar" hidden></div>
+              <textarea id="communityMessageInput" class="input" rows="2" maxlength="2000" placeholder="Write a message…" aria-label="Message"></textarea>
+              <div class="community-v2-compose-row"><span class="sub">Respect other learners. No passwords or private data. <span class="community-v2-count" id="communityV2Count"></span></span><button type="button" id="communityV2SendBtn" class="btn primary" onclick="communitySendMessage()">Send</button></div>
+              <p class="community-v2-err" id="communityV2SendError" role="alert" hidden></p>
+            </div>
+          </div>
+        </div>
+        <div class="community-v2-pane" id="communityV2Pane-leaderboard" role="tabpanel" aria-labelledby="communityV2Tab-leaderboard" hidden><div id="communityV2Pane-leaderboard-body"></div></div>
+        <div class="community-v2-pane" id="communityV2Pane-challenges" role="tabpanel" aria-labelledby="communityV2Tab-challenges" hidden><div id="communityV2Pane-challenges-body"></div></div>
+        <div class="community-v2-pane" id="communityV2Pane-announcements" role="tabpanel" aria-labelledby="communityV2Tab-announcements" hidden><div id="communityV2Pane-announcements-body"></div></div>
+        <div class="community-v2-pane" id="communityV2Pane-polls" role="tabpanel" aria-labelledby="communityV2Tab-polls" hidden><div id="communityV2Pane-polls-body"></div></div>
+        <div class="community-v2-pane" id="communityV2Pane-members" role="tabpanel" aria-labelledby="communityV2Tab-members" hidden>
+          <div id="communityV2Pane-members-body">
+            <div class="community-v2-pane-head"><div><h3>Members</h3><p>Select a member to see their profile, badges and study progress.</p></div></div>
+            <div id="communityV2Directory"></div>
+          </div>
+          <div class="card community-card"><div class="row" style="flex-wrap:wrap"><h2>Study progress</h2><button class="mini" onclick="communityForceRefreshRoom()">↻ Refresh</button></div><p>Members who share progress appear here with their summary.</p><div id="communityMembers" class="community-members"><div class="community-empty">Select a community to see members.</div></div></div>
+        </div>
+        <div class="community-v2-pane" id="communityV2Pane-achievements" role="tabpanel" aria-labelledby="communityV2Tab-achievements" hidden><div id="communityV2Pane-achievements-body"></div></div>
+        <div class="community-v2-pane" id="communityV2Pane-groups" role="tabpanel" aria-labelledby="communityV2Tab-groups" hidden><div id="communityV2Pane-groups-body"></div></div>
+        <div class="community-v2-pane" id="communityV2Pane-notifications" role="tabpanel" aria-labelledby="communityV2Tab-notifications" hidden><div id="communityV2Pane-notifications-body"></div></div>
+      </section>
     </div>
   </div>
 </section>
@@ -6703,6 +6943,9 @@ function init(){
 document.addEventListener("DOMContentLoaded",init);
 </script>
 
+<!-- Community V2 dialog (replaces alert/confirm/prompt inside Community) -->
+<div id="communityV2Dialog" role="dialog" aria-modal="true" aria-labelledby="communityV2DialogTitle" aria-hidden="true"><div class="community-v2-dialog-box"><h3 id="communityV2DialogTitle"></h3><div id="communityV2DialogBody"></div><div class="community-v2-dialog-actions" id="communityV2DialogActions"></div></div></div>
+
 <!-- Community integration. Requires project URL + anon key; no service-role key belongs in client code. -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -6966,6 +7209,7 @@ function communityResetRoomUI(){
   const input=communityEl("communityMessageInput");if(input)input.value="";
   const leave=communityEl("communityLeaveButton");if(leave){leave.disabled=true;leave.textContent="Leave";}
   communityLastMessageAt=null;
+  try{if(window.communityV2)communityV2.onRoomReset();}catch(_e){}
 }
 function communityResetUI(){
   communityResetRoomUI();
@@ -7385,6 +7629,7 @@ function communityCleanupRealtime(){
   }catch(_e){}
   communityRealtime=null;
   communityStopPolling();
+  try{if(window.communityV2)communityV2.onRoomCleanup();}catch(_e){}
 }
 function communityForceRefreshRoom(){
   if(!communityClient||!communityUser||!communityCurrent||communityCurrent.id==null){
@@ -7479,6 +7724,7 @@ async function communitySelect(id){
       }
     });
   communityStartPolling();
+  try{if(window.communityV2)communityV2.onRoomSelected();}catch(_e){}
   // Keep a previously shared summary fresh after a reload.
   if(communityIsShared(uid,cid))communityPushProgress(cid,true,true);
 }
@@ -7532,6 +7778,7 @@ function communityName(uid){
 function communityRenderMessageList(id,messages){
   const box=communityEl("communityChat");
   if(!box||!communitySame(communityCurrent?.id,id))return;
+  if(window.communityV2&&communityV2.chatActive()){communityV2.chatRefreshSoon();return;}
   box.innerHTML="";
   communityLastMessageAt=null;
   (messages||[]).forEach(m=>communityAppendMessage(m));
@@ -7583,6 +7830,7 @@ function communityAppendMessage(m){
   const box=communityEl("communityChat");
   if(!box||!communityCurrent||(m.community_id!=null&&!communitySame(m.community_id,communityCurrent.id)))return;
   if(m.created_at&&(!communityLastMessageAt||Date.parse(m.created_at)>Date.parse(communityLastMessageAt)))communityLastMessageAt=m.created_at;
+  if(window.communityV2&&communityV2.chatActive()){communityV2.chatRefreshSoon();return;}
   const empty=box.querySelector(".community-empty");if(empty)empty.remove();
   if(box.querySelector(`[data-message-id="${CSS.escape(String(m.id))}"]`))return;
   const el=document.createElement("div");el.className="community-message"+(communitySame(m.user_id,communityUser?.id)?" mine":"");el.dataset.messageId=m.id;
@@ -7598,6 +7846,7 @@ function communityAppendMessage(m){
   }catch(_e){}
 }
 async function communitySendMessage(){
+  if(window.communityV2&&communityV2.chatActive())return communityV2.send();
   if(!communityCurrent||!communityUser)return communityStatus("আগে একটি Community নির্বাচন করো।","error");
   if(communityBusy.send)return;
   const input=communityEl("communityMessageInput"),body=input.value.trim();if(!body)return;
@@ -8349,6 +8598,1223 @@ document.addEventListener("DOMContentLoaded",()=>{communityWireInputs();communit
   document.addEventListener("visibilitychange", () => { if(document.visibilityState === "visible"){ ensure(); pull(); } });
   window.addEventListener("online", () => { ensure(); if(communityUser) startRealtime(); pull(); });
 })();   
+</script>
+
+<script id="communityV2Script">
+/* =====================================================================
+   COMMUNITY V2 (upgrade). Isolated module: the only global it adds is `communityV2`.
+   Uses existing Community globals read-only: communityClient, communityUser, communityCurrent,
+   communityMemberships, communityEsc, communityFmt, communityName, communityFetchNames, communitySid, communitySame.
+   Every server rule is enforced by RLS / SECURITY DEFINER functions (community_upgrade.sql);
+   client checks below are only for showing/hiding buttons.
+   ===================================================================== */
+(function(){
+"use strict";
+if(window.communityV2)return;
+
+const $=id=>document.getElementById(id);
+const esc=v=>communityEsc(v);
+const SECTIONS=[
+  {id:"chat",label:"Chat",icon:"💬"},{id:"leaderboard",label:"Leaderboard",icon:"🏆"},
+  {id:"challenges",label:"Challenges",icon:"🎯"},{id:"announcements",label:"Announcements",icon:"📢"},
+  {id:"polls",label:"Polls",icon:"📊"},{id:"members",label:"Members",icon:"👥"},
+  {id:"achievements",label:"Achievements",icon:"🏅"},{id:"groups",label:"Study Groups",icon:"📚"},
+  {id:"notifications",label:"Notifications",icon:"🔔"}
+];
+const SECTION_KEY="syllabusTrackerCommunityV2Section";
+const REACTIONS=["👍","❤️","😂","🎉","🙏","🔥"];
+const S={
+  section:"chat",cid:null,uid:null,missing:false,rpcChat:undefined,
+  prefs:null,prefsReady:false,
+  chat:{messages:[],pinned:[],loaded:false,error:null,sig:"",replyTo:null,editingId:null,reactFor:null,sending:false,sendError:"",seen:new Set(),firstRender:true,pinsOpen:false,dirty:false},
+  presence:new Map(),data:{},stale:{},inflight:{},again:{},
+  channel:null,channelFor:null,notifChannel:null,notifUser:null,
+  timer:null,tick:0,unreadChat:0,unreadNotifs:0,notifs:[],notifsLoaded:false,notifFilter:"all",
+  lbPeriod:"weekly",chalTab:"active",annLimit:30,pollSel:{},members:[],membersLoaded:false,
+  group:{openId:null,detail:null,messages:[],channel:null,sending:false,error:""},
+  listenersBound:false,debounce:{}
+};
+
+/* ---------- generic helpers ---------- */
+const sid=v=>String(v==null?"":v);
+const same=(a,b)=>a!=null&&b!=null&&sid(a)===sid(b);
+const myId=()=>communityUser&&communityUser.id;
+const ready=()=>!!(communityClient&&communityUser&&S.cid);
+function myRole(){const m=(communityMemberships||[]).find(x=>same(x.community_id,S.cid));return (m&&m.role)||"member";}
+const isAdmin=()=>["owner","admin"].includes(myRole());
+const isOwner=()=>myRole()==="owner";
+function isMissingErr(e){
+  const m=(e&&(e.message||""))||"",c=e&&(e.code||"");
+  return c==="PGRST202"||c==="PGRST205"||c==="42883"||c==="42P01"||/could not find the (function|table)|schema cache|does not exist/i.test(m);
+}
+function errMsg(e){
+  if(isMissingErr(e))return "The Community upgrade SQL has not been installed on this database yet.";
+  const m=(e&&e.message)||String(e||"Something went wrong");
+  if(/Failed to fetch|NetworkError|network/i.test(m))return "Network problem. Check your connection and try again.";
+  if(/row-level security|permission denied/i.test(m))return "You do not have permission to do that.";
+  return m;
+}
+async function rpc(name,args){
+  const r=await communityClient.rpc(name,args||{});
+  if(r.error){if(isMissingErr(r.error))S.missing=true;throw r.error;}
+  return r.data;
+}
+function toastMsg(t){try{if(typeof toast==="function")toast(t);else communityStatus(t);}catch(_e){}}
+function initials(name){
+  const p=String(name||"?").trim().split(/\s+/).filter(Boolean);
+  return ((p[0]||"?")[0]+(p.length>1?p[p.length-1][0]:"")).toUpperCase();
+}
+function hue(name){let h=0;const s=String(name||"");for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%360;return h;}
+function avatar(name,cls){
+  return `<span class="community-v2-avatar ${cls||""}" style="--cv2-h:${hue(name)}" aria-hidden="true">${esc(initials(name))}</span>`;
+}
+function timeAgo(iso){
+  if(!iso)return "";const s=Math.max(0,(Date.now()-Date.parse(iso))/1000);
+  if(s<60)return "just now";if(s<3600)return Math.floor(s/60)+"m ago";
+  if(s<86400)return Math.floor(s/3600)+"h ago";if(s<604800)return Math.floor(s/86400)+"d ago";
+  return new Date(iso).toLocaleDateString();
+}
+function fmtTime(iso){try{return new Date(iso).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});}catch(_e){return "";}}
+function fmtDate(iso){try{return new Date(iso).toLocaleDateString([],{year:"numeric",month:"short",day:"numeric"});}catch(_e){return "";}}
+function dayLabel(iso){
+  const d=new Date(iso),n=new Date();
+  const k=x=>x.getFullYear()+"-"+x.getMonth()+"-"+x.getDate();
+  const y=new Date(n);y.setDate(n.getDate()-1);
+  if(k(d)===k(n))return "Today";if(k(d)===k(y))return "Yesterday";
+  return d.toLocaleDateString([],{weekday:"long",month:"short",day:"numeric",year:d.getFullYear()===n.getFullYear()?undefined:"numeric"});
+}
+function plural(n,w){return n+" "+w+(n===1?"":"s");}
+function pct(a,b){return b>0?Math.max(0,Math.min(100,Math.round(a/b*100))):0;}
+function secFmt(s){try{return communityFmt(Number(s)||0);}catch(_e){return Math.round((Number(s)||0)/60)+"m";}}
+function onTab(){return typeof currentTab==="undefined"||currentTab==="community";}
+function visibleNow(){return document.visibilityState!=="hidden"&&onTab();}
+
+/* ---------- shared UI fragments ---------- */
+function skeleton(n){let h="";for(let i=0;i<(n||3);i++)h+='<div class="community-v2-skel"><span></span><span></span></div>';return '<div class="community-v2-skels" aria-busy="true" aria-label="Loading">'+h+'</div>';}
+function emptyState(icon,title,text,extra){
+  return `<div class="community-v2-state"><div class="community-v2-state-icon" aria-hidden="true">${icon}</div><strong>${esc(title)}</strong><p>${esc(text||"")}</p>${extra||""}</div>`;
+}
+function errorState(msg,retry){
+  const missing=S.missing;
+  return `<div class="community-v2-state community-v2-state-error" role="alert"><div class="community-v2-state-icon" aria-hidden="true">⚠️</div>
+    <strong>${missing?"Database upgrade needed":"Couldn't load this section"}</strong><p>${esc(msg||"")}</p>
+    ${missing?'<p class="community-v2-hint">Run <code>community_upgrade.sql</code> once in the Supabase SQL Editor, then reload.</p>':""}
+    ${retry?`<button type="button" class="btn" data-cv2-action="retry" data-cv2-section="${esc(retry)}">Try again</button>`:""}</div>`;
+}
+function btn(label,action,attrs,cls){
+  let a="";for(const k in (attrs||{}))a+=` data-cv2-${k}="${esc(attrs[k])}"`;
+  return `<button type="button" class="${cls||"mini"}" data-cv2-action="${action}"${a}>${label}</button>`;
+}
+function bar(p,cls){return `<div class="community-v2-bar ${cls||""}" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}"><span style="width:${p}%"></span></div>`;}
+function setPane(id,html){const e=$("communityV2Pane-"+id+"-body")||$("communityV2Pane-"+id);if(e)e.innerHTML=html;}
+function paneBody(id){return $("communityV2Pane-"+id+"-body");}
+
+/* ---------- dialog (replaces alert/confirm/prompt) ---------- */
+const D={resolve:null,opener:null,onSubmit:null,busy:false};
+function dialogEl(){return $("communityV2Dialog");}
+function closeDialog(val){
+  const el=dialogEl();if(!el)return;
+  el.classList.remove("show");el.setAttribute("aria-hidden","true");
+  const body=$("communityV2DialogBody");if(body)body.innerHTML="";
+  const r=D.resolve;D.resolve=null;D.onSubmit=null;D.busy=false;
+  try{if(D.opener&&document.contains(D.opener))D.opener.focus();}catch(_e){}
+  D.opener=null;if(r)r(val===undefined?null:val);
+}
+function openDialog(opt){
+  const el=dialogEl();if(!el)return Promise.resolve(null);
+  if(D.resolve)closeDialog(null);
+  D.opener=document.activeElement;
+  $("communityV2DialogTitle").textContent=opt.title||"";
+  $("communityV2DialogBody").innerHTML=opt.html||"";
+  const act=$("communityV2DialogActions");
+  act.innerHTML=(opt.cancelLabel===false?"":`<button type="button" class="btn" data-cv2-action="dialog-cancel">${esc(opt.cancelLabel||"Cancel")}</button>`)+
+    (opt.submitLabel?`<button type="button" class="btn ${opt.danger?"danger":"primary"}" id="communityV2DialogSubmit" data-cv2-action="dialog-submit">${esc(opt.submitLabel)}</button>`:"");
+  const box=el.querySelector(".community-v2-dialog-box");if(box)box.classList.toggle("wide",!!opt.wide);
+  D.onSubmit=opt.onSubmit||null;
+  el.classList.add("show");el.setAttribute("aria-hidden","false");
+  const p=new Promise(res=>{D.resolve=res;});
+  setTimeout(()=>{
+    const f=el.querySelector("[autofocus],input:not([type=hidden]),textarea,select")||$("communityV2DialogSubmit")||el.querySelector("button");
+    if(f)f.focus();
+    if(opt.onMount)try{opt.onMount(el);}catch(_e){}
+  },30);
+  return p;
+}
+function confirmDialog(title,text,confirmLabel,danger){
+  return openDialog({title,html:`<p class="community-v2-dialog-text">${esc(text)}</p>`,submitLabel:confirmLabel||"Confirm",danger:danger!==false,
+    onSubmit:async()=>true}).then(v=>v===true);
+}
+async function submitDialog(){
+  if(D.busy||!D.onSubmit)return;
+  const errBox=$("communityV2DialogError"),sub=$("communityV2DialogSubmit");
+  if(errBox){errBox.textContent="";errBox.hidden=true;}
+  D.busy=true;const label=sub&&sub.textContent;if(sub){sub.disabled=true;sub.textContent="Working…";}
+  try{
+    const out=await D.onSubmit($("communityV2DialogBody"));
+    D.busy=false;closeDialog(out===undefined?true:out);
+  }catch(e){
+    D.busy=false;if(sub){sub.disabled=false;sub.textContent=label;}
+    if(errBox){errBox.textContent=errMsg(e);errBox.hidden=false;}
+  }
+}
+function trapFocus(e){
+  const el=dialogEl();if(!el||!el.classList.contains("show")||e.key!=="Tab")return;
+  const f=[...el.querySelectorAll("button:not([disabled]),input:not([disabled]),textarea,select,a[href]")].filter(x=>x.offsetParent!==null);
+  if(!f.length)return;const first=f[0],last=f[f.length-1];
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+}
+function fieldVal(root,name){const e=root.querySelector('[name="'+name+'"]');return e?(e.type==="checkbox"?e.checked:e.value):"";}
+
+/* ---------- preferences (leaderboard opt-in, notifications, last seen, timezone) ---------- */
+const PREF_DEFAULTS={leaderboard_opt_in:false,show_last_seen:true,n_messages:true,n_replies:true,n_reactions:true,n_announcements:true,n_polls:true,n_challenges:true,n_achievements:true,n_partners:true,n_groups:true};
+function localTz(){try{return Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC";}catch(_e){return "UTC";}}
+async function loadPrefs(){
+  const cid=S.cid;
+  try{
+    const r=await communityClient.from("community_user_prefs").select("*").eq("community_id",cid).eq("user_id",myId()).maybeSingle();
+    if(cid!==S.cid)return;
+    if(r.error){if(isMissingErr(r.error))S.missing=true;S.prefs={...PREF_DEFAULTS};S.prefsReady=false;return;}
+    S.prefs=r.data?{...PREF_DEFAULTS,...r.data}:{...PREF_DEFAULTS};
+    S.prefsReady=true;
+    const tz=localTz();
+    if(!r.data||r.data.tz!==tz){
+      const up=await communityClient.from("community_user_prefs").upsert({community_id:cid,user_id:myId(),tz},{onConflict:"community_id,user_id"});
+      if(!up.error&&S.prefs)S.prefs.tz=tz;
+    }
+  }catch(_e){S.prefs=S.prefs||{...PREF_DEFAULTS};}
+}
+async function savePref(patch){
+  const cid=S.cid;
+  const row={community_id:cid,user_id:myId(),tz:localTz(),...patch};
+  const r=await communityClient.from("community_user_prefs").upsert(row,{onConflict:"community_id,user_id"});
+  if(r.error){if(isMissingErr(r.error))S.missing=true;throw r.error;}
+  S.prefs={...(S.prefs||PREF_DEFAULTS),...patch};S.prefsReady=true;
+}
+
+/* ---------- navigation ---------- */
+function buildNav(){
+  const nav=$("communityV2Nav");if(!nav||nav.dataset.built)return;
+  nav.dataset.built="1";
+  nav.innerHTML=SECTIONS.map(s=>`<button type="button" role="tab" class="community-v2-tab" id="communityV2Tab-${s.id}" aria-controls="communityV2Pane-${s.id}" aria-selected="false" tabindex="-1" data-cv2-action="section" data-cv2-section="${s.id}"><span class="community-v2-tab-ic" aria-hidden="true">${s.icon}</span><span class="community-v2-tab-lb">${s.label}</span><span class="community-v2-badge" id="communityV2Badge-${s.id}" hidden></span></button>`).join("");
+  nav.addEventListener("keydown",e=>{
+    if(e.key!=="ArrowRight"&&e.key!=="ArrowLeft")return;
+    const i=SECTIONS.findIndex(s=>s.id===S.section),n=(i+(e.key==="ArrowRight"?1:-1)+SECTIONS.length)%SECTIONS.length;
+    showSection(SECTIONS[n].id,true);
+  });
+}
+function updateBadges(){
+  const set=(id,n)=>{const b=$("communityV2Badge-"+id);if(!b)return;b.hidden=!(n>0);b.textContent=n>99?"99+":String(n);};
+  set("notifications",S.unreadNotifs);set("chat",S.section==="chat"?0:S.unreadChat);
+}
+function showSection(id,focusTab){
+  if(!SECTIONS.some(s=>s.id===id))id="chat";
+  S.section=id;
+  try{localStorage.setItem(SECTION_KEY,id);}catch(_e){}
+  SECTIONS.forEach(s=>{
+    const t=$("communityV2Tab-"+s.id),p=$("communityV2Pane-"+s.id);
+    const on=s.id===id;
+    if(t){t.classList.toggle("active",on);t.setAttribute("aria-selected",on?"true":"false");t.tabIndex=on?0:-1;if(on&&focusTab)t.focus();}
+    if(p)p.hidden=!on;
+  });
+  if(id==="chat")S.unreadChat=0;
+  updateBadges();
+  const act=document.querySelector(".community-v2-tab.active");
+  if(act&&act.scrollIntoView)try{act.scrollIntoView({block:"nearest",inline:"center"});}catch(_e){}
+  if(S.cid)loadSection(id,{});
+}
+const LOADERS={};
+function loadSection(id,opt){
+  const f=LOADERS[id];if(!f||!ready())return Promise.resolve();
+  opt=opt||{};
+  if(S.inflight[id]){S.again[id]=true;return Promise.resolve();}
+  S.inflight[id]=true;
+  return Promise.resolve(f(opt)).catch(e=>{console.warn("Community section "+id+" failed:",e);}).finally(()=>{
+    S.inflight[id]=false;S.stale[id]=false;
+    if(S.again[id]){S.again[id]=false;if(S.section===id&&ready())loadSection(id,{silent:true});}
+  });
+}
+function markStale(id){
+  S.stale[id]=true;
+  if(id==="chat"&&S.section!=="chat"&&S.rpcChat===true){chatRefresh();return;}
+  if(S.section===id){
+    clearTimeout(S.debounce[id]);
+    S.debounce[id]=setTimeout(()=>{if(ready()&&S.section===id)loadSection(id,{silent:true});},350);
+  }
+}
+
+/* ---------- realtime (one channel per room; polling below stays as the fallback) ---------- */
+function closeRoomChannel(){
+  if(S.channel){try{communityClient.removeChannel(S.channel);}catch(_e){}}
+  S.channel=null;S.channelFor=null;
+}
+function openRoomChannel(){
+  closeRoomChannel();
+  if(!ready())return;
+  const cid=S.cid,f="community_id=eq."+cid;
+  const map=[["community_message_ext","chat"],["community_message_reactions","chat"],["community_announcements","announcements"],
+    ["community_polls","polls"],["community_poll_options","polls"],["community_challenges","challenges"],
+    ["community_challenge_participants","challenges"],["community_member_achievements","achievements"],
+    ["community_groups","groups"],["community_group_members","groups"],["community_partnerships","groups"],
+    ["community_progress","leaderboard"]];
+  try{
+    let ch=communityClient.channel("community-v2-room-"+cid+"-"+Date.now());
+    map.forEach(([table,section])=>{
+      ch=ch.on("postgres_changes",{event:"*",schema:"public",table,filter:f},()=>{if(same(S.cid,cid)){markStale(section);if(table==="community_progress")markStale("challenges");}});
+    });
+    ch.subscribe();
+    S.channel=ch;S.channelFor=cid;
+  }catch(e){console.warn("Community v2 realtime unavailable; polling continues.",e);}
+}
+function closeUserChannel(){
+  if(S.notifChannel){try{communityClient.removeChannel(S.notifChannel);}catch(_e){}}
+  S.notifChannel=null;S.notifUser=null;
+}
+function openUserChannel(){
+  closeUserChannel();
+  if(!communityClient||!communityUser)return;
+  const uid=communityUser.id;
+  try{
+    S.notifChannel=communityClient.channel("community-v2-notify-"+uid+"-"+Date.now())
+      .on("postgres_changes",{event:"*",schema:"public",table:"community_notifications",filter:"user_id=eq."+uid},payload=>{
+        refreshUnread();
+        if(S.section==="notifications")loadSection("notifications",{silent:true});
+        else S.stale.notifications=true;
+        const n=payload&&payload.new;
+        if(payload&&payload.eventType==="INSERT"&&n&&n.type!=="message"&&!n.read_at&&document.visibilityState==="visible"&&!(S.section==="notifications")){
+          toastMsg("🔔 "+String(n.title||"New notification"));
+        }
+      })
+      .on("postgres_changes",{event:"*",schema:"public",table:"community_partnerships"},()=>{if(S.cid)markStale("groups");})
+      .on("postgres_changes",{event:"*",schema:"public",table:"community_group_members",filter:"user_id=eq."+uid},()=>{if(S.cid)markStale("groups");})
+      .subscribe();
+    S.notifUser=uid;
+  }catch(e){console.warn("Community notifications realtime unavailable.",e);}
+}
+async function refreshUnread(){
+  if(!communityClient||!communityUser)return;
+  try{
+    const r=await communityClient.from("community_notifications").select("id",{count:"exact",head:true}).is("read_at",null);
+    if(!r.error&&typeof r.count==="number"){S.unreadNotifs=r.count;updateBadges();}
+    else if(r.error&&isMissingErr(r.error))S.missing=true;
+  }catch(_e){}
+}
+
+/* ---------- presence ---------- */
+function isOnline(uid){const t=S.presence.get(sid(uid));return !!t&&Date.now()-t<75000;}
+function lastSeenText(uid){
+  const t=S.presence.get(sid(uid));if(!t)return "";
+  return isOnline(uid)?"Online":"Last seen "+timeAgo(new Date(t).toISOString());
+}
+async function heartbeat(){
+  if(!ready()||S.missing&&S.prefsReady===false&&S.rpcChat===false)return;
+  try{await rpc("community_touch_presence",{p_community_id:S.cid});}catch(_e){}
+}
+async function loadPresence(){
+  if(!ready())return;
+  const cid=S.cid;
+  try{
+    const d=await rpc("community_get_presence",{p_community_id:cid});
+    if(cid!==S.cid)return;
+    const m=new Map();(d||[]).forEach(r=>m.set(sid(r.member_id),Date.parse(r.seen_at)));
+    S.presence=m;renderPresenceChip();
+    if(S.section==="members")renderMemberDirectory();
+  }catch(_e){}
+}
+function renderPresenceChip(){
+  const e=$("communityV2Presence");if(!e)return;
+  let n=0;S.presence.forEach((t,k)=>{if(Date.now()-t<75000)n++;});
+  e.textContent=n>0?("● "+n+" online"):"";e.hidden=n===0;
+}
+
+/* ---------- timers ---------- */
+function startTimers(){
+  stopTimers();
+  S.tick=0;
+  S.timer=setInterval(()=>{
+    if(!ready()||!visibleNow())return;
+    S.tick++;
+    if(S.section==="chat"&&S.rpcChat!==false)chatRefresh();
+    else if(S.section!=="chat"&&S.tick%2===0&&LOADERS[S.section]&&S.section!=="notifications")loadSection(S.section,{silent:true});
+    if(S.rpcChat===true&&S.tick%3===0&&S.section!=="chat")chatRefresh();
+    if(S.tick%8===1)heartbeat();
+    if(S.tick%5===0){loadPresence();refreshUnread();}
+  },4000);
+  setTimeout(()=>{heartbeat();loadPresence();},600);
+}
+function stopTimers(){if(S.timer)clearInterval(S.timer);S.timer=null;}
+
+/* =====================================================================
+   CHAT
+   ===================================================================== */
+function absorbChat(data){
+  const c=S.chat,msgs=(data&&data.messages)||[],pins=(data&&data.pinned)||[];
+  if(c.loaded){
+    msgs.forEach(m=>{
+      if(!c.seen.has(m.id)&&!same(m.user_id,myId())){c.newBelow=(c.newBelow||0)+1;if(S.section!=="chat")S.unreadChat++;}
+    });
+  }
+  c.seen=new Set(msgs.map(m=>m.id));
+  c.messages=msgs;c.pinned=pins;c.loaded=true;
+  if(c.replyTo&&!msgs.some(m=>m.id===c.replyTo.id))c.replyTo=null;
+  updateBadges();
+}
+async function chatRefresh(){
+  if(!ready()||S.rpcChat===false)return;
+  if(S.inflight.chatFetch){S.again.chatFetch=true;return;}
+  S.inflight.chatFetch=true;const cid=S.cid;
+  try{
+    const data=await rpc("community_get_chat",{p_community_id:cid,p_limit:150});
+    if(!same(cid,S.cid))return;
+    S.rpcChat=true;S.chat.error=null;absorbChat(data);renderChat();renderChatExtras();setChatMode();
+  }catch(e){
+    if(!same(cid,S.cid))return;
+    if(isMissingErr(e)){S.rpcChat=false;setChatMode();updateBanner();}
+    else{S.chat.error=errMsg(e);renderChatExtras();}
+  }finally{
+    S.inflight.chatFetch=false;
+    if(S.again.chatFetch){S.again.chatFetch=false;setTimeout(chatRefresh,60);}
+  }
+}
+function setChatMode(){
+  const pane=$("communityV2Pane-chat");if(!pane)return;
+  pane.classList.toggle("is-enhanced",S.rpcChat===true);
+  pane.classList.toggle("is-legacy",S.rpcChat===false);
+}
+function nearBottom(box){return box.scrollHeight-box.scrollTop-box.clientHeight<90;}
+function msgHtml(m,grouped){
+  const c=S.chat,mine=same(m.user_id,myId()),name=m.display_name||"Member";
+  const edit=c.editingId===m.id;
+  const quote=m.reply?`<button type="button" class="community-v2-quote" data-cv2-action="jump" data-cv2-id="${esc(m.reply.id)}" aria-label="Go to the original message"><strong>${esc(m.reply.display_name||"Member")}</strong><span>${esc(m.reply.body||"")}</span></button>`:"";
+  const reacts=(m.reactions||[]).map(r=>`<button type="button" class="community-v2-react${r.mine?" mine":""}" data-cv2-action="react" data-cv2-id="${esc(m.id)}" data-cv2-emoji="${esc(r.emoji)}" aria-pressed="${r.mine?"true":"false"}" aria-label="${esc(r.emoji)} ${r.count}">${esc(r.emoji)} <span>${r.count}</span></button>`).join("");
+  const picker=c.reactFor===m.id?`<div class="community-v2-picker" role="group" aria-label="Choose a reaction">${REACTIONS.map(e=>`<button type="button" data-cv2-action="react" data-cv2-id="${esc(m.id)}" data-cv2-emoji="${e}" aria-label="React ${e}">${e}</button>`).join("")}</div>`:"";
+  const acts=`<div class="community-v2-msg-actions">
+      <button type="button" data-cv2-action="react-pick" data-cv2-id="${esc(m.id)}" title="React" aria-label="Add reaction">😊</button>
+      <button type="button" data-cv2-action="chat-reply" data-cv2-id="${esc(m.id)}" title="Reply" aria-label="Reply">↩</button>
+      ${mine?`<button type="button" data-cv2-action="chat-edit" data-cv2-id="${esc(m.id)}" title="Edit" aria-label="Edit message">✏️</button><button type="button" data-cv2-action="chat-delete" data-cv2-id="${esc(m.id)}" title="Delete" aria-label="Delete message">🗑</button>`:""}
+      ${isAdmin()?`<button type="button" data-cv2-action="chat-pin" data-cv2-id="${esc(m.id)}" data-cv2-pinned="${m.pinned_at?"1":"0"}" title="${m.pinned_at?"Unpin":"Pin"}" aria-label="${m.pinned_at?"Unpin message":"Pin message"}">${m.pinned_at?"📍":"📌"}</button>`:""}
+    </div>`;
+  const bodyHtml=edit
+    ?`<div class="community-v2-edit"><textarea id="communityV2EditInput" class="input" rows="3" maxlength="2000" aria-label="Edit message">${esc(m.body)}</textarea><div class="community-v2-edit-actions"><span class="community-v2-err" id="communityV2EditErr" hidden></span><button type="button" class="mini" data-cv2-action="chat-edit-cancel">Cancel</button><button type="button" class="mini primary" data-cv2-action="chat-edit-save" data-cv2-id="${esc(m.id)}">Save</button></div></div>`
+    :`<div class="community-v2-msg-text">${esc(m.body)}</div>`;
+  return `<div class="community-v2-msg${mine?" mine":""}${grouped?" grouped":""}${m.pinned_at?" pinned":""}" data-mid="${esc(m.id)}" id="cv2m-${esc(m.id)}">
+    ${grouped?'<span class="community-v2-avatar-gap"></span>':avatar(name)}
+    <div class="community-v2-bubble">
+      ${grouped?"":`<div class="community-v2-msg-head"><strong>${esc(name)}${mine?" (You)":""}</strong><time datetime="${esc(m.created_at)}" title="${esc(new Date(m.created_at).toLocaleString())}">${esc(fmtTime(m.created_at))}</time></div>`}
+      ${m.pinned_at?'<span class="community-v2-flag pin">📌 Pinned</span>':""}
+      ${quote}${bodyHtml}
+      <div class="community-v2-msg-foot">${grouped?`<time datetime="${esc(m.created_at)}">${esc(fmtTime(m.created_at))}</time>`:""}${m.edited_at?`<span class="community-v2-flag edited" title="Edited ${esc(new Date(m.edited_at).toLocaleString())}">edited</span>`:""}</div>
+      ${reacts?`<div class="community-v2-reacts">${reacts}</div>`:""}${picker}
+      ${edit?"":acts}
+    </div></div>`;
+}
+function renderChat(force){
+  const box=$("communityChat");if(!box||S.rpcChat!==true)return;
+  const c=S.chat;
+  if(c.editingId&&!force){c.dirty=true;return;}
+  const sig=JSON.stringify([c.messages,c.reactFor,c.editingId]);
+  if(sig===c.sig&&!force)return;
+  const prevTop=box.scrollTop,stick=c.firstRender||c.stick||nearBottom(box);
+  let html="",lastDay="",lastUser=null,lastAt=0;
+  if(!c.messages.length){
+    html=emptyState("💬","No messages yet","Say hello to your study community. Messages here are visible to all members.");
+  }else{
+    c.messages.forEach(m=>{
+      const day=new Date(m.created_at).toDateString();
+      if(day!==lastDay){html+=`<div class="community-v2-day" role="separator"><span>${esc(dayLabel(m.created_at))}</span></div>`;lastDay=day;lastUser=null;}
+      const t=Date.parse(m.created_at);
+      const grouped=same(lastUser,m.user_id)&&t-lastAt<5*60000&&!m.reply;
+      html+=msgHtml(m,grouped);lastUser=m.user_id;lastAt=t;
+    });
+  }
+  box.innerHTML=html;c.sig=sig;c.dirty=false;
+  if(stick){box.scrollTop=box.scrollHeight;c.newBelow=0;}else box.scrollTop=prevTop;
+  c.firstRender=false;c.stick=false;
+  const pill=$("communityV2NewPill");if(pill){pill.hidden=!(c.newBelow>0&&!stick);if(!pill.hidden)pill.textContent="↓ "+plural(c.newBelow,"new message");}
+  if(c.editingId){const t=$("communityV2EditInput");if(t&&!t.dataset.focused){t.dataset.focused="1";t.focus();t.setSelectionRange(t.value.length,t.value.length);}}
+}
+function renderChatExtras(){
+  const c=S.chat;
+  const pb=$("communityV2Pinned");
+  if(pb){
+    if(!c.pinned.length){pb.hidden=true;pb.innerHTML="";}
+    else{
+      pb.hidden=false;
+      const top=c.pinned[0];
+      pb.innerHTML=`<button type="button" class="community-v2-pinned-head" data-cv2-action="pins-toggle" aria-expanded="${c.pinsOpen}"><span>📌 ${plural(c.pinned.length,"pinned message")}</span><span class="community-v2-pinned-prev">${esc((top.display_name||"Member")+": "+top.body)}</span><span aria-hidden="true">${c.pinsOpen?"▴":"▾"}</span></button>`+
+        (c.pinsOpen?`<ul class="community-v2-pinned-list">${c.pinned.map(p=>`<li><button type="button" class="community-v2-pinned-item" data-cv2-action="jump" data-cv2-id="${esc(p.id)}"><strong>${esc(p.display_name||"Member")}</strong><span>${esc(p.body)}</span><small>${esc(fmtDate(p.created_at))}</small></button>${isAdmin()?`<button type="button" class="mini" data-cv2-action="chat-pin" data-cv2-id="${esc(p.id)}" data-cv2-pinned="1">Unpin</button>`:""}</li>`).join("")}</ul>`:"");
+    }
+  }
+  const rb=$("communityV2ReplyBar");
+  if(rb){
+    if(c.replyTo){rb.hidden=false;rb.innerHTML=`<span>↩ Replying to <strong>${esc(c.replyTo.name)}</strong><em>${esc(c.replyTo.body)}</em></span><button type="button" class="mini" data-cv2-action="chat-reply-cancel" aria-label="Cancel reply">✕</button>`;}
+    else{rb.hidden=true;rb.innerHTML="";}
+  }
+  const st=$("communityV2ChatStatus");
+  if(st){st.hidden=!c.error;st.textContent=c.error?("Connection problem: "+c.error+" Retrying…"):"";}
+  const er=$("communityV2SendError");if(er){er.textContent=c.sendError||"";er.hidden=!c.sendError;}
+  const sb=$("communityV2SendBtn");if(sb){sb.disabled=!!c.sending;sb.textContent=c.sending?"Sending…":"Send";}
+}
+function chatFind(id){return S.chat.messages.find(m=>m.id===id);}
+async function chatSend(){
+  const input=$("communityMessageInput");if(!input||!ready())return;
+  const c=S.chat,body=input.value.trim();
+  if(!body||c.sending)return;
+  if(body.length>2000){c.sendError="Message is too long (2000 characters max).";renderChatExtras();return;}
+  c.sending=true;c.sendError="";renderChatExtras();
+  try{
+    await rpc("community_send_message",{p_community_id:S.cid,p_body:body,p_reply_to:c.replyTo?c.replyTo.id:null});
+    input.value="";c.replyTo=null;c.stick=true;updateCounter();
+    c.sending=false;renderChatExtras();await chatRefresh();
+  }catch(e){
+    c.sendError=errMsg(e);
+    if(isMissingErr(e)){S.rpcChat=false;setChatMode();updateBanner();}
+  }finally{c.sending=false;renderChatExtras();}
+}
+function updateCounter(){
+  const i=$("communityMessageInput"),n=$("communityV2Count");
+  if(i&&n){const l=i.value.length;n.textContent=l>1500?(l+" / 2000"):"";n.classList.toggle("warn",l>1900);}
+}
+async function chatReact(id,emoji){
+  const m=chatFind(id);if(!m)return;
+  S.chat.reactFor=null;
+  const list=m.reactions=m.reactions||[];let r=list.find(x=>x.emoji===emoji);
+  if(r){r.mine=!r.mine;r.count+=r.mine?1:-1;if(r.count<=0)m.reactions=list.filter(x=>x!==r);}
+  else list.push({emoji,count:1,mine:true});
+  renderChat(true);
+  try{await rpc("community_toggle_reaction",{p_message_id:id,p_emoji:emoji});chatRefresh();}
+  catch(e){toastMsg("Couldn't update reaction: "+errMsg(e));chatRefresh();}
+}
+async function chatSaveEdit(id){
+  const t=$("communityV2EditInput"),er=$("communityV2EditErr");if(!t)return;
+  const body=t.value.trim();
+  const fail=m=>{if(er){er.textContent=m;er.hidden=false;}};
+  if(!body)return fail("Message can't be empty.");
+  if(body.length>2000)return fail("Too long (2000 max).");
+  try{
+    await rpc("community_edit_message",{p_message_id:id,p_body:body});
+    S.chat.editingId=null;await chatRefresh();renderChat(true);
+  }catch(e){fail(errMsg(e));}
+}
+async function chatDelete(id){
+  const ok=await confirmDialog("Delete message?","This permanently deletes your message for everyone in this community.","Delete",true);
+  if(!ok)return;
+  try{await rpc("community_delete_message",{p_message_id:id});toastMsg("Message deleted");await chatRefresh();}
+  catch(e){toastMsg("Couldn't delete: "+errMsg(e));}
+}
+async function chatPin(id,pinned){
+  try{await rpc("community_pin_message",{p_message_id:id,p_pinned:!pinned});await chatRefresh();}
+  catch(e){toastMsg("Couldn't "+(pinned?"unpin":"pin")+": "+errMsg(e));}
+}
+function jumpTo(id){
+  const el=document.getElementById("cv2m-"+id);
+  if(!el){showSection("chat");toastMsg("That message is older than the loaded history.");return;}
+  if(S.section!=="chat")showSection("chat");
+  el.scrollIntoView({block:"center",behavior:"smooth"});
+  el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),1600);
+}
+LOADERS.chat=async function(){if(S.rpcChat!==false)await chatRefresh();renderChatExtras();setChatMode();};
+
+/* =====================================================================
+   LEADERBOARD
+   ===================================================================== */
+const PERIODS=[["weekly","This week"],["monthly","This month"],["overall","Overall"]];
+LOADERS.leaderboard=async function(opt){
+  const body=paneBody("leaderboard"),cid=S.cid,period=S.lbPeriod;
+  S.data.lb=S.data.lb||{};
+  if(!S.data.lb[period]&&!(opt&&opt.silent))body.innerHTML=skeleton(4);
+  try{
+    const d=await rpc("community_get_leaderboard",{p_community_id:cid,p_period:period});
+    if(!same(cid,S.cid))return;
+    S.data.lb[period]=d;if(S.prefs&&typeof d.opted_in==="boolean")S.prefs.leaderboard_opt_in=d.opted_in;
+    if(S.section==="leaderboard")renderLeaderboard();
+  }catch(e){if(same(cid,S.cid)&&!S.data.lb[period])body.innerHTML=errorState(errMsg(e),"leaderboard");}
+};
+function lbStat(label,val){return `<div class="community-v2-stat"><strong>${esc(val)}</strong><span>${esc(label)}</span></div>`;}
+function renderLeaderboard(){
+  const body=paneBody("leaderboard"),d=S.data.lb&&S.data.lb[S.lbPeriod];if(!body||!d)return;
+  const me=d.me||{},rows=d.rows||[],over=S.lbPeriod==="overall";
+  const range=over?"All time":(fmtDate(d.from)+" – "+fmtDate(d.to));
+  const medal=r=>r===1?"🥇":r===2?"🥈":r===3?"🥉":String(r);
+  const part=d.opted_in
+    ?`<div class="community-v2-callout ok"><div><strong>You're on the leaderboard</strong><p>${me.shared?"Your rank updates whenever your study progress syncs.":"Your progress isn't shared yet, so you won't be ranked until you share it."}</p></div><div class="community-v2-callout-actions">${me.shared?"":'<button type="button" class="btn primary" data-cv2-action="share-progress">Share my progress</button>'}<button type="button" class="btn" data-cv2-action="lb-optout">Leave leaderboard</button></div></div>`
+    :`<div class="community-v2-callout"><div><strong>Leaderboard participation is optional</strong><p>You're hidden from the rankings. Join to appear with your display name, chapters, consistency and streak. Nothing else is shown.</p></div><div class="community-v2-callout-actions"><button type="button" class="btn primary" data-cv2-action="lb-optin">Join leaderboard</button></div></div>`;
+  const mine=`<div class="community-v2-card community-v2-mine"><div class="community-v2-card-h"><strong>Your summary</strong><span class="community-v2-muted">${esc(range)}</span></div>
+    <div class="community-v2-stats">${lbStat("Rank",me.rank?("#"+me.rank):(d.opted_in?"Not ranked":"Hidden"))}${lbStat("Chapters",me.chapters||0)}${lbStat("Study days",me.study_days||0)}${lbStat("Consistency",(me.consistency||0)+"%")}${lbStat("Streak",(me.streak||0)+" d")}${lbStat("Study time",secFmt(me.seconds))}</div></div>`;
+  const how=`<details class="community-v2-how"><summary>How rankings are calculated</summary><ul>
+    <li><strong>Who appears:</strong> only members who joined the leaderboard <em>and</em> share their progress. Everyone else is hidden.</li>
+    <li><strong>Ranking order:</strong> chapters completed in the period, then study days, then study time. Ties share a rank.</li>
+    <li><strong>This week / this month:</strong> counted by the server from your progress syncs (week starts Monday, in your time zone). Overall uses the totals you share.</li>
+    <li><strong>Chapters</strong> only count when your total rises above your previous highest total (un-checking and re-checking adds nothing), up to 30 a day.</li>
+    <li><strong>Study time</strong> can never grow faster than real elapsed time between syncs and is capped at 16 hours a day.</li>
+    <li><strong>Study day:</strong> at least 5 minutes studied or 1 chapter completed. <strong>Consistency</strong> = study days ÷ days in the period (Overall uses the last 30 days). <strong>Streak</strong> = consecutive study days tracked by the server.</li>
+    <li><strong>Limits:</strong> progress numbers come from each member's own app. The server range-checks them, but they can't be independently verified.</li></ul></details>`;
+  const list=rows.length?`<ol class="community-v2-lb">${rows.map(r=>`<li class="community-v2-lb-row${r.is_me?" me":""}${r.rank<=3?" top":""}"><span class="community-v2-rank" aria-label="Rank ${r.rank}">${medal(r.rank)}</span>${avatar(r.display_name)}
+      <button type="button" class="community-v2-lb-name" data-cv2-action="profile" data-cv2-uid="${esc(r.user_id)}">${esc(r.display_name||"Member")}${r.is_me?" (You)":""}</button>
+      <span class="community-v2-lb-stats"><b>${r.chapters}</b> ch · <b>${r.consistency}%</b> consistency · <b>${r.streak}</b> d streak · ${esc(secFmt(r.seconds))}</span></li>`).join("")}</ol>`
+    :emptyState("🏆","No one is ranked yet","Join the leaderboard and share your progress to be the first on the board.");
+  body.innerHTML=`<div class="community-v2-pane-head"><div><h3>Leaderboard</h3><p>Friendly study rankings. Opt-in only.</p></div>
+    <div class="community-v2-seg" role="tablist" aria-label="Leaderboard period">${PERIODS.map(([k,l])=>`<button type="button" role="tab" aria-selected="${S.lbPeriod===k}" class="${S.lbPeriod===k?"active":""}" data-cv2-action="lb-period" data-cv2-period="${k}">${l}</button>`).join("")}</div></div>
+    ${part}${mine}${how}<div class="community-v2-card">${list}</div>`;
+}
+async function lbSetOpt(on){
+  try{await savePref({leaderboard_opt_in:on});S.data.lb={};toastMsg(on?"You joined the leaderboard":"You left the leaderboard");await loadSection("leaderboard",{silent:true});}
+  catch(e){toastMsg("Couldn't update: "+errMsg(e));}
+}
+
+/* =====================================================================
+   CHALLENGES
+   ===================================================================== */
+const KIND={streak7:"7-Day Study Challenge",streak30:"30-Day Study Challenge",daily_chapter:"Daily Chapter Challenge",community_goal:"Community Study Goal"};
+function kindGoal(c){
+  if(c.kind==="streak7"||c.kind==="streak30")return `Study ${c.target} days in a row`;
+  if(c.kind==="daily_chapter")return `Complete a chapter on ${c.target} different days`;
+  return `Together complete ${c.target} chapters`;
+}
+LOADERS.challenges=async function(opt){
+  const body=paneBody("challenges"),cid=S.cid;
+  if(!S.data.chal&&!(opt&&opt.silent))body.innerHTML=skeleton(3);
+  try{
+    const d=await rpc("community_get_challenges",{p_community_id:cid});
+    if(!same(cid,S.cid))return;
+    S.data.chal=d||[];if(S.section==="challenges")renderChallenges();
+  }catch(e){if(same(cid,S.cid)&&!S.data.chal)body.innerHTML=errorState(errMsg(e),"challenges");}
+};
+function chalCard(c){
+  const joined=c.joined,done=!!c.my_completed_at,goal=c.kind==="community_goal";
+  const prog=goal?(c.collective||0):(c.my_progress||0),p=pct(prog,c.target);
+  const open=c.status==="active"||c.status==="upcoming";
+  const chip=done?'<span class="community-v2-chip ok">✓ Completed</span>':c.status==="closed"?'<span class="community-v2-chip">Closed</span>':c.status==="ended"?'<span class="community-v2-chip">Ended</span>':c.status==="upcoming"?'<span class="community-v2-chip warn">Starts '+esc(fmtDate(c.starts_on))+'</span>':'<span class="community-v2-chip live">Active</span>';
+  const parts=(c.participants||[]).map(x=>`<li>${avatar(x.display_name,"sm")}<span>${esc(x.display_name||"Member")}${same(x.user_id,myId())?" (You)":""}</span><em>${goal?(x.progress+" ch"):(x.progress+"/"+c.target)}${x.completed?" ✓":""}</em></li>`).join("");
+  return `<article class="community-v2-card community-v2-chal${done?" done":""}">
+    <header><div><span class="community-v2-kind">${esc(KIND[c.kind]||c.kind)}</span><h4>${esc(c.title)}</h4></div>${chip}</header>
+    ${c.description?`<p class="community-v2-desc">${esc(c.description)}</p>`:""}
+    <p class="community-v2-muted">${esc(kindGoal(c))} · ${esc(fmtDate(c.starts_on))} – ${esc(fmtDate(c.ends_on))} · ${plural(c.participant_count,"participant")}</p>
+    ${joined||goal?`<div class="community-v2-prog">${bar(p,done?"ok":"")}<div class="community-v2-prog-l"><span>${goal?`Community: <b>${prog}</b> / ${c.target} chapters`:`Your progress: <b>${prog}</b> / ${c.target}`}</span><span>${p}%</span></div>${goal&&joined?`<div class="community-v2-muted">Your contribution: ${c.my_progress||0} chapters</div>`:""}</div>`:""}
+    <div class="community-v2-actions">
+      ${open&&!joined?`<button type="button" class="btn primary" data-cv2-action="chal-join" data-cv2-id="${esc(c.id)}">Join challenge</button>`:""}
+      ${open&&joined&&!done?`<button type="button" class="btn" data-cv2-action="chal-leave" data-cv2-id="${esc(c.id)}">Leave</button>`:""}
+      ${isAdmin()&&!c.closed_at&&c.status!=="ended"?`<button type="button" class="mini" data-cv2-action="chal-close" data-cv2-id="${esc(c.id)}">Close</button>`:""}
+      ${isAdmin()?`<button type="button" class="mini danger" data-cv2-action="chal-delete" data-cv2-id="${esc(c.id)}">Delete</button>`:""}
+    </div>
+    ${(c.participants||[]).length?`<details class="community-v2-parts"><summary>Participants (${c.participants.length})</summary><ul>${parts}</ul></details>`:""}
+  </article>`;
+}
+function renderChallenges(){
+  const body=paneBody("challenges"),all=S.data.chal;if(!body||!all)return;
+  const by={active:all.filter(c=>c.status==="active"),upcoming:all.filter(c=>c.status==="upcoming"),history:all.filter(c=>c.status==="ended"||c.status==="closed")};
+  const tabs=[["active","Active"],["upcoming","Upcoming"],["history","History"]];
+  const list=by[S.chalTab]||[];
+  const empties={active:["🎯","No active challenges",isAdmin()?"Create a challenge to get everyone studying together.":"Ask an owner/admin to start a study challenge."],upcoming:["🗓️","Nothing scheduled","Upcoming challenges will appear here."],history:["📜","No challenge history yet","Finished and closed challenges are kept here."]};
+  body.innerHTML=`<div class="community-v2-pane-head"><div><h3>Study challenges</h3><p>Progress is calculated by the server from your synced study activity.</p></div>${isAdmin()?'<button type="button" class="btn primary" data-cv2-action="chal-new">+ New challenge</button>':""}</div>
+    <div class="community-v2-seg" role="tablist" aria-label="Challenge status">${tabs.map(([k,l])=>`<button type="button" role="tab" aria-selected="${S.chalTab===k}" class="${S.chalTab===k?"active":""}" data-cv2-action="chal-tab" data-cv2-tab="${k}">${l} <span class="community-v2-count">${by[k].length}</span></button>`).join("")}</div>
+    <div class="community-v2-grid">${list.length?list.map(chalCard).join(""):emptyState(...empties[S.chalTab])}</div>`;
+}
+function localDateStr(d){d=d||new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function newChallengeDialog(){
+  const defaults={streak7:["7-Day Study Challenge",14,7],streak30:["30-Day Study Challenge",45,30],daily_chapter:["Daily Chapter Challenge",14,7],community_goal:["Community Study Goal",14,50]};
+  return openDialog({title:"New study challenge",submitLabel:"Create challenge",wide:true,
+    html:`<div class="community-v2-form" id="communityV2ChalForm">
+      <label>Type<select name="kind" class="select"><option value="streak7">7-Day Study Challenge — study 7 days in a row</option><option value="streak30">30-Day Study Challenge — study 30 days in a row</option><option value="daily_chapter">Daily Chapter Completion — a chapter on N days</option><option value="community_goal">Community Study Goal — chapters together</option></select></label>
+      <label>Title<input name="title" class="input" maxlength="80" value="${esc(defaults.streak7[0])}"></label>
+      <label>Description (optional)<textarea name="description" class="input" rows="2" maxlength="400"></textarea></label>
+      <div class="community-v2-row2"><label id="communityV2TargetWrap" hidden>Target<input name="target" type="number" class="input" min="1" max="5000" value="7"></label>
+      <label>Starts on<input name="starts_on" type="date" class="input" min="${localDateStr(new Date(Date.now()-86400000))}" value="${localDateStr()}"></label>
+      <label>Duration (days)<input name="duration" type="number" class="input" min="1" max="365" value="14"></label></div>
+      <p class="community-v2-hint" id="communityV2ChalHint">Members must study on 7 consecutive days within the window to complete it.</p>
+      <p class="community-v2-err" id="communityV2DialogError" hidden></p></div>`,
+    onMount:el=>{
+      const f=el.querySelector("#communityV2ChalForm"),k=f.querySelector('[name="kind"]'),tw=f.querySelector("#communityV2TargetWrap");
+      let lastTitle=defaults.streak7[0];
+      k.addEventListener("change",()=>{
+        const d=defaults[k.value],t=f.querySelector('[name="title"]');
+        if(t.value===lastTitle||!t.value)t.value=d[0];lastTitle=d[0];
+        f.querySelector('[name="duration"]').value=d[1];f.querySelector('[name="target"]').value=d[2];
+        tw.hidden=!(k.value==="daily_chapter"||k.value==="community_goal");
+        f.querySelector("#communityV2ChalHint").textContent={streak7:"Members must study on 7 consecutive days within the window.",streak30:"Members must study on 30 consecutive days within the window.",daily_chapter:"Members must complete at least one chapter on this many different days.",community_goal:"Everyone who joins contributes chapters. The goal is reached when the total hits the target."}[k.value];
+      });
+    },
+    onSubmit:async root=>{
+      const kind=fieldVal(root,"kind"),title=String(fieldVal(root,"title")).trim();
+      if(!title)throw new Error("Please enter a title.");
+      await rpc("community_create_challenge",{p_community_id:S.cid,p_kind:kind,p_title:title,p_description:String(fieldVal(root,"description")).trim(),
+        p_target:(kind==="daily_chapter"||kind==="community_goal")?(parseInt(fieldVal(root,"target"),10)||null):null,
+        p_starts_on:fieldVal(root,"starts_on"),p_duration_days:parseInt(fieldVal(root,"duration"),10)||null});
+      toastMsg("Challenge created");S.chalTab="active";loadSection("challenges",{silent:true});return true;
+    }});
+}
+async function chalAction(kind,id){
+  try{
+    if(kind==="join"){await rpc("community_join_challenge",{p_challenge_id:id});toastMsg("You joined the challenge");}
+    else if(kind==="leave"){if(!await confirmDialog("Leave challenge?","Your progress for this challenge will stop counting. You can rejoin while it is still running, but days before you rejoined won't count.","Leave",true))return;await rpc("community_leave_challenge",{p_challenge_id:id});}
+    else if(kind==="close"){if(!await confirmDialog("Close challenge?","No further completions will be recorded. It moves to History.","Close challenge",true))return;await rpc("community_close_challenge",{p_challenge_id:id});}
+    else if(kind==="delete"){if(!await confirmDialog("Delete challenge?","This removes the challenge and all participant progress. This can't be undone.","Delete",true))return;await rpc("community_delete_challenge",{p_challenge_id:id});}
+    await loadSection("challenges",{silent:true});
+  }catch(e){toastMsg(errMsg(e));}
+}
+
+/* =====================================================================
+   ANNOUNCEMENTS
+   ===================================================================== */
+LOADERS.announcements=async function(opt){
+  const body=paneBody("announcements"),cid=S.cid;
+  if(!S.data.ann&&!(opt&&opt.silent))body.innerHTML=skeleton(3);
+  try{
+    const r=await communityClient.from("community_announcements").select("id,author_id,title,body,pinned,created_at,edited_at")
+      .eq("community_id",cid).order("pinned",{ascending:false}).order("created_at",{ascending:false}).limit(S.annLimit);
+    if(r.error){if(isMissingErr(r.error))S.missing=true;throw r.error;}
+    if(!same(cid,S.cid))return;
+    await communityFetchNames((r.data||[]).map(a=>a.author_id));
+    S.data.ann=r.data||[];if(S.section==="announcements")renderAnnouncements();
+  }catch(e){if(same(cid,S.cid)&&!S.data.ann)body.innerHTML=errorState(errMsg(e),"announcements");}
+};
+function renderAnnouncements(){
+  const body=paneBody("announcements"),list=S.data.ann;if(!body||!list)return;
+  const cards=list.map(a=>{
+    const mine=same(a.author_id,myId()),canEdit=isOwner()||(isAdmin()&&mine),canDel=canEdit;
+    return `<article class="community-v2-card community-v2-ann${a.pinned?" pinned":""}">
+      <header><span class="community-v2-kind">📢 Announcement${a.pinned?" · 📌 Pinned":""}</span>
+      <time class="community-v2-muted" datetime="${esc(a.created_at)}">${esc(fmtDate(a.created_at))} · ${esc(fmtTime(a.created_at))}</time></header>
+      <h4>${esc(a.title)}</h4><div class="community-v2-ann-body">${esc(a.body)}</div>
+      <footer><span class="community-v2-muted">${avatar(communityName(a.author_id),"sm")} ${esc(communityName(a.author_id))}${a.edited_at?" · edited":""}</span>
+      <span class="community-v2-actions">${isAdmin()?btn(a.pinned?"Unpin":"Pin","ann-pin",{id:a.id,pinned:a.pinned?"1":"0"}):""}${canEdit?btn("Edit","ann-edit",{id:a.id}):""}${canDel?btn("Delete","ann-delete",{id:a.id},"mini danger"):""}</span></footer></article>`;
+  }).join("");
+  body.innerHTML=`<div class="community-v2-pane-head"><div><h3>Announcements</h3><p>Official updates from owners and admins. Separate from chat.</p></div>${isAdmin()?'<button type="button" class="btn primary" data-cv2-action="ann-new">+ New announcement</button>':""}</div>
+    ${list.length?`<div class="community-v2-stack">${cards}</div>`:emptyState("📢","No announcements yet",isAdmin()?"Post the first announcement for your community.":"Owners and admins will post important updates here.")}
+    ${list.length>=S.annLimit?'<div class="community-v2-more"><button type="button" class="btn" data-cv2-action="ann-more">Load older announcements</button></div>':""}`;
+}
+function annDialog(existing){
+  const e=existing||{};
+  return openDialog({title:existing?"Edit announcement":"New announcement",submitLabel:existing?"Save changes":"Publish",wide:true,
+    html:`<div class="community-v2-form"><label>Title<input name="title" class="input" maxlength="120" value="${esc(e.title||"")}" autofocus></label>
+      <label>Message<textarea name="body" class="input" rows="6" maxlength="4000">${esc(e.body||"")}</textarea></label>
+      ${existing?"":'<label class="community-v2-check"><input type="checkbox" name="pin"> Pin this announcement</label>'}
+      <p class="community-v2-err" id="communityV2DialogError" hidden></p></div>`,
+    onSubmit:async root=>{
+      const title=String(fieldVal(root,"title")).trim(),text=String(fieldVal(root,"body")).trim();
+      if(!title||!text)throw new Error("Title and message are required.");
+      let r;
+      if(existing)r=await communityClient.from("community_announcements").update({title,body:text}).eq("id",existing.id).select("id");
+      else r=await communityClient.from("community_announcements").insert({community_id:S.cid,author_id:myId(),title,body:text,pinned:!!fieldVal(root,"pin")}).select("id");
+      if(r.error)throw r.error;
+      if(!r.data||!r.data.length)throw new Error("You don't have permission to do that.");
+      toastMsg(existing?"Announcement updated":"Announcement published");loadSection("announcements",{silent:true});return true;
+    }});
+}
+async function annAction(kind,id,pinned){
+  try{
+    if(kind==="pin"){const r=await communityClient.from("community_announcements").update({pinned:!pinned}).eq("id",id).select("id");if(r.error)throw r.error;if(!r.data.length)throw new Error("Not allowed");}
+    else if(kind==="delete"){
+      if(!await confirmDialog("Delete announcement?","This removes it from the announcement history for everyone.","Delete",true))return;
+      const r=await communityClient.from("community_announcements").delete().eq("id",id).select("id");if(r.error)throw r.error;if(!r.data.length)throw new Error("Not allowed");
+    }else if(kind==="edit"){const a=(S.data.ann||[]).find(x=>x.id===id);if(a)annDialog(a);return;}
+    await loadSection("announcements",{silent:true});
+  }catch(e){toastMsg(errMsg(e));}
+}
+
+/* =====================================================================
+   POLLS
+   ===================================================================== */
+LOADERS.polls=async function(opt){
+  const body=paneBody("polls"),cid=S.cid;
+  if(!S.data.polls&&!(opt&&opt.silent))body.innerHTML=skeleton(3);
+  try{
+    const pr=await communityClient.from("community_polls").select("id,created_by,question,multi,expires_at,closed_at,voter_count,created_at").eq("community_id",cid).order("created_at",{ascending:false}).limit(40);
+    if(pr.error){if(isMissingErr(pr.error))S.missing=true;throw pr.error;}
+    const ids=(pr.data||[]).map(p=>p.id);let opts=[],votes=[];
+    if(ids.length){
+      const [o,v]=await Promise.all([
+        communityClient.from("community_poll_options").select("id,poll_id,label,position,vote_count").in("poll_id",ids).order("position"),
+        communityClient.from("community_poll_votes").select("poll_id,option_id").in("poll_id",ids)]);
+      if(o.error)throw o.error;if(v.error)throw v.error;opts=o.data||[];votes=v.data||[];
+    }
+    if(!same(cid,S.cid))return;
+    S.data.polls=(pr.data||[]).map(p=>({...p,options:opts.filter(o=>o.poll_id===p.id),mine:votes.filter(v=>v.poll_id===p.id).map(v=>v.option_id)}));
+    if(S.section==="polls")renderPolls();
+  }catch(e){if(same(cid,S.cid)&&!S.data.polls)body.innerHTML=errorState(errMsg(e),"polls");}
+};
+function pollClosed(p){return !!p.closed_at||(p.expires_at&&Date.parse(p.expires_at)<=Date.now());}
+function pollCard(p){
+  const closed=pollClosed(p),voted=p.mine.length>0,showRes=closed||voted;
+  const total=p.options.reduce((a,o)=>a+(o.vote_count||0),0);
+  const sel=S.pollSel[p.id]||(S.pollSel[p.id]=new Set());
+  const canManage=isAdmin()||same(p.created_by,myId());
+  const rows=p.options.map(o=>{
+    const share=pct(o.vote_count||0,total),mine=p.mine.includes(o.id);
+    if(showRes)return `<div class="community-v2-opt res${mine?" mine":""}"><div class="community-v2-opt-top"><span>${esc(o.label)}${mine?" ✓":""}</span><b>${o.vote_count||0} · ${share}%</b></div>${bar(share)}</div>`;
+    const type=p.multi?"checkbox":"radio";
+    return `<label class="community-v2-opt pick"><input type="${type}" name="pp-${esc(p.id)}" data-cv2-action="poll-pick" data-cv2-id="${esc(p.id)}" data-cv2-opt="${esc(o.id)}" data-cv2-multi="${p.multi?1:0}"${sel.has(o.id)?" checked":""}><span>${esc(o.label)}</span></label>`;
+  }).join("");
+  const exp=p.expires_at&&!p.closed_at?(closed?"Expired "+timeAgo(p.expires_at):"Closes "+new Date(p.expires_at).toLocaleString([], {month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})):"";
+  return `<article class="community-v2-card community-v2-poll${closed?" closed":""}"><header><span class="community-v2-kind">📊 ${p.multi?"Multiple choice":"Single choice"}</span>${closed?'<span class="community-v2-chip">Closed</span>':'<span class="community-v2-chip live">Open</span>'}</header>
+    <h4>${esc(p.question)}</h4><div class="community-v2-opts">${rows}</div>
+    <footer><span class="community-v2-muted">${plural(p.voter_count||0,"vote")} cast${exp?" · "+esc(exp):""}${!showRes?" · votes are final":""}</span>
+    <span class="community-v2-actions">${!showRes?btn("Vote","poll-vote",{id:p.id},"btn primary"):""}${canManage&&!closed?btn("Close poll","poll-close",{id:p.id}):""}${canManage?btn("Delete","poll-delete",{id:p.id},"mini danger"):""}</span></footer></article>`;
+}
+function renderPolls(){
+  const body=paneBody("polls"),list=S.data.polls;if(!body||!list)return;
+  const open=list.filter(p=>!pollClosed(p)),done=list.filter(pollClosed);
+  body.innerHTML=`<div class="community-v2-pane-head"><div><h3>Polls</h3><p>One vote per member. Results update live.</p></div><button type="button" class="btn primary" data-cv2-action="poll-new">+ New poll</button></div>
+    ${list.length?`<div class="community-v2-stack">${open.map(pollCard).join("")}${done.length?`<h5 class="community-v2-sub">Closed polls</h5>`+done.map(pollCard).join(""):""}</div>`:emptyState("📊","No polls yet","Create a poll to get quick feedback from your community.")}`;
+}
+function newPollDialog(){
+  const optRow=(v,i)=>`<div class="community-v2-optrow"><input class="input" data-opt maxlength="100" placeholder="Option ${i}" value="${esc(v||"")}" aria-label="Option ${i}"><button type="button" class="mini" data-rm aria-label="Remove option">✕</button></div>`;
+  return openDialog({title:"New poll",submitLabel:"Create poll",wide:true,
+    html:`<div class="community-v2-form" id="communityV2PollForm"><label>Question<input name="question" class="input" maxlength="200" autofocus></label>
+      <div><span class="community-v2-lbl">Options (2–8)</span><div id="communityV2PollOpts">${optRow("",1)}${optRow("",2)}</div><button type="button" class="mini" data-add>+ Add option</button></div>
+      <label class="community-v2-check"><input type="checkbox" name="multi"> Allow selecting multiple options</label>
+      <label>Closes<select name="expiry" class="select"><option value="">Never (close manually)</option><option value="3600000">In 1 hour</option><option value="86400000">In 1 day</option><option value="259200000">In 3 days</option><option value="604800000">In 7 days</option></select></label>
+      <p class="community-v2-err" id="communityV2DialogError" hidden></p></div>`,
+    onMount:el=>{
+      const f=el.querySelector("#communityV2PollForm"),box=f.querySelector("#communityV2PollOpts");
+      f.addEventListener("click",e=>{
+        if(e.target.closest("[data-add]")){const n=box.children.length;if(n<8){box.insertAdjacentHTML("beforeend",optRow("",n+1));box.lastElementChild.querySelector("input").focus();}}
+        const rm=e.target.closest("[data-rm]");if(rm&&box.children.length>2)rm.parentElement.remove();
+      });
+    },
+    onSubmit:async root=>{
+      const q=String(fieldVal(root,"question")).trim();
+      const opts=[...root.querySelectorAll("[data-opt]")].map(i=>i.value.trim()).filter(Boolean);
+      if(!q)throw new Error("Please enter a question.");
+      if(opts.length<2)throw new Error("Add at least two options.");
+      if(new Set(opts.map(o=>o.toLowerCase())).size!==opts.length)throw new Error("Options must be different.");
+      const ex=fieldVal(root,"expiry");
+      await rpc("community_create_poll",{p_community_id:S.cid,p_question:q,p_options:opts,p_multi:!!fieldVal(root,"multi"),p_expires_at:ex?new Date(Date.now()+Number(ex)).toISOString():null});
+      toastMsg("Poll created");loadSection("polls",{silent:true});return true;
+    }});
+}
+async function pollVote(id){
+  const sel=[...(S.pollSel[id]||[])];if(!sel.length){toastMsg("Choose an option first.");return;}
+  const rows=sel.map(o=>({poll_id:id,option_id:o,user_id:myId()}));
+  try{
+    const r=await communityClient.from("community_poll_votes").insert(rows);
+    if(r.error){if(isMissingErr(r.error))S.missing=true;throw r.error;}
+    delete S.pollSel[id];toastMsg("Vote recorded");await loadSection("polls",{silent:true});renderPolls();
+  }catch(e){
+    const m=errMsg(e);toastMsg(/duplicate|already voted|unique/i.test(m)?"You've already voted in this poll.":m);await loadSection("polls",{silent:true});renderPolls();
+  }
+}
+async function pollAction(kind,id){
+  try{
+    if(kind==="close"){if(!await confirmDialog("Close poll?","Voting stops and results are shown to everyone.","Close poll",true))return;await rpc("community_close_poll",{p_poll_id:id});}
+    else{if(!await confirmDialog("Delete poll?","The poll and all votes are removed for everyone.","Delete",true))return;await rpc("community_delete_poll",{p_poll_id:id});}
+    await loadSection("polls",{silent:true});renderPolls();
+  }catch(e){toastMsg(errMsg(e));}
+}
+
+/* =====================================================================
+   MEMBERS + PROFILE
+   ===================================================================== */
+LOADERS.members=async function(opt){
+  const cid=S.cid;
+  if(!S.membersLoaded){const d0=$("communityV2Directory");if(d0)d0.innerHTML=skeleton(3);}
+  try{
+    const r=await communityClient.from("community_members").select("user_id,role,joined_at").eq("community_id",cid);
+    if(r.error)throw r.error;if(!same(cid,S.cid))return;
+    await communityFetchNames((r.data||[]).map(m=>m.user_id));
+    S.members=r.data||[];S.membersLoaded=true;
+  }catch(e){if(!S.membersLoaded){const d=$("communityV2Directory");if(d)d.innerHTML=errorState(errMsg(e),"members");}return;}
+  await loadPresence();renderMemberDirectory();
+};
+function renderMemberDirectory(){
+  const d=$("communityV2Directory");if(!d)return;
+  if(!S.membersLoaded){d.innerHTML=skeleton(3);return;}
+  const order={owner:0,admin:1};
+  const list=[...S.members].sort((a,b)=>(order[a.role]??2)-(order[b.role]??2)||communityName(a.user_id).localeCompare(communityName(b.user_id)));
+  d.innerHTML=`<div class="community-v2-members">${list.map(m=>{
+    const n=communityName(m.user_id),on=isOnline(m.user_id),seen=lastSeenText(m.user_id);
+    return `<button type="button" class="community-v2-member" data-cv2-action="profile" data-cv2-uid="${esc(m.user_id)}"><span class="community-v2-avwrap">${avatar(n)}${on?'<i class="community-v2-dot" title="Online"></i>':""}</span>
+      <span class="community-v2-member-t"><strong>${esc(n)}${same(m.user_id,myId())?" (You)":""}</strong><small>${m.role==="owner"?"Owner":m.role==="admin"?"Admin":"Member"}${seen?" · "+esc(seen):""}</small></span></button>`;}).join("")}</div>`;
+}
+async function openProfile(uid){
+  if(!ready())return;
+  const loading=openDialog({title:"Member profile",html:skeleton(3),cancelLabel:"Close",wide:true});
+  try{
+    const [p,partners]=await Promise.all([rpc("community_get_member_profile",{p_community_id:S.cid,p_user_id:uid}),
+      rpc("community_get_partners",{p_community_id:S.cid}).catch(()=>[])]);
+    if(!D.resolve)return;
+    const rel=(partners||[]).find(x=>same(x.user_id,uid));
+    const prog=p.shared?`<div class="community-v2-card flat"><div class="community-v2-prog-l"><span>Chapters <b>${p.completed_chapters}</b> / ${p.total_chapters}</span><span>${pct(p.completed_chapters,p.total_chapters)}%</span></div>${bar(pct(p.completed_chapters,p.total_chapters))}</div>
+      <div class="community-v2-stats">${lbStat("Streak",(p.streak||0)+" d")}${lbStat("Study days (30d)",p.study_days_30||0)}${lbStat("Total study time",secFmt(p.total_seconds))}</div>`
+      :`<p class="community-v2-muted">This member hasn't shared study progress.</p>`;
+    const badges=(p.badges||[]).length?`<div class="community-v2-badges">${p.badges.map(b=>`<span class="community-v2-badgechip" title="${esc(b.description)}">${esc(b.icon)} ${esc(b.title)}</span>`).join("")}</div>`:`<p class="community-v2-muted">No badges earned yet.</p>`;
+    const a=p.activity||{};
+    let partnerBtn="";
+    if(!p.is_me){
+      if(!rel)partnerBtn=`<button type="button" class="btn primary" data-cv2-action="partner-request" data-cv2-uid="${esc(uid)}">Request study partner</button>`;
+      else if(rel.status==="accepted")partnerBtn=`<span class="community-v2-chip ok">✓ Study partners</span> <button type="button" class="mini danger" data-cv2-action="partner-end" data-cv2-id="${esc(rel.id)}">End partnership</button>`;
+      else partnerBtn=`<span class="community-v2-chip warn">${rel.incoming?"Wants to partner with you (see Study Groups)":"Request pending"}</span>`;
+    }
+    $("communityV2DialogBody").innerHTML=`<div class="community-v2-profile"><div class="community-v2-profile-head">${avatar(p.display_name,"lg")}<div><h3>${esc(p.display_name||"Member")}${p.is_me?" (You)":""}</h3>
+      <p class="community-v2-muted">${esc(p.role)} · Joined ${esc(fmtDate(p.joined_at))}${p.last_seen_at?" · "+esc(Date.now()-Date.parse(p.last_seen_at)<75000?"Online":"Last seen "+timeAgo(p.last_seen_at)):""}</p></div></div>
+      <h5 class="community-v2-sub">Study progress</h5>${prog}<h5 class="community-v2-sub">Badges</h5>${badges}
+      <h5 class="community-v2-sub">Community activity</h5><div class="community-v2-stats">${lbStat("Messages",a.messages||0)}${lbStat("Polls voted",a.polls_voted||0)}${lbStat("Reactions",a.reactions_given||0)}${lbStat("Challenges done",a.challenges_completed||0)}</div>
+      ${partnerBtn?`<div class="community-v2-actions" style="margin-top:14px">${partnerBtn}</div>`:""}</div>`;
+  }catch(e){if(D.resolve)$("communityV2DialogBody").innerHTML=errorState(errMsg(e));}
+  return loading;
+}
+
+/* =====================================================================
+   ACHIEVEMENTS
+   ===================================================================== */
+LOADERS.achievements=async function(opt){
+  const body=paneBody("achievements"),cid=S.cid;
+  if(!S.data.ach&&!(opt&&opt.silent))body.innerHTML=skeleton(3);
+  try{
+    const d=await rpc("community_get_achievements",{p_community_id:cid});
+    if(!same(cid,S.cid))return;S.data.ach=d;if(S.section==="achievements")renderAchievements();
+  }catch(e){if(same(cid,S.cid)&&!S.data.ach)body.innerHTML=errorState(errMsg(e),"achievements");}
+};
+function renderAchievements(){
+  const body=paneBody("achievements"),d=S.data.ach;if(!body||!d)return;
+  const hint={streak_7:`${Math.min(d.streak,7)} / 7 days`,streak_30:`${Math.min(d.streak,30)} / 30 days`,first_10_chapters:`${Math.min(d.tracked_chapters,10)} / 10 chapters`,
+    consistency:`${Math.min(d.days21,14)} / 14 study days in the last 21`,challenge_completed:"Complete any community challenge",community_contributor:`${Math.min(d.messages,25)} / 25 messages`};
+  const earned=(d.catalog||[]).filter(b=>b.awarded_at).length;
+  body.innerHTML=`<div class="community-v2-pane-head"><div><h3>Achievements</h3><p>${earned} of ${(d.catalog||[]).length} earned in this community. Badges are awarded by the server from tracked activity, never from client claims.</p></div></div>
+    <div class="community-v2-grid badges">${(d.catalog||[]).map(b=>`<article class="community-v2-card community-v2-ach${b.awarded_at?" earned":""}"><div class="community-v2-ach-ic" aria-hidden="true">${esc(b.icon)}</div><h4>${esc(b.title)}</h4><p class="community-v2-muted">${esc(b.description)}</p>${b.awarded_at?`<span class="community-v2-chip ok">Earned ${esc(fmtDate(b.awarded_at))}</span>`:`<span class="community-v2-chip">${esc(hint[b.code]||"Locked")}</span>`}</article>`).join("")}</div>`;
+}
+
+/* =====================================================================
+   NOTIFICATIONS
+   ===================================================================== */
+const NOTIF_ICON={message:"💬",reply:"↩️",reaction:"😊",announcement:"📢",poll:"📊",challenge:"🎯",achievement:"🏅",partner:"🤝",group:"📚"};
+const NOTIF_SECTION={message:"chat",reply:"chat",reaction:"chat",announcement:"announcements",poll:"polls",challenge:"challenges",achievement:"achievements",partner:"groups",group:"groups"};
+const PREF_LABELS=[["n_messages","New messages (one summary per community)"],["n_replies","Replies to my messages"],["n_reactions","Reactions to my messages"],["n_announcements","Announcements"],["n_polls","Poll updates"],["n_challenges","Challenge updates"],["n_achievements","Achievement awards"],["n_partners","Study partner requests"],["n_groups","Group invitations"]];
+LOADERS.notifications=async function(opt){
+  const body=paneBody("notifications");
+  if(!S.notifsLoaded&&!(opt&&opt.silent))body.innerHTML=skeleton(4);
+  try{
+    const r=await communityClient.from("community_notifications").select("id,community_id,type,title,body,ref_id,event_count,created_at,read_at").order("created_at",{ascending:false}).limit(80);
+    if(r.error){if(isMissingErr(r.error))S.missing=true;throw r.error;}
+    S.notifs=r.data||[];S.notifsLoaded=true;S.unreadNotifs=S.notifs.filter(n=>!n.read_at).length;updateBadges();
+    if(S.section==="notifications")renderNotifications();
+  }catch(e){if(!S.notifsLoaded)body.innerHTML=errorState(errMsg(e),"notifications");}
+};
+function roomName(cid){const m=(communityMemberships||[]).find(x=>same(x.community_id,cid));return (m&&m.communities&&m.communities.name)||"Community";}
+function renderNotifications(){
+  const body=paneBody("notifications");if(!body)return;
+  const list=S.notifs.filter(n=>S.notifFilter==="all"||!n.read_at);
+  const prefs=S.prefs||PREF_DEFAULTS;
+  const items=list.map(n=>`<li><button type="button" class="community-v2-notif${n.read_at?"":" unread"}" data-cv2-action="notif-open" data-cv2-id="${esc(n.id)}">
+    <span class="community-v2-notif-ic" aria-hidden="true">${NOTIF_ICON[n.type]||"🔔"}</span>
+    <span class="community-v2-notif-t"><strong>${esc(n.title)}${n.event_count>1?" ("+n.event_count+")":""}</strong>${n.body?`<span>${esc(n.body)}</span>`:""}<small>${esc(roomName(n.community_id))} · ${esc(timeAgo(n.created_at))}</small></span>${n.read_at?"":'<i class="community-v2-unread" aria-label="Unread"></i>'}</button></li>`).join("");
+  body.innerHTML=`<div class="community-v2-pane-head"><div><h3>Notifications</h3><p>Activity across all your communities.</p></div>
+    <div class="community-v2-actions"><div class="community-v2-seg">${[["all","All"],["unread","Unread"]].map(([k,l])=>`<button type="button" class="${S.notifFilter===k?"active":""}" data-cv2-action="notif-filter" data-cv2-filter="${k}">${l}</button>`).join("")}</div><button type="button" class="btn" data-cv2-action="notif-all"${S.unreadNotifs?"":" disabled"}>Mark all as read</button></div></div>
+    ${list.length?`<ul class="community-v2-notifs">${items}</ul>`:emptyState("🔔",S.notifFilter==="unread"?"You're all caught up":"No notifications yet","Replies, announcements, polls, challenges and badges will show up here.")}
+    <details class="community-v2-how"><summary>Notification preferences for “${esc(roomName(S.cid))}”</summary><div class="community-v2-prefs">
+      ${PREF_LABELS.map(([k,l])=>`<label class="community-v2-switch"><input type="checkbox" data-cv2-action="pref" data-cv2-key="${k}"${prefs[k]?" checked":""}><span>${esc(l)}</span></label>`).join("")}
+      <label class="community-v2-switch"><input type="checkbox" data-cv2-action="pref" data-cv2-key="show_last_seen"${prefs.show_last_seen?" checked":""}><span>Show my online / last-seen status to members</span></label></div></details>`;
+}
+async function notifOpen(id){
+  const n=S.notifs.find(x=>x.id===id);if(!n)return;
+  if(!n.read_at){n.read_at=new Date().toISOString();S.unreadNotifs=Math.max(0,S.unreadNotifs-1);updateBadges();renderNotifications();try{await rpc("community_mark_notifications_read",{p_ids:[id]});}catch(_e){}}
+  const target=NOTIF_SECTION[n.type]||"chat";
+  if(!same(n.community_id,S.cid)&&typeof communitySelect==="function"){await communitySelect(n.community_id);}
+  showSection(target);
+}
+
+/* =====================================================================
+   STUDY PARTNERS + GROUPS
+   ===================================================================== */
+LOADERS.groups=async function(opt){
+  const body=paneBody("groups"),cid=S.cid;
+  if(S.group.openId){await loadGroupDetail(opt);return;}
+  if(!S.data.groups&&!(opt&&opt.silent))body.innerHTML=skeleton(3);
+  try{
+    const [g,p]=await Promise.all([rpc("community_get_groups",{p_community_id:cid}),rpc("community_get_partners",{p_community_id:cid})]);
+    if(!same(cid,S.cid))return;
+    S.data.groups=g||[];S.data.partners=p||[];
+    if(S.section==="groups"&&!S.group.openId)renderGroups();
+  }catch(e){if(same(cid,S.cid)&&!S.data.groups)body.innerHTML=errorState(errMsg(e),"groups");}
+};
+function renderGroups(){
+  const body=paneBody("groups"),g=S.data.groups,p=S.data.partners;if(!body||!g)return;
+  const inv=g.filter(x=>x.my_status==="invited"),mine=g.filter(x=>x.my_status==="active");
+  const incoming=p.filter(x=>x.status==="pending"&&x.incoming),outgoing=p.filter(x=>x.status==="pending"&&!x.incoming),acc=p.filter(x=>x.status==="accepted");
+  const partnerRow=(x,actions)=>`<li class="community-v2-prow">${avatar(x.display_name)}<button type="button" class="community-v2-lb-name" data-cv2-action="profile" data-cv2-uid="${esc(x.user_id)}">${esc(x.display_name||"Member")}</button>
+    <span class="community-v2-muted">${x.status==="accepted"&&x.total_chapters!=null?`${x.completed_chapters}/${x.total_chapters} ch · ${x.streak||0} d streak`:esc(x.status==="pending"?timeAgo(x.since):"")}</span><span class="community-v2-actions">${actions}</span></li>`;
+  body.innerHTML=`<div class="community-v2-pane-head"><div><h3>Study partners & groups</h3><p>Small private spaces to study together.</p></div><button type="button" class="btn primary" data-cv2-action="group-new">+ New group</button></div>
+    <div class="community-v2-card"><div class="community-v2-card-h"><strong>Study partners</strong><button type="button" class="mini" data-cv2-action="goto-members">Find a partner</button></div>
+    ${(incoming.length+outgoing.length+acc.length)?`<ul class="community-v2-plist">${incoming.map(x=>partnerRow(x,btn("Accept","partner-respond",{id:x.id,accept:"1"},"mini primary")+btn("Decline","partner-respond",{id:x.id,accept:"0"}))).join("")}${acc.map(x=>partnerRow(x,btn("End","partner-end",{id:x.id},"mini danger"))).join("")}${outgoing.map(x=>partnerRow(x,btn("Cancel request","partner-end",{id:x.id}))).join("")}</ul>`:`<p class="community-v2-muted">No partners yet. Open a member's profile and choose “Request study partner”.</p>`}</div>
+    ${inv.length?`<div class="community-v2-card"><div class="community-v2-card-h"><strong>Group invitations</strong></div><ul class="community-v2-plist">${inv.map(x=>`<li class="community-v2-prow"><span>📚</span><span><strong>${esc(x.name)}</strong><small class="community-v2-muted"> invited by ${esc(x.invited_by||"a member")}</small></span><span class="community-v2-actions">${btn("Join","group-respond",{id:x.id,accept:"1"},"mini primary")}${btn("Decline","group-respond",{id:x.id,accept:"0"})}</span></li>`).join("")}</ul></div>`:""}
+    <h5 class="community-v2-sub">Your groups</h5>
+    ${mine.length?`<div class="community-v2-grid">${mine.map(x=>{const gp=x.goal_target?pct(x.goal_progress||0,x.goal_target):null;return `<button type="button" class="community-v2-card community-v2-groupcard" data-cv2-action="group-open" data-cv2-id="${esc(x.id)}"><strong>${esc(x.name)}</strong><span class="community-v2-muted">${esc(x.description||"No description")}</span><span class="community-v2-muted">${plural(x.member_count,"member")}${x.my_role==="owner"?" · you own this":""}</span>${gp!=null?`${bar(gp)}<span class="community-v2-muted">${esc(x.goal_title||"Goal")}: ${x.goal_progress||0}/${x.goal_target} chapters</span>`:""}</button>`;}).join("")}</div>`:emptyState("📚","No study groups yet","Create a small group, invite members and chat privately.")}`;
+}
+async function loadGroupDetail(opt){
+  const gid=S.group.openId,body=paneBody("groups");
+  if(!S.group.detail&&!(opt&&opt.silent))body.innerHTML=skeleton(3);
+  try{
+    const [d,m]=await Promise.all([rpc("community_get_group_detail",{p_group_id:gid}),
+      communityClient.from("community_group_messages").select("id,user_id,body,created_at").eq("group_id",gid).order("created_at",{ascending:false}).limit(100)]);
+    if(S.group.openId!==gid)return;
+    if(m.error)throw m.error;
+    const msgs=(m.data||[]).reverse();
+    await communityFetchNames([...msgs.map(x=>x.user_id),...(d.members||[]).map(x=>x.user_id)]);
+    S.group.detail=d;S.group.messages=msgs;
+    if(S.section==="groups"){if(!$("communityV2GroupHead"))buildGroupDetail();renderGroupParts();}
+    openGroupChannel(gid);
+  }catch(e){
+    if(S.group.openId===gid&&!S.group.detail){S.group.openId=null;body.innerHTML=errorState(errMsg(e),"groups");}
+  }
+}
+function buildGroupDetail(){
+  paneBody("groups").innerHTML=`<div class="community-v2-pane-head"><button type="button" class="btn" data-cv2-action="group-back">← All groups</button></div>
+    <div id="communityV2GroupHead"></div>
+    <div class="community-v2-card community-v2-groupchat"><div class="community-v2-card-h"><strong>Group chat</strong><span class="community-v2-muted">Only group members can read this</span></div>
+      <div id="communityV2GroupList" class="community-v2-glist" aria-live="polite"></div>
+      <div class="community-v2-compose"><textarea id="communityV2GroupInput" class="input" rows="2" maxlength="2000" placeholder="Message the group…" aria-label="Group message"></textarea>
+      <div class="community-v2-compose-row"><span class="community-v2-err" id="communityV2GroupErr" hidden></span><button type="button" class="btn primary" id="communityV2GroupSend" data-cv2-action="group-send">Send</button></div></div></div>`;
+}
+function renderGroupParts(){
+  const d=S.group.detail;if(!d)return;
+  const head=$("communityV2GroupHead"),list=$("communityV2GroupList");if(!head||!list)return;
+  const gp=d.goal_target?pct(d.goal_progress,d.goal_target):null;
+  head.innerHTML=`<div class="community-v2-card"><div class="community-v2-card-h"><div><h3>${esc(d.name)}</h3><p class="community-v2-muted">${esc(d.description||"")}</p></div>
+    <div class="community-v2-actions">${d.i_am_owner?btn("Invite","group-invite",{})+btn("Edit","group-edit",{})+btn("Delete","group-delete",{},"mini danger"):""}${btn("Leave","group-leave",{})}</div></div>
+    ${gp!=null?`<div class="community-v2-prog">${bar(gp)}<div class="community-v2-prog-l"><span>${esc(d.goal_title||"Group goal")}: <b>${d.goal_progress}</b> / ${d.goal_target} chapters${d.goal_end?" · ends "+esc(fmtDate(d.goal_end)):""}</span><span>${gp}%</span></div></div>`:""}
+    <ul class="community-v2-plist">${(d.members||[]).map(m=>`<li class="community-v2-prow">${avatar(m.display_name)}<button type="button" class="community-v2-lb-name" data-cv2-action="profile" data-cv2-uid="${esc(m.user_id)}">${esc(m.display_name||"Member")}${same(m.user_id,myId())?" (You)":""}</button>
+      <span class="community-v2-muted">${m.status==="invited"?"Invited":(m.role==="owner"?"Owner · ":"")+m.chapters+" ch · "+secFmt(m.seconds)+" · "+(m.streak||0)+" d streak"}</span>
+      <span class="community-v2-actions">${d.i_am_owner&&!same(m.user_id,myId())?btn("Remove","group-remove",{uid:m.user_id},"mini danger"):""}</span></li>`).join("")}</ul></div>`;
+  const stick=list.scrollHeight-list.scrollTop-list.clientHeight<80||!list.dataset.init;
+  list.dataset.init="1";
+  list.innerHTML=S.group.messages.length?S.group.messages.map(m=>`<div class="community-v2-msg${same(m.user_id,myId())?" mine":""}">${avatar(communityName(m.user_id))}<div class="community-v2-bubble"><div class="community-v2-msg-head"><strong>${esc(communityName(m.user_id))}</strong><time>${esc(fmtDate(m.created_at))} ${esc(fmtTime(m.created_at))}</time></div><div class="community-v2-msg-text">${esc(m.body)}</div></div></div>`).join(""):emptyState("💬","No messages yet","Start the conversation with your group.");
+  if(stick)list.scrollTop=list.scrollHeight;
+}
+function openGroupChannel(gid){
+  if(S.group.channel&&S.group.channelFor===gid)return;
+  closeGroupChannel();
+  try{
+    S.group.channel=communityClient.channel("community-v2-group-"+gid+"-"+Date.now())
+      .on("postgres_changes",{event:"INSERT",schema:"public",table:"community_group_messages",filter:"group_id=eq."+gid},()=>{if(S.group.openId===gid&&S.section==="groups")loadSection("groups",{silent:true});})
+      .subscribe();
+    S.group.channelFor=gid;
+  }catch(_e){}
+}
+function closeGroupChannel(){
+  if(S.group.channel){try{communityClient.removeChannel(S.group.channel);}catch(_e){}}
+  S.group.channel=null;S.group.channelFor=null;
+}
+async function groupSend(){
+  const i=$("communityV2GroupInput"),er=$("communityV2GroupErr"),b=$("communityV2GroupSend");if(!i||S.group.sending)return;
+  const text=i.value.trim();if(!text)return;
+  S.group.sending=true;b.disabled=true;b.textContent="Sending…";er.hidden=true;
+  try{
+    const r=await communityClient.from("community_group_messages").insert({group_id:S.group.openId,user_id:myId(),body:text});
+    if(r.error)throw r.error;i.value="";await loadGroupDetail({silent:true});
+  }catch(e){er.textContent=errMsg(e);er.hidden=false;}
+  finally{S.group.sending=false;b.disabled=false;b.textContent="Send";}
+}
+function groupFormDialog(g){
+  return openDialog({title:g?"Edit group":"New study group",submitLabel:g?"Save":"Create group",wide:true,
+    html:`<div class="community-v2-form"><label>Group name<input name="name" class="input" maxlength="60" value="${esc(g?g.name:"")}" autofocus></label>
+      <label>Description<textarea name="description" class="input" rows="2" maxlength="240">${esc(g?g.description:"")}</textarea></label>
+      <div class="community-v2-row2"><label>Goal title (optional)<input name="goal_title" class="input" maxlength="80" value="${esc(g&&g.goal_title||"")}"></label>
+      <label>Goal chapters<input name="goal_target" type="number" class="input" min="1" max="5000" value="${g&&g.goal_target?g.goal_target:""}"></label>
+      <label>Goal days<input name="goal_days" type="number" class="input" min="1" max="365" placeholder="e.g. 14"></label></div>
+      <p class="community-v2-hint">Group progress sums chapters completed by active members who share their progress.</p><p class="community-v2-err" id="communityV2DialogError" hidden></p></div>`,
+    onSubmit:async root=>{
+      const name=String(fieldVal(root,"name")).trim();if(!name)throw new Error("Group name is required.");
+      const gt=parseInt(fieldVal(root,"goal_target"),10)||null,gd=parseInt(fieldVal(root,"goal_days"),10)||null;
+      const a={p_name:name,p_description:String(fieldVal(root,"description")).trim(),p_goal_title:String(fieldVal(root,"goal_title")).trim()||null,p_goal_target:gt,p_goal_days:gd};
+      if(g){await rpc("community_group_update",{p_group_id:g.id,...a});S.group.detail=null;}
+      else{const id=await rpc("community_create_group",{p_community_id:S.cid,...a});S.group.openId=id;S.group.detail=null;}
+      toastMsg(g?"Group updated":"Group created");loadSection("groups",{silent:true});return true;
+    }});
+}
+function groupInviteDialog(){
+  const d=S.group.detail,taken=new Set((d.members||[]).map(m=>sid(m.user_id)));
+  const cand=S.members.filter(m=>!taken.has(sid(m.user_id)));
+  return openDialog({title:"Invite to group",submitLabel:null,cancelLabel:"Close",
+    html:cand.length?`<ul class="community-v2-plist">${cand.map(m=>`<li class="community-v2-prow">${avatar(communityName(m.user_id))}<span>${esc(communityName(m.user_id))}</span><span class="community-v2-actions">${btn("Invite","group-invite-do",{uid:m.user_id},"mini primary")}</span></li>`).join("")}</ul><p class="community-v2-err" id="communityV2DialogError" hidden></p>`:`<p class="community-v2-muted">Everyone in this community is already in the group (or invited).</p>`});
+}
+async function partnerAct(kind,a){
+  try{
+    if(kind==="request"){await rpc("community_partner_request",{p_community_id:S.cid,p_target:a.uid});toastMsg("Request sent");closeDialog(true);}
+    else if(kind==="respond"){await rpc("community_partner_respond",{p_id:a.id,p_accept:a.accept==="1"});}
+    else if(kind==="end"){if(!await confirmDialog("End partnership?","You'll no longer be study partners. This also cancels a pending request.","End",true))return;await rpc("community_partner_end",{p_id:a.id});}
+    S.data.groups=null;await loadSection("groups",{silent:true});
+  }catch(e){toastMsg(errMsg(e));}
+}
+async function groupAct(kind,a){
+  try{
+    if(kind==="respond"){await rpc("community_group_respond",{p_group_id:a.id,p_accept:a.accept==="1"});}
+    else if(kind==="leave"){if(!await confirmDialog("Leave group?","If you're the last member, the group is deleted.","Leave",true))return;await rpc("community_group_leave",{p_group_id:S.group.openId});S.group.openId=null;S.group.detail=null;closeGroupChannel();}
+    else if(kind==="delete"){if(!await confirmDialog("Delete group?","The group, its members and its chat are permanently deleted.","Delete",true))return;await rpc("community_group_delete",{p_group_id:S.group.openId});S.group.openId=null;S.group.detail=null;closeGroupChannel();}
+    else if(kind==="remove"){if(!await confirmDialog("Remove member?","They will lose access to the group and its chat.","Remove",true))return;await rpc("community_group_remove_member",{p_group_id:S.group.openId,p_user:a.uid});}
+    else if(kind==="invite-do"){await rpc("community_group_invite",{p_group_id:S.group.openId,p_user:a.uid});toastMsg("Invitation sent");closeDialog(true);}
+    S.data.groups=null;await loadSection("groups",{silent:true});
+    if(!S.group.openId)renderGroups();
+  }catch(e){const er=$("communityV2DialogError");if(er&&D.resolve){er.textContent=errMsg(e);er.hidden=false;}else toastMsg(errMsg(e));}
+}
+
+/* =====================================================================
+   EVENTS (delegated; bound exactly once)
+   ===================================================================== */
+function updateBanner(){
+  const b=$("communityV2Banner");if(!b)return;
+  b.hidden=!S.missing;
+  if(S.missing)b.innerHTML="<strong>Community upgrade not installed.</strong> Chat, progress sharing and members still work. To enable replies, reactions, leaderboards, challenges, polls and more, run <code>community_upgrade.sql</code> once in the Supabase SQL Editor.";
+}
+function onClick(e){
+  const t=e.target.closest("[data-cv2-action]");
+  if(!t){
+    const card=e.target.closest("#communityMembers .community-member[data-member-uid]");
+    if(card&&ready()&&!S.missing){openProfile(card.dataset.memberUid);return;}
+    const pk=$("communityV2Dialog");
+    if(pk&&e.target===pk&&!D.busy)closeDialog(null);
+    return;
+  }
+  if(t.tagName==="INPUT")return;
+  const a=t.dataset.cv2Action,id=t.dataset.cv2Id,uid=t.dataset.cv2Uid,c=S.chat;
+  switch(a){
+    case "section":showSection(t.dataset.cv2Section);break;
+    case "retry":S.missing=false;updateBanner();loadSection(t.dataset.cv2Section||S.section,{});break;
+    case "toggle-side":{const r=$("communityV2Root");const c2=r.classList.toggle("side-collapsed");t.setAttribute("aria-expanded",c2?"false":"true");break;}
+    case "dialog-cancel":closeDialog(null);break;
+    case "dialog-submit":submitDialog();break;
+    case "share-progress":if(typeof communitySyncProgress==="function")communitySyncProgress();break;
+    case "goto-members":showSection("members");break;
+    case "profile":openProfile(uid);break;
+    case "jump":jumpTo(id);break;
+    case "pins-toggle":c.pinsOpen=!c.pinsOpen;renderChatExtras();break;
+    case "react-pick":c.reactFor=c.reactFor===id?null:id;renderChat(true);break;
+    case "react":chatReact(id,t.dataset.cv2Emoji);break;
+    case "chat-reply":{const m=chatFind(id);if(m){c.replyTo={id,name:m.display_name||"Member",body:String(m.body).slice(0,80)};renderChatExtras();const i=$("communityMessageInput");if(i)i.focus();}break;}
+    case "chat-reply-cancel":c.replyTo=null;renderChatExtras();break;
+    case "chat-edit":c.editingId=id;renderChat(true);break;
+    case "chat-edit-cancel":c.editingId=null;renderChat(true);break;
+    case "chat-edit-save":chatSaveEdit(id);break;
+    case "chat-delete":chatDelete(id);break;
+    case "chat-pin":chatPin(id,t.dataset.cv2Pinned==="1");break;
+    case "new-pill":{const b=$("communityChat");if(b){b.scrollTop=b.scrollHeight;c.newBelow=0;$("communityV2NewPill").hidden=true;}break;}
+    case "lb-period":S.lbPeriod=t.dataset.cv2Period;if(S.data.lb&&S.data.lb[S.lbPeriod])renderLeaderboard();loadSection("leaderboard",{silent:true});break;
+    case "lb-optin":lbSetOpt(true);break;
+    case "lb-optout":lbSetOpt(false);break;
+    case "chal-tab":S.chalTab=t.dataset.cv2Tab;renderChallenges();break;
+    case "chal-new":newChallengeDialog();break;
+    case "chal-join":chalAction("join",id);break;
+    case "chal-leave":chalAction("leave",id);break;
+    case "chal-close":chalAction("close",id);break;
+    case "chal-delete":chalAction("delete",id);break;
+    case "ann-new":annDialog(null);break;
+    case "ann-more":S.annLimit+=30;loadSection("announcements",{silent:true});break;
+    case "ann-pin":annAction("pin",id,t.dataset.cv2Pinned==="1");break;
+    case "ann-edit":annAction("edit",id);break;
+    case "ann-delete":annAction("delete",id);break;
+    case "poll-new":newPollDialog();break;
+    case "poll-vote":pollVote(id);break;
+    case "poll-close":pollAction("close",id);break;
+    case "poll-delete":pollAction("delete",id);break;
+    case "notif-open":notifOpen(id);break;
+    case "notif-filter":S.notifFilter=t.dataset.cv2Filter;renderNotifications();break;
+    case "notif-all":
+      rpc("community_mark_all_notifications_read",{p_community_id:null}).then(()=>{S.notifs.forEach(n=>{if(!n.read_at)n.read_at=new Date().toISOString();});S.unreadNotifs=0;updateBadges();renderNotifications();}).catch(er=>toastMsg(errMsg(er)));break;
+    case "partner-request":partnerAct("request",{uid});break;
+    case "partner-respond":partnerAct("respond",{id,accept:t.dataset.cv2Accept});break;
+    case "partner-end":partnerAct("end",{id});break;
+    case "group-new":groupFormDialog(null);break;
+    case "group-open":S.group.openId=id;S.group.detail=null;S.group.messages=[];loadSection("groups",{});break;
+    case "group-back":S.group.openId=null;S.group.detail=null;closeGroupChannel();S.data.groups=null;loadSection("groups",{});break;
+    case "group-send":groupSend();break;
+    case "group-edit":groupFormDialog(S.group.detail);break;
+    case "group-invite":groupInviteDialog();break;
+    case "group-invite-do":groupAct("invite-do",{uid});break;
+    case "group-remove":groupAct("remove",{uid:t.dataset.cvUid||t.dataset.cv2Uid});break;
+    case "group-leave":groupAct("leave",{});break;
+    case "group-delete":groupAct("delete",{});break;
+    case "group-respond":groupAct("respond",{id,accept:t.dataset.cv2Accept});break;
+  }
+}
+function onChange(e){
+  const t=e.target.closest&&e.target.closest("[data-cv2-action]");if(!t)return;
+  const a=t.dataset.cv2Action;
+  if(a==="poll-pick"){
+    const pid=t.dataset.cv2Id,set=S.pollSel[pid]||(S.pollSel[pid]=new Set());
+    if(t.dataset.cv2Multi==="1"){t.checked?set.add(t.dataset.cv2Opt):set.delete(t.dataset.cv2Opt);}
+    else{set.clear();if(t.checked)set.add(t.dataset.cv2Opt);}
+  }else if(a==="pref"){
+    const k=t.dataset.cv2Key,v=t.checked;
+    savePref({[k]:v}).catch(er=>{t.checked=!v;toastMsg("Couldn't save: "+errMsg(er));});
+  }
+}
+function onKey(e){
+  const dlg=dialogEl();
+  if(dlg&&dlg.classList.contains("show")){
+    if(e.key==="Escape"&&!D.busy){e.stopPropagation();closeDialog(null);return;}
+    trapFocus(e);
+    if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)&&D.onSubmit)submitDialog();
+    return;
+  }
+  if(e.key==="Escape"&&S.chat.replyTo&&e.target&&e.target.id==="communityMessageInput"){S.chat.replyTo=null;renderChatExtras();}
+  if(e.target&&e.target.id==="communityV2GroupInput"&&e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();groupSend();}
+  if(e.target&&e.target.id==="communityV2EditInput"&&e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();if(S.chat.editingId)chatSaveEdit(S.chat.editingId);}
+  if(e.target&&e.target.id==="communityV2EditInput"&&e.key==="Escape"){S.chat.editingId=null;renderChat(true);}
+}
+function bindOnce(){
+  if(S.listenersBound)return;S.listenersBound=true;
+  document.addEventListener("click",ev=>{
+    const root=$("communityV2Root"),dlg=dialogEl();
+    if((root&&root.contains(ev.target))||(dlg&&dlg.contains(ev.target))||ev.target.closest("#communityMembers"))onClick(ev);
+  });
+  document.addEventListener("change",ev=>{const root=$("communityV2Root");if(root&&root.contains(ev.target))onChange(ev);});
+  document.addEventListener("keydown",onKey,true);
+  document.addEventListener("input",ev=>{if(ev.target&&ev.target.id==="communityMessageInput")updateCounter();});
+  const chat=$("communityChat");
+  if(chat)chat.addEventListener("scroll",()=>{if(nearBottom(chat)&&S.chat.newBelow){S.chat.newBelow=0;const p=$("communityV2NewPill");if(p)p.hidden=true;}},{passive:true});
+  document.addEventListener("visibilitychange",()=>{if(visibleNow()&&ready()){loadSection(S.section,{silent:true});loadPresence();heartbeat();}});
+}
+
+/* =====================================================================
+   LIFECYCLE (called from tiny hooks in the legacy Community code)
+   ===================================================================== */
+function noRoomHTML(){return emptyState("👋","Select a community","Choose one of your communities (or create / join one) to see this section.");}
+function resetRoomState(){
+  S.chat={...S.chat,messages:[],pinned:[],loaded:false,error:null,sig:"",replyTo:null,editingId:null,reactFor:null,sending:false,sendError:"",seen:new Set(),firstRender:true,pinsOpen:false,dirty:false,newBelow:0};
+  S.rpcChat=undefined;S.data={};S.members=[];S.membersLoaded=false;S.presence=new Map();S.pollSel={};S.annLimit=30;
+  S.prefs=null;S.prefsReady=false;S.unreadChat=0;S.inflight={};S.again={};S.group.openId=null;S.group.detail=null;S.group.messages=[];
+  closeGroupChannel();setChatMode();
+}
+function paintNoRoom(){
+  SECTIONS.forEach(s=>{if(s.id!=="chat"&&s.id!=="members"){const b=paneBody(s.id);if(b)b.innerHTML=noRoomHTML();}});
+  renderPresenceChip();updateBadges();
+  const d=$("communityV2Directory");if(d)d.innerHTML=noRoomHTML();
+}
+async function onRoomSelected(){
+  if(!communityClient||!communityUser||!communityCurrent||communityCurrent.id==null)return;
+  const cid=sid(communityCurrent.id);
+  bindOnce();buildNav();
+  if(S.cid!==cid||S.uid!==myId()){resetRoomState();}
+  S.cid=cid;S.uid=myId();
+  try{const saved=localStorage.getItem(SECTION_KEY);if(saved&&SECTIONS.some(s=>s.id===saved))S.section=saved;}catch(_e){}
+  const root=$("communityV2Root");if(root&&window.innerWidth<900){root.classList.add("side-collapsed");const tg=root.querySelector("[data-cv2-action=toggle-side]");if(tg)tg.setAttribute("aria-expanded","false");}
+  openRoomChannel();openUserChannel();startTimers();
+  await loadPrefs();updateBanner();
+  showSection(S.section);
+  chatRefresh();refreshUnread();
+}
+function onRoomCleanup(){
+  stopTimers();closeRoomChannel();closeGroupChannel();
+  S.cid=null;
+}
+function onRoomReset(){
+  onRoomCleanup();resetRoomState();paintNoRoom();
+  if(!communityUser)closeUserChannel();
+}
+/* keeps the user-level notification channel in sync with login state */
+setInterval(()=>{
+  if(!communityClient)return;
+  if(communityUser&&S.notifUser!==communityUser.id){bindOnce();buildNav();openUserChannel();refreshUnread();}
+  if(!communityUser&&S.notifUser){closeUserChannel();S.unreadNotifs=0;S.notifs=[];S.notifsLoaded=false;updateBadges();}
+},3000);
+document.addEventListener("DOMContentLoaded",()=>{buildNav();paintNoRoom();updateBanner();});
+
+window.communityV2={
+  chatActive:()=>S.rpcChat===true&&ready()&&same(S.cid,communityCurrent&&communityCurrent.id),
+  chatRefreshSoon:()=>{clearTimeout(S.debounce.chatSoon);S.debounce.chatSoon=setTimeout(chatRefresh,120);},
+  send:chatSend,onRoomSelected,onRoomCleanup,onRoomReset
+};
+})();
+
 </script>
 
 <!-- Dashboard Name Modal -->
