@@ -12,7 +12,15 @@
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=2">
 <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=2">
 <title>Syllabus Tracker</title>
-<script>try{if(localStorage.getItem("syllabusTheme")==="dark")document.documentElement.classList.add("dark");}catch(e){}</script>
+<script>
+try{
+  var __t = localStorage.getItem("syllabusTheme") || "light";
+  if(__t==="dark"||__t==="midnight"||__t==="forest"||__t==="ocean"||__t==="rose"||__t==="sunset"){
+    document.documentElement.classList.add("dark");
+  }
+  document.documentElement.setAttribute("data-theme", __t);
+}catch(e){}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
