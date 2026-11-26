@@ -4273,15 +4273,24 @@ html.dark .dash-stat-icon.ico-exam {
     opacity: 1 !important;
     gap: 5px !important;
   }
-  .header-actions .hdr-lbl {
-    display: none; /* save space; icon remains */
-  }
+  /* Focus: flat pill on mobile (not a tiny square) */
   #pomoHeaderBtn {
-    padding: 0 !important;
-    width: 36px !important;
-    height: 36px !important;
-    min-width: 36px !important;
-    border-radius: 11px !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: 32px !important;
+    padding: 0 10px !important;
+    border-radius: 999px !important;
+    gap: 5px !important;
+    font-size: 12px !important;
+  }
+  #pomoHeaderBtn .hdr-ico {
+    font-size: 13px !important;
+  }
+  #pomoHeaderBtn .hdr-lbl {
+    display: inline !important;
+    font-size: 11.5px !important;
+    font-weight: 750 !important;
+    letter-spacing: -0.01em;
   }
   .theme-toggle, .icon-btn {
     width: 36px !important;
