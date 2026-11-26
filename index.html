@@ -4043,8 +4043,319 @@ body {
     padding: 8px 16px;
   }
 }
+
+/* =========================================================
+   MODERN NAV + REFINED ICONS (visual only)
+   ========================================================= */
+
+/* --- Top nav: modern segmented pills --- */
+.topbar .tabs.top-nav {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 4px 14px 12px !important;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px !important;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.topbar .tabs.top-nav::-webkit-scrollbar { display: none; }
+
+.topbar .tabs.top-nav .tab {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  padding: 7px 12px 7px 8px !important;
+  border-radius: 999px !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--soft) 70%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+  transition: background .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .15s ease;
+}
+.topbar .tabs.top-nav .tab:hover {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
+  background: color-mix(in srgb, var(--primary) 10%, var(--card));
+}
+.topbar .tabs.top-nav .tab.active {
+  color: #fff !important;
+  background: var(--grad) !important;
+  border-color: transparent !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 8px 18px -6px rgba(91,92,230,.55) !important;
+}
+.topbar .tabs.top-nav .tab .tab-ico {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 9px;
+  font-size: 14px;
+  line-height: 1;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  flex: none;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji", sans-serif !important;
+}
+.topbar .tabs.top-nav .tab.active .tab-ico {
+  background: rgba(255,255,255,.22);
+}
+.topbar .tabs.top-nav .tab .tab-lbl {
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+/* Header action icons */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+.header-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.header-actions .hdr-ico {
+  font-size: 16px;
+  line-height: 1;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji", sans-serif !important;
+}
+.header-actions .hdr-lbl {
+  font-size: 12px;
+  font-weight: 750;
+}
+.theme-toggle, .icon-btn {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px;
+  padding: 0 !important;
+  border-radius: 12px !important;
+}
+#pomoHeaderBtn {
+  min-width: auto;
+  padding: 8px 12px !important;
+  border-radius: 12px !important;
+}
+
+/* Brand logo always visible + fallback */
+.brand {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: none;
+}
+.brand-icon {
+  width: 40px !important;
+  height: 40px !important;
+  flex: none !important;
+  display: grid !important;
+  place-items: center;
+  border-radius: 12px !important;
+  overflow: hidden;
+  background: linear-gradient(135deg, #5557e8, #7a4dff) !important;
+  box-shadow: 0 6px 16px -4px rgba(91,92,230,.45) !important;
+}
+.brand-icon img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain;
+  display: block;
+}
+.brand-icon img[src=""],
+.brand-icon img:not([src]) {
+  opacity: 0;
+}
+
+/* Stat icons – premium badge look */
+.dash-stat-icon {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 12px !important;
+  font-size: 18px !important;
+  display: grid !important;
+  place-items: center !important;
+  margin-bottom: 8px !important;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji", sans-serif !important;
+  line-height: 1 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 6px 14px -6px rgba(0,0,0,.18);
+}
+.dash-stat-icon.ico-time {
+  background: linear-gradient(145deg, #e0e7ff, #c7d2fe) !important;
+  color: #4338ca !important;
+}
+.dash-stat-icon.ico-streak {
+  background: linear-gradient(145deg, #ffedd5, #fdba74) !important;
+  color: #c2410c !important;
+}
+.dash-stat-icon.ico-goal {
+  background: linear-gradient(145deg, #d1fae5, #6ee7b7) !important;
+  color: #047857 !important;
+}
+.dash-stat-icon.ico-exam {
+  background: linear-gradient(145deg, #ede9fe, #c4b5fd) !important;
+  color: #6d28d9 !important;
+}
+html.dark .dash-stat-icon.ico-time {
+  background: linear-gradient(145deg, #1e1b4b, #312e81) !important;
+  color: #a5b4fc !important;
+}
+html.dark .dash-stat-icon.ico-streak {
+  background: linear-gradient(145deg, #431407, #7c2d12) !important;
+  color: #fdba74 !important;
+}
+html.dark .dash-stat-icon.ico-goal {
+  background: linear-gradient(145deg, #052e24, #065f46) !important;
+  color: #6ee7b7 !important;
+}
+html.dark .dash-stat-icon.ico-exam {
+  background: linear-gradient(145deg, #2e1065, #5b21b6) !important;
+  color: #c4b5fd !important;
+}
+
+/* Subject / chapter / quick icons */
+.subject-icon,
+.qicon {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji", sans-serif !important;
+  line-height: 1 !important;
+}
+.subject-icon {
+  background: linear-gradient(145deg, var(--primary-soft), color-mix(in srgb, var(--primary) 18%, var(--card))) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary) 16%, transparent), 0 6px 14px -8px color-mix(in srgb, var(--primary) 50%, transparent) !important;
+}
+
+/* ---- Mobile: force visible brand, icons, date ---- */
+@media (max-width: 760px) {
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-inner {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    padding: 10px 12px 6px !important;
+  }
+  .brand {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    max-width: 55%;
+  }
+  .brand-icon {
+    width: 36px !important;
+    height: 36px !important;
+    display: grid !important;
+    visibility: visible !important;
+  }
+  .brand h1 {
+    font-size: 14px !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .header-actions {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    gap: 5px !important;
+  }
+  .header-actions .hdr-lbl {
+    display: none; /* save space; icon remains */
+  }
+  #pomoHeaderBtn {
+    padding: 0 !important;
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    border-radius: 11px !important;
+  }
+  .theme-toggle, .icon-btn {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+  }
+
+  /* Modern tabs on mobile – icon + short label, scrollable */
+  .topbar .tabs.top-nav {
+    padding: 2px 10px 10px !important;
+    gap: 5px !important;
+  }
+  .topbar .tabs.top-nav .tab {
+    padding: 6px 10px 6px 6px !important;
+    font-size: 11.5px !important;
+  }
+  .topbar .tabs.top-nav .tab .tab-ico {
+    width: 24px;
+    height: 24px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+
+  /* Date forced visible */
+  .dash-welcome {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    visibility: visible !important;
+  }
+  #welcomeDate,
+  #welcomeDate.dash-date-pill,
+  .dash-date-pill {
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    align-self: flex-start !important;
+    position: relative !important;
+    z-index: 2 !important;
+    margin-top: 2px !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .topbar .tabs.top-nav .tab .tab-lbl {
+    /* keep labels; user needs them */
+    max-width: 9.5em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .brand h1 {
+    max-width: 110px;
+  }
+  .dash-stat-icon {
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 15px !important;
+  }
+}
+
+@media (max-width: 400px) {
+  /* ultra-narrow: still show icon+label but tighter */
+  .topbar .tabs.top-nav .tab {
+    padding: 5px 8px 5px 5px !important;
+  }
+  .brand h1 {
+    max-width: 90px;
+    font-size: 13px !important;
+  }
+}
 </style>
 </head>
+
 
 <body>
 <header class="topbar">
@@ -4057,22 +4368,22 @@ body {
       <input id="globalSearchInput" class="input header-search-input" placeholder="Search chapters, subjects… ( / )" oninput="handleGlobalSearch(this.value)" autocomplete="off">
     </div>
     <div class="header-actions">
-      <button id="pomoHeaderBtn" class="btn danger" onclick="openPomodoro()" title="Pomodoro">🍅</button>
-      <button id="animBtn" class="btn theme-toggle" onclick="toggleAnimMenu()" title="Progress animation" aria-haspopup="true">✨</button>
-      <button id="themeBtn" class="btn theme-toggle" onclick="toggleThemeMenu()" title="Themes" aria-haspopup="true">🎨</button>
-      <button class="btn icon-btn" onclick="goToSection('community')" title="Community">👥</button>
+      <button id="pomoHeaderBtn" class="btn danger" onclick="openPomodoro()" title="Pomodoro"><span class="hdr-ico" aria-hidden="true">🍅</span><span class="hdr-lbl">Focus</span></button>
+      <button id="animBtn" class="btn theme-toggle" onclick="toggleAnimMenu()" title="Progress animation" aria-haspopup="true"><span class="hdr-ico" aria-hidden="true">✨</span></button>
+      <button id="themeBtn" class="btn theme-toggle" onclick="toggleThemeMenu()" title="Themes" aria-haspopup="true"><span class="hdr-ico" aria-hidden="true">🎨</span></button>
+      <button class="btn icon-btn" onclick="goToSection('community')" title="Community"><span class="hdr-ico" aria-hidden="true">👥</span></button>
     </div>
   </div>
-  <nav class="tabs top-nav">
-    <button class="tab active" data-tab="syllabus" onclick="goToSection('syllabus')">📚 Syllabus</button>
-    <button class="tab" data-tab="exams" onclick="goToSection('exams')">🎯 Exam Planner</button>
-    <button class="tab" data-tab="todo" onclick="goToSection('todo')">✅ To-Do</button>
-    <button class="tab" data-tab="history" onclick="goToSection('history')">📊 History</button>
-    <button class="tab" data-tab="insights" onclick="goToSection('insights')">💡 Insights</button>
-    <button class="tab" data-tab="notes" onclick="goToSection('notes')">📝 Notes</button>
-    <button class="tab" data-tab="revision" onclick="goToSection('revision')">🔄 Revision</button>
-    <button class="tab" data-tab="reports" onclick="goToSection('reports')">📈 Reports</button>
-    <button class="tab" data-tab="community" onclick="goToSection('community')">👥 Community</button>
+  <nav class="tabs top-nav" role="tablist" aria-label="Main sections">
+    <button class="tab active" data-tab="syllabus" onclick="goToSection('syllabus')" role="tab"><span class="tab-ico" aria-hidden="true">📚</span><span class="tab-lbl">Syllabus</span></button>
+    <button class="tab" data-tab="exams" onclick="goToSection('exams')" role="tab"><span class="tab-ico" aria-hidden="true">🎯</span><span class="tab-lbl">Exam Planner</span></button>
+    <button class="tab" data-tab="todo" onclick="goToSection('todo')" role="tab"><span class="tab-ico" aria-hidden="true">✅</span><span class="tab-lbl">To-Do</span></button>
+    <button class="tab" data-tab="history" onclick="goToSection('history')" role="tab"><span class="tab-ico" aria-hidden="true">📊</span><span class="tab-lbl">History</span></button>
+    <button class="tab" data-tab="insights" onclick="goToSection('insights')" role="tab"><span class="tab-ico" aria-hidden="true">💡</span><span class="tab-lbl">Insights</span></button>
+    <button class="tab" data-tab="notes" onclick="goToSection('notes')" role="tab"><span class="tab-ico" aria-hidden="true">📝</span><span class="tab-lbl">Notes</span></button>
+    <button class="tab" data-tab="revision" onclick="goToSection('revision')" role="tab"><span class="tab-ico" aria-hidden="true">🔄</span><span class="tab-lbl">Revision</span></button>
+    <button class="tab" data-tab="reports" onclick="goToSection('reports')" role="tab"><span class="tab-ico" aria-hidden="true">📈</span><span class="tab-lbl">Reports</span></button>
+    <button class="tab" data-tab="community" onclick="goToSection('community')" role="tab"><span class="tab-ico" aria-hidden="true">👥</span><span class="tab-lbl">Community</span></button>
   </nav>
 </header>
 
@@ -4104,25 +4415,25 @@ body {
       <div class="dash-pix-wrap"><canvas id="overallPix" aria-hidden="true"></canvas></div>
     </div>
     <div class="card dash-stat">
-      <div class="dash-stat-icon" style="background:#eef2ff;color:#6366f1">⏱</div>
+      <div class="dash-stat-icon ico-time" aria-hidden="true">⏱</div>
       <div class="label">Study time</div>
       <div id="quickTodayStudy" class="dash-stat-value">0s</div>
       <div class="dash-stat-sub">Today</div>
     </div>
     <div class="card dash-stat">
-      <div class="dash-stat-icon" style="background:#fff7ed;color:#f59e0b">🔥</div>
+      <div class="dash-stat-icon ico-streak" aria-hidden="true">🔥</div>
       <div class="label">Study streak</div>
       <div id="quickStreak" class="dash-stat-value">0 days</div>
       <div class="dash-stat-sub">Keep it going</div>
     </div>
     <div class="card dash-stat">
-      <div class="dash-stat-icon" style="background:#ecfdf5;color:#10b981">🎯</div>
+      <div class="dash-stat-icon ico-goal" aria-hidden="true">🎯</div>
       <div class="label">Today's goal</div>
       <div id="quickGoal" class="dash-stat-value">0%</div>
       <div class="dash-stat-sub">Daily target</div>
     </div>
     <div class="card dash-stat">
-      <div class="dash-stat-icon" style="background:#f5f3ff;color:#8b5cf6">📅</div>
+      <div class="dash-stat-icon ico-exam" aria-hidden="true">📅</div>
       <div class="label">Upcoming exam</div>
       <div id="quickExams" class="dash-stat-value">0</div>
       <div class="dash-stat-sub" id="quickExamSub">None scheduled</div>
