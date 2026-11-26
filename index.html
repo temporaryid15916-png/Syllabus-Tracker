@@ -10739,19 +10739,26 @@ safe(function(){
   if(typeof orig==="function"){
     window.setAppTheme=function(name){
 
-      /* Instant fallback for unsupported browsers or reduced motion */
-      if(RM || !document.startViewTransition){
-        var result=orig.apply(this,arguments);
+      var self=this;
+      var args=Array.prototype.slice.call(arguments);
+
+      /* Instant fallback */
+      if(typeof document.startViewTransition!=="function"){
+        orig.apply(self,args);
         syncMeta();
-        return result;
+        return;
       }
 
-      /* Animate only the visual transition */
-      document.startViewTransition(function(){
-        orig.apply(this,arguments);
+      /* Correctly pass the selected theme into the transition */
+      try{
+        document.startViewTransition(function(){
+          orig.apply(self,args);
+          syncMeta();
+        });
+      }catch(e){
+        orig.apply(self,args);
         syncMeta();
-      }.bind(this));
-
+      }
     };
   }
 
