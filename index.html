@@ -10724,30 +10724,37 @@ safe(function(){var a=document.createElement("div");a.id="ambientBg";a.setAttrib
 root.classList.add("intro");
 setTimeout(function(){root.classList.remove("intro")},3200);
 var rvUntil=Date.now()+2000;
-/* theme color meta + smooth theme switch + chart redraw */
-function syncMeta(){safe(function(){var m=document.querySelector('meta[name="theme-color"]');var c=getComputedStyle(document.body).getPropertyValue("--bg").trim();if(m&&c)m.setAttribute("content",c)})}
+/* Fast theme switch with bottom-left reveal */
+function syncMeta(){
+  safe(function(){
+    var m=document.querySelector('meta[name="theme-color"]');
+    var c=getComputedStyle(document.body).getPropertyValue("--bg").trim();
+    if(m&&c)m.setAttribute("content",c);
+  });
+}
+
 safe(function(){
   var orig=window.setAppTheme;
+
   if(typeof orig==="function"){
     window.setAppTheme=function(name){
-      root.classList.add("theme-anim");
-      var r=orig.apply(this,arguments);
-      syncMeta();
-      clearTimeout(window.__thT);
-      window.__thT=setTimeout(function(){
-        root.classList.remove("theme-anim");
-        safe(function(){
-          if(typeof currentTab!=="undefined"){
-            if(currentTab==="history"&&typeof drawGraph==="function")drawGraph();
-            else if(currentTab==="reports"&&typeof renderReports==="function")renderReports();
-            else if(currentTab==="insights"&&typeof renderInsights==="function")renderInsights();
-          }
-          if(typeof updateDashboard==="function")updateDashboard();
-        });
-      },480);
-      return r;
+
+      /* Instant fallback for unsupported browsers or reduced motion */
+      if(RM || !document.startViewTransition){
+        var result=orig.apply(this,arguments);
+        syncMeta();
+        return result;
+      }
+
+      /* Animate only the visual transition */
+      document.startViewTransition(function(){
+        orig.apply(this,arguments);
+        syncMeta();
+      }.bind(this));
+
     };
   }
+
   syncMeta();
 });
 /* tab switch: scroll active tab into view + reveal window */
