@@ -3344,7 +3344,32 @@ html.dark{color-scheme:dark}
 html,body{--grad:linear-gradient(135deg,var(--primary),var(--purple));--glow:0 8px 24px -8px color-mix(in srgb,var(--primary) 60%,transparent);--glass:color-mix(in srgb,var(--card) 80%,transparent)}
 body,body.dark{--bg:inherit;--card:inherit;--soft:inherit;--text:inherit;--muted:inherit;--border:inherit;--primary:inherit;--primary-soft:inherit;--success:inherit;--success-soft:inherit;--warning:inherit;--warning-soft:inherit;--danger:inherit;--purple:inherit;--shadow:inherit;--shadow-lg:inherit;--ring:inherit}
 html.dark{--shadow:0 1px 3px rgba(0,0,0,.3),0 8px 24px -8px rgba(0,0,0,.5)}
-html.theme-anim *,html.theme-anim *::before,html.theme-anim *::after{transition:background-color .4s ease,color .4s ease,border-color .4s ease,box-shadow .4s ease,fill .4s ease,stroke .4s ease!important}
+/* Fast bottom-left theme reveal */
+::view-transition-old(root){
+    animation:none;
+    z-index:1;
+}
+
+::view-transition-new(root){
+    animation:themeReveal .28s cubic-bezier(.2,.75,.25,1) both;
+    transform-origin:bottom left;
+    z-index:2;
+}
+
+@keyframes themeReveal{
+    from{
+        clip-path:circle(0% at 0% 100%);
+    }
+    to{
+        clip-path:circle(150% at 0% 100%);
+    }
+}
+
+@media (prefers-reduced-motion:reduce){
+    ::view-transition-new(root){
+        animation:none;
+    }
+}
 #ambientBg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
 #ambientBg i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.28;will-change:transform;transition:background .5s}
 #ambientBg i:nth-child(1){width:46vmax;height:46vmax;left:-14vmax;top:-16vmax;background:rgb(var(--amb1));animation:floatA 26s ease-in-out infinite alternate}
