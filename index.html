@@ -3377,7 +3377,21 @@ html:not(.dark) #ambientBg i{opacity:.16}
 .pomo{animation:fadeIn .3s ease}
 .tab.active{animation:popIn .3s var(--spring)}
 .dash-welcome{padding:16px 18px;border-radius:var(--radius);background:linear-gradient(120deg,color-mix(in srgb,var(--primary) 26%,var(--card)),color-mix(in srgb,var(--purple) 18%,var(--card)),color-mix(in srgb,var(--primary) 12%,var(--card)));background-size:240% 240%;animation:gradShift 14s ease-in-out infinite alternate;border:1px solid var(--border);box-shadow:var(--shadow)}
-.dash-hello{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.dash-hello{
+    background:var(--grad);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.dash-hello::after{
+    content:" 👋";
+    background:none;
+    -webkit-background-clip:initial;
+    background-clip:initial;
+    -webkit-text-fill-color:initial;
+    color:var(--text);
+}
 html.intro .dash-welcome{animation:fadeUp .6s var(--ease) both,gradShift 14s ease-in-out .6s infinite alternate}
 html.intro .dash-stats>*{animation:fadeUp .6s var(--ease) both}
 html.intro .dash-mid>*{animation:fadeUp .6s var(--ease) .45s both}
