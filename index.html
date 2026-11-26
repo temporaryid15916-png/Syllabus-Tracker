@@ -3316,15 +3316,6 @@ body :is(.input,.select):not(#communityPanel *,#communityV2Dialog *,#pomodoroOve
 @property --p{syntax:"<number>";inherits:true;initial-value:0}
 html{--ease:cubic-bezier(.2,.8,.2,1);--spring:cubic-bezier(.2,.9,.3,1.25);--accent2:var(--purple)}
 /* ===== THEMES v2 : 14 themes, smooth colour crossfade ===== */
-@property --bg{syntax:"<color>";inherits:true;initial-value:#f3f1ff}
-@property --card{syntax:"<color>";inherits:true;initial-value:#ffffff}
-@property --soft{syntax:"<color>";inherits:true;initial-value:#efecff}
-@property --text{syntax:"<color>";inherits:true;initial-value:#1b1847}
-@property --muted{syntax:"<color>";inherits:true;initial-value:#6a6f87}
-@property --border{syntax:"<color>";inherits:true;initial-value:#e3def8}
-@property --primary{syntax:"<color>";inherits:true;initial-value:#6d5df6}
-@property --primary-soft{syntax:"<color>";inherits:true;initial-value:#eceaff}
-@property --purple{syntax:"<color>";inherits:true;initial-value:#9a6bff}
 html{--on-primary:#fff;--p0:#6aa8ff;--p1:#7c83ff;--p2:#c79bff;--p3:#ff7fa8}
 html[data-theme="light"]{--bg:#f3f1ff;--card:#ffffff;--soft:#efecff;--text:#1b1847;--muted:#6a6f87;--border:#e3def8;--primary:#6d5df6;--primary-soft:#eceaff;--purple:#9a6bff;--amb1:124,92,255;--amb2:56,140,255;--on-primary:#fff;--p0:#6aa8ff;--p1:#7c83ff;--p2:#c79bff;--p3:#ff7fa8}
 html[data-theme="dark"]{--bg:#070816;--card:#0f1226;--soft:#171a35;--text:#eef1ff;--muted:#9aa3c7;--border:rgba(129,140,248,.16);--primary:#8b93ff;--primary-soft:#1a1d45;--purple:#b08cff;--amb1:124,92,255;--amb2:56,120,255;--on-primary:#fff;--p0:#6aa8ff;--p1:#7c83ff;--p2:#c79bff;--p3:#ff7fa8}
@@ -3342,9 +3333,6 @@ html[data-theme="ember"]{--bg:#1c0f14;--card:#2a161d;--soft:#351d26;--text:#fff0
 html[data-theme="sakura"]{--bg:#fdf2f6;--card:#ffffff;--soft:#fbe7ef;--text:#3b1030;--muted:#8c5f7c;--border:#f4d9e5;--primary:#e11d74;--primary-soft:#fde4ef;--purple:#f472b6;--amb1:244,114,182;--amb2:251,146,60;--on-primary:#fff;--p0:#f472b6;--p1:#e11d74;--p2:#f472b6;--p3:#fb923c}
 html:not(.dark){color-scheme:light}
 html[data-theme="graphite"] #ambientBg{display:none}
-/* smooth crossfade: only while html has .theme-fade (added for ~0.6s on every theme change) */
-html.theme-fade{transition:--bg .5s ease,--card .5s ease,--soft .5s ease,--text .5s ease,--muted .5s ease,--border .5s ease,--primary .5s ease,--primary-soft .5s ease,--purple .5s ease!important}
-html.theme-fade body{transition:none!important}
 /* text on primary-coloured buttons follows the theme (dark ink on bright accents) */
 html:root:root .btn.primary,html:root:root .tab.active,html:root:root .topbar .tabs.top-nav .tab.active,html:root:root .filter.active,html:root:root .community-v2-tab.active{color:var(--on-primary)}
 /* ===== Dashboard: overall card holds the progress animation canvas ===== */
@@ -4552,7 +4540,6 @@ function applyTheme(d){
   setAppTheme(d ? "dark" : "light");
 }
 
-let __themeFadeTimer = 0;
 let __themeReady = false;
 function setAppTheme(name){
   if(!THEME_META[name]) name = "light";
@@ -4560,23 +4547,25 @@ function setAppTheme(name){
   const root = document.documentElement;
   const isDark = !!meta.dark;
   const prev = root.getAttribute("data-theme");
-  /* smooth crossfade: only on a real change, never on first load, never with reduced motion */
+  const apply = function(){
+    root.classList.toggle("dark", isDark);
+    if(document.body) document.body.classList.toggle("dark", isDark);
+    root.setAttribute("data-theme", name);
+  };
+  /* bottom-left -> top reveal (GPU snapshot, no lag); skipped on first load / reduced motion */
   let reduce = false;
   try{ reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(_e){}
-  if(__themeReady && prev && prev !== name && !reduce){
-    root.classList.add("theme-fade");
-    clearTimeout(__themeFadeTimer);
-    __themeFadeTimer = setTimeout(function(){ root.classList.remove("theme-fade"); }, 700);
+  if(__themeReady && prev && prev !== name && !reduce && document.startViewTransition){
+    try{ document.startViewTransition(apply); }catch(_e){ apply(); }
+  }else{
+    apply();
   }
-  root.classList.toggle("dark", isDark);
-  if(document.body) document.body.classList.toggle("dark", isDark);
-  root.setAttribute("data-theme", name);
   const tb = document.getElementById("themeBtn");
   if(tb) tb.textContent = meta.icon;
   try{ localStorage.setItem(KEY.theme, name); }catch(_e){}
   /* defer non-critical work so UI stays responsive */
   if(typeof currentTab !== "undefined" && currentTab === "history" && typeof drawGraph === "function"){
-    setTimeout(function(){ try{ drawGraph(); }catch(_e){} }, 540);
+    setTimeout(function(){ try{ drawGraph(); }catch(_e){} }, 450);
   }
   /* sync theme-color meta without blocking */
   requestAnimationFrame(function(){
@@ -4594,7 +4583,7 @@ function setAppTheme(name){
       var c2 = getComputedStyle(document.body).getPropertyValue("--bg").trim();
       if(m2 && c2) m2.setAttribute("content", c2);
     }catch(_e){}
-  }, 620);
+  }, 450);
   __themeReady = true;
 }
 
@@ -4628,10 +4617,10 @@ function closePopMenus(exceptId){
     if(m) m.style.display = "none";
   });
 }
-function renderThemeMenu(){
+function renderThemeMenu(forceId){
   const menu = document.getElementById("themeMenu");
   if(!menu) return;
-  const cur = document.documentElement.getAttribute("data-theme") || "light";
+  const cur = forceId || document.documentElement.getAttribute("data-theme") || "light";
   const card = function(t){
     return '<button type="button" class="pm-opt' + (t.id === cur ? ' on' : '') + '" data-theme-id="' + t.id + '" role="menuitemradio" aria-checked="' + (t.id === cur) + '">' +
       '<span class="pv" style="--pb:' + t.bg + ';--pc:' + t.card + ';--pa:' + t.a + ';--pg:' + t.b + '"></span>' +
@@ -4660,8 +4649,9 @@ document.addEventListener("click", function(e){
   if(!menu) return;
   const opt = e.target && e.target.closest ? e.target.closest("[data-theme-id]") : null;
   if(opt && menu.contains(opt)){
-    setAppTheme(opt.getAttribute("data-theme-id"));
-    renderThemeMenu();
+    const tid = opt.getAttribute("data-theme-id");
+    setAppTheme(tid);
+    renderThemeMenu(tid);
     if(window.innerWidth < 700) setTimeout(function(){ menu.style.display = "none"; }, 160);
     return;
   }
