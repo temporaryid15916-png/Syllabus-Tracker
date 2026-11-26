@@ -3692,8 +3692,360 @@ button.btn, button.mini, button.tab, button.filter {
     transition-duration: .01ms !important;
   }
 }
+
+/* =========================================================
+   RESPONSIVE + POLISH  (mobile / tablet / desktop)
+   – layout space, date visibility, fonts, refined icons
+   – no feature changes
+   ========================================================= */
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  font-family: "Plus Jakarta Sans", "Hind Siliguri", "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-feature-settings: "ss01" 1, "cv11" 1;
+  letter-spacing: -0.011em;
+  line-height: 1.5;
+}
+/* Refined emoji / symbol rendering (same glyphs, cleaner look) */
+.dash-stat-icon,
+.qicon,
+.subject-icon,
+.brand-icon,
+.member-clock-icon,
+.dash-achieve-icon,
+.todo-check,
+.community-v2-avatar,
+.community-v2-notif-ic,
+.chapter-picker-book-icon,
+.num,
+.chev {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji", "EmojiSymbols", "Segoe UI Symbol", sans-serif !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  line-height: 1 !important;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.dash-stat-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  font-size: 17px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 8px;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary) 12%, transparent);
+}
+.qicon {
+  width: 38px;
+  height: 38px;
+  font-size: 17px;
+  border-radius: 12px;
+}
+.subject-icon {
+  width: 42px;
+  height: 42px;
+  font-size: 19px;
+  border-radius: 13px;
+}
+.dash-achieve-icon {
+  font-size: 30px;
+  filter: drop-shadow(0 4px 10px rgba(16, 185, 129, 0.25));
+}
+
+/* Welcome + date always readable */
+.dash-welcome {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px 16px;
+  flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box;
+}
+.dash-date-pill {
+  flex: none;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  font-weight: 700;
+  color: var(--text);
+  background: color-mix(in srgb, var(--card) 88%, var(--primary-soft));
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, var(--border));
+  box-shadow: var(--shadow);
+}
+.dash-hello {
+  font-size: clamp(1.15rem, 2.6vw + 0.7rem, 1.65rem);
+  line-height: 1.2;
+  word-break: break-word;
+}
+.dash-motto {
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+/* Safer grids – prevent overflow */
+.dash-stats,
+.grid4,
+.quick,
+.exam-grid,
+.history-grid,
+.dash-mid,
+.dash-bottom,
+.community-wrap {
+  min-width: 0;
+}
+.dash-stat,
+.card,
+.subject,
+.todo-task,
+.exam {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* ---- Tablet ≤ 900px ---- */
+@media (max-width: 900px) {
+  .container {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  .dash-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .dash-stat-main {
+    grid-column: 1 / -1;
+  }
+  .dash-mid,
+  .dash-bottom {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Phone / large phone ≤ 760px ---- */
+@media (max-width: 760px) {
+  .container {
+    padding: 12px 12px 28px !important;
+  }
+  .topbar-inner {
+    padding: 10px 12px 6px !important;
+    gap: 8px;
+  }
+  .brand h1 {
+    font-size: 15px !important;
+  }
+  .header-search {
+    display: none !important;
+  }
+  .topbar .tabs.top-nav {
+    padding: 0 10px 8px !important;
+    gap: 2px;
+  }
+  .topbar .tabs.top-nav .tab {
+    padding: 7px 11px !important;
+    font-size: 11.5px !important;
+  }
+
+  /* Date always visible + stacked nicely */
+  .dash-welcome {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 14px 14px !important;
+    margin-bottom: 12px !important;
+  }
+  .dash-date-pill {
+    align-self: flex-start;
+    padding: 8px 14px;
+    font-size: 12.5px;
+    font-weight: 750;
+    border-radius: 999px;
+    max-width: 100%;
+  }
+  .dash-hello {
+    font-size: 1.35rem !important;
+  }
+  .dash-motto {
+    font-size: 12.5px;
+  }
+
+  .dash-stats {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 9px !important;
+  }
+  .dash-stat {
+    padding: 13px !important;
+  }
+  .dash-stat-value {
+    font-size: 17.5px !important;
+  }
+  .dash-stat-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+    border-radius: 10px;
+  }
+  .progress-ring {
+    width: 60px !important;
+    height: 60px !important;
+  }
+  .ring-pct {
+    font-size: 11.5px !important;
+  }
+  .dash-panel {
+    padding: 13px !important;
+  }
+  .subject-progress {
+    display: none;
+  }
+  .chapter {
+    flex-wrap: wrap;
+  }
+  .tools {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .grid4,
+  .quick {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+  .stat {
+    padding: 12px !important;
+  }
+  .stat .value {
+    font-size: 18px !important;
+  }
+}
+
+/* ---- Small phones ≤ 560px ---- */
+@media (max-width: 560px) {
+  body {
+    font-size: 13.5px;
+  }
+  .container {
+    padding: 10px 10px 24px !important;
+  }
+  .dash-welcome {
+    padding: 12px 12px !important;
+    border-radius: 16px !important;
+  }
+  .dash-hello {
+    font-size: 1.2rem !important;
+  }
+  .dash-date-pill {
+    font-size: 12px;
+    padding: 7px 12px;
+  }
+  .dash-stats {
+    gap: 8px !important;
+  }
+  .dash-stat {
+    padding: 11px 10px !important;
+    border-radius: 14px !important;
+  }
+  .dash-stat-value {
+    font-size: 16px !important;
+  }
+  .dash-stat-title,
+  .label {
+    font-size: 10px !important;
+  }
+  .dash-stat-sub {
+    font-size: 10.5px !important;
+  }
+  .progress-ring {
+    width: 52px !important;
+    height: 52px !important;
+  }
+  .ring-pct {
+    font-size: 10.5px !important;
+  }
+  .dash-stat-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .qicon {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 14px !important;
+  }
+  .subject-icon {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 16px !important;
+  }
+  .tab {
+    padding: 7px 10px !important;
+    font-size: 11px !important;
+  }
+  .btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  .mini {
+    padding: 6px 9px;
+    font-size: 11px;
+  }
+  .todo-week-day {
+    min-height: 54px;
+    padding: 6px 2px;
+  }
+  .todo-week-day .dnum {
+    font-size: 13px;
+  }
+  /* Keep date on its own clear row */
+  #welcomeDate.dash-date-pill {
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
+/* ---- Very small ≤ 380px ---- */
+@media (max-width: 380px) {
+  .dash-stats {
+    grid-template-columns: 1fr !important;
+  }
+  .dash-stat-main {
+    grid-column: auto !important;
+  }
+  .dash-hello {
+    font-size: 1.1rem !important;
+  }
+  .brand h1 {
+    font-size: 13.5px !important;
+  }
+}
+
+/* Desktop polish – comfortable spacing */
+@media (min-width: 1100px) {
+  .container {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+  .dash-welcome {
+    padding: 18px 20px;
+  }
+  .dash-date-pill {
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+}
 </style>
 </head>
+
 <body>
 <header class="topbar">
   <div class="topbar-inner">
@@ -4824,7 +5176,13 @@ function updateDashboard(){
       const gEl=document.getElementById("welcomeGreeting");
       if(gEl) gEl.textContent = uname ? (greet+", "+uname) : greet;
       const dEl=document.getElementById("welcomeDate");
-      if(dEl) dEl.textContent=new Date().toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"});
+      if(dEl){
+        const now=new Date();
+        const narrow=typeof window.matchMedia==="function"&&window.matchMedia("(max-width:560px)").matches;
+        dEl.textContent=now.toLocaleDateString("en-US", narrow
+          ? {weekday:"short",month:"short",day:"numeric"}
+          : {weekday:"short",month:"short",day:"numeric",year:"numeric"});
+      }
       const hEl=document.getElementById("welcomeHint");
       if(hEl){
         if(nearestName) hEl.textContent=`🎯 ${nearestName} in ${nearestDays} day${nearestDays===1?"":"s"} — stay focused!`;
