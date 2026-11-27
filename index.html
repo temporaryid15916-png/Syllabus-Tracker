@@ -4465,6 +4465,32 @@ html.dark{--pl-sh:0 1px 2px rgba(0,0,0,.35),0 8px 22px -12px rgba(0,0,0,.6);--pl
 .fx-confetti.fx-lg{width:9px;height:13px}
 @media (prefers-reduced-motion:reduce){#syllabusPanel .chapter.fx-prog,#syllabusPanel .chapter.fx-prog .num,#syllabusPanel .chapter.fx-done .num,#syllabusPanel .chapter.fx-done .status,#syllabusPanel .chapter.fx-done .mini.status{animation:none}}
 </style>
+<style id="pomoSettingsCompactV1">
+/* ===== Pomodoro "Session Settings" card — compact redesign. CSS only: same elements, IDs and handlers. ===== */
+html:root:root #pomodoroOverlay .pomo-grid>.pomo-card:first-child{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-content:start;padding:14px}
+#pomodoroOverlay .pomo-grid>.pomo-card:first-child>h3{grid-column:1/-1;margin:0 0 2px;font-size:13px;letter-spacing:.01em}
+/* the four number fields become small tiles: label on top, big value below */
+html:root:root #pomodoroOverlay .pomo-card:first-child .pomo-setting-row{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:3px;padding:8px 11px 7px;border:1px solid var(--border);border-radius:13px;background:color-mix(in srgb,var(--soft) 62%,transparent);transition:border-color .15s ease,box-shadow .15s ease;min-width:0}
+html:root:root #pomodoroOverlay .pomo-card:first-child .pomo-setting-row:last-of-type{border-bottom:1px solid var(--border)}
+html:root:root #pomodoroOverlay .pomo-card:first-child .pomo-setting-row:focus-within{border-color:var(--primary);box-shadow:var(--pl-ring,0 0 0 3px color-mix(in srgb,var(--primary) 22%,transparent))}
+html:root:root #pomodoroOverlay .pomo-card:first-child .pomo-setting-row label{font-size:10.5px;font-weight:700;letter-spacing:.03em;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html:root:root #pomodoroOverlay .pomo-card:first-child .pomo-setting-row input.input{width:100%;padding:0;border:0;background:transparent;box-shadow:none;text-align:left;font-size:20px;font-weight:800;line-height:1.15;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--text);-moz-appearance:textfield;appearance:textfield}
+#pomodoroOverlay .pomo-card:first-child .pomo-setting-row input.input::-webkit-outer-spin-button,#pomodoroOverlay .pomo-card:first-child .pomo-setting-row input.input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+html:root:root #pomodoroOverlay .pomo-card:first-child .pomo-setting-row input.input:focus{outline:none;box-shadow:none;border:0;background:transparent}
+/* sound row: full width, label left / select right */
+html:root:root #pomodoroOverlay .pomo-card:first-child .pomo-setting-row:has(#pomoSoundSelect){grid-column:1/-1;flex-direction:row;align-items:center;justify-content:space-between;padding:6px 8px 6px 11px}
+html:root:root #pomodoroOverlay #pomoSoundSelect{width:auto!important;flex:1 1 0;max-width:62%;min-width:0;padding:6px 8px;border-radius:9px;font-size:12px;text-align:left}
+/* Preview + Apply side by side */
+#pomodoroOverlay .pomo-card:first-child>div[style*="margin-top:6px"],#pomodoroOverlay .pomo-card:first-child>div[style*="margin-top:10px"]{margin-top:0!important}
+#pomodoroOverlay .pomo-card:first-child .btn{min-height:38px;padding:8px 10px;font-size:12.5px;border-radius:11px;white-space:nowrap}
+html:root:root #pomodoroOverlay .pomo-card:first-child button[onclick^="previewPomoSound"]{background:var(--soft)!important;color:var(--text)!important;border:1px solid var(--border)!important}
+/* Book / Chapter pickers: two columns, tight */
+html:root:root #pomodoroOverlay .pomo-card:first-child .pomo-pickers{grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:2px!important;padding-top:8px;border-top:1px solid var(--border)}
+#pomodoroOverlay .pomo-pickers .label{font-size:10.5px;font-weight:700;letter-spacing:.03em;margin-bottom:3px;display:block}
+#pomodoroOverlay .pomo-pickers .select{width:100%;min-width:0;text-overflow:ellipsis;padding:7px 8px;border-radius:10px;font-size:12px}
+@media (max-width:960px){html:root:root #pomodoroOverlay .pomo-grid>.pomo-card:first-child{gap:7px;padding:12px}}
+@media (max-width:380px){html:root:root #pomodoroOverlay .pomo-card:first-child .pomo-setting-row input.input{font-size:18px}}
+</style>
 </head>
 
 
