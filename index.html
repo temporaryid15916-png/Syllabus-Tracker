@@ -4852,34 +4852,69 @@ html:root:root #pomodoroOverlay .pomo-card:first-child .pomo-pickers{grid-column
 
 <!-- Reports Tab — Monthly Study Reports -->
 <section id="reportsPanel" class="panel">
-  <div class="card section" id="monthlyReportCard">
-    <div class="row" style="margin-bottom:14px;flex-wrap:wrap;gap:10px;align-items:center">
-      <div style="flex:1;min-width:180px">
-        <h2 style="margin:0">📊 Monthly Study Report</h2>
-        <p class="sub" style="margin-top:3px">প্রতিদিন কোন subject কতক্ষণ পড়েছ — মাস অনুযায়ী দেখো</p>
+  <div class="card section rep-head">
+    <div class="row" style="flex-wrap:wrap;gap:12px;align-items:flex-start">
+      <div style="flex:1;min-width:200px">
+        <h2 style="margin:0;display:flex;align-items:center;gap:8px"><span aria-hidden="true">📊</span> Study Report</h2>
+        <p class="sub" style="margin-top:4px">তোমার পড়ার অগ্রগতি দেখো, মাসভিত্তিক রিপোর্ট এখানে</p>
       </div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <button type="button" class="btn" id="btnReportPrev" onclick="shiftReportMonth(-1)" title="Previous month">← Prev</button>
-        <div id="reportMonthLabel" style="min-width:140px;text-align:center;font-weight:800;font-size:15px;letter-spacing:-.02em"></div>
-        <button type="button" class="btn" id="btnReportNext" onclick="shiftReportMonth(1)" title="Next month">Next →</button>
-        <button type="button" class="btn primary" id="btnReportPdf" onclick="downloadMonthlyReportPdf()">⬇ PDF</button>
+      <button type="button" class="btn primary" id="btnReportPdf" onclick="downloadMonthlyReportPdf()">⬇ Download PDF</button>
+    </div>
+  </div>
+
+  <div class="card section" style="padding-top:12px;padding-bottom:12px">
+    <div class="row" style="margin-bottom:10px;align-items:center">
+      <h3 style="margin:0;font-size:13px;font-weight:750">📁 Monthly archive</h3>
+      <div style="display:flex;gap:6px">
+        <button type="button" class="mini" id="btnReportPrev" onclick="shiftReportMonth(-1)" title="Older">←</button>
+        <button type="button" class="mini" id="btnReportNext" onclick="shiftReportMonth(1)" title="Newer">→</button>
+      </div>
+    </div>
+    <div id="reportMonthArchive" class="rep-archive"></div>
+  </div>
+
+  <div class="rep-main-grid">
+    <div class="card section rep-cal-card">
+      <div class="row" style="margin-bottom:10px">
+        <h3 id="reportMonthLabel" style="margin:0;font-size:15px;font-weight:800"></h3>
+      </div>
+      <div class="rep-cal-head" aria-hidden="true">
+        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+      </div>
+      <div id="reportCalendar" class="rep-cal-grid"></div>
+      <div class="rep-legend">
+        <span><i class="rep-dot studied"></i> পড়াশোনা হয়েছে</span>
+        <span><i class="rep-dot selected"></i> নির্বাচিত দিন</span>
+        <span><i class="rep-dot empty"></i> পড়াশোনা হয়নি</span>
       </div>
     </div>
 
+    <div class="card section rep-detail-card">
+      <div class="row" style="margin-bottom:8px">
+        <h3 style="margin:0;font-size:14px;font-weight:750" id="reportDayTitle">দিনের রিপোর্ট</h3>
+      </div>
+      <div id="reportDayDetail" class="rep-day-detail">
+        <div class="community-empty">Calendar থেকে একটি তারিখ বেছে নাও</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card section">
+    <h3 style="margin:0 0 12px;font-size:15px;font-weight:800">📊 মাসিক সারসংক্ষেপ — <span id="reportSummaryMonth"></span></h3>
     <div id="reportSummary" class="grid4" style="margin-bottom:14px"></div>
-
-    <div class="row" style="margin-bottom:8px;align-items:baseline">
-      <h3 style="margin:0;font-size:14px">📚 Subject breakdown</h3>
-      <span class="sub" id="reportSubjectHint"></span>
+    <div class="rep-summary-split">
+      <div>
+        <h4 style="margin:0 0 8px;font-size:13px;font-weight:750">বিষয়ভিত্তিক সময় বণ্টন</h4>
+        <div id="reportSubjectList" class="list"></div>
+      </div>
+      <div>
+        <div class="row" style="margin-bottom:8px">
+          <h4 style="margin:0;font-size:13px;font-weight:750">দৈনিক পড়ার ইতিহাস</h4>
+          <span class="sub" id="reportDayListHint"></span>
+        </div>
+        <div id="reportDayList" class="list rep-day-table"></div>
+      </div>
     </div>
-    <div id="reportSubjectList" class="list" style="margin-bottom:16px"></div>
-
-    <div class="row" style="margin-bottom:8px;align-items:baseline">
-      <h3 style="margin:0;font-size:14px">📅 Day-by-day</h3>
-      <span class="sub">ক্লিক করলে সেই দিনের বিস্তারিত</span>
-    </div>
-    <div id="reportDayList" class="list"></div>
-    <div id="reportDayDetail" class="sub" style="margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--soft);border:1px solid var(--border);display:none"></div>
   </div>
 
   <div class="card section">
