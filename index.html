@@ -6779,22 +6779,32 @@ function updatePomoDisplay(){
         tl.innerHTML=html;
       }
 
-      // week bars
-      const wb=document.getElementById("pomoWeekBars");
-      if(wb){
+     // last 7 days study history bar chart (Box 2)
+      const b7=document.getElementById("pomoLast7Bars");
+      if(b7){
         const labels=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
         const now=new Date();
-        const day=now.getDay();
-        const start=new Date(now.getFullYear(), now.getMonth(), now.getDate()-day);
-        let max=1; const vals=[];
-        for(let i=0;i<7;i++){
-          const dd=new Date(start.getFullYear(), start.getMonth(), start.getDate()+i);
+        const rows=[];
+        let maxSec=1, sumSec=0;
+        for(let i=6;i>=0;i--){
+          const dd=new Date(now.getFullYear(), now.getMonth(), now.getDate()-i);
           const k=formatDateKey(dd);
           let v=Number(history[k]?.totalSeconds||0);
           if(k===dayKey) v+=Math.round(pendingStudySeconds||0);
-          vals.push(v); if(v>max) max=v;
+          sumSec+=v;
+          if(v>maxSec) maxSec=v;
+          rows.push({ label: i===0 ? "Today" : labels[dd.getDay()], sec: v, key: k });
         }
-        wb.innerHTML=vals.map((v,i)=>`<div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end"><div class="b" style="height:${Math.max(4, Math.round(v/max*100))}%"></div><div class="lbl">${labels[i]}</div></div>`).join("");
+        setTxt("pomoLast7Total", "Total: " + (typeof fmt==="function" ? fmt(sumSec) : Math.round(sumSec/60)+"m"));
+        b7.innerHTML=rows.map(r=>{
+          const hPct=r.sec>0 ? Math.max(8, Math.round((r.sec/maxSec)*100)) : 4;
+          const shortLbl=r.sec>=3600 ? (r.sec/3600).toFixed(1)+"h" : (r.sec>=60 ? Math.round(r.sec/60)+"m" : (r.sec>0 ? r.sec+"s" : "0m"));
+          return `<div class="pomo-7d-col" title="${r.key}: ${typeof fmt==="function" ? fmt(r.sec) : r.sec+"s"}">` +
+            `<div class="pomo-7d-val">${shortLbl}</div>` +
+            `<div class="pomo-7d-track"><div class="pomo-7d-bar" style="height:${hPct}%"></div></div>` +
+            `<div class="pomo-7d-lbl">${r.label}</div>` +
+          `</div>`;
+        }).join("");
       }
 
       const extra=document.getElementById("pomoMotivationExtra");
