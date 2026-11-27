@@ -9155,7 +9155,7 @@ document.addEventListener("click", (ev)=>{
   if(t.hasAttribute("data-rev-done")){ markRevisionDone(t.getAttribute("data-rev-done")); return; }
   if(t.hasAttribute("data-rev-reschedule")){ rescheduleRevision(t.getAttribute("data-rev-reschedule")); return; }
   if(t.hasAttribute("data-rev-remove")){ removeRevision(t.getAttribute("data-rev-remove")); return; }
-  if(t.hasAttribute("data-heat")){ showHeatDetail(t.getAttribute("data-heat")); return; }
+  if(t.hasAttribute("data-heat")){ if(typeof showHeatDetail==="function") showHeatDetail(t.getAttribute("data-heat")); return; }
   if(t.hasAttribute("data-todo-reschedule")){
     const id = t.getAttribute("data-todo-reschedule");
     if(typeof rescheduleTodo === "function") rescheduleTodo(id);
@@ -12760,13 +12760,13 @@ function setAnim(k){
   if(!RM)PIX.ripples.push({at:performance.now()+500});
   applyLayout();kick();
 }
-function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function escAnim(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]})}
 function renderAnimMenu(hover){
   var menu=document.getElementById("animMenu");if(!menu)return;
   var shown=hover||anim,cur=findAnim(shown);
   menu.innerHTML='<div class="pm-head"><b>✨ Progress animation</b><span>'+ANL.length+' styles</span></div><div class="pm-grid">'+
-    ANL.map(function(a){return'<button type="button" class="pm-opt an'+(a[0]===anim?" on":"")+'" data-an="'+a[0]+'" role="menuitemradio" aria-checked="'+(a[0]===anim)+'"><i>'+a[0]+'</i><span class="pt"><strong>'+esc(a[1])+'</strong></span><span class="ck">✓</span></button>'}).join("")+
-    '</div><div class="pm-desc" id="animDesc">'+esc(cur.d)+'</div>';
+    ANL.map(function(a){return'<button type="button" class="pm-opt an'+(a[0]===anim?" on":"")+'" data-an="'+a[0]+'" role="menuitemradio" aria-checked="'+(a[0]===anim)+'"><i>'+a[0]+'</i><span class="pt"><strong>'+escAnim(a[1])+'</strong></span><span class="ck">✓</span></button>'}).join("")+
+    '</div><div class="pm-desc" id="animDesc">'+escAnim(cur.d)+'</div>';
 }
 function toggleAnimMenu(){
   var menu=document.getElementById("animMenu"),btn=document.getElementById("animBtn");
