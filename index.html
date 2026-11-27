@@ -12872,7 +12872,8 @@ var KEYS=["syllabusTracker","syllabusLastChapter","syllabusCollapsed","pomodoroD
   "dailyStudyGoal","syllabusTodos","syllabusTodoPlans","syllabusNotes","syllabusRevisions","syllabusWeeklyGoal",
   "syllabusAchievements","syllabusRevisionInterval","syllabusUserName","syllabusTheme","syllabusProgressAnim","syllabusPomoAlertSound"];
 var KSET={}; KEYS.forEach(function(k){KSET[k]=1;});
-var META_K="__cs_meta_v1", DIRTY_K="__cs_dirty_v1", UID_K="__cs_uid_v1", RELOAD_K="__cs_reloads";
+var MERGE={pomodoroDailyHistory:1,syllabusAchievements:1};
+var META_K="__cs_meta_v1", DIRTY_K="__cs_dirty_v1", UID_K="__cs_uid_v1";
 
 var LS=window.localStorage;
 var origSet=Storage.prototype.setItem, origRem=Storage.prototype.removeItem, origGet=Storage.prototype.getItem;
@@ -12895,7 +12896,6 @@ function mark(k){
 }
 Storage.prototype.setItem=function(k,v){
   if(this===LS && KSET[k]===1){
-    if(frozen)return;                       // reload cholche, stale write block
     var prev=rawGet(k);
     var r=origSet.apply(this,arguments);
     if(!applying && prev!==String(v)) mark(k);
@@ -12905,7 +12905,6 @@ Storage.prototype.setItem=function(k,v){
 };
 Storage.prototype.removeItem=function(k){
   if(this===LS && KSET[k]===1){
-    if(frozen)return;
     var had=rawGet(k)!==null;
     var r=origRem.apply(this,arguments);
     if(!applying && had) mark(k);
@@ -12946,7 +12945,7 @@ function getUid(){try{return (typeof communityUser!=="undefined"&&communityUser&
 async function pull(){
   if(!uid||!client||pulling)return false;
   pulling=true; setState("syncing");
-  var changed=false;
+  var changedKeys=[];
   try{
     var q=await client.from(TABLE).select("key,updated_at").eq("user_id",uid);
     if(q.error)throw q.error;
@@ -12955,6 +12954,7 @@ async function pull(){
     KEYS.forEach(function(k){
       var rt=remote[k], lt=meta[k]||0, has=rawGet(k)!==null;
       if(rt===undefined){ if(has){ if(!lt){meta[k]=Date.now();} dirty[k]=1; } return; }   // local only -> push
+      if(MERGE[k]){ if(!has||rt!==lt) need.push(k); return; }
       if(rt>lt || !has) need.push(k);
       else if(lt>rt) dirty[k]=1;
     });
@@ -12965,14 +12965,14 @@ async function pull(){
       (v.data||[]).forEach(function(r){
         var k=r.key; if(!KSET[k])return;
         var localRaw=rawGet(k), rt=Number(r.updated_at)||0, lt=meta[k]||0;
-        if(r.value==null){ if(localRaw!==null){rawRem(k);changed=true;} meta[k]=rt; delete dirty[k]; return; }
-        if(localRaw!==null && !lt && localRaw!==r.value){          // first sync, duto side-ei data
+        if(r.value==null){ if(localRaw!==null){rawRem(k);changedKeys.push(k);} meta[k]=rt; delete dirty[k]; return; }
+        if(localRaw!==null && (MERGE[k]||!lt) && localRaw!==r.value){   // duto side-ei data -> merge
           var m=mergeVals(k,localRaw,r.value);
-          rawSet(k,m); changed=true;
+          if(m!==localRaw){ rawSet(k,m); changedKeys.push(k); }
           if(m!==r.value){ meta[k]=Math.max(rt+1,Date.now()); dirty[k]=1; } else { meta[k]=rt; delete dirty[k]; }
           return;
         }
-        if(localRaw!==r.value){ rawSet(k,r.value); changed=true; }
+        if(localRaw!==r.value){ rawSet(k,r.value); changedKeys.push(k); }
         meta[k]=rt; delete dirty[k];
       });
       applying=false;
@@ -12980,12 +12980,12 @@ async function pull(){
     saveMeta(); saveDirty();
     if(Object.keys(dirty).length) await pushNow();
     lastSyncAt=Date.now(); setState("ok");
-    if(changed) scheduleReload();
+    if(changedKeys.length) hydrate(changedKeys);
   }catch(e){
     applying=false; setState(navigator.onLine===false?"offline":"error",e&&e.message);
     schedulePush(15000);
   }finally{pulling=false;}
-  return changed;
+  return changedKeys.length>0;
 }
 
 async function pushNow(){
@@ -13015,24 +13015,47 @@ function busy(){
   var a=document.activeElement;
   return !!(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&a.value);
 }
-var reloadWait=null;
-function scheduleReload(){
-  if(frozen)return;
-  var n=0; try{var o=JSON.parse(sessionStorage.getItem(RELOAD_K)||"[]").filter(function(t){return Date.now()-t<60000;});n=o.length;}catch(e){}
-  if(n>=4){return;}   // safety: reload loop theke bachano
-  toast("☁️ Onno device theke notun data pawa gese, refresh hocche…");
-  clearInterval(reloadWait);
-  var tries=0;
-  reloadWait=setInterval(async function(){
-    tries++;
-    if(busy()&&tries<120)return;          // timer chalu / type korchi -> opekkha
-    clearInterval(reloadWait);
-    try{ if(typeof flushStudy==="function")flushStudy(); }catch(e){}
-    await pushNow();
-    frozen=true;
-    try{var o=JSON.parse(sessionStorage.getItem(RELOAD_K)||"[]");o.push(Date.now());sessionStorage.setItem(RELOAD_K,JSON.stringify(o));}catch(e){}
-    setTimeout(function(){location.reload();},150);
-  },1000);
+function parse(k,d){var r=rawGet(k);if(r===null)return d;try{var v=JSON.parse(r);return v==null?d:v;}catch(e){return d;}}
+function num(k){var n=Number(rawGet(k));return n&&!isNaN(n)?n:0;}
+var TAB_RENDER={exams:"renderExams",history:"renderHistory",insights:"renderInsights",todo:"renderTodo",notes:"renderNotes",revision:"renderRevision",reports:"renderReports"};
+function call(n){try{if(typeof window[n]==="function")window[n]();}catch(e){}}
+/* Onno device theke notun data ashle page reload na kore app-er memory + screen update kore */
+function hydrate(keys){
+  var was=applying; applying=true;
+  try{
+    keys.forEach(function(k){
+      try{
+        var v;
+        switch(k){
+          case "syllabusTracker": v=parse(k,{}); progress=isObj(v)?v:{}; break;
+          case "syllabusLastChapter": last=parse(k,null); break;
+          case "syllabusCollapsed": v=parse(k,{}); collapsed=isObj(v)?v:{}; break;
+          case "pomodoroDailyHistory": v=parse(k,{}); history=isObj(v)?v:{}; break;
+          case "studentExamPlanner": v=parse(k,[]); exams=Array.isArray(v)?v:[]; break;
+          case "dailyStudyGoal": v=num(k); goal=(!v||v<10)?120:v; break;
+          case "syllabusTodos": v=parse(k,[]); todos=Array.isArray(v)?v:[]; break;
+          case "syllabusTodoPlans": v=parse(k,[]); todoPlans=v; break;
+          case "syllabusNotes": notes=parse(k,{}); break;
+          case "syllabusRevisions": revisions=parse(k,{}); break;
+          case "syllabusWeeklyGoal": v=num(k); if(v)weeklyGoal=v; break;
+          case "syllabusAchievements": v=parse(k,{}); achievements=isObj(v)?v:{}; break;
+          case "syllabusRevisionInterval": v=num(k); revisionIntervalDays=(!v||v<1)?7:v; break;
+          case "syllabusTheme": if(typeof setAppTheme==="function")setAppTheme(rawGet(k)||"light"); break;
+        }
+      }catch(e){}
+    });
+    call("renderSyllabus"); call("updateDashboard");
+    try{
+      var t=(typeof currentTab!=="undefined")?currentTab:"";
+      var typing=busyTyping();
+      if(TAB_RENDER[t]&&!typing)call(TAB_RENDER[t]);
+    }catch(e){}
+    toast("☁️ Onno device theke update holo");
+  }finally{applying=was;}
+}
+function busyTyping(){
+  var a=document.activeElement;
+  return !!(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&a.value);
 }
 
 /* ---------- login / logout ---------- */
@@ -13055,8 +13078,8 @@ async function onLogin(newUid){
     applying=true; KEYS.forEach(function(k){rawRem(k);}); applying=false;
     meta={}; dirty={}; saveMeta(); saveDirty();
     rawSet(UID_K,newUid);
+    hydrate(KEYS);                            // memory-o reset (ager account er data jeno save na hoy)
     await pull(); subscribe();
-    scheduleReload();                         // notun account er data load korte
     return;
   }
   if(!last){ meta={}; dirty={}; saveMeta(); saveDirty(); }   // ei device e ager kono sync nei -> duto side merge hobe
