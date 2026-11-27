@@ -4363,6 +4363,27 @@ html.dark .dash-stat-icon.ico-exam {
   }
 }
 </style>
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V3CMCGQXX6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { window.dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-V3CMCGQXX6');
+
+  // Privacy-conscious app events: never send names, emails, notes, chat text, or chapter details.
+  function trackAppEvent(eventName, extraParams) {
+    try {
+      if (typeof gtag !== 'function') return;
+      var appMode = 'browser';
+      try {
+        if ((window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true) appMode = 'pwa';
+      } catch (_e) {}
+      var params = Object.assign({ app_mode: appMode }, extraParams || {});
+      gtag('event', eventName, params);
+    } catch (_e) {}
+  }
+</script>
 </head>
 
 
@@ -5340,7 +5361,9 @@ let __popW = window.innerWidth;
 window.addEventListener("resize", function(){ if(window.innerWidth !== __popW){ __popW = window.innerWidth; closePopMenus(""); } });
 
 function switchTab(t, opts){
+    const previousTab = currentTab;
     currentTab=t;
+    if(previousTab !== t) trackAppEvent("tab_view", { tab_name: String(t || "unknown") });
     document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===t));
     document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===t+"Panel"));
     if(t==="exams")renderExams();
@@ -5684,6 +5707,7 @@ function toggleChapterStatus(b,c){
     if(s==="not-started"){progress[k]="in-progress";toast("🟡 In Progress");}
     else if(s==="in-progress"){
       progress[k]="complete";
+      trackAppEvent("chapter_marked_complete");
       toast("🟢 Complete!");
       try{ offerTodoSyncOnChapterComplete(b,c); }catch(_e){}
       // Smart revision: schedule next review if not already tracked
@@ -6790,6 +6814,7 @@ function togglePomodoroPlay(){
         flushStudySeconds(true);
         clearBackgroundPomodoroNotification();
     } else {
+        trackAppEvent(pomo.mode === "focus" ? "pomodoro_start" : "pomodoro_break_resume");
         pomo.running = true;
         pomo.started = true;
         pomo.awaitingNext = false;
@@ -6910,6 +6935,7 @@ function handlePomoFinish(){
     if(cSelect) cSelect.disabled = true;
 
     if(pomo.mode === "focus"){
+        trackAppEvent("pomodoro_complete");
         try{
             const d = today();
             history[d]??={totalSeconds:0,sessions:0,byBook:{},byChapter:{}};
