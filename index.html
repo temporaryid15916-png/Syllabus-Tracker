@@ -4850,32 +4850,44 @@ html:root:root #pomodoroOverlay .pomo-card:first-child .pomo-pickers{grid-column
   </div>
 </section>
 
-<!-- Reports Tab (Heatmap + Weekly/Monthly) -->
+<!-- Reports Tab — Monthly Study Reports -->
 <section id="reportsPanel" class="panel">
-  <div class="card section">
-    <h2>🔥 Study Activity Heatmap</h2>
-    <p class="sub">Daily study activity heatmap (uses your Pomodoro history)</p>
-    <div id="heatmapContainer" style="overflow-x:auto;margin-top:12px"></div>
-    <div id="heatmapDetail" class="sub" style="margin-top:8px">Click a day for details</div>
-  </div>
-  <div class="card section">
-    <div class="row" style="margin-bottom:10px;flex-wrap:wrap;gap:8px">
-      <div><h2>📈 Weekly & Monthly Reports</h2><p class="sub">Accurate totals from your study history and progress</p></div>
-      <div>
-        <button class="filter active" id="btnReportWeekly" onclick="setReportPeriod('weekly')">Weekly</button>
-        <button class="filter" id="btnReportMonthly" onclick="setReportPeriod('monthly')">Monthly</button>
+  <div class="card section" id="monthlyReportCard">
+    <div class="row" style="margin-bottom:14px;flex-wrap:wrap;gap:10px;align-items:center">
+      <div style="flex:1;min-width:180px">
+        <h2 style="margin:0">📊 Monthly Study Report</h2>
+        <p class="sub" style="margin-top:3px">প্রতিদিন কোন subject কতক্ষণ পড়েছ — মাস অনুযায়ী দেখো</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button type="button" class="btn" id="btnReportPrev" onclick="shiftReportMonth(-1)" title="Previous month">← Prev</button>
+        <div id="reportMonthLabel" style="min-width:140px;text-align:center;font-weight:800;font-size:15px;letter-spacing:-.02em"></div>
+        <button type="button" class="btn" id="btnReportNext" onclick="shiftReportMonth(1)" title="Next month">Next →</button>
+        <button type="button" class="btn primary" id="btnReportPdf" onclick="downloadMonthlyReportPdf()">⬇ PDF</button>
       </div>
     </div>
-    <div id="reportSummary" class="grid4" style="margin-bottom:12px"></div>
-    <div id="reportSubjectList" class="list"></div>
+
+    <div id="reportSummary" class="grid4" style="margin-bottom:14px"></div>
+
+    <div class="row" style="margin-bottom:8px;align-items:baseline">
+      <h3 style="margin:0;font-size:14px">📚 Subject breakdown</h3>
+      <span class="sub" id="reportSubjectHint"></span>
+    </div>
+    <div id="reportSubjectList" class="list" style="margin-bottom:16px"></div>
+
+    <div class="row" style="margin-bottom:8px;align-items:baseline">
+      <h3 style="margin:0;font-size:14px">📅 Day-by-day</h3>
+      <span class="sub">ক্লিক করলে সেই দিনের বিস্তারিত</span>
+    </div>
+    <div id="reportDayList" class="list"></div>
+    <div id="reportDayDetail" class="sub" style="margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--soft);border:1px solid var(--border);display:none"></div>
   </div>
+
   <div class="card section">
     <h2>⚡ Smart Catch-up</h2>
     <p class="sub">Missed or overdue tasks from your To-Do list (never auto-deletes)</p>
     <div id="catchupList" class="list"></div>
   </div>
 </section>
-
 <!-- Community Tab: independent module; existing tracker panels remain unchanged -->
 <section id="communityPanel" class="panel">
   <div id="communityStatus" class="community-status" style="display:none"></div>
