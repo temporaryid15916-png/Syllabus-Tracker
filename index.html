@@ -12861,5 +12861,255 @@ try{
 }catch(e){}
 })();
 </script>
+<script id="cloudSyncScript">
+/* ===== Cloud Sync: account diye shob device e same data (Supabase) ===== */
+(function(){
+"use strict";
+if(window.__cloudSyncLoaded)return; window.__cloudSyncLoaded=true;
+
+var TABLE="user_app_data";
+var KEYS=["syllabusTracker","syllabusLastChapter","syllabusCollapsed","pomodoroDailyHistory","studentExamPlanner",
+  "dailyStudyGoal","syllabusTodos","syllabusTodoPlans","syllabusNotes","syllabusRevisions","syllabusWeeklyGoal",
+  "syllabusAchievements","syllabusRevisionInterval","syllabusUserName","syllabusTheme","syllabusProgressAnim","syllabusPomoAlertSound"];
+var KSET={}; KEYS.forEach(function(k){KSET[k]=1;});
+var META_K="__cs_meta_v1", DIRTY_K="__cs_dirty_v1", UID_K="__cs_uid_v1", RELOAD_K="__cs_reloads";
+
+var LS=window.localStorage;
+var origSet=Storage.prototype.setItem, origRem=Storage.prototype.removeItem, origGet=Storage.prototype.getItem;
+function rawGet(k){try{return origGet.call(LS,k);}catch(e){return null;}}
+function rawSet(k,v){try{origSet.call(LS,k,v);return true;}catch(e){return false;}}
+function rawRem(k){try{origRem.call(LS,k);}catch(e){}}
+function readJSON(k,d){try{var v=JSON.parse(rawGet(k));return v==null?d:v;}catch(e){return d;}}
+
+var meta=readJSON(META_K,{}), dirty=readJSON(DIRTY_K,{});
+function saveMeta(){rawSet(META_K,JSON.stringify(meta));}
+function saveDirty(){rawSet(DIRTY_K,JSON.stringify(dirty));}
+
+var uid=null, client=null, chan=null, pushTimer=null, retryTimer=null, pulling=false, pushing=false;
+var applying=false, frozen=false, state="off", lastSyncAt=0;
+
+/* ---------- local change tracking ---------- */
+function mark(k){
+  meta[k]=Date.now(); dirty[k]=1; saveMeta(); saveDirty();
+  if(uid) schedulePush(1500);
+}
+Storage.prototype.setItem=function(k,v){
+  if(this===LS && KSET[k]===1){
+    if(frozen)return;                       // reload cholche, stale write block
+    var prev=rawGet(k);
+    var r=origSet.apply(this,arguments);
+    if(!applying && prev!==String(v)) mark(k);
+    return r;
+  }
+  return origSet.apply(this,arguments);
+};
+Storage.prototype.removeItem=function(k){
+  if(this===LS && KSET[k]===1){
+    if(frozen)return;
+    var had=rawGet(k)!==null;
+    var r=origRem.apply(this,arguments);
+    if(!applying && had) mark(k);
+    return r;
+  }
+  return origRem.apply(this,arguments);
+};
+
+/* ---------- merge (shudhu first-time login e, duto device-ei data thakle) ---------- */
+function isObj(x){return x&&typeof x==="object"&&!Array.isArray(x);}
+function deepMax(a,b){
+  if(typeof a==="number"&&typeof b==="number")return Math.max(a,b);
+  if(typeof a==="boolean"&&typeof b==="boolean")return a||b;
+  if(isObj(a)&&isObj(b)){var o={},k;for(k in b)o[k]=b[k];for(k in a)o[k]=(k in b)?deepMax(a[k],b[k]):a[k];return o;}
+  return a!==undefined?a:b;
+}
+function mergeVals(key,localStr,remoteStr){
+  try{
+    var l=JSON.parse(localStr), r=JSON.parse(remoteStr);
+    if(key==="pomodoroDailyHistory"||key==="syllabusAchievements")return JSON.stringify(deepMax(l,r));
+    if(Array.isArray(l)&&Array.isArray(r)){
+      var seen={},out=[];
+      l.concat(r).forEach(function(x){
+        var id=x&&typeof x==="object"&&x.id!=null?"i"+x.id:"j"+JSON.stringify(x);
+        if(!seen[id]){seen[id]=1;out.push(x);}
+      });
+      return JSON.stringify(out);
+    }
+    if(isObj(l)&&isObj(r)){var o={},k;for(k in r)o[k]=r[k];for(k in l)o[k]=l[k];return JSON.stringify(o);}
+  }catch(e){}
+  return remoteStr;
+}
+
+/* ---------- supabase helpers ---------- */
+function getClient(){try{return (typeof communityClient!=="undefined"&&communityClient)||null;}catch(e){return null;}}
+function getUid(){try{return (typeof communityUser!=="undefined"&&communityUser&&communityUser.id)?String(communityUser.id):null;}catch(e){return null;}}
+
+async function pull(){
+  if(!uid||!client||pulling)return false;
+  pulling=true; setState("syncing");
+  var changed=false;
+  try{
+    var q=await client.from(TABLE).select("key,updated_at").eq("user_id",uid);
+    if(q.error)throw q.error;
+    var remote={}; (q.data||[]).forEach(function(r){remote[r.key]=Number(r.updated_at)||0;});
+    var need=[];
+    KEYS.forEach(function(k){
+      var rt=remote[k], lt=meta[k]||0, has=rawGet(k)!==null;
+      if(rt===undefined){ if(has){ if(!lt){meta[k]=Date.now();} dirty[k]=1; } return; }   // local only -> push
+      if(rt>lt || !has) need.push(k);
+      else if(lt>rt) dirty[k]=1;
+    });
+    if(need.length){
+      var v=await client.from(TABLE).select("key,value,updated_at").eq("user_id",uid).in("key",need);
+      if(v.error)throw v.error;
+      applying=true;
+      (v.data||[]).forEach(function(r){
+        var k=r.key; if(!KSET[k])return;
+        var localRaw=rawGet(k), rt=Number(r.updated_at)||0, lt=meta[k]||0;
+        if(r.value==null){ if(localRaw!==null){rawRem(k);changed=true;} meta[k]=rt; delete dirty[k]; return; }
+        if(localRaw!==null && !lt && localRaw!==r.value){          // first sync, duto side-ei data
+          var m=mergeVals(k,localRaw,r.value);
+          rawSet(k,m); changed=true;
+          if(m!==r.value){ meta[k]=Math.max(rt+1,Date.now()); dirty[k]=1; } else { meta[k]=rt; delete dirty[k]; }
+          return;
+        }
+        if(localRaw!==r.value){ rawSet(k,r.value); changed=true; }
+        meta[k]=rt; delete dirty[k];
+      });
+      applying=false;
+    }
+    saveMeta(); saveDirty();
+    if(Object.keys(dirty).length) await pushNow();
+    lastSyncAt=Date.now(); setState("ok");
+    if(changed) scheduleReload();
+  }catch(e){
+    applying=false; setState(navigator.onLine===false?"offline":"error",e&&e.message);
+    schedulePush(15000);
+  }finally{pulling=false;}
+  return changed;
+}
+
+async function pushNow(){
+  if(!uid||!client||pushing)return;
+  var ks=Object.keys(dirty).filter(function(k){return KSET[k]===1;});
+  if(!ks.length){return;}
+  pushing=true; setState("syncing");
+  try{
+    var rows=ks.map(function(k){return {user_id:uid,key:k,value:rawGet(k),updated_at:meta[k]||Date.now()};});
+    var r=await client.from(TABLE).upsert(rows,{onConflict:"user_id,key"});
+    if(r.error)throw r.error;
+    ks.forEach(function(k){delete dirty[k];}); saveDirty();
+    lastSyncAt=Date.now(); setState("ok");
+  }catch(e){
+    setState(navigator.onLine===false?"offline":"error",e&&e.message);
+    schedulePush(15000);
+  }finally{pushing=false;}
+}
+function schedulePush(ms){
+  clearTimeout(pushTimer);
+  pushTimer=setTimeout(function(){pushNow();},ms);
+}
+
+/* ---------- remote data aache -> app refresh ---------- */
+function busy(){
+  try{ if(typeof pomo!=="undefined"&&pomo&&pomo.running)return true; }catch(e){}
+  var a=document.activeElement;
+  return !!(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&a.value);
+}
+var reloadWait=null;
+function scheduleReload(){
+  if(frozen)return;
+  var n=0; try{var o=JSON.parse(sessionStorage.getItem(RELOAD_K)||"[]").filter(function(t){return Date.now()-t<60000;});n=o.length;}catch(e){}
+  if(n>=4){return;}   // safety: reload loop theke bachano
+  toast("☁️ Onno device theke notun data pawa gese, refresh hocche…");
+  clearInterval(reloadWait);
+  var tries=0;
+  reloadWait=setInterval(async function(){
+    tries++;
+    if(busy()&&tries<120)return;          // timer chalu / type korchi -> opekkha
+    clearInterval(reloadWait);
+    try{ if(typeof flushStudy==="function")flushStudy(); }catch(e){}
+    await pushNow();
+    frozen=true;
+    try{var o=JSON.parse(sessionStorage.getItem(RELOAD_K)||"[]");o.push(Date.now());sessionStorage.setItem(RELOAD_K,JSON.stringify(o));}catch(e){}
+    setTimeout(function(){location.reload();},150);
+  },1000);
+}
+
+/* ---------- login / logout ---------- */
+function subscribe(){
+  unsubscribe();
+  try{
+    chan=client.channel("appdata-"+uid)
+      .on("postgres_changes",{event:"*",schema:"public",table:TABLE,filter:"user_id=eq."+uid},function(){pull();})
+      .subscribe();
+  }catch(e){chan=null;}
+}
+function unsubscribe(){
+  try{ if(chan&&client)client.removeChannel(chan); }catch(e){}
+  chan=null;
+}
+async function onLogin(newUid){
+  uid=newUid; client=getClient();
+  var last=rawGet(UID_K);
+  if(last && last!==newUid){                 // onno account -> ager account er data muche fela
+    applying=true; KEYS.forEach(function(k){rawRem(k);}); applying=false;
+    meta={}; dirty={}; saveMeta(); saveDirty();
+    rawSet(UID_K,newUid);
+    await pull(); subscribe();
+    scheduleReload();                         // notun account er data load korte
+    return;
+  }
+  if(!last){ meta={}; dirty={}; saveMeta(); saveDirty(); }   // ei device e ager kono sync nei -> duto side merge hobe
+  rawSet(UID_K,newUid);
+  await pull(); subscribe();
+}
+function onLogout(){
+  unsubscribe(); uid=null; client=null; setState("off");
+}
+setInterval(function(){
+  var u=getUid();
+  if(u&&u!==uid)onLogin(u);
+  else if(!u&&uid)onLogout();
+  else if(u&&uid&&!chan&&getClient()){client=getClient();subscribe();}
+},1500);
+setInterval(function(){ if(uid&&document.visibilityState==="visible")pull(); },30000);   // realtime fallback
+document.addEventListener("visibilitychange",function(){
+  if(!uid)return;
+  if(document.visibilityState==="visible")pull(); else pushNow();
+});
+window.addEventListener("online",function(){ if(uid){pull();} else setState("off"); });
+window.addEventListener("offline",function(){ if(uid)setState("offline"); });
+window.addEventListener("pagehide",function(){ if(uid)pushNow(); });
+
+/* ---------- UI: choto sync badge ---------- */
+var badge=null;
+function toast(m){ try{ if(typeof window.toast==="function")return window.toast(m); }catch(e){} try{ if(typeof toast_==="function")toast_(m);}catch(e){} }
+function ui(){
+  if(badge)return;
+  var st=document.createElement("style");
+  st.textContent="#cloudSyncBadge{position:fixed;left:10px;bottom:10px;z-index:900;font:600 12px/1 system-ui,sans-serif;padding:8px 11px;border-radius:999px;border:1px solid var(--border,#ddd);background:var(--card,#fff);color:var(--text,#111);box-shadow:0 4px 14px rgba(0,0,0,.18);cursor:pointer;opacity:.92;max-width:70vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#cloudSyncBadge:hover{opacity:1}#cloudSyncBadge.err{border-color:#f43f5e;color:#f43f5e}#cloudSyncBadge.ok{border-color:#10b981}";
+  document.head.appendChild(st);
+  badge=document.createElement("button");
+  badge.id="cloudSyncBadge"; badge.type="button";
+  badge.addEventListener("click",function(){
+    if(!uid){ try{ if(typeof switchTab==="function")switchTab("community"); }catch(e){} return; }
+    pull();
+  });
+  document.body.appendChild(badge); render();
+}
+function render(){
+  if(!badge)return;
+  var t={off:"☁️ Login korle sync hobe",syncing:"🔄 Syncing…",ok:"☁️ Synced",offline:"📴 Offline (pore sync hobe)",error:"⚠️ Sync error - tap koro"}[state]||"";
+  if(state==="ok"&&lastSyncAt){var d=new Date(lastSyncAt);t+=" · "+("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2);}
+  badge.textContent=t; badge.className=state==="error"?"err":(state==="ok"?"ok":"");
+  if(state==="error"&&lastErr)badge.title=lastErr;
+}
+var lastErr="";
+function setState(s,err){ state=s; lastErr=err||""; render(); }
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",ui); else ui();
+window.cloudSyncNow=function(){return pull();};
+window.cloudSyncDebug=function(){return {uid:uid,state:state,meta:meta,dirty:dirty};};
+})();
+</script>
 </body>
 </html>
