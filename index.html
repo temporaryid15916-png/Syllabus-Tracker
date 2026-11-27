@@ -8469,93 +8469,159 @@ function confirmRevisionInterval(){
   toast("Interval set to "+n+" days");
 }
 
-function renderHeatmap(){
-  const box = document.getElementById("heatmapContainer");
-  if(!box) return;
-  const year = new Date().getFullYear();
-  const start = new Date(year, 0, 1);
-  const end = new Date(year, 11, 31);
-  let html = `<div style="display:flex;gap:3px;align-items:flex-start;font-size:10px">`;
-  let cur = new Date(start);
-  while(cur.getDay() !== 0) cur.setDate(cur.getDate()-1);
-  const vals = Object.values(history || {}).map(h=>Number(h?.totalSeconds||0));
-  const maxSec = Math.max(1, ...(vals.length ? vals : [0]));
-  while(cur <= end || cur.getDay() !== 0){
-    if(cur.getDay()===0) html += `<div style="display:flex;flex-direction:column;gap:3px">`;
-    const key = formatDateKey(cur);
-    const sec = Number(history[key]?.totalSeconds||0);
-    const level = sec<=0 ? 0 : sec < maxSec*0.25 ? 1 : sec < maxSec*0.5 ? 2 : sec < maxSec*0.75 ? 3 : 4;
-    const colors = ["var(--soft)","#c7d2fe","#818cf8","#4f46e5","#312e81"];
-    const inYear = cur.getFullYear()===year;
-    html += `<div title="${key}: ${fmt(sec)}" data-heat="${key}" style="width:12px;height:12px;border-radius:2px;background:${inYear?colors[level]:'transparent'};cursor:pointer"></div>`;
-    if(cur.getDay()===6) html += `</div>`;
-    cur.setDate(cur.getDate()+1);
-    if(cur > end && cur.getDay()===0) break;
-  }
-  html += `</div>`;
-  box.innerHTML = html;
-}
-function showHeatDetail(key){
-  const el = document.getElementById("heatmapDetail");
-  if(!el) return;
-  const h = history[key];
-  if(!h || !h.totalSeconds){ el.textContent = key + " — No study recorded"; return; }
-  const books = Object.entries(h.byBook||{}).map(([b,s])=>`${b}: ${fmt(s)}`).join(" · ");
-  el.textContent = `${key} — ${fmt(h.totalSeconds)} total · ${h.sessions||0} sessions` + (books? " · "+books : "");
+function getReportMonthRange(){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth() + reportMonthOffset;
+  const start = new Date(y, m, 1);
+  const end = new Date(y, m + 1, 0);
+  const todayKey = today();
+  const startKey = formatDateKey(start);
+  const endKey = formatDateKey(end);
+  const clampEnd = endKey > todayKey ? todayKey : endKey;
+  return { start, end, startKey, endKey, clampEnd, label: start.toLocaleString(undefined, { month: "long", year: "numeric" }) };
 }
 
-function setReportPeriod(p){
-  reportPeriod = p;
-  document.getElementById("btnReportWeekly")?.classList.toggle("active", p==="weekly");
-  document.getElementById("btnReportMonthly")?.classList.toggle("active", p==="monthly");
+function shiftReportMonth(dir){
+  const next = reportMonthOffset + dir;
+  if(next > 0) return;
+  reportMonthOffset = next;
   renderReports();
 }
-function renderReports(){
-  renderHeatmap();
-  const sumBox = document.getElementById("reportSummary");
-  const subBox = document.getElementById("reportSubjectList");
-  const catchBox = document.getElementById("catchupList");
-  if(!sumBox) return;
 
-  const now = new Date();
-  let from;
-  if(reportPeriod==="weekly"){
-    from = new Date(now); from.setDate(from.getDate() - 6);
-  } else {
-    from = new Date(now.getFullYear(), now.getMonth(), 1);
-  }
-  const fromKey = formatDateKey(from);
+function collectMonthStats(startKey, clampEnd){
   let totalSec = 0, daysActive = 0, sessions = 0;
   const byBook = {};
-  Object.entries(history || {}).forEach(([k,h])=>{
-    if(k >= fromKey && k <= today()){
-      const s = Number(h.totalSeconds||0);
-      if(s>0){ totalSec += s; daysActive++; sessions += Number(h.sessions||0); }
-      Object.entries(h.byBook||{}).forEach(([b,bs])=>{ byBook[b] = (byBook[b]||0) + Number(bs||0); });
-    }
+  const days = [];
+  Object.entries(history || {}).forEach(([k, h])=>{
+    if(k < startKey || k > clampEnd) return;
+    const s = Number(h.totalSeconds || 0);
+    const sess = Number(h.sessions || 0);
+    if(s > 0){ totalSec += s; daysActive++; }
+    sessions += sess;
+    Object.entries(h.byBook || {}).forEach(([b, bs])=>{
+      byBook[b] = (byBook[b] || 0) + Number(bs || 0);
+    });
+    days.push({
+      key: k,
+      sec: s,
+      sessions: sess,
+      byBook: { ...(h.byBook || {}) },
+      byChapter: { ...(h.byChapter || {}) }
+    });
   });
-  let done=0, total=0;
-  Object.entries(BOOKS).forEach(([b,arr])=>{ total+=arr.length; arr.forEach((_,i)=>{ if(progress[chKey(b,i+1)]==="complete") done++; }); });
-  const tasksDone = (todos||[]).filter(t=>t.status==="complete" && t.completedAt && formatDateKey(new Date(t.completedAt)) >= fromKey).length;
+  days.sort((a, b) => b.key.localeCompare(a.key));
+  return { totalSec, daysActive, sessions, byBook, days };
+}
+
+function showReportDayDetail(key){
+  const el = document.getElementById("reportDayDetail");
+  if(!el) return;
+  const h = history[key];
+  if(!h || !Number(h.totalSeconds)){
+    el.style.display = "block";
+    el.innerHTML = `<strong>${esc(key)}</strong> — এই দিনে কোনো study record নেই।`;
+    return;
+  }
+  const books = Object.entries(h.byBook || {})
+    .sort((a, b) => Number(b[1]) - Number(a[1]))
+    .map(([b, s]) => `<div class="listrow" style="padding:4px 0;border:0"><span>${esc(b)}</span><strong>${fmt(Number(s)||0)}</strong></div>`)
+    .join("");
+  el.style.display = "block";
+  el.innerHTML = `<strong>${esc(key)}</strong> · মোট ${fmt(Number(h.totalSeconds)||0)} · ${Number(h.sessions)||0} session`
+    + (books ? `<div style="margin-top:6px">${books}</div>` : "");
+}
+
+function renderReports(){
+  const sumBox = document.getElementById("reportSummary");
+  const subBox = document.getElementById("reportSubjectList");
+  const dayBox = document.getElementById("reportDayList");
+  const catchBox = document.getElementById("catchupList");
+  const labelEl = document.getElementById("reportMonthLabel");
+  const nextBtn = document.getElementById("btnReportNext");
+  if(!sumBox) return;
+
+  const range = getReportMonthRange();
+  if(labelEl) labelEl.textContent = range.label;
+  if(nextBtn) nextBtn.disabled = reportMonthOffset >= 0;
+
+  const { totalSec, daysActive, sessions, byBook, days } = collectMonthStats(range.startKey, range.clampEnd);
+
+  let done = 0, total = 0;
+  Object.entries(BOOKS).forEach(([b, arr])=>{
+    total += arr.length;
+    arr.forEach((_, i)=>{ if(progress[chKey(b, i + 1)] === "complete") done++; });
+  });
+  const tasksDone = (todos || []).filter(t =>
+    t.status === "complete" && t.completedAt &&
+    formatDateKey(new Date(t.completedAt)) >= range.startKey &&
+    formatDateKey(new Date(t.completedAt)) <= range.clampEnd
+  ).length;
+
+  const dayCount = Math.max(1, Number(range.end.getDate()));
+  const avgSec = daysActive ? Math.round(totalSec / daysActive) : 0;
 
   sumBox.innerHTML = `
-    <div class="stat"><div class="label">Study Time</div><div class="value">${fmt(totalSec)}</div><div class="sub">${reportPeriod}</div></div>
-    <div class="stat"><div class="label">Active Days</div><div class="value">${daysActive}</div><div class="sub">days studied</div></div>
-    <div class="stat"><div class="label">Tasks Done</div><div class="value" style="color:var(--success)">${tasksDone}</div><div class="sub">completed</div></div>
-    <div class="stat"><div class="label">Syllabus</div><div class="value" style="color:var(--primary)">${fmtPct(total?done/total*100:0)}</div><div class="sub">${done}/${total} chapters</div></div>`;
+    <div class="stat"><div class="label">Study Time</div><div class="value">${fmt(totalSec)}</div><div class="sub">${range.label}</div></div>
+    <div class="stat"><div class="label">Active Days</div><div class="value">${daysActive}</div><div class="sub">of ${dayCount} days</div></div>
+    <div class="stat"><div class="label">Avg / active day</div><div class="value">${fmt(avgSec)}</div><div class="sub">${sessions} sessions</div></div>
+    <div class="stat"><div class="label">Tasks Done</div><div class="value" style="color:var(--success)">${tasksDone}</div><div class="sub">${done}/${total} chapters overall</div></div>`;
+
+  const hint = document.getElementById("reportSubjectHint");
+  if(hint) hint.textContent = Object.keys(byBook).length ? Object.keys(byBook).length + " subjects" : "";
 
   if(subBox){
-    const sorted = Object.entries(byBook).sort((a,b)=>b[1]-a[1]);
-    subBox.innerHTML = sorted.length ? sorted.map(([b,s])=>`<div class="listrow"><span>${esc(b)}</span><strong>${fmt(s)}</strong></div>`).join("") : `<div class="community-empty">No subject study time in this period.</div>`;
+    const sorted = Object.entries(byBook).sort((a, b) => b[1] - a[1]);
+    const maxB = sorted.length ? sorted[0][1] : 1;
+    subBox.innerHTML = sorted.length
+      ? sorted.map(([b, s]) => {
+          const pct = Math.round((s / maxB) * 100);
+          return `<div class="listrow" style="flex-direction:column;align-items:stretch;gap:6px;padding:10px 0">
+            <div class="row"><span style="font-weight:650">${esc(b)}</span><strong style="color:var(--primary)">${fmt(s)}</strong></div>
+            <div class="progress" style="height:6px"><div class="fill" style="width:${pct}%"></div></div>
+          </div>`;
+        }).join("")
+      : `<div class="community-empty">এই মাসে কোনো subject study time নেই।</div>`;
   }
 
+  if(dayBox){
+    if(!days.length){
+      dayBox.innerHTML = `<div class="community-empty">এই মাসে কোনো study day নেই।</div>`;
+    } else {
+      dayBox.innerHTML = days.map(d => {
+        const top = Object.entries(d.byBook || {})
+          .sort((a, b) => Number(b[1]) - Number(a[1]))
+          .slice(0, 3)
+          .map(([b, s]) => `${esc(b)} ${fmt(Number(s)||0)}`)
+          .join(" · ");
+        const dObj = new Date(d.key + "T12:00:00");
+        const nice = dObj.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
+        return `<button type="button" class="listrow" style="width:100%;text-align:left;cursor:pointer;border:1px solid var(--border);border-radius:12px;padding:10px 12px;background:var(--card);margin:0"
+          onclick="showReportDayDetail('${esc(d.key)}')">
+          <div style="min-width:0;flex:1">
+            <strong>${esc(nice)}</strong>
+            <div class="sub" style="margin-top:2px">${top || "—"}</div>
+          </div>
+          <div style="text-align:right;flex:none">
+            <strong style="color:var(--primary)">${fmt(d.sec)}</strong>
+            <div class="sub">${d.sessions || 0} sess</div>
+          </div>
+        </button>`;
+      }).join("");
+    }
+  }
+
+  const detail = document.getElementById("reportDayDetail");
+  if(detail){ detail.style.display = "none"; detail.innerHTML = ""; }
+
   if(catchBox){
-    const overdue = (todos||[]).filter(t=>t.status!=="complete" && t.date && t.date < today()).sort((a,b)=>a.date.localeCompare(b.date));
+    const overdue = (todos || []).filter(t => t.status !== "complete" && t.date && t.date < today())
+      .sort((a, b) => a.date.localeCompare(b.date));
     if(!overdue.length){
       catchBox.innerHTML = `<div class="community-empty">No overdue tasks — great job!</div>`;
     } else {
-      catchBox.innerHTML = overdue.slice(0,12).map(t=>`<div class="listrow">
-        <div><strong>${esc(t.title)}</strong><div class="sub">Due ${esc(t.date)} · ${esc(t.priority||"medium")}</div></div>
+      catchBox.innerHTML = overdue.slice(0, 12).map(t => `<div class="listrow">
+        <div><strong>${esc(t.title)}</strong><div class="sub">Due ${esc(t.date)} · ${esc(t.priority || "medium")}</div></div>
         <div style="display:flex;gap:5px">
           <button class="mini" data-todo-reschedule="${esc(t.id)}">Reschedule</button>
           <button class="mini" data-todo-done="${esc(t.id)}">✓ Done</button>
@@ -8563,6 +8629,61 @@ function renderReports(){
       </div>`).join("");
     }
   }
+}
+
+function downloadMonthlyReportPdf(){
+  const range = getReportMonthRange();
+  const { totalSec, daysActive, sessions, byBook, days } = collectMonthStats(range.startKey, range.clampEnd);
+  const sorted = Object.entries(byBook).sort((a, b) => b[1] - a[1]);
+  const subjectRows = sorted.length
+    ? sorted.map(([b, s]) => `<tr><td>${esc(b)}</td><td style="text-align:right">${fmt(s)}</td></tr>`).join("")
+    : `<tr><td colspan="2">No subject data</td></tr>`;
+  const dayRows = days.length
+    ? days.map(d => {
+        const parts = Object.entries(d.byBook || {})
+          .sort((a, b) => Number(b[1]) - Number(a[1]))
+          .map(([b, s]) => `${esc(b)}: ${fmt(Number(s)||0)}`)
+          .join("; ");
+        return `<tr><td>${esc(d.key)}</td><td style="text-align:right">${fmt(d.sec)}</td><td>${parts || "—"}</td></tr>`;
+      }).join("")
+    : `<tr><td colspan="3">No study days</td></tr>`;
+
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Study Report — ${esc(range.label)}</title>
+  <style>
+    body{font-family:system-ui,-apple-system,sans-serif;color:#111;padding:28px;max-width:800px;margin:auto}
+    h1{font-size:22px;margin:0 0 4px} .sub{color:#666;font-size:13px;margin-bottom:18px}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px}
+    .stat{border:1px solid #e5e7eb;border-radius:12px;padding:12px}
+    .stat b{display:block;font-size:18px;margin-top:4px}
+    .stat span{font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.04em}
+    table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:22px}
+    th,td{border-bottom:1px solid #e5e7eb;padding:8px 6px;text-align:left}
+    th{font-size:11px;color:#6b7280;text-transform:uppercase}
+    h2{font-size:15px;margin:18px 0 8px}
+    @media print{body{padding:0} .noprint{display:none}}
+  </style></head><body>
+  <h1>📊 Monthly Study Report</h1>
+  <div class="sub">${esc(range.label)} · Generated ${esc(today())}</div>
+  <div class="stats">
+    <div class="stat"><span>Study time</span><b>${fmt(totalSec)}</b></div>
+    <div class="stat"><span>Active days</span><b>${daysActive}</b></div>
+    <div class="stat"><span>Sessions</span><b>${sessions}</b></div>
+    <div class="stat"><span>Subjects</span><b>${sorted.length}</b></div>
+  </div>
+  <h2>Subject breakdown</h2>
+  <table><thead><tr><th>Subject</th><th style="text-align:right">Time</th></tr></thead><tbody>${subjectRows}</tbody></table>
+  <h2>Day-by-day</h2>
+  <table><thead><tr><th>Date</th><th style="text-align:right">Total</th><th>Subjects</th></tr></thead><tbody>${dayRows}</tbody></table>
+  <p class="sub noprint">Print dialog খুলে “Save as PDF” বেছে নাও।</p>
+  <script>window.onload=function(){window.print()}<\/script>
+  </body></html>`;
+
+  const w = window.open("", "_blank");
+  if(!w){ toast("Pop-up blocked — allow pop-ups for PDF"); return; }
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+  toast("📄 Print → Save as PDF");
 }
 
 function saveGoalsFromInsights(){
