@@ -1090,8 +1090,9 @@ html.dark .subject-icon {
 .pomo-dot.now { background: #818cf8; box-shadow: 0 0 0 3px rgba(129,140,248,.35); }
 .pomo-bottom {
     display: grid;
-    grid-template-columns: 1.1fr 1.2fr 0.9fr;
+    grid-template-columns: 1.1fr 1.2fr;
     gap: 12px;
+    align-items: stretch;
 }
 .pomo-motivation {
     display: flex;
@@ -1108,6 +1109,68 @@ html.dark .subject-icon {
     font-size: 12px;
     color: #c7d2fe;
     margin-top: 4px;
+}
+.pomo-7d-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 112px;
+    padding-top: 10px;
+    margin-top: auto;
+}
+.pomo-7d-col {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+}
+.pomo-7d-val {
+    font-size: 9.5px;
+    font-weight: 700;
+    color: var(--muted);
+    white-space: nowrap;
+}
+.pomo-7d-track {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    background: color-mix(in srgb, var(--primary) 8%, transparent);
+    border-radius: 7px;
+    padding: 2px;
+}
+.pomo-7d-bar {
+    width: 100%;
+    max-width: 26px;
+    min-height: 4px;
+    border-radius: 5px 5px 3px 3px;
+    background: linear-gradient(180deg, var(--purple), var(--primary));
+    transition: height .35s ease;
+}
+.pomo-7d-lbl {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+}
+.pomo-plain-tips {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--muted);
+    padding: 2px 4px;
+    margin-top: 2px;
+}
+.pomo-plain-tips strong {
+    color: var(--text);
+    font-weight: 700;
+    margin-right: 4px;
+}
+@media (max-width: 960px) {
+    .pomo-bottom { grid-template-columns: 1fr; }
 }
 .pomo-box { display: none; } /* legacy class kept for safety */
 html:not(.dark) .pomo {
