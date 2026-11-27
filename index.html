@@ -5047,27 +5047,7 @@ html:root:root #pomodoroOverlay .pomo-card:first-child .pomo-pickers{grid-column
         </div>
       </div>
 
-      <!-- Right: session progress -->
-      <div class="pomo-card">
-        <h3>📊 Session Progress</h3>
-        <div class="pomo-progress-head">
-          <div id="pomoSideRing" class="pomo-side-ring" style="--side-pct:0"><span id="pomoSideRingText">0.00%</span></div>
-          <div>
-            <div style="font-size:20px;font-weight:800;color:#f8fafc" id="pomoSessionsToday">0</div>
-            <div style="font-size:11px;color:#94a3b8">Sessions today</div>
-            <div style="font-size:12px;color:#a5b4fc;margin-top:4px" id="pomoStudyToday">0m study</div>
-          </div>
-        </div>
-        <div class="pomo-stat-grid">
-          <div class="pomo-stat-tile"><div class="k">🎯 Daily goal</div><div class="v" id="pomoGoalPct">0.00%</div></div>
-          <div class="pomo-stat-tile"><div class="k">🔥 Streak</div><div class="v" id="pomoStreakStat">0</div></div>
-        </div>
-        <div style="margin-top:12px;font-size:11px;font-weight:700;color:#94a3b8">This week</div>
-        <div id="pomoWeekBars" class="pomo-week-mini"></div>
-      </div>
-    </div>
-
-    <div class="pomo-bottom">
+      <!-- Right (Box 1): Today's Stats (moved from bottom-left) -->
       <div class="pomo-card">
         <h3>🏆 Today's Stats</h3>
         <div class="pomo-stat-grid">
@@ -5077,15 +5057,27 @@ html:root:root #pomodoroOverlay .pomo-card:first-child .pomo-pickers{grid-column
           <div class="pomo-stat-tile"><div class="k">🔥 Streak</div><div class="v" id="pomoStatStreak">0</div></div>
         </div>
       </div>
+    </div>
+
+    <div class="pomo-bottom">
+      <!-- Box 2: Last 7 days study history bar chart -->
+      <div class="pomo-card">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+          <h3 style="margin:0">📊 Last 7 Days Study History</h3>
+          <span style="font-size:11px;color:var(--muted)" id="pomoLast7Total">0m</span>
+        </div>
+        <div id="pomoLast7Bars" class="pomo-7d-chart"></div>
+      </div>
+
       <div class="pomo-card pomo-motivation">
         <div class="big">Stay Focused!</div>
         <div class="subm">Your hard work will pay off 💜</div>
         <div class="subm" style="margin-top:10px" id="pomoMotivationExtra">Select a chapter and press Start.</div>
       </div>
-      <div class="pomo-card" style="display:flex;flex-direction:column;justify-content:center;gap:8px">
-        <div style="font-size:12px;color:#94a3b8;font-weight:700">Tips</div>
-        <div style="font-size:12.5px;color:#e2e8f0;line-height:1.45">Focus sessions auto-start the next break. Long break runs every cycle. Sound & alerts work as before.</div>
-      </div>
+    </div>
+
+    <div class="pomo-plain-tips">
+      <strong>Tips:</strong> Focus sessions auto-start the next break. Long break runs every cycle. Sound &amp; alerts work as before.
     </div>
   </div>
 </div>
