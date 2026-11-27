@@ -4445,7 +4445,26 @@ html.dark{--pl-sh:0 1px 2px rgba(0,0,0,.35),0 8px 22px -12px rgba(0,0,0,.6);--pl
   :is(#clearHistoryModal,#resetDailyGoalModal,#alertEnabledModal,#deleteExamModal,#resetModal,#examModal,#todoModal,#todoMultiModal,#todoChapterSyncModal,#todoDeleteModal,#todoRescheduleModal,#noteDeleteModal,#revisionIntervalModal) .modalbox{padding:20px 16px}
 }
 @media (prefers-reduced-motion:reduce){:is(#syllabusPanel,#examsPanel,#todoPanel,#historyPanel,#insightsPanel,#notesPanel,#revisionPanel,#reportsPanel) .card{transition:none}}
-</style>  
+</style>
+<style id="chapterFxStyle">
+/* ===== Syllabus chapter fix + feedback animations (scoped to #syllabusPanel only) ===== */
+/* 1) Stop already-complete chapters replaying their pop animation each time the list re-renders */
+#syllabusPanel .chapter.complete .num,#syllabusPanel .status.complete{animation:none}
+/* 2) No hover/press movement on the syllabus list, so a re-render under the cursor never makes rows or cards jump */
+#syllabusPanel .subject:hover,#syllabusPanel .card.subject:hover{transform:none}
+#syllabusPanel .chapter:hover,#syllabusPanel .chapter:active{transform:none}
+/* 3) One-shot feedback, only on the chapter that was just clicked */
+@keyframes chFxSweep{0%{background-position:-120% 0}100%{background-position:220% 0}}
+@keyframes chFxPulse{0%{box-shadow:0 0 0 0 rgba(245,158,11,.55)}100%{box-shadow:0 0 0 14px rgba(245,158,11,0)}}
+@keyframes chFxGlow{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--success) 55%,transparent)}100%{box-shadow:0 0 0 16px transparent}}
+@keyframes chFxPop{0%{transform:scale(.55) rotate(-14deg)}55%{transform:scale(1.22) rotate(5deg)}100%{transform:none}}
+#syllabusPanel .chapter.fx-prog{background-image:linear-gradient(100deg,transparent 30%,color-mix(in srgb,var(--warning) 28%,transparent) 50%,transparent 70%);background-size:60% 100%;background-repeat:no-repeat;animation:chFxSweep .9s ease-out 1}
+#syllabusPanel .chapter.fx-prog .num{animation:chFxPulse .9s ease-out 1}
+#syllabusPanel .chapter.fx-done .num{animation:chFxPop .5s var(--spring,ease-out) 1,chFxGlow .9s ease-out 1}
+#syllabusPanel .chapter.fx-done .status,#syllabusPanel .chapter.fx-done .mini.status{animation:chFxPop .45s var(--spring,ease-out) 1}
+.fx-confetti.fx-lg{width:9px;height:13px}
+@media (prefers-reduced-motion:reduce){#syllabusPanel .chapter.fx-prog,#syllabusPanel .chapter.fx-prog .num,#syllabusPanel .chapter.fx-done .num,#syllabusPanel .chapter.fx-done .status,#syllabusPanel .chapter.fx-done .mini.status{animation:none}}
+</style>
 </head>
 
 
@@ -12294,5 +12313,53 @@ try{pixSet(readPct())}catch(e){}
 })();
 </script>
 
+<script id="chapterFxScript">
+/* Wraps toggleChapterStatus (original untouched): keeps scroll position steady after the list re-renders,
+   then plays a short animation on the clicked chapter only. Data/logic are not changed. */
+(function(){
+"use strict";
+try{
+  var orig=window.toggleChapterStatus;
+  if(typeof orig!=="function") return;
+  var RM=false;try{RM=window.matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){}
+  function burst(el,n){
+    if(RM||!el) return;
+    var r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+    var cols=["var(--primary)","var(--purple)","var(--success)","var(--warning)"];
+    for(var i=0;i<n;i++){
+      var s=document.createElement("span");s.className="fx-confetti"+(n>14?" fx-lg":"");
+      var a=Math.random()*Math.PI*2,d=36+Math.random()*(n>14?90:56);
+      s.style.left=x+"px";s.style.top=y+"px";s.style.background=cols[i%4];
+      s.style.setProperty("--x",Math.cos(a)*d+"px");
+      s.style.setProperty("--y",(Math.sin(a)*d-28)+"px");
+      s.style.setProperty("--r",(Math.random()*400-200)+"deg");
+      document.body.appendChild(s);
+      (function(q){setTimeout(function(){q.remove()},1050)})(s);
+    }
+  }
+  window.toggleChapterStatus=function(b,c){
+    var y=window.pageYOffset||0;
+    var res=orig.apply(this,arguments);
+    try{
+      if(Math.abs((window.pageYOffset||0)-y)>1) window.scrollTo(0,y);
+      var el=document.getElementById("ch_"+String(b).replace(/[^a-zA-Z0-9]/g,"_")+"_"+c);
+      if(el&&!RM){
+        var cls=el.classList.contains("complete")?"fx-done":el.classList.contains("in-progress")?"fx-prog":"";
+        if(cls){
+          el.classList.add(cls);
+          setTimeout(function(){el.classList.remove(cls)},1100);
+          if(cls==="fx-done"){
+            var all=false;
+            try{all=BOOKS[b].every(function(_,i){return progress[chKey(b,i+1)]==="complete"})}catch(e){}
+            burst(el.querySelector(".num")||el,all?26:12);
+          }
+        }
+      }
+    }catch(e){}
+    return res;
+  };
+}catch(e){}
+})();
+</script>
 </body>
 </html>
