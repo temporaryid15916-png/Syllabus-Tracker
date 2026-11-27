@@ -8584,13 +8584,23 @@ function getReportMonthRange(){
   const startKey = formatDateKey(start);
   const endKey = formatDateKey(end);
   const clampEnd = endKey > todayKey ? todayKey : endKey;
-  return { start, end, startKey, endKey, clampEnd, label: start.toLocaleString(undefined, { month: "long", year: "numeric" }) };
+  const label = start.toLocaleString(undefined, { month: "long", year: "numeric" });
+  const labelBn = start.toLocaleString("bn-BD", { month: "long", year: "numeric" });
+  return { start, end, startKey, endKey, clampEnd, label, labelBn, y: start.getFullYear(), mo: start.getMonth() };
 }
 
 function shiftReportMonth(dir){
   const next = reportMonthOffset + dir;
   if(next > 0) return;
   reportMonthOffset = next;
+  reportSelectedDay = null;
+  renderReports();
+}
+
+function jumpReportMonth(offset){
+  if(offset > 0) return;
+  reportMonthOffset = offset;
+  reportSelectedDay = null;
   renderReports();
 }
 
@@ -8598,6 +8608,7 @@ function collectMonthStats(startKey, clampEnd){
   let totalSec = 0, daysActive = 0, sessions = 0;
   const byBook = {};
   const days = [];
+  const byDay = {};
   Object.entries(history || {}).forEach(([k, h])=>{
     if(k < startKey || k > clampEnd) return;
     const s = Number(h.totalSeconds || 0);
@@ -8607,34 +8618,144 @@ function collectMonthStats(startKey, clampEnd){
     Object.entries(h.byBook || {}).forEach(([b, bs])=>{
       byBook[b] = (byBook[b] || 0) + Number(bs || 0);
     });
-    days.push({
+    const row = {
       key: k,
       sec: s,
       sessions: sess,
       byBook: { ...(h.byBook || {}) },
       byChapter: { ...(h.byChapter || {}) }
-    });
+    };
+    days.push(row);
+    byDay[k] = row;
   });
   days.sort((a, b) => b.key.localeCompare(a.key));
-  return { totalSec, daysActive, sessions, byBook, days };
+  return { totalSec, daysActive, sessions, byBook, days, byDay };
+}
+
+function listHistoryMonths(){
+  const map = new Map();
+  const now = new Date();
+  const curKey = now.getFullYear() * 12 + now.getMonth();
+  Object.keys(history || {}).forEach(k=>{
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(k)) return;
+    const d = new Date(k + "T12:00:00");
+    if(isNaN(d.getTime())) return;
+    const key = d.getFullYear() * 12 + d.getMonth();
+    if(key > curKey) return;
+    if(!map.has(key)) map.set(key, { y: d.getFullYear(), m: d.getMonth() });
+  });
+  map.set(curKey, { y: now.getFullYear(), m: now.getMonth() });
+  return [...map.entries()].sort((a, b) => b[0] - a[0]).map(([key, v])=>{
+    const start = new Date(v.y, v.m, 1);
+    const end = new Date(v.y, v.m + 1, 0);
+    const startKey = formatDateKey(start);
+    const endKey = formatDateKey(end);
+    const todayKey = today();
+    const clampEnd = endKey > todayKey ? todayKey : endKey;
+    const st = collectMonthStats(startKey, clampEnd);
+    const dayCount = end.getDate();
+    const pct = Math.min(100, Math.round((st.daysActive / dayCount) * 100));
+    const offset = (v.y - now.getFullYear()) * 12 + (v.m - now.getMonth());
+    return {
+      offset, y: v.y, m: v.m,
+      label: start.toLocaleString(undefined, { month: "long", year: "numeric" }),
+      labelBn: start.toLocaleString("bn-BD", { month: "long", year: "numeric" }),
+      ...st, dayCount, pct
+    };
+  });
 }
 
 function showReportDayDetail(key){
+  reportSelectedDay = key;
   const el = document.getElementById("reportDayDetail");
+  const title = document.getElementById("reportDayTitle");
   if(!el) return;
+  document.querySelectorAll(".rep-cal-cell.selected").forEach(n=>n.classList.remove("selected"));
+  const cell = document.querySelector('.rep-cal-cell[data-day="'+key+'"]');
+  if(cell) cell.classList.add("selected");
+  document.querySelectorAll("#reportDayList .listrow").forEach(n=>{
+    n.classList.toggle("active-day", n.getAttribute("data-day") === key);
+  });
+
+  const dObj = new Date(key + "T12:00:00");
+  const nice = isNaN(dObj.getTime()) ? key : dObj.toLocaleDateString("bn-BD", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  if(title) title.textContent = nice;
+
   const h = history[key];
   if(!h || !Number(h.totalSeconds)){
-    el.style.display = "block";
-    el.innerHTML = `<strong>${esc(key)}</strong> — এই দিনে কোনো study record নেই।`;
+    el.innerHTML = `<div class="rep-day-kicker">${esc(nice)}</div>
+      <div class="community-empty" style="padding:18px 8px">এই দিনে কোনো study record নেই।</div>`;
     return;
   }
   const books = Object.entries(h.byBook || {})
-    .sort((a, b) => Number(b[1]) - Number(a[1]))
-    .map(([b, s]) => `<div class="listrow" style="padding:4px 0;border:0"><span>${esc(b)}</span><strong>${fmt(Number(s)||0)}</strong></div>`)
-    .join("");
-  el.style.display = "block";
-  el.innerHTML = `<strong>${esc(key)}</strong> · মোট ${fmt(Number(h.totalSeconds)||0)} · ${Number(h.sessions)||0} session`
-    + (books ? `<div style="margin-top:6px">${books}</div>` : "");
+    .sort((a, b) => Number(b[1]) - Number(a[1]));
+  const maxB = books.length ? Number(books[0][1]) || 1 : 1;
+  const bookHtml = books.length
+    ? books.map(([b, s])=>{
+        const sec = Number(s) || 0;
+        const pct = Math.round((sec / maxB) * 100);
+        return `<div class="rep-sub-row"><span>${esc(b)}</span><strong>${fmt(sec)}</strong></div>
+          <div class="rep-sub-bar"><i style="width:${pct}%"></i></div>`;
+      }).join("")
+    : `<div class="sub">Subject-wise breakdown নেই</div>`;
+
+  const chEntries = Object.entries(h.byChapter || {})
+    .map(([ck, s])=>({ ck, sec: Number(s)||0 }))
+    .filter(x=>x.sec>0)
+    .sort((a,b)=>b.sec-a.sec)
+    .slice(0, 8);
+  const chHtml = chEntries.length
+    ? `<div style="margin-top:12px"><div class="sub" style="font-weight:700;margin-bottom:4px">Chapter-wise</div>
+        ${chEntries.map(c=>`<div class="rep-sub-row"><span>${esc(c.ck.replace("__"," · Ch "))}</span><strong>${fmt(c.sec)}</strong></div>`).join("")}
+       </div>`
+    : "";
+
+  el.innerHTML = `<div class="rep-day-kicker">${esc(nice)}</div>
+    <div class="rep-day-time">${fmt(Number(h.totalSeconds)||0)}</div>
+    <div class="sub" style="margin:4px 0 10px">${Number(h.sessions)||0} study session</div>
+    <div class="sub" style="font-weight:700;margin-bottom:4px">পড়াশোনার বিষয়সমূহ</div>
+    ${bookHtml}${chHtml}`;
+}
+
+function renderReportCalendar(range, byDay){
+  const box = document.getElementById("reportCalendar");
+  if(!box) return;
+  const todayKey = today();
+  const firstDow = range.start.getDay();
+  const daysInMonth = range.end.getDate();
+  let html = "";
+  for(let i = 0; i < firstDow; i++) html += `<div class="rep-cal-cell pad"></div>`;
+  for(let d = 1; d <= daysInMonth; d++){
+    const dt = new Date(range.y, range.mo, d);
+    const key = formatDateKey(dt);
+    const isFuture = key > todayKey;
+    const studied = !isFuture && byDay[key] && byDay[key].sec > 0;
+    const selected = reportSelectedDay === key;
+    let cls = "rep-cal-cell";
+    if(isFuture) cls += " future";
+    else if(selected) cls += " selected studied";
+    else if(studied) cls += " studied";
+    const title = studied ? `${key}: ${fmt(byDay[key].sec)}` : key;
+    const click = isFuture ? "" : ` onclick="showReportDayDetail('${key}')"`;
+    html += `<button type="button" class="${cls}" data-day="${key}" title="${esc(title)}"${click}>${d}</button>`;
+  }
+  box.innerHTML = html;
+}
+
+function renderReportArchive(){
+  const box = document.getElementById("reportMonthArchive");
+  if(!box) return;
+  const months = listHistoryMonths();
+  box.innerHTML = months.map(m=>{
+    const active = m.offset === reportMonthOffset ? " active" : "";
+    return `<button type="button" class="rep-arch-card${active}" onclick="jumpReportMonth(${m.offset})">
+      <div class="rep-arch-m">${esc(m.label)}</div>
+      <div class="rep-arch-t">${fmt(m.totalSec)}</div>
+      <div class="rep-arch-s">${m.daysActive} দিন · ${m.sessions} সেশন</div>
+      <div class="progress"><div class="fill" style="width:${m.pct}%"></div></div>
+      <div class="rep-arch-s" style="margin-top:4px">${m.pct}% active days</div>
+    </button>`;
+  }).join("");
 }
 
 function renderReports(){
@@ -8643,69 +8764,64 @@ function renderReports(){
   const dayBox = document.getElementById("reportDayList");
   const catchBox = document.getElementById("catchupList");
   const labelEl = document.getElementById("reportMonthLabel");
+  const sumMonth = document.getElementById("reportSummaryMonth");
   const nextBtn = document.getElementById("btnReportNext");
   if(!sumBox) return;
 
   const range = getReportMonthRange();
-  if(labelEl) labelEl.textContent = range.label;
+  if(labelEl) labelEl.textContent = range.label + (range.labelBn ? " (" + range.labelBn + ")" : "");
+  if(sumMonth) sumMonth.textContent = range.label;
   if(nextBtn) nextBtn.disabled = reportMonthOffset >= 0;
 
-  const { totalSec, daysActive, sessions, byBook, days } = collectMonthStats(range.startKey, range.clampEnd);
-
-  let done = 0, total = 0;
-  Object.entries(BOOKS).forEach(([b, arr])=>{
-    total += arr.length;
-    arr.forEach((_, i)=>{ if(progress[chKey(b, i + 1)] === "complete") done++; });
-  });
-  const tasksDone = (todos || []).filter(t =>
-    t.status === "complete" && t.completedAt &&
-    formatDateKey(new Date(t.completedAt)) >= range.startKey &&
-    formatDateKey(new Date(t.completedAt)) <= range.clampEnd
-  ).length;
-
+  const { totalSec, daysActive, sessions, byBook, days, byDay } = collectMonthStats(range.startKey, range.clampEnd);
   const dayCount = Math.max(1, Number(range.end.getDate()));
   const avgSec = daysActive ? Math.round(totalSec / daysActive) : 0;
 
-  sumBox.innerHTML = `
-    <div class="stat"><div class="label">Study Time</div><div class="value">${fmt(totalSec)}</div><div class="sub">${range.label}</div></div>
-    <div class="stat"><div class="label">Active Days</div><div class="value">${daysActive}</div><div class="sub">of ${dayCount} days</div></div>
-    <div class="stat"><div class="label">Avg / active day</div><div class="value">${fmt(avgSec)}</div><div class="sub">${sessions} sessions</div></div>
-    <div class="stat"><div class="label">Tasks Done</div><div class="value" style="color:var(--success)">${tasksDone}</div><div class="sub">${done}/${total} chapters overall</div></div>`;
+  if(!reportSelectedDay || reportSelectedDay < range.startKey || reportSelectedDay > range.endKey){
+    if(byDay[today()] && today() >= range.startKey && today() <= range.endKey) reportSelectedDay = today();
+    else if(days.length) reportSelectedDay = days[0].key;
+    else reportSelectedDay = range.startKey;
+  }
 
-  const hint = document.getElementById("reportSubjectHint");
-  if(hint) hint.textContent = Object.keys(byBook).length ? Object.keys(byBook).length + " subjects" : "";
+  renderReportArchive();
+  renderReportCalendar(range, byDay);
+
+  sumBox.innerHTML = `
+    <div class="stat"><div class="label">মোট পড়ার সময়</div><div class="value">${fmt(totalSec)}</div><div class="sub">${range.label}</div></div>
+    <div class="stat"><div class="label">পড়ার দিন</div><div class="value">${daysActive}</div><div class="sub">of ${dayCount} days</div></div>
+    <div class="stat"><div class="label">মোট Sessions</div><div class="value">${sessions}</div><div class="sub">focus sessions</div></div>
+    <div class="stat"><div class="label">দৈনিক গড়</div><div class="value">${fmt(avgSec)}</div><div class="sub">per active day</div></div>`;
 
   if(subBox){
     const sorted = Object.entries(byBook).sort((a, b) => b[1] - a[1]);
-    const maxB = sorted.length ? sorted[0][1] : 1;
+    const sumB = sorted.reduce((a, [, s]) => a + s, 0) || 1;
     subBox.innerHTML = sorted.length
       ? sorted.map(([b, s]) => {
-          const pct = Math.round((s / maxB) * 100);
-          return `<div class="listrow" style="flex-direction:column;align-items:stretch;gap:6px;padding:10px 0">
-            <div class="row"><span style="font-weight:650">${esc(b)}</span><strong style="color:var(--primary)">${fmt(s)}</strong></div>
-            <div class="progress" style="height:6px"><div class="fill" style="width:${pct}%"></div></div>
+          const pct = Math.round((s / sumB) * 1000) / 10;
+          return `<div class="listrow" style="flex-direction:column;align-items:stretch;gap:4px;padding:8px 0">
+            <div class="row"><span style="font-weight:650">${esc(b)}</span><strong style="color:var(--primary)">${fmt(s)} · ${pct}%</strong></div>
+            <div class="rep-sub-bar"><i style="width:${Math.min(100,pct)}%"></i></div>
           </div>`;
         }).join("")
       : `<div class="community-empty">এই মাসে কোনো subject study time নেই।</div>`;
   }
+
+  const hint = document.getElementById("reportDayListHint");
+  if(hint) hint.textContent = days.length ? days.length + " days" : "";
 
   if(dayBox){
     if(!days.length){
       dayBox.innerHTML = `<div class="community-empty">এই মাসে কোনো study day নেই।</div>`;
     } else {
       dayBox.innerHTML = days.map(d => {
-        const top = Object.entries(d.byBook || {})
-          .sort((a, b) => Number(b[1]) - Number(a[1]))
-          .slice(0, 3)
-          .map(([b, s]) => `${esc(b)} ${fmt(Number(s)||0)}`)
-          .join(" · ");
         const dObj = new Date(d.key + "T12:00:00");
-        const nice = dObj.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
-        return `<button type="button" class="listrow" style="width:100%;text-align:left;cursor:pointer;border:1px solid var(--border);border-radius:12px;padding:10px 12px;background:var(--card);margin:0"
-          onclick="showReportDayDetail('${esc(d.key)}')">
+        const dayName = dObj.toLocaleDateString("bn-BD", { weekday: "short" });
+        const dateShort = dObj.toLocaleDateString("bn-BD", { day: "numeric", month: "short" });
+        const active = d.key === reportSelectedDay ? " active-day" : "";
+        return `<button type="button" class="listrow${active}" data-day="${esc(d.key)}" onclick="showReportDayDetail('${esc(d.key)}')">
           <div style="min-width:0;flex:1">
-            <strong>${esc(nice)}</strong>
-            <div class="sub" style="margin-top:2px">${top || "—"}</div>
+            <strong>${esc(dateShort)}</strong>
+            <div class="sub">${esc(dayName)}</div>
           </div>
           <div style="text-align:right;flex:none">
             <strong style="color:var(--primary)">${fmt(d.sec)}</strong>
@@ -8716,8 +8832,7 @@ function renderReports(){
     }
   }
 
-  const detail = document.getElementById("reportDayDetail");
-  if(detail){ detail.style.display = "none"; detail.innerHTML = ""; }
+  showReportDayDetail(reportSelectedDay);
 
   if(catchBox){
     const overdue = (todos || []).filter(t => t.status !== "complete" && t.date && t.date < today())
@@ -8736,59 +8851,102 @@ function renderReports(){
   }
 }
 
+function pdfEscape(s){
+  return String(s).replace(/\\/g,"\\\\").replace(/\(/g,"\\(").replace(/\)/g,"\\)");
+}
 function downloadMonthlyReportPdf(){
   const range = getReportMonthRange();
-  const { totalSec, daysActive, sessions, byBook, days } = collectMonthStats(range.startKey, range.clampEnd);
+  const { totalSec, daysActive, sessions, byBook, days, byDay } = collectMonthStats(range.startKey, range.clampEnd);
   const sorted = Object.entries(byBook).sort((a, b) => b[1] - a[1]);
-  const subjectRows = sorted.length
-    ? sorted.map(([b, s]) => `<tr><td>${esc(b)}</td><td style="text-align:right">${fmt(s)}</td></tr>`).join("")
-    : `<tr><td colspan="2">No subject data</td></tr>`;
-  const dayRows = days.length
-    ? days.map(d => {
-        const parts = Object.entries(d.byBook || {})
-          .sort((a, b) => Number(b[1]) - Number(a[1]))
-          .map(([b, s]) => `${esc(b)}: ${fmt(Number(s)||0)}`)
-          .join("; ");
-        return `<tr><td>${esc(d.key)}</td><td style="text-align:right">${fmt(d.sec)}</td><td>${parts || "—"}</td></tr>`;
-      }).join("")
-    : `<tr><td colspan="3">No study days</td></tr>`;
+  const dayCount = range.end.getDate();
+  const avgSec = daysActive ? Math.round(totalSec / daysActive) : 0;
+  const fileName = range.label.replace(/\s+/g, "-") + "-Study-Report.pdf";
 
-  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Study Report — ${esc(range.label)}</title>
-  <style>
-    body{font-family:system-ui,-apple-system,sans-serif;color:#111;padding:28px;max-width:800px;margin:auto}
-    h1{font-size:22px;margin:0 0 4px} .sub{color:#666;font-size:13px;margin-bottom:18px}
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px}
-    .stat{border:1px solid #e5e7eb;border-radius:12px;padding:12px}
-    .stat b{display:block;font-size:18px;margin-top:4px}
-    .stat span{font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.04em}
-    table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:22px}
-    th,td{border-bottom:1px solid #e5e7eb;padding:8px 6px;text-align:left}
-    th{font-size:11px;color:#6b7280;text-transform:uppercase}
-    h2{font-size:15px;margin:18px 0 8px}
-    @media print{body{padding:0} .noprint{display:none}}
-  </style></head><body>
-  <h1>📊 Monthly Study Report</h1>
-  <div class="sub">${esc(range.label)} · Generated ${esc(today())}</div>
-  <div class="stats">
-    <div class="stat"><span>Study time</span><b>${fmt(totalSec)}</b></div>
-    <div class="stat"><span>Active days</span><b>${daysActive}</b></div>
-    <div class="stat"><span>Sessions</span><b>${sessions}</b></div>
-    <div class="stat"><span>Subjects</span><b>${sorted.length}</b></div>
-  </div>
-  <h2>Subject breakdown</h2>
-  <table><thead><tr><th>Subject</th><th style="text-align:right">Time</th></tr></thead><tbody>${subjectRows}</tbody></table>
-  <h2>Day-by-day</h2>
-  <table><thead><tr><th>Date</th><th style="text-align:right">Total</th><th>Subjects</th></tr></thead><tbody>${dayRows}</tbody></table>
-  <p class="sub noprint">Print dialog খুলে “Save as PDF” বেছে নাও।</p>
-  <script>window.onload=function(){window.print()}<\/script>
-  </body></html>`;
+  const lines = [];
+  lines.push("Syllabus Tracker - Monthly Study Report");
+  lines.push(range.label);
+  lines.push("Generated: " + today());
+  lines.push("");
+  lines.push("SUMMARY");
+  lines.push("Total study time: " + fmt(totalSec));
+  lines.push("Active days: " + daysActive + " / " + dayCount);
+  lines.push("Sessions: " + sessions);
+  lines.push("Daily average (active days): " + fmt(avgSec));
+  lines.push("");
+  lines.push("SUBJECT BREAKDOWN");
+  if(!sorted.length) lines.push("(no subject data)");
+  else sorted.forEach(([b, s])=> lines.push("- " + b + ": " + fmt(s)));
+  lines.push("");
+  lines.push("DAILY HISTORY");
+  if(!days.length) lines.push("(no study days)");
+  else days.forEach(d=>{
+    const parts = Object.entries(d.byBook || {}).sort((a,b)=>Number(b[1])-Number(a[1])).map(([b,s])=>b+": "+fmt(Number(s)||0)).join(", ");
+    lines.push(d.key + " | " + fmt(d.sec) + " | " + (d.sessions||0) + " sess" + (parts ? " | " + parts : ""));
+  });
+  lines.push("");
+  lines.push("CALENDAR (studied days marked *)");
+  const firstDow = range.start.getDay();
+  let week = "    ".repeat(firstDow);
+  for(let d = 1; d <= dayCount; d++){
+    const key = formatDateKey(new Date(range.y, range.mo, d));
+    const mark = (byDay[key] && byDay[key].sec > 0) ? "*" : " ";
+    week += (String(d).padStart(2," ") + mark + " ");
+    if((firstDow + d) % 7 === 0 || d === dayCount){ lines.push(week); week = ""; }
+  }
+  lines.push("");
+  lines.push("Note: PDF uses English labels for offline compatibility. All numbers are from your real study history.");
 
-  const w = window.open("", "_blank");
-  if(!w){ toast("Pop-up blocked — allow pop-ups for PDF"); return; }
-  w.document.open();
-  w.document.write(html);
-  w.document.close();
-  toast("📄 Print → Save as PDF");
+  const text = lines.join("\n");
+  const chunks = [];
+  const maxLinesPerPage = 48;
+  const allLines = text.split("\n");
+  for(let i = 0; i < allLines.length; i += maxLinesPerPage){
+    chunks.push(allLines.slice(i, i + maxLinesPerPage));
+  }
+  if(!chunks.length) chunks.push([""]);
+
+  const objects = [];
+  objects.push("<< /Type /Catalog /Pages 2 0 R >>");
+  const pageIds = [];
+  let objIndex = 3;
+  const contentIds = [];
+  chunks.forEach(()=>{ pageIds.push(objIndex++); contentIds.push(objIndex++); });
+  objects.push("<< /Type /Pages /Kids [" + pageIds.map(id=>id+" 0 R").join(" ") + "] /Count " + pageIds.length + " >>");
+
+  chunks.forEach((pageLines, idx)=>{
+    const content = pageLines.map((ln, i)=>{
+      const y = 800 - i * 14;
+      return "BT /F1 10 Tf 40 "+y+" Td ("+pdfEscape(ln)+") Tj ET";
+    }).join("\n");
+    const stream = content;
+    objects.push("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents "+contentIds[idx]+" 0 R /Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >> >> >>");
+    objects.push("<< /Length "+stream.length+" >>\nstream\n"+stream+"\nendstream");
+  });
+
+  let pdf = "%PDF-1.4\n";
+  const offsets = [0];
+  objects.forEach((body, i)=>{
+    offsets.push(pdf.length);
+    pdf += (i + 1) + " 0 obj\n" + body + "\nendobj\n";
+  });
+  const xrefPos = pdf.length;
+  pdf += "xref\n0 " + (objects.length + 1) + "\n";
+  pdf += "0000000000 65535 f \n";
+  for(let i = 1; i <= objects.length; i++){
+    pdf += String(offsets[i]).padStart(10, "0") + " 00000 n \n";
+  }
+  pdf += "trailer\n<< /Size " + (objects.length + 1) + " /Root 1 0 R >>\nstartxref\n" + xrefPos + "\n%%EOF";
+
+  const blob = new Blob([pdf], { type: "application/pdf" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 2000);
+  toast("📄 " + fileName + " downloaded");
 }
 
 function saveGoalsFromInsights(){
