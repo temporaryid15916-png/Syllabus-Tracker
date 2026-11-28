@@ -13133,5 +13133,289 @@ window.cloudSyncNow=function(){return pull();};
 window.cloudSyncDebug=function(){return {uid:uid,state:state,meta:meta,dirty:dirty};};
 })();
 </script>
+<!-- ===================== REPORTS GRAPH PATCH (paste just before </body>) ===================== -->
+<style id="repGraphPatchStyle">
+/* nicer calendar cells */
+.rep-cal-cell{position:relative;transition:transform .15s ease,box-shadow .15s ease}
+.rep-cal-cell.studied{background:linear-gradient(145deg,rgba(52,211,153,.38),rgba(16,185,129,.16));border-color:rgba(16,185,129,.65);color:var(--text)}
+.rep-cal-cell.studied::after{content:"";position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:#10b981}
+.rep-cal-cell.selected{background:linear-gradient(135deg,#f59e0b,#fbbf24)!important;border-color:transparent!important;color:#111!important;transform:scale(1.08);box-shadow:0 0 0 3px rgba(245,158,11,.30),0 8px 18px -6px rgba(245,158,11,.6)}
+.rep-cal-cell.selected::after{background:#111}
+/* legend chips */
+.rep-legend2{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.rep-lg{display:inline-flex;align-items:center;gap:8px;padding:6px 12px 6px 7px;border-radius:999px;background:var(--soft);border:1px solid var(--border);font-size:11.5px;font-weight:650;color:var(--text)}
+.rep-sw{position:relative;width:20px;height:20px;border-radius:7px;flex:none;border:1px solid var(--border)}
+.rep-sw.st{background:linear-gradient(145deg,rgba(52,211,153,.55),rgba(16,185,129,.3));border-color:rgba(16,185,129,.7)}
+.rep-sw.st::after{content:"";position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:#10b981}
+.rep-sw.sel{background:linear-gradient(135deg,#f59e0b,#fbbf24);border-color:transparent;box-shadow:0 0 0 2px rgba(245,158,11,.3)}
+.rep-sw.em{background:var(--soft)}
+/* graph modal */
+#repGraphModal .modalbox{max-width:940px;width:100%}
+.rg-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.rg-head h3{margin:0;font-size:17px}
+.rg-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.rg-wrap{width:100%;background:var(--soft);border-radius:14px;padding:6px;overflow:hidden}
+#repGraphCanvas{display:block;width:100%;cursor:pointer}
+.rg-info{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--soft);border:1px solid var(--border);font-size:12.5px;line-height:1.6;min-height:42px}
+.rg-sum{margin-top:8px;font-size:12px;color:var(--muted)}
+</style>
+
+<div id="repGraphModal" class="modal" role="dialog" aria-modal="true" aria-label="Monthly study graph">
+  <div class="card modalbox">
+    <div class="rg-head">
+      <div><h3>📊 Monthly Study Graph</h3><div class="sub" id="repGraphMonth"></div></div>
+      <div class="rg-actions">
+        <button type="button" class="mini" id="repGraphPrev" title="Previous month">←</button>
+        <button type="button" class="mini" id="repGraphNext" title="Next month">→</button>
+        <button type="button" class="btn danger" id="repGraphClose">✕ Close</button>
+      </div>
+    </div>
+    <div class="rg-wrap"><canvas id="repGraphCanvas"></canvas></div>
+    <div class="rg-info" id="repGraphInfo">কোনো bar-এ click করো, ওই দিনের subject-wise সময় দেখতে পাবে।</div>
+    <div class="rg-sum" id="repGraphSum"></div>
+  </div>
+</div>
+
+<script id="repGraphPatchJS">
+(function(){
+"use strict";
+var COL={"Physics 1st Paper":"#6366f1","Physics 2nd Paper":"#8b5cf6","Chemistry 1st Paper":"#10b981","Chemistry 2nd Paper":"#14b8a6","Higher Math 1st Paper":"#f59e0b","Higher Math 2nd Paper":"#f97316","Botany":"#84cc16","Zoology":"#ef4444","E.B.I.":"#64748b","Other":"#94a3b8"};
+function colOf(b){
+  if(COL[b])return COL[b];
+  var h=0;for(var i=0;i<b.length;i++)h=(h*31+b.charCodeAt(i))%360;
+  return "hsl("+h+",65%,52%)";
+}
+var FONT='"Plus Jakarta Sans","Hind Siliguri",system-ui,sans-serif';
+function $(id){return document.getElementById(id);}
+
+/* ---------- draw stacked bar graph (screen + PDF) ---------- */
+function repDraw(cv,W,H,dpr,pal){
+  var ctx=cv.getContext("2d");
+  cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  if(pal.bg){ctx.fillStyle=pal.bg;ctx.fillRect(0,0,W,H);}
+  var range=getReportMonthRange(),st=collectMonthStats(range.startKey,range.clampEnd),n=range.end.getDate();
+  var books=Object.keys(POMO_BOOKS),days=[],max=0,used={},d,i;
+  for(d=1;d<=n;d++){
+    var key=formatDateKey(new Date(range.y,range.mo,d)),row=st.byDay[key],bb=(row&&row.byBook)||{};
+    var segs=books.map(function(b){return [b,Number(bb[b])||0];}).filter(function(s){return s[1]>0;});
+    var tot=segs.reduce(function(a,s){return a+s[1];},0);
+    if(row&&row.sec>tot+1){segs.push(["Other",row.sec-tot]);tot=row.sec;}
+    segs.forEach(function(s){used[s[0]]=1;});
+    days.push({d:d,key:key,segs:segs,total:tot});
+    if(tot>max)max=tot;
+  }
+  var legend=Object.keys(used);
+  ctx.font="600 11px "+pal.font;
+  /* legend layout */
+  var lx=12,rows=1,lw=W-24,items=legend.map(function(b){return {b:b,w:ctx.measureText(b).width+30};});
+  var cur=0;items.forEach(function(it){if(cur+it.w>lw&&cur>0){rows++;cur=0;}it.row=rows-1;it.x=cur;cur+=it.w;});
+  var legendH=legend.length?rows*20+6:0;
+  var pad={l:46,r:12,t:14,b:26+legendH};
+  var pw=W-pad.l-pad.r,ph=H-pad.t-pad.b;
+  if(max<=0)max=1800;
+  var steps=[600,900,1800,3600,7200,10800,14400,21600],step=steps[steps.length-1];
+  for(i=0;i<steps.length;i++){if(max/steps[i]<=5){step=steps[i];break;}}
+  var top=Math.max(step,Math.ceil(max/step)*step);
+  /* grid + y labels */
+  ctx.font="10px "+pal.font;ctx.textAlign="right";ctx.lineWidth=1;
+  for(var v=0;v<=top;v+=step){
+    var y=pad.t+ph-(v/top)*ph;
+    ctx.strokeStyle=pal.grid;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    var m=Math.round(v/60),lab=m>=60?(Math.floor(m/60)+"h"+(m%60?" "+m%60+"m":"")):(m+"m");
+    ctx.fillStyle=pal.muted;ctx.fillText(lab,pad.l-6,y+3);
+  }
+  /* bars */
+  var slot=pw/n,bw=Math.max(3,slot*0.68),bars=[],skip=slot<15?2:1;
+  ctx.textAlign="center";
+  days.forEach(function(dy,idx){
+    var x=pad.l+idx*slot+(slot-bw)/2,yb=pad.t+ph;
+    dy.segs.forEach(function(s){
+      var h=(s[1]/top)*ph;
+      ctx.fillStyle=colOf(s[0]);ctx.fillRect(x,yb-h,bw,Math.max(1,h));
+      ctx.strokeStyle=pal.bg||"rgba(0,0,0,0)";ctx.lineWidth=.6;if(pal.bg)ctx.strokeRect(x,yb-h,bw,Math.max(1,h));
+      yb-=h;
+    });
+    if(dy.total<=0){ctx.fillStyle=pal.grid;ctx.fillRect(x,pad.t+ph-2,bw,2);}
+    if((dy.d-1)%skip===0){ctx.fillStyle=pal.muted;ctx.font="10px "+pal.font;ctx.fillText(String(dy.d),x+bw/2,pad.t+ph+14);}
+    bars.push({x:pad.l+idx*slot,w:slot,day:dy});
+  });
+  /* legend */
+  ctx.textAlign="left";ctx.font="600 11px "+pal.font;
+  items.forEach(function(it){
+    var ly=pad.t+ph+24+it.row*20;
+    ctx.fillStyle=colOf(it.b);ctx.beginPath();
+    if(ctx.roundRect)ctx.roundRect(lx+it.x,ly,12,12,3);else ctx.rect(lx+it.x,ly,12,12);
+    ctx.fill();ctx.fillStyle=pal.text;ctx.fillText(it.b,lx+it.x+18,ly+10);
+  });
+  if(!legend.length){
+    ctx.fillStyle=pal.muted;ctx.textAlign="center";ctx.font="600 13px "+pal.font;
+    ctx.fillText("এই মাসে কোনো study data নেই",pad.l+pw/2,pad.t+ph/2);
+  }
+  cv._bars=bars;cv._range=range;cv._stats=st;
+  return {range:range,stats:st};
+}
+
+/* ---------- screen modal ---------- */
+function screenPal(){
+  var cs=getComputedStyle(document.documentElement);
+  return {bg:null,text:cs.getPropertyValue("--text").trim()||"#eee",muted:cs.getPropertyValue("--muted").trim()||"#999",grid:"rgba(128,128,128,.25)",font:FONT};
+}
+function showInfo(day){
+  var el=$("repGraphInfo");if(!el||!day)return;
+  var dObj=new Date(day.key+"T12:00:00"),nice=isNaN(dObj)?day.key:dObj.toLocaleDateString("bn-BD",{weekday:"long",day:"numeric",month:"long"});
+  if(!day.total){el.innerHTML="<b>"+esc(nice)+"</b><br>এই দিনে পড়াশোনা হয়নি।";return;}
+  el.innerHTML="<b>"+esc(nice)+"</b> — মোট <b>"+fmt(day.total)+"</b><br>"+day.segs.map(function(s){
+    return '<span style="display:inline-flex;align-items:center;gap:5px;margin:2px 12px 2px 0"><i style="width:10px;height:10px;border-radius:3px;background:'+colOf(s[0])+'"></i>'+esc(s[0])+": <b>"+fmt(s[1])+"</b></span>";
+  }).join("");
+}
+function render(){
+  var cv=$("repGraphCanvas");if(!cv)return;
+  var W=Math.max(300,cv.parentElement.clientWidth-12),H=W<520?320:380;
+  cv.style.width=W+"px";cv.style.height=H+"px";
+  var r=repDraw(cv,W,H,Math.min(2,window.devicePixelRatio||1),screenPal());
+  $("repGraphMonth").textContent=r.range.label;
+  var s=r.stats;
+  $("repGraphSum").textContent="মোট "+fmt(s.totalSec)+" · "+s.daysActive+" দিন পড়েছ · "+s.sessions+" sessions";
+  $("repGraphNext").disabled=reportMonthOffset>=0;
+  var sel=null;
+  if(typeof reportSelectedDay!=="undefined"&&reportSelectedDay){
+    (cv._bars||[]).forEach(function(b){if(b.day.key===reportSelectedDay)sel=b.day;});
+  }
+  if(sel)showInfo(sel);else $("repGraphInfo").textContent="কোনো bar-এ click করো, ওই দিনের subject-wise সময় দেখতে পাবে।";
+}
+function openGraph(){$("repGraphModal").classList.add("show");setTimeout(render,30);}
+function closeGraph(){$("repGraphModal").classList.remove("show");}
+window.openReportGraph=openGraph;window.closeReportGraph=closeGraph;
+
+function pick(e){
+  var cv=$("repGraphCanvas"),r=cv.getBoundingClientRect(),x=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
+  var hit=null;(cv._bars||[]).forEach(function(b){if(x>=b.x&&x<b.x+b.w)hit=b.day;});
+  if(hit)showInfo(hit);
+}
+$("repGraphCanvas").addEventListener("click",pick);
+$("repGraphCanvas").addEventListener("mousemove",function(e){if(e.buttons===0)pick(e);});
+$("repGraphClose").addEventListener("click",closeGraph);
+$("repGraphModal").addEventListener("click",function(e){if(e.target===this)closeGraph();});
+$("repGraphPrev").addEventListener("click",function(){shiftReportMonth(-1);render();});
+$("repGraphNext").addEventListener("click",function(){shiftReportMonth(1);render();});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&$("repGraphModal").classList.contains("show"))closeGraph();});
+window.addEventListener("resize",function(){if($("repGraphModal").classList.contains("show"))render();});
+
+/* ---------- inject buttons + new legend ---------- */
+(function(){
+  var pdfBtn=$("btnReportPdf");
+  if(pdfBtn&&!$("btnReportGraphTop")){
+    var wrap=document.createElement("div");wrap.style.cssText="display:flex;gap:8px;flex-wrap:wrap";
+    pdfBtn.parentNode.insertBefore(wrap,pdfBtn);
+    var vb=document.createElement("button");vb.type="button";vb.className="btn";vb.id="btnReportGraphTop";vb.textContent="📊 View Graph";vb.onclick=openGraph;
+    wrap.appendChild(vb);wrap.appendChild(pdfBtn);
+  }
+  var lg=document.querySelector(".rep-legend");
+  if(lg){
+    lg.className="rep-legend2";
+    lg.innerHTML='<span class="rep-lg"><i class="rep-sw st"></i>পড়াশোনা হয়েছে</span><span class="rep-lg"><i class="rep-sw sel"></i>নির্বাচিত দিন</span><span class="rep-lg"><i class="rep-sw em"></i>পড়াশোনা হয়নি</span>';
+    var gb=document.createElement("button");gb.type="button";gb.className="btn primary";gb.id="btnReportGraphCal";
+    gb.style.cssText="width:100%;margin-top:12px";gb.textContent="📊 View Graph — মাসের bar graph দেখো";gb.onclick=openGraph;
+    lg.parentNode.insertBefore(gb,lg.nextSibling);
+  }
+})();
+
+/* ---------- PDF with graph + footer ---------- */
+function L(s){var u=new Uint8Array(s.length);for(var i=0;i<s.length;i++)u[i]=s.charCodeAt(i)&255;return u;}
+function clean(s){
+  return String(s).replace(/•/g,"\x95").replace(/©/g,"\xA9").replace(/[^\x00-\xFF]/g,"?")
+    .replace(/\\/g,"\\\\").replace(/\(/g,"\\(").replace(/\)/g,"\\)");
+}
+function downloadPdf(){
+  var range=getReportMonthRange(),st=collectMonthStats(range.startKey,range.clampEnd);
+  var totalSec=st.totalSec,daysActive=st.daysActive,sessions=st.sessions,byBook=st.byBook,days=st.days,byDay=st.byDay;
+  var sorted=Object.entries(byBook).sort(function(a,b){return b[1]-a[1];});
+  var dayCount=range.end.getDate(),avgSec=daysActive?Math.round(totalSec/daysActive):0;
+  var fileName=range.label.replace(/\s+/g,"-")+"-Study-Report.pdf";
+  var HEAD={"SUMMARY":1,"SUBJECT BREAKDOWN":1,"DAILY HISTORY":1,"CALENDAR (studied days marked *)":1};
+  var lines=[];
+  lines.push("Syllabus Tracker - Monthly Study Report");lines.push(range.label);lines.push("Generated: "+today());lines.push("");
+  lines.push("SUMMARY");
+  lines.push("Total study time: "+fmt(totalSec));lines.push("Active days: "+daysActive+" / "+dayCount);
+  lines.push("Sessions: "+sessions);lines.push("Daily average (active days): "+fmt(avgSec));lines.push("");
+  lines.push("SUBJECT BREAKDOWN");
+  if(!sorted.length)lines.push("(no subject data)");else sorted.forEach(function(x){lines.push("- "+x[0]+": "+fmt(x[1]));});
+  lines.push("");lines.push("DAILY HISTORY");
+  if(!days.length)lines.push("(no study days)");
+  else days.forEach(function(d){
+    var parts=Object.entries(d.byBook||{}).sort(function(a,b){return Number(b[1])-Number(a[1]);}).map(function(x){return x[0]+": "+fmt(Number(x[1])||0);}).join(", ");
+    var ln=d.key+" | "+fmt(d.sec)+" | "+(d.sessions||0)+" sess"+(parts?" | "+parts:"");
+    lines.push(ln.length>100?ln.slice(0,98)+"..":ln);
+  });
+  lines.push("");lines.push("CALENDAR (studied days marked *)");
+  var firstDow=range.start.getDay(),week="    ".repeat(firstDow);
+  for(var d=1;d<=dayCount;d++){
+    var key=formatDateKey(new Date(range.y,range.mo,d)),mark=(byDay[key]&&byDay[key].sec>0)?"*":" ";
+    week+=String(d).padStart(2," ")+mark+" ";
+    if((firstDow+d)%7===0||d===dayCount){lines.push(week);week="";}
+  }
+  var PER=46,pages=[];
+  for(var i=0;i<lines.length;i+=PER)pages.push(lines.slice(i,i+PER));
+  if(!pages.length)pages.push([""]);
+
+  /* graph image (white background, drawn by the browser) */
+  var cv=document.createElement("canvas");
+  repDraw(cv,700,400,2.2,{bg:"#ffffff",text:"#1e1b4b",muted:"#64748b",grid:"rgba(100,116,139,.28)",font:'Helvetica, Arial, "Hind Siliguri", sans-serif'});
+  var b64=cv.toDataURL("image/jpeg",0.92).split(",")[1],bin=atob(b64),jb=new Uint8Array(bin.length);
+  for(var k=0;k<bin.length;k++)jb[k]=bin.charCodeAt(k);
+
+  var footer=function(){
+    var f="0.6 w 0.8 0.8 0.85 RG 40 60 m 555 60 l S\n0.4 g\n";
+    [["©turabi_alam",46],["Study • Track • Complete",36],["Made with love for HSC Students",26]].forEach(function(r){
+      var t=clean(r[0]),w=t.length*8*0.5;
+      f+="BT /F1 8 Tf "+(297.5-w/2).toFixed(1)+" "+r[1]+" Td ("+t+") Tj ET\n";
+    });
+    return f;
+  };
+  var total=pages.length+1,parts=[],pos=0,offs={};
+  var put=function(x){var u=typeof x==="string"?L(x):x;parts.push(u);pos+=u.length;};
+  var obj=function(id,body){offs[id]=pos;put(id+" 0 obj\n"+body+"\nendobj\n");};
+  put("%PDF-1.4\n");
+  var kids=[];for(var p=0;p<total;p++)kids.push((6+2*p)+" 0 R");
+  obj(1,"<< /Type /Catalog /Pages 2 0 R >>");
+  obj(2,"<< /Type /Pages /Kids ["+kids.join(" ")+"] /Count "+total+" >>");
+  obj(3,"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>");
+  obj(4,"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>");
+  offs[5]=pos;
+  put("5 0 obj\n<< /Type /XObject /Subtype /Image /Width "+cv.width+" /Height "+cv.height+" /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length "+jb.length+" >>\nstream\n");
+  put(jb);put("\nendstream\nendobj\n");
+  var res="/Resources << /Font << /F1 3 0 R /F2 4 0 R >> /XObject << /Im1 5 0 R >> >>";
+  for(var pi=0;pi<total;pi++){
+    var c="0 g\n";
+    if(pi<pages.length){
+      pages[pi].forEach(function(ln,i2){
+        var y=800-i2*14,bold=(pi===0&&i2===0)||HEAD[ln];
+        c+="BT /"+(bold?"F2":"F1")+" "+((pi===0&&i2===0)?14:10)+" Tf 40 "+y+" Td ("+clean(ln)+") Tj ET\n";
+      });
+    }else{
+      var iw=515,ih=iw*cv.height/cv.width;
+      c+="BT /F2 14 Tf 40 800 Td ("+clean("Monthly Study Graph - "+range.label)+") Tj ET\n";
+      c+="BT /F1 9 Tf 40 784 Td ("+clean("Each bar = one day. Colours show how long each subject was studied.")+") Tj ET\n";
+      c+="q "+iw+" 0 0 "+ih.toFixed(1)+" 40 "+(770-ih).toFixed(1)+" cm /Im1 Do Q\n";
+    }
+    c+=footer();
+    obj(7+2*pi,"<< /Length "+c.length+" >>\nstream\n"+c+"\nendstream");
+    obj(6+2*pi,"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents "+(7+2*pi)+" 0 R "+res+" >>");
+  }
+  var maxId=5+2*total,xref=pos,x="xref\n0 "+(maxId+1)+"\n0000000000 65535 f \n";
+  for(var id=1;id<=maxId;id++)x+=String(offs[id]).padStart(10,"0")+" 00000 n \n";
+  x+="trailer\n<< /Size "+(maxId+1)+" /Root 1 0 R >>\nstartxref\n"+xref+"\n%%EOF";
+  put(x);
+  var blob=new Blob(parts,{type:"application/pdf"}),url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download=fileName;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(url);},2000);
+  toast("📄 "+fileName+" downloaded");
+}
+window.downloadMonthlyReportPdf=downloadPdf;
+})();
+</script>
+<!-- ===================== END REPORTS GRAPH PATCH ===================== -->
+  
 </body>
 </html>
